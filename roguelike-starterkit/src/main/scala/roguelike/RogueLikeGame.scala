@@ -24,6 +24,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit] {
         )
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
+        .withShaders(MapRenderer.shader(Assets.mapVertShader, Assets.mapFragShader))
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =

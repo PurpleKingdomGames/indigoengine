@@ -39,7 +39,8 @@ object GameScene extends Scene[Unit, Unit, Unit] {
         Text("░░░░░\n░░@░░\n░░░░░", DfTiles.Fonts.fontKey, Assets.fontMaterial)
           .modifyMaterial { case m: Material.ImageEffects =>
             m.withOverlay(Fill.Color(RGBA.Magenta))
-          }
+          },
+        MapRenderer(Point(100, 100), Size(30, 30), Depth(1))
       )
     )
 
