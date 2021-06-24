@@ -8,12 +8,10 @@ vec2 UV;
 
 //<indigo-fragment>
 layout (std140) uniform RogueLikeMapData {
-  vec2 GRID_DIMENSIONS;
-  vec2 CHAR_SIZE;
+  vec4 GRID_DIMENSIONS_CHAR_SIZE;
   vec4 MASK;
-  float[9] CHARS;
-  vec3[9] FOREGROUND;
-  vec4[9] BACKGROUND;
+  vec4[2000] CHAR_FOREGROUND;
+  vec4[2000] BACKGROUND;
 };
 
 in vec2 TILEMAP_TL_TEX_COORDS;
@@ -21,6 +19,8 @@ in vec2 ONE_TEXEL;
 in vec2 TEXTURE_SIZE;
 
 void fragment() {
+  vec2 GRID_DIMENSIONS = GRID_DIMENSIONS_CHAR_SIZE.xy;
+  vec2 CHAR_SIZE = GRID_DIMENSIONS_CHAR_SIZE.zw;
 
   // Which grid square am I in on the map? e.g. 3x3, coords (1,1)
   vec2 gridSquare = UV * GRID_DIMENSIONS;
@@ -29,7 +29,7 @@ void fragment() {
   int index = int(floor(gridSquare.y) * GRID_DIMENSIONS.x + floor(gridSquare.x));
 
   // Which character is that? e.g. position 4 in the array is for char 64, which is '@'
-  int charIndex = int(CHARS[index]);
+  int charIndex = int(CHAR_FOREGROUND[index].x);
 
   // Where on the texture is the top left of the relevant character cell?
   float cellX = float(charIndex % 16) / 16.0;
@@ -45,7 +45,7 @@ void fragment() {
   if(color == MASK) {
     COLOR = BACKGROUND[index];
   } else {
-    COLOR = vec4(color.rgb * (FOREGROUND[index].rgb * color.a), color.a);
+    COLOR = vec4(color.rgb * (CHAR_FOREGROUND[index].gba * color.a), color.a);
   }
 
 }

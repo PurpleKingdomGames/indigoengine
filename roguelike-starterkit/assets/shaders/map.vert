@@ -16,12 +16,10 @@ vec2 scaleCoordsWithOffset(vec2 texcoord, vec2 offset){
 
 //<indigo-vertex>
 layout (std140) uniform RogueLikeMapData {
-  vec2 GRID_DIMENSIONS;
-  vec2 CHAR_SIZE;
+  vec4 GRID_DIMENSIONS_CHAR_SIZE;
   vec4 MASK;
-  float[9] CHARS;
-  vec3[9] FOREGROUND;
-  vec4[9] BACKGROUND;
+  vec4[2000] CHAR_FOREGROUND;
+  vec4[2000] BACKGROUND;
 };
 
 out vec2 TILEMAP_TL_TEX_COORDS;
@@ -29,6 +27,7 @@ out vec2 ONE_TEXEL;
 out vec2 TEXTURE_SIZE;
 
 void vertex() {
+  vec2 CHAR_SIZE = GRID_DIMENSIONS_CHAR_SIZE.zw;
 
   vec2 TILEMAP_BR_TEX_COORDS = scaleCoordsWithOffset((CHAR_SIZE * 16.0) / SIZE, CHANNEL_0_ATLAS_OFFSET);
 
