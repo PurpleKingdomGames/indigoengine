@@ -3,12 +3,14 @@ package roguelike.utils
 import indigo._
 import indigo.ShaderPrimitive._
 
+import roguelike.DfTiles
+
 final case class MapRenderer(
     tileSheet: AssetName,
     gridSize: Size,
     charSize: Size,
     mask: RGBA,
-    map: List[Int],
+    map: List[MapTile],
     position: Point,
     depth: Depth
 ) extends EntityNode:
@@ -44,7 +46,7 @@ final case class MapRenderer(
   def withMask(newColor: RGB): MapRenderer =
     this.copy(mask = newColor.toRGBA)
 
-  def withMap(newMap: List[Int]): MapRenderer =
+  def withMap(newMap: List[MapTile]): MapRenderer =
     this.copy(map = newMap)
 
   def withDepth(newDepth: Depth): MapRenderer =
@@ -62,13 +64,21 @@ final case class MapRenderer(
           Uniform("CHAR_SIZE")       -> vec2(charSize.width.toFloat, charSize.height.toFloat),
           Uniform("MASK")            -> vec4(mask.r, mask.g, mask.b, mask.a),
           Uniform("CHARS") -> array(count)(
-            map.map(c => float(c.toFloat)): _*
+            map.map(t => float(t.char.toInt.toFloat)): _*
           ),
-          Uniform("FOREGROUND") -> array(count)(
-            List.fill(count)(vec3(1, 0, 1)): _*
+          Uniform("FOREGROUND") -> array(
+            count,
+            map.map { t =>
+              val color = t.foreground
+              vec3(color.r.toFloat, color.g.toFloat, color.b.toFloat)
+            }.toArray
           ),
-          Uniform("BACKGROUND") -> array(count)(
-            List.fill(count)(vec4(0.5, 0, 0.5, 1)): _*
+          Uniform("BACKGROUND") -> array(
+            count,
+            map.map { t =>
+              val color = t.background
+              vec4(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
+            }.toArray
           )
         )
       )
@@ -87,3 +97,11 @@ object MapRenderer:
       .External(shaderId)
       .withVertexProgram(vertProgram)
       .withFragmentProgram(fragProgram)
+
+final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA)
+object MapTile:
+  def apply(char: DfTiles.Tile): MapTile =
+    MapTile(char, RGB.White, RGBA.None)
+
+  def apply(char: DfTiles.Tile, foreground: RGB): MapTile =
+    MapTile(char, foreground, RGBA.Zero)

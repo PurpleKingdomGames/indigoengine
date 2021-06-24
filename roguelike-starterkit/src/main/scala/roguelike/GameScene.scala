@@ -4,6 +4,7 @@ import indigo._
 import indigo.scenes._
 
 import roguelike.utils.{MapRenderer, TerminalText}
+import roguelike.utils.MapTile
 
 object GameScene extends Scene[Unit, Unit, Unit]:
 
@@ -45,10 +46,14 @@ object GameScene extends Scene[Unit, Unit, Unit]:
     MapRenderer(Assets.tileMap, Size(3, 3), Size(10, 10))
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    val surround = MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
+    val hero     = MapTile(DfTiles.Tile.`@`, RGB.Magenta)
     Outcome(
       SceneUpdateFragment(
         mapRenderer.withMap(
-          List(176, 176, 176, 176, 64, 176, 176, 176, 176)
+          List(surround, surround, surround) ++
+            List(surround, hero, surround) ++
+            List(surround, surround, surround)
         )
       )
     )

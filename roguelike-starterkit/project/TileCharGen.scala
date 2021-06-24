@@ -4,9 +4,9 @@ import scala.sys.process._
 object TileCharGen {
 
   def genFont(charWidth: Int, charHeight: Int, chars: List[CharDetail]): String = {
-    val sheetWidth: Int = charWidth * 16
+    val sheetWidth: Int  = charWidth * 16
     val sheetHeight: Int = charHeight * 16
-    
+
     val charString = chars.map(cd => "       .addChar(" + cd.toFontChar(charWidth, charHeight) + ")").mkString("\n")
 
     s"""  object Fonts {
@@ -15,6 +15,38 @@ object TileCharGen {
     |
     |    val fontInfo: FontInfo =
     |      FontInfo(fontKey, $sheetWidth, $sheetHeight, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseSensitive
+    |$charString
+    |  }
+    |""".stripMargin
+  }
+
+  def genTiles(chars: List[CharDetail]): String = {
+    val charString =
+      chars
+        .map { cd =>
+          val c = cd.char match {
+            case '\\' => None
+            case '_'  => None
+            case '\'' => None
+            case '`'  => None
+            case char => Some(char.toString)
+          }
+
+          s"""    ${c.map(cc => s"val `$cc`: Tile = ${cd.index.toString}").getOrElse("// Reserved char")}
+          |    val ${cd.name}: Tile = ${cd.index.toString}
+          |""".stripMargin
+        }
+        .mkString("\n")
+
+    s"""  opaque type Tile = Int
+    |
+    |  object Tile {
+    |
+    |    def apply(char: Int): Tile = char
+    |    
+    |    extension (t: Tile)
+    |      def toInt: Int = t
+    |
     |$charString
     |  }
     |""".stripMargin
@@ -43,7 +75,7 @@ object TileCharGen {
     println("Generating Tiles & Fonts")
 
     val contents: String =
-      genFont(charWidth, charHeight, CharMap.chars)
+      genFont(charWidth, charHeight, CharMap.chars) + "\n" + genTiles(CharMap.chars)
 
     val file: File =
       sourceManagedDir / (moduleName + ".scala")
@@ -62,9 +94,9 @@ object TileCharGen {
 
 final case class CharDetail(index: Int, unicode: Int, char: Char, name: String) {
   def toFontChar(charWidth: Int, charHeight: Int): String = {
-    val x: Int = (index % 16) * charWidth
-    val y: Int = (index / 16) * charWidth
-    val charString = if(name == "REVERSE_SOLIDUS") "\\\\" else char.toString()
+    val x: Int     = (index % 16) * charWidth
+    val y: Int     = (index / 16) * charWidth
+    val charString = if (name == "REVERSE_SOLIDUS") "\\\\" else char.toString()
 
     s"""FontChar("$charString", ${x.toString}, ${y.toString}, ${charWidth.toString}, ${charHeight.toString})"""
   }
