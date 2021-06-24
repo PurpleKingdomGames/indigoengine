@@ -41,9 +41,14 @@ object GameScene extends Scene[Unit, Unit, Unit]:
 
   val size = Size(30)
 
+  val mapRenderer: MapRenderer =
+    MapRenderer(Assets.tileMap, Size(3, 3), Size(10, 10))
+
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        MapRenderer(Assets.tileMap, Point(100), size, Depth(1))
+        mapRenderer.withMap(
+          List(176, 176, 176, 176, 64, 176, 176, 176, 176)
+        )
       )
     )
