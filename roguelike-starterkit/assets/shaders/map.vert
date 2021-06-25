@@ -15,11 +15,9 @@ vec2 scaleCoordsWithOffset(vec2 texcoord, vec2 offset){
 }
 
 //<indigo-vertex>
-layout (std140) uniform RogueLikeMapData {
+layout (std140) uniform RogueLikeData {
   vec4 GRID_DIMENSIONS_CHAR_SIZE;
   vec4 MASK;
-  vec4[2000] CHAR_FOREGROUND;
-  vec4[2000] BACKGROUND;
 };
 
 out vec2 TILEMAP_TL_TEX_COORDS;

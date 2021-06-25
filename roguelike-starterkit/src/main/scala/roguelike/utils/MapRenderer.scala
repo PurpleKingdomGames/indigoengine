@@ -53,14 +53,14 @@ final case class MapRenderer(
     this.copy(depth = newDepth)
 
   private val count       = gridSize.width * gridSize.height
-  private val total       = 2000
+  private val total       = 4096
   private val emptyColors = Array.fill(total - count)(vec4(0.0f, 0.0f, 0.0f, 0.0f))
 
   def toShaderData: ShaderData =
     ShaderData(
       MapRenderer.shaderId,
       UniformBlock(
-        "RogueLikeMapData",
+        "RogueLikeData",
         List(
           Uniform("GRID_DIMENSIONS_CHAR_SIZE") -> vec4(
             gridSize.width.toFloat,
@@ -68,14 +68,24 @@ final case class MapRenderer(
             charSize.width.toFloat,
             charSize.height.toFloat
           ),
-          Uniform("MASK") -> vec4(mask.r, mask.g, mask.b, mask.a),
+          Uniform("MASK") -> vec4(mask.r, mask.g, mask.b, mask.a)
+        )
+      ),
+      UniformBlock(
+        "RogueLikeMapForeground",
+        List(
           Uniform("CHAR_FOREGROUND") -> array(
             total,
             (map.map { t =>
               val color = t.foreground
               vec4(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
             } ++ emptyColors).toArray
-          ),
+          )
+        )
+      ),
+      UniformBlock(
+        "RogueLikeMapBackground",
+        List(
           Uniform("BACKGROUND") -> array(
             total,
             (map.map { t =>
