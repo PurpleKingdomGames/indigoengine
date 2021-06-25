@@ -7,17 +7,19 @@ vec4 COLOR;
 vec2 UV;
 
 //<indigo-fragment>
+#define MAX_TILE_COUNT 4096
+
 layout (std140) uniform RogueLikeData {
   vec4 GRID_DIMENSIONS_CHAR_SIZE;
   vec4 MASK;
 };
 
 layout (std140) uniform RogueLikeMapForeground {
-  vec4[4096] CHAR_FOREGROUND;
+  vec4[MAX_TILE_COUNT] CHAR_FOREGROUND;
 };
 
 layout (std140) uniform RogueLikeMapBackground {
-  vec4[4096] BACKGROUND;
+  vec4[MAX_TILE_COUNT] BACKGROUND;
 };
 
 in vec2 TILEMAP_TL_TEX_COORDS;
