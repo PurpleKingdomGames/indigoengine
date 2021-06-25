@@ -18,7 +18,12 @@ layout (std140) uniform RogueLikeTextData {
 
 void fragment(){
 
-  if(CHANNEL_0 == MASK) {
+  bool maskDiff = abs(CHANNEL_0.x - MASK.x) < 0.001 &&
+                  abs(CHANNEL_0.y - MASK.y) < 0.001 &&
+                  abs(CHANNEL_0.z - MASK.z) < 0.001 &&
+                  abs(CHANNEL_0.w - MASK.w) < 0.001;
+
+  if(maskDiff) {
     COLOR = BACKGROUND;
   } else {
     COLOR = vec4(CHANNEL_0.rgb * (FOREGROUND.rgb * CHANNEL_0.a), CHANNEL_0.a);

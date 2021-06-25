@@ -50,7 +50,12 @@ void fragment() {
   
   vec4 color = texture(SRC_CHANNEL, relUV);
 
-  if(color == MASK) {
+  bool maskDiff = abs(color.x - MASK.x) < 0.001 &&
+                  abs(color.y - MASK.y) < 0.001 &&
+                  abs(color.z - MASK.z) < 0.001 &&
+                  abs(color.w - MASK.w) < 0.001;
+
+  if(maskDiff) {
     COLOR = BACKGROUND[index];
   } else {
     COLOR = vec4(color.rgb * (CHAR_FOREGROUND[index].gba * color.a), color.a);
