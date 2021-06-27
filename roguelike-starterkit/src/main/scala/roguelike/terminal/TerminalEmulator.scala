@@ -28,6 +28,8 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     this.copy(charMap = charMap.insertElements(tiles.map(p => (p._2, Vertex.fromPoint(p._1)))))
   def put(tiles: (Point, MapTile)*): TerminalEmulator =
     put(tiles.toList)
+  def put(coords: Point, mapTile: MapTile): TerminalEmulator =
+    put(List(coords -> mapTile))
 
   def get(coords: Point): Option[MapTile] =
     charMap.fetchElementAt(Vertex.fromPoint(coords))
