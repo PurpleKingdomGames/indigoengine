@@ -1,4 +1,4 @@
-package roguelike.utils
+package roguelike.terminal
 
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
@@ -40,7 +40,7 @@ final case class TerminalText(
           List(
             Uniform("FOREGROUND") -> vec3(foreground.r, foreground.g, foreground.b),
             Uniform("BACKGROUND") -> vec4(background.r, background.g, background.b, background.a),
-            Uniform("MASK") -> vec4(mask.r, mask.g, mask.b, mask.a)
+            Uniform("MASK")       -> vec4(mask.r, mask.g, mask.b, mask.a)
           )
         )
       ),

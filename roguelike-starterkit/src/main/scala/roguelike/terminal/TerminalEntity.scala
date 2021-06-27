@@ -1,11 +1,11 @@
-package roguelike.utils
+package roguelike.terminal
 
 import indigo._
 import indigo.ShaderPrimitive._
 
 import roguelike.DfTiles
 
-final case class MapRenderer(
+final case class TerminalEntity(
     tileSheet: AssetName,
     gridSize: Size,
     charSize: Size,
@@ -20,36 +20,36 @@ final case class MapRenderer(
   def scale: Vector2    = Vector2.one
   def size: Size        = gridSize * charSize
 
-  def moveTo(pt: Point): MapRenderer =
+  def moveTo(pt: Point): TerminalEntity =
     this.copy(position = pt)
-  def moveTo(x: Int, y: Int): MapRenderer =
+  def moveTo(x: Int, y: Int): TerminalEntity =
     moveTo(Point(x, y))
-  def withPosition(newPosition: Point): MapRenderer =
+  def withPosition(newPosition: Point): TerminalEntity =
     moveTo(newPosition)
 
-  def moveBy(pt: Point): MapRenderer =
+  def moveBy(pt: Point): TerminalEntity =
     this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): MapRenderer =
+  def moveBy(x: Int, y: Int): TerminalEntity =
     moveBy(Point(x, y))
 
-  def withTileSheet(newTileSheet: AssetName): MapRenderer =
+  def withTileSheet(newTileSheet: AssetName): TerminalEntity =
     this.copy(tileSheet = newTileSheet)
 
-  def withGridSize(newGridSize: Size): MapRenderer =
+  def withGridSize(newGridSize: Size): TerminalEntity =
     this.copy(gridSize = newGridSize)
 
-  def withCharSize(newCharSize: Size): MapRenderer =
+  def withCharSize(newCharSize: Size): TerminalEntity =
     this.copy(charSize = newCharSize)
 
-  def withMask(newColor: RGBA): MapRenderer =
+  def withMask(newColor: RGBA): TerminalEntity =
     this.copy(mask = newColor)
-  def withMask(newColor: RGB): MapRenderer =
+  def withMask(newColor: RGB): TerminalEntity =
     this.copy(mask = newColor.toRGBA)
 
-  def withMap(newMap: List[MapTile]): MapRenderer =
+  def withMap(newMap: List[MapTile]): TerminalEntity =
     this.copy(map = newMap)
 
-  def withDepth(newDepth: Depth): MapRenderer =
+  def withDepth(newDepth: Depth): TerminalEntity =
     this.copy(depth = newDepth)
 
   private val count       = gridSize.width * gridSize.height
@@ -58,7 +58,7 @@ final case class MapRenderer(
 
   def toShaderData: ShaderData =
     ShaderData(
-      MapRenderer.shaderId,
+      TerminalEntity.shaderId,
       UniformBlock(
         "RogueLikeData",
         List(
@@ -97,10 +97,13 @@ final case class MapRenderer(
       )
     ).withChannel0(tileSheet)
 
-object MapRenderer:
+object TerminalEntity:
 
-  def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): MapRenderer =
-    MapRenderer(tileSheet, gridSize, charSize, RGBA.Magenta, Nil, Point.zero, Depth(1))
+  def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): TerminalEntity =
+    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Nil, Point.zero, Depth(1))
+
+  def apply(tileSheet: AssetName, gridSize: Size, charSize: Size, map: List[MapTile]): TerminalEntity =
+    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1))
 
   val shaderId: ShaderId =
     ShaderId("map shader")

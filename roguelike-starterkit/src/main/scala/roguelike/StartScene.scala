@@ -3,7 +3,7 @@ package roguelike
 import indigo._
 import indigo.scenes._
 
-import roguelike.utils.{MapRenderer, TerminalText}
+import roguelike.terminal.{TerminalEntity, TerminalText}
 
 object StartScene extends Scene[Unit, Unit, Unit]:
 

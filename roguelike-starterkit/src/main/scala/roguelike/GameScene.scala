@@ -3,8 +3,9 @@ package roguelike
 import indigo._
 import indigo.scenes._
 
-import roguelike.utils.{MapRenderer, TerminalText}
-import roguelike.utils.MapTile
+import roguelike.terminal.{TerminalEntity, TerminalText}
+import roguelike.terminal.MapTile
+import roguelike.terminal.TerminalEmulator
 
 object GameScene extends Scene[Unit, Unit, Unit]:
 
@@ -40,19 +41,24 @@ object GameScene extends Scene[Unit, Unit, Unit]:
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  val mapRenderer: MapRenderer =
-    MapRenderer(Assets.tileMap, Size(3, 3), Size(10, 10))
+  // This shouldn't live here really, just keeping it simple for demo purposes.
+  val terminal: TerminalEmulator =
+    TerminalEmulator(Size(3, 3))
+      .put(
+        Point(0, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 1) -> MapTile(DfTiles.Tile.`@`, RGB.Magenta),
+        Point(2, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
+      )
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
-    val surround = MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
-    val hero     = MapTile(DfTiles.Tile.`@`, RGB.Magenta)
-    
     Outcome(
       SceneUpdateFragment(
-        mapRenderer.withMap(
-          List(surround, surround, surround) ++
-            List(surround, hero, surround) ++
-            List(surround, surround, surround)
-        )
+        terminal.draw(Assets.tileMap, Size(10, 10), MapTile(DfTiles.Tile.SPACE))
       )
     )

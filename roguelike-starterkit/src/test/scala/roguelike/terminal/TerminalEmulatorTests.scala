@@ -1,4 +1,4 @@
-package roguelike.utils
+package roguelike.terminal
 
 import indigo.RGB
 import indigo.RGBA
@@ -7,11 +7,11 @@ import indigo.Size
 
 import roguelike.DfTiles.Tile
 
-class ConsoleEmulatorTests extends munit.FunSuite {
+class TerminalEmulatorTests extends munit.FunSuite {
 
   test("should be able to put and get an element at a given position") {
     val console =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val expected =
@@ -25,7 +25,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("trying to get at an empty location returns None") {
     val console =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val expected: Option[MapTile] =
@@ -46,7 +46,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
       )
 
     val console =
-      ConsoleEmulator(Size(10))
+      TerminalEmulator(Size(10))
         .put(list)
 
     assert(
@@ -58,10 +58,10 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("continuous list (empty)") {
     val console =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
 
     val actual =
-      console.draw(MapTile(Tile.`.`))
+      console.toTileList(MapTile(Tile.`.`))
 
     val expected =
       List.fill(9)(MapTile(Tile.`.`))
@@ -82,11 +82,11 @@ class ConsoleEmulatorTests extends munit.FunSuite {
       coords.zip(List.fill(8)(MapTile(Tile.`!`)) :+ MapTile(Tile.`@`))
 
     val console =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(items)
 
     val actual =
-      console.draw(MapTile(Tile.`.`))
+      console.toTileList(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -133,11 +133,11 @@ class ConsoleEmulatorTests extends munit.FunSuite {
       coords.zip(items)
 
     val console =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(itemsWithCoords)
 
     val actual =
-      console.draw(MapTile(Tile.`.`))
+      console.toTileList(MapTile(Tile.`.`))
 
     val expected =
       List(
@@ -158,11 +158,11 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("combine") {
     val consoleA =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val consoleB =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(2, 2), Tile.`!`)
 
     val combined =
@@ -174,11 +174,11 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("toList") {
     val consoleA =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val consoleB =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(2, 2), Tile.`!`)
 
     val expected =
@@ -193,11 +193,11 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("toPositionedList") {
     val consoleA =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val consoleB =
-      ConsoleEmulator(Size(3))
+      TerminalEmulator(Size(3))
         .put(Point(2, 2), Tile.`!`)
 
     val expected =
@@ -212,7 +212,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
 
   test("placing something in the center works.") {
     val console =
-      ConsoleEmulator(Size(80, 50))
+      TerminalEmulator(Size(80, 50))
         .put(Point(40, 25), Tile.`@`)
 
     val expected =
@@ -229,7 +229,7 @@ class ConsoleEmulatorTests extends munit.FunSuite {
     assert(list.contains((Point(40, 25), MapTile(Tile.`@`))))
 
     val drawn =
-      console.draw(MapTile(Tile.LIGHT_SHADE))
+      console.toTileList(MapTile(Tile.LIGHT_SHADE))
 
     val foundAt =
       drawn.zipWithIndex.find(p => p._1 == MapTile(Tile.`@`)).map(_._2)

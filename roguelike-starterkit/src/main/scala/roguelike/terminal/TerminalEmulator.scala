@@ -1,4 +1,4 @@
-package roguelike.utils
+package roguelike.terminal
 
 import indigo._
 import indigoextras.trees.QuadTree
@@ -8,7 +8,7 @@ import indigoextras.geometry.Vertex
 import roguelike.DfTiles
 import scala.annotation.tailrec
 
-final case class ConsoleEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
+final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
   private val coordsList: List[Point] =
     (0 until screenSize.height).flatMap { y =>
@@ -17,23 +17,26 @@ final case class ConsoleEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       }
     }.toList
 
-  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB, bgColor: RGBA): ConsoleEmulator =
+  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords)))
-  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB): ConsoleEmulator =
+  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor), Vertex.fromPoint(coords)))
-  def put(coords: Point, tile: DfTiles.Tile): ConsoleEmulator =
+  def put(coords: Point, tile: DfTiles.Tile): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile), Vertex.fromPoint(coords)))
 
-  def put(tiles: List[(Point, MapTile)]): ConsoleEmulator =
+  def put(tiles: List[(Point, MapTile)]): TerminalEmulator =
     this.copy(charMap = charMap.insertElements(tiles.map(p => (p._2, Vertex.fromPoint(p._1)))))
-  def put(tiles: (Point, MapTile)*): ConsoleEmulator =
+  def put(tiles: (Point, MapTile)*): TerminalEmulator =
     put(tiles.toList)
 
   def get(coords: Point): Option[MapTile] =
     charMap.fetchElementAt(Vertex.fromPoint(coords))
 
-  def draw(default: MapTile): List[MapTile] =
+  def toTileList(default: MapTile): List[MapTile] =
     coordsList.map(pt => get(pt).getOrElse(default))
+
+  def draw(tileSheet: AssetName, charSize: Size, default: MapTile): TerminalEntity =
+    TerminalEntity(tileSheet, screenSize, charSize, toTileList(default))
 
   def toList: List[MapTile] =
     @tailrec
@@ -95,11 +98,11 @@ final case class ConsoleEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
     rec(List(charMap), Nil)
 
-  def combine(otherConsole: ConsoleEmulator): ConsoleEmulator =
+  def combine(otherConsole: TerminalEmulator): TerminalEmulator =
     this.copy(
       charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1))))
     )
 
-object ConsoleEmulator:
-  def apply(screenSize: Size): ConsoleEmulator =
-    ConsoleEmulator(screenSize, QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))
+object TerminalEmulator:
+  def apply(screenSize: Size): TerminalEmulator =
+    TerminalEmulator(screenSize, QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))

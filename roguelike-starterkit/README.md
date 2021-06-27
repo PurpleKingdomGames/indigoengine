@@ -111,27 +111,33 @@ Looks great! ...but has two problems:
 
 Great for pop-up menus, and monochrome sections of ASCII art, or maps that aren't too big. After that, a new strategy may be needed.
 
-### Method 2: `MapRenderer`
+### Method 2: `TerminalEmulator`
 
-The `MapRenderer` works in a completely different way. Here a special shader is going to draw all the ASCII characters out in a continuous image, and you can interleave colors any time you like with no performance cost. This moves processing costs away from the rendering pipeline but incurs a penalty on the CPU side.
+The `TerminalEmulator` works in a completely different way. Here a special shader is going to draw all the ASCII characters out in a continuous image, and you can interleave colors any time you like with no performance cost. This moves processing costs away from the rendering pipeline but incurs a penalty on the CPU side.
+
+The terminal emulator... emulates a simple terminal interface allowing you to put and get characters. Terminals can be merged and drawn.
 
 It's used like this:
 
 ```scala
-  val mapRenderer: MapRenderer =
-    MapRenderer(Assets.tileMap, Size(3, 3), Size(10, 10))
+  val terminal: TerminalEmulator =
+    TerminalEmulator(Size(3, 3))
+      .put(
+        Point(0, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 1) -> MapTile(DfTiles.Tile.`@`, RGB.Magenta),
+        Point(2, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
+      )
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
-    val surround = MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
-    val hero     = MapTile(DfTiles.Tile.`@`, RGB.Magenta)
-    
     Outcome(
       SceneUpdateFragment(
-        mapRenderer.withMap(
-          List(surround, surround, surround) ++
-            List(surround, hero, surround) ++
-            List(surround, surround, surround)
-        )
+        terminal.draw(Assets.tileMap, Size(10, 10), MapTile(DfTiles.Tile.SPACE))
       )
     )
 ```
@@ -145,10 +151,10 @@ A word on the performance of this solution, by default, this version is configur
 1. Lower your FPS! Do you need 60 fps for an ASCII game? Probably not! 30 fps would likely be fine. As you lower FPS what you get (aside from less frequent graphics updates) is input lag. So another way to go is to artificially lower fps: Leave your game running at 60fps, but put in a throttle that only redraws the view every 15-30 fps based on time since last draw.
 2. Lower the max array size. If you can get away with a smaller grid, lower the array size to reduce the amount of clean up needed each frame. This must be done in two places (**AND they must be the same value!!**):
 
-  a. `MapRenderer.scala` - `private val total = 4096` - change 4096 to, say, 1024.
+  a. `TerminalEntity.scala` - `private val total = 4096` - change 4096 to, say, 1024.
   b. `map.frag` - `#define MAX_TILE_COUNT 4096` - change 4096 to, say, 1024.
 
-> **IMPORTANT** - the max size _will_ be allocated whether your grid is 80x50 or 3x3, so if you only need 9 tiles, lower the value to 9! You can have more than one `MapRenderer` if that is useful...
+> **IMPORTANT** - the max size _will_ be allocated whether your grid is 80x50 or 3x3, so if you only need 9 tiles, lower the value to 9! You can have more than one `TerminalEntity` if that is useful...
 
 If this proves insufficient I can look into other ways of speeding it up. Please report an issue.
 

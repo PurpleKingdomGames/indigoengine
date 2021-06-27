@@ -4,7 +4,7 @@ import indigo._
 import indigo.scenes._
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-import roguelike.utils.{MapRenderer, TerminalText}
+import roguelike.terminal.{TerminalEntity, TerminalText}
 
 @JSExportTopLevel("IndigoGame")
 object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
@@ -27,7 +27,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
-          MapRenderer.shader(Assets.Required.mapVertShader, Assets.Required.mapFragShader),
+          TerminalEntity.shader(Assets.Required.mapVertShader, Assets.Required.mapFragShader),
           TerminalText.shader(Assets.Required.textFragShader)
         )
     )
