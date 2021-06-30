@@ -162,10 +162,13 @@ The trade off here is that it's more powerful but less friendly. You just give i
 
 The `Size(10, 10)` is the size, 10x10 pixels, of the characters/tiles on the source texture, i.e. how much space `@` takes up. This is a key factor in choosing a tile sheet.
 
-A word on the performance of this solution, by default, this version is configured to render up to a maximum of 4096 tiles and _just_ manages to run at 60fps (for me), but with no business logic. 4000 tiles is an 80x50 which is one of the standard roguelike game grid sizes. However, performance will varying from platform to platform and browser to browser. The performance problem here is a that your allocating a couple of massive arrays every frame, and the GC has to keep up. Two ways to reduce GC pressure:
+A word on the performance of this solution, by default, this version is configured to render up to a maximum of 4096 tiles and _just_ manages to run at 60fps (for me), but with no business logic. 4000 tiles is an 80x50 which is one of the standard roguelike game grid sizes. However, performance will varying from platform to platform and browser to browser. The performance problem here is a that your allocating a couple of massive arrays every frame, and the GC has to keep up.
+
+Three ways to improve performance / reduce GC pressure:
 
 1. Lower your FPS! Do you need 60 fps for an ASCII game? Probably not! 30 fps would likely be fine. As you lower FPS what you get (aside from less frequent graphics updates) is input lag. So another way to go is to artificially lower fps: Leave your game running at 60fps, but put in a throttle that only redraws the view every 15-30 fps based on time since last draw.
-2. Lower the max array size. If you can get away with a smaller grid, lower the array size to reduce the amount of clean up needed each frame. This must be done in two places (**AND they must be the same value!!**):
+2. Only call `draw`, when the map changes, which is on key stroke not on every frame. This will reduce the number of times the massive arrays are produced and discarded. Cache the drawn `TerminalEntity` in the view model.
+3. Lower the max array size. If you can get away with a smaller grid, lower the array size to reduce the amount of clean up needed each frame. This must be done in two places (**AND they must be the same value!!**):
 
   a. `TerminalEntity.scala` - `private val total = 4096` - change 4096 to, say, 1024.
   b. `map.frag` - `#define MAX_TILE_COUNT 4096` - change 4096 to, say, 1024.
