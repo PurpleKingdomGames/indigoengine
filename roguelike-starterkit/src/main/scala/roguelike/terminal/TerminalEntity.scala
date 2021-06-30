@@ -56,6 +56,18 @@ final case class TerminalEntity(
   private val total       = 4096
   private val emptyColors = Array.fill(total - count)(vec4(0.0f, 0.0f, 0.0f, 0.0f))
 
+  private lazy val fgArray =
+    (map.map { t =>
+      val color = t.foreground
+      vec4(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
+    } ++ emptyColors).toArray
+
+  private lazy val bgArray =
+    (map.map { t =>
+      val color = t.background
+      vec4(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
+    } ++ emptyColors).toArray
+
   def toShaderData: ShaderData =
     ShaderData(
       TerminalEntity.shaderId,
@@ -74,25 +86,13 @@ final case class TerminalEntity(
       UniformBlock(
         "RogueLikeMapForeground",
         List(
-          Uniform("CHAR_FOREGROUND") -> array(
-            total,
-            (map.map { t =>
-              val color = t.foreground
-              vec4(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
-            } ++ emptyColors).toArray
-          )
+          Uniform("CHAR_FOREGROUND") -> array(total, fgArray)
         )
       ),
       UniformBlock(
         "RogueLikeMapBackground",
         List(
-          Uniform("BACKGROUND") -> array(
-            total,
-            (map.map { t =>
-              val color = t.background
-              vec4(color.r.toFloat, color.g.toFloat, color.b.toFloat, color.a.toFloat)
-            } ++ emptyColors).toArray
-          )
+          Uniform("BACKGROUND") -> array(total, bgArray)
         )
       )
     ).withChannel0(tileSheet)
