@@ -29,7 +29,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
-          TerminalEntity.shader(Assets.Required.mapVertShader, Assets.Required.mapFragShader),
+          TerminalEntity.shader(Assets.Required.mapFragShader),
           TerminalText.shader(Assets.Required.textFragShader)
         )
     )

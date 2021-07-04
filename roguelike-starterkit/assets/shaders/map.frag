@@ -5,6 +5,9 @@ precision mediump float;
 uniform sampler2D SRC_CHANNEL;
 vec4 COLOR;
 vec2 UV;
+vec2 CHANNEL_0_SIZE;
+vec2 CHANNEL_0_POSITION;
+vec2 TEXTURE_SIZE;
 
 //<indigo-fragment>
 #define MAX_TILE_COUNT 4096
@@ -22,13 +25,11 @@ layout (std140) uniform RogueLikeMapBackground {
   vec4[MAX_TILE_COUNT] BACKGROUND;
 };
 
-in vec2 TILEMAP_TL_TEX_COORDS;
-in vec2 ONE_TEXEL;
-in vec2 TEXTURE_SIZE;
-
 void fragment() {
   vec2 GRID_DIMENSIONS = GRID_DIMENSIONS_CHAR_SIZE.xy;
   vec2 CHAR_SIZE = GRID_DIMENSIONS_CHAR_SIZE.zw;
+
+  vec2 ONE_TEXEL = CHANNEL_0_SIZE / TEXTURE_SIZE;
 
   // Which grid square am I in on the map? e.g. 3x3, coords (1,1)
   vec2 gridSquare = UV * GRID_DIMENSIONS;
@@ -46,7 +47,7 @@ void fragment() {
 
   // What are the relative UV coords?
   vec2 tileSize = ONE_TEXEL * CHAR_SIZE;
-  vec2 relUV = TILEMAP_TL_TEX_COORDS + (cell * TEXTURE_SIZE) + (tileSize * fract(gridSquare));
+  vec2 relUV = CHANNEL_0_POSITION + (cell * CHANNEL_0_SIZE) + (tileSize * fract(gridSquare));
   
   vec4 color = texture(SRC_CHANNEL, relUV);
 

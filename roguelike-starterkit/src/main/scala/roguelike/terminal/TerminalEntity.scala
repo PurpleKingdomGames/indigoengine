@@ -108,10 +108,9 @@ object TerminalEntity:
   val shaderId: ShaderId =
     ShaderId("map shader")
 
-  def shader(vertProgram: AssetName, fragProgram: AssetName): EntityShader =
+  def shader(fragProgram: AssetName): EntityShader =
     EntityShader
       .External(shaderId)
-      .withVertexProgram(vertProgram)
       .withFragmentProgram(fragProgram)
 
 final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA)
