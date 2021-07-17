@@ -70,6 +70,32 @@ class TerminalEmulatorTests extends munit.FunSuite {
     )
   }
 
+  test("should be able insert a line of text") {
+    val console =
+      TerminalEmulator(Size(10))
+        .putLine(Point(1, 3), "Hello", RGB.Red, RGBA.Blue)
+
+    val actual =
+      List(
+        console.get(Point(1, 3)),
+        console.get(Point(2, 3)),
+        console.get(Point(3, 3)),
+        console.get(Point(4, 3)),
+        console.get(Point(5, 3)),
+      ).collect { case Some(s) => s }
+
+    val expected =
+      List(
+        MapTile(Tile.`H`, RGB.Red, RGBA.Blue),
+        MapTile(Tile.`e`, RGB.Red, RGBA.Blue),
+        MapTile(Tile.`l`, RGB.Red, RGBA.Blue),
+        MapTile(Tile.`l`, RGB.Red, RGBA.Blue),
+        MapTile(Tile.`o`, RGB.Red, RGBA.Blue)
+      )
+
+    assertEquals(actual, expected)
+  }
+
   test("continuous list (empty)") {
     val console =
       TerminalEmulator(Size(3))

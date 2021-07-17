@@ -31,6 +31,14 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def put(coords: Point, mapTile: MapTile): TerminalEmulator =
     put(List(coords -> mapTile))
 
+  // TODO: Wrap text if too long for line
+  def putLine(startCoords: Point, text: String, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+    val tiles: List[(Point, MapTile)] =
+      text.toCharArray.toList.zipWithIndex.map { case (c, i) =>
+        (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile(c), fgColor, bgColor))
+      }
+    put(tiles)
+
   def get(coords: Point): Option[MapTile] =
     charMap.fetchElementAt(Vertex.fromPoint(coords))
 
