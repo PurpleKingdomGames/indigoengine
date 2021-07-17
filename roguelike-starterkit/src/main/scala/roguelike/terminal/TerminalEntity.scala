@@ -53,7 +53,7 @@ final case class TerminalEntity(
     this.copy(depth = newDepth)
 
   private val count       = gridSize.width * gridSize.height
-  private val total       = 4096
+  private val total       = 4000
   private val emptyColors = Array.fill(total - count)(vec4(0.0f, 0.0f, 0.0f, 0.0f))
 
   private lazy val fgArray =

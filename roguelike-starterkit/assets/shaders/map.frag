@@ -10,7 +10,7 @@ vec2 CHANNEL_0_POSITION;
 vec2 TEXTURE_SIZE;
 
 //<indigo-fragment>
-#define MAX_TILE_COUNT 4096
+#define MAX_TILE_COUNT 4000
 
 layout (std140) uniform RogueLikeData {
   vec4 GRID_DIMENSIONS_CHAR_SIZE;
