@@ -38,6 +38,21 @@ object TileCharGen {
         }
         .mkString("\n")
 
+    val charToString: Char => String = c => if (c == '\\') "\\\\" else c.toString()
+
+    val lookUp = {
+      val cs = chars
+        .map(cd => (s"""${charToString(cd.char)}""", cd.index))
+        .map(p => s""""${p._1}" -> ${p._2.toString()},""")
+        .dropRight(1) // remove last comma
+        .mkString("\n      ")
+
+      s"""    val charCodes: Map[String, Int] = Map(
+      |      $cs
+      |    )
+      |""".stripMargin
+    }
+
     s"""  opaque type Tile = Int
     |
     |  object Tile {
@@ -48,6 +63,8 @@ object TileCharGen {
     |      def toInt: Int = t
     |
     |$charString
+    |
+    |$lookUp
     |  }
     |""".stripMargin
   }
