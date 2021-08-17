@@ -113,7 +113,16 @@ object TerminalEntity:
       .External(shaderId)
       .withFragmentProgram(fragProgram)
 
-final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA)
+final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA):
+  def withChar(newChar: DfTiles.Tile): MapTile =
+    this.copy(char = newChar)
+
+  def withForegroundColor(newColor: RGB): MapTile =
+    this.copy(foreground = newColor)
+
+  def withBackgroundColor(newColor: RGBA): MapTile =
+    this.copy(background = newColor)
+
 object MapTile:
   def apply(char: DfTiles.Tile): MapTile =
     MapTile(char, RGB.White, RGBA.Zero)

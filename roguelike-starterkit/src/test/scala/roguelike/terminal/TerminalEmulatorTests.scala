@@ -23,20 +23,6 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assertEquals(expected, actual)
   }
 
-  test("should be able to put in the same element twice") {
-    val console =
-      TerminalEmulator(Size(3))
-        .put(Point(1, 1), Tile.`@`)
-        .put(Point(2, 1), Tile.`@`)
-
-    val expected =
-      Option(MapTile(Tile.`@`, RGB.White, RGBA.Zero))
-
-    assert(console.toList.length == 2)
-    assertEquals(expected, console.get(Point(1, 1)))
-    assertEquals(expected, console.get(Point(2, 1)))
-  }
-
   test("trying to get at an empty location returns None") {
     val console =
       TerminalEmulator(Size(3))
