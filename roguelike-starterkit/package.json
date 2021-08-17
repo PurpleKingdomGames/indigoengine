@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "parcel index.html --no-cache --out-dir dist --log-level 4 --no-source-maps",
-    "build": "parcel build index.html --out-dir dist --log-level 4 --no-source-maps"
+    "prebuild": "rm -fr dist",
+    "build": "sbt clean fullOptJS indigoBuildFull && parcel build index.html --out-dir dist --log-level 4 --no-source-maps --public-url ./"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.5",
@@ -13,9 +14,9 @@
   "staticFiles": {
     "staticPath": [
       {
-        "staticPath": "target/indigoBuild/assets",
+        "staticPath": "target/indigoBuildFull/assets",
         "staticOutDir": "assets",
-        "watcherGlob": "target/indigoBuild/assets/**/*"
+        "watcherGlob": "target/indigoBuildFull/assets/**/*"
       }
     ]
   }
