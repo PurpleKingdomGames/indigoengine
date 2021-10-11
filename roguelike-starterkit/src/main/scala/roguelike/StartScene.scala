@@ -2,8 +2,8 @@ package roguelike
 
 import indigo._
 import indigo.scenes._
-
-import roguelike.terminal.{TerminalEntity, TerminalText}
+import roguelike.terminal.TerminalEntity
+import roguelike.terminal.TerminalText
 
 object StartScene extends Scene[Unit, Unit, Unit]:
 
@@ -48,7 +48,11 @@ object StartScene extends Scene[Unit, Unit, Unit]:
     |╚═════════════════════╝
     |""".stripMargin
 
-  def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[Unit],
+      model: Unit,
+      viewModel: Unit
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         Text(message, DfTiles.Fonts.fontKey, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue))

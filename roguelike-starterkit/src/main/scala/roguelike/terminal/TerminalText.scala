@@ -1,15 +1,16 @@
 package roguelike.terminal
 
 import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
-import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
-import indigo.shared.datatypes.RGBA
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.Uniform
 import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderId
-import indigo.shared.datatypes.RGB
+import indigo.shared.shader.ShaderPrimitive.vec3
+import indigo.shared.shader.ShaderPrimitive.vec4
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
 
 final case class TerminalText(
     tileMap: AssetName,

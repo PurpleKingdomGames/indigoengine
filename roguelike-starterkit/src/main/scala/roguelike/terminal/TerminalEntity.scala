@@ -1,8 +1,7 @@
 package roguelike.terminal
 
-import indigo._
 import indigo.ShaderPrimitive._
-
+import indigo._
 import roguelike.DfTiles
 
 final case class TerminalEntity(
@@ -102,7 +101,12 @@ object TerminalEntity:
   def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): TerminalEntity =
     TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Nil, Point.zero, Depth(1))
 
-  def apply(tileSheet: AssetName, gridSize: Size, charSize: Size, map: List[MapTile]): TerminalEntity =
+  def apply(
+      tileSheet: AssetName,
+      gridSize: Size,
+      charSize: Size,
+      map: List[MapTile]
+  ): TerminalEntity =
     TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1))
 
   val shaderId: ShaderId =

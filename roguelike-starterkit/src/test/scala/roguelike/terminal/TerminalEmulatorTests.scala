@@ -67,7 +67,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         console.get(Point(2, 3)),
         console.get(Point(3, 3)),
         console.get(Point(4, 3)),
-        console.get(Point(5, 3)),
+        console.get(Point(5, 3))
       ).collect { case Some(s) => s }
 
     val expected =

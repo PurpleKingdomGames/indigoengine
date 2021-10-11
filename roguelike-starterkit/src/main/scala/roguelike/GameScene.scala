@@ -2,10 +2,10 @@ package roguelike
 
 import indigo._
 import indigo.scenes._
-
-import roguelike.terminal.{TerminalEntity, TerminalText}
 import roguelike.terminal.MapTile
 import roguelike.terminal.TerminalEmulator
+import roguelike.terminal.TerminalEntity
+import roguelike.terminal.TerminalText
 
 object GameScene extends Scene[Unit, Unit, Unit]:
 
@@ -59,7 +59,11 @@ object GameScene extends Scene[Unit, Unit, Unit]:
   val entity =
     terminal.draw(Assets.tileMap, Size(10, 10), MapTile(DfTiles.Tile.SPACE))
 
-  def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[Unit],
+      model: Unit,
+      viewModel: Unit
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         entity

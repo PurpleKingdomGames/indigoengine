@@ -70,7 +70,11 @@ class PathFinderTests extends munit.FunSuite {
       List(
         Walkable(0, Point(0, 0), 2),
         Blocked(1, Point(1, 0)),
-        Walkable(2, Point(2, 0), -1), // Unscored squares are returned to keep sampleAt working correctly
+        Walkable(
+          2,
+          Point(2, 0),
+          -1
+        ), // Unscored squares are returned to keep sampleAt working correctly
         Walkable(3, Point(0, 1), 1),
         Walkable(4, Point(1, 1), 2),
         Walkable(5, Point(2, 1), 3), //start
@@ -134,7 +138,9 @@ class PathFinderTests extends munit.FunSuite {
     assertEquals(PathFinder.sampleAt(searchGrid, Point(0, 0), searchGrid.size.width), expected)
   }
 
-  test("Point.should be able to convert zero indexed coordinates into a one dimensional array position") {
+  test(
+    "Point.should be able to convert zero indexed coordinates into a one dimensional array position"
+  ) {
 
     assertEquals(Coords.toGridPosition(Point(0, 0), 4), 0)
     assertEquals(Coords.toGridPosition(Point(1, 1), 4), 5)
@@ -201,11 +207,11 @@ class PathFinderTests extends munit.FunSuite {
       searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
 
     val possiblePaths: List[List[Point]] = List(
-      List(Point(3,2), Point(3,3), Point(3,4), Point(2,4), Point(2,5)),
-      List(Point(3,2), Point(2,2), Point(2,3), Point(2,4), Point(2,5))
+      List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5)),
+      List(Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5))
     )
 
     assert(possiblePaths.contains(actual), true)
   }
-  
+
 }

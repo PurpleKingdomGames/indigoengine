@@ -1,11 +1,13 @@
 package roguelike.terminal
 
 import indigo._
-import indigoextras.trees.QuadTree
-import indigoextras.trees.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import indigoextras.geometry.Vertex
-
+import indigoextras.trees.QuadTree
+import indigoextras.trees.QuadTree.QuadBranch
+import indigoextras.trees.QuadTree.QuadEmpty
+import indigoextras.trees.QuadTree.QuadLeaf
 import roguelike.DfTiles
+
 import scala.annotation.tailrec
 
 final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
@@ -18,7 +20,9 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     }.toList
 
   def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
-    this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords)))
+    this.copy(charMap =
+      charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords))
+    )
   def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor), Vertex.fromPoint(coords)))
   def put(coords: Point, tile: DfTiles.Tile): TerminalEmulator =
@@ -45,7 +49,12 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       }
     put(tiles)
 
-  def putLines(startCoords: Point, textLines: List[String], fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+  def putLines(
+      startCoords: Point,
+      textLines: List[String],
+      fgColor: RGB,
+      bgColor: RGBA
+  ): TerminalEmulator =
     @tailrec
     def rec(remaining: List[String], yOffset: Int, term: TerminalEmulator): TerminalEmulator =
       remaining match
@@ -68,7 +77,9 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     this.copy(charMap = charMap.removeElement(Vertex.fromPoint(coords)))
 
   def clear: TerminalEmulator =
-    this.copy(charMap = QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))
+    this.copy(charMap =
+      QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
+    )
 
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
@@ -143,14 +154,21 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     combine(otherConsole)
   def combine(otherConsole: TerminalEmulator): TerminalEmulator =
     this.copy(
-      charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1))))
+      charMap = charMap.insertElements(
+        otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1)))
+      )
     )
 
   def inset(otherConsole: TerminalEmulator, offset: Point): TerminalEmulator =
     this.copy(
-      charMap = charMap.insertElements(otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1 + offset))))
+      charMap = charMap.insertElements(
+        otherConsole.toPositionedList.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
+      )
     )
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =
-    TerminalEmulator(screenSize, QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble))
+    TerminalEmulator(
+      screenSize,
+      QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
+    )

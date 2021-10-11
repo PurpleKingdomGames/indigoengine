@@ -2,9 +2,10 @@ package roguelike
 
 import indigo._
 import indigo.scenes._
-import scala.scalajs.js.annotation.JSExportTopLevel
+import roguelike.terminal.TerminalEntity
+import roguelike.terminal.TerminalText
 
-import roguelike.terminal.{TerminalEntity, TerminalText}
+import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
 object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
@@ -46,8 +47,16 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+  def updateViewModel(
+      context: FrameContext[Unit],
+      model: Unit,
+      viewModel: Unit
+  ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[Unit],
+      model: Unit,
+      viewModel: Unit
+  ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

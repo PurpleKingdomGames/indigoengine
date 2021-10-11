@@ -1,16 +1,22 @@
 package roguelike.utils
 
-import scala.annotation.tailrec
-import indigo.shared.dice.Dice
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
+import indigo.shared.dice.Dice
+
+import scala.annotation.tailrec
 
 final case class PathFinder(size: Size, grid: List[GridSquare]):
 
   def contains(coords: Point): Boolean =
     coords.x >= 0 && coords.y >= 0 && coords.x < size.width && coords.y < size.height
 
-  def locatePath(dice: Dice, start: Point, end: Point, scoreAmount: GridSquare => Int): List[Point] =
+  def locatePath(
+      dice: Dice,
+      start: Point,
+      end: Point,
+      scoreAmount: GridSquare => Int
+  ): List[Point] =
     PathFinder.locatePath(
       dice,
       start,
@@ -26,7 +32,8 @@ object PathFinder:
       coords + Coords.relativeLeft,
       coords + Coords.relativeRight,
       coords + Coords.relativeDown
-    ).filter(c => searchGrid.contains(c)).map(c => searchGrid.grid(Coords.toGridPosition(c, gridWidth)))
+    ).filter(c => searchGrid.contains(c))
+      .map(c => searchGrid.grid(Coords.toGridPosition(c, gridWidth)))
 
   def fromImpassable(size: Size, impassable: List[Point]): PathFinder =
     val grid: List[GridSquare] = (0 until (size.width * size.height)).toList.map { index =>
@@ -66,7 +73,7 @@ object PathFinder:
         lastCoords: List[Point],
         scored: List[GridSquare]
     ): List[GridSquare] =
-      (unscored, lastCoords) match {
+      (unscored, lastCoords) match
         case (Nil, _) | (_, Nil) =>
           scored ++ unscored
 
@@ -97,7 +104,6 @@ object PathFinder:
             lastCoords = next.map(_.coords),
             scored = next ++ scored
           )
-      }
 
     val (done, todo) = searchGrid.grid.partition(_.coords == end)
 
@@ -115,7 +121,9 @@ object PathFinder:
     ): List[Point] =
       if (currentPosition == end) acc
       else
-        sampleAt(searchGrid, currentPosition, width).filter(c => c.score != -1 && c.score < currentScore) match {
+        sampleAt(searchGrid, currentPosition, width).filter(c =>
+          c.score != -1 && c.score < currentScore
+        ) match {
           case Nil =>
             acc
 
@@ -171,5 +179,5 @@ object GridSquare:
     def withScore(newScore: Int): Walkable = this.copy(score = newScore)
 
   final case class Blocked(index: Int, coords: Point) extends GridSquare:
-    val score: Int                        = Int.MaxValue
+    val score: Int                     = Int.MaxValue
     def withScore(score: Int): Blocked = this
