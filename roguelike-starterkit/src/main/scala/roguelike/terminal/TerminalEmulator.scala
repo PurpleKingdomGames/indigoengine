@@ -90,6 +90,19 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def draw(tileSheet: AssetName, charSize: Size, default: MapTile): TerminalEntity =
     TerminalEntity(tileSheet, screenSize, charSize, toTileList(default))
 
+  def toCloneTileData(default: DfTiles.Tile): Array[CloneTileData] =
+    toPositionedList.toArray.map { case (pt, t) =>
+      val crop = DfTiles.Tile.charCrops(t.char.toInt)
+      CloneTileData(
+        pt.x * crop._3,
+        pt.y * crop._4,
+        crop._1,
+        crop._2,
+        crop._3,
+        crop._4
+      )
+    }
+
   def toList: List[MapTile] =
     @tailrec
     def rec(open: List[QuadTree[MapTile]], acc: List[MapTile]): List[MapTile] =

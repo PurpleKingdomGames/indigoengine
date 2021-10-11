@@ -7,7 +7,9 @@ object TileCharGen {
     val sheetWidth: Int  = charWidth * 16
     val sheetHeight: Int = charHeight * 16
 
-    val charString = chars.map(cd => "       .addChar(" + cd.toFontChar(charWidth, charHeight) + ")").mkString("\n")
+    val charString = chars
+      .map(cd => "       .addChar(" + cd.toFontChar(charWidth, charHeight) + ")")
+      .mkString("\n")
 
     s"""  object Fonts {
     |
@@ -20,9 +22,10 @@ object TileCharGen {
     |""".stripMargin
   }
 
-  def genTiles(chars: List[CharDetail]): String = {
+  def genTiles(charWidth: Int, charHeight: Int, chars: List[CharDetail]): String = {
     val charString =
       chars
+        .filterNot(cd => cd.index == 0 || cd.index == 255)
         .map { cd =>
           val c = cd.char match {
             case '\\' => None
@@ -32,7 +35,9 @@ object TileCharGen {
             case char => Some(char.toString)
           }
 
-          s"""    ${c.map(cc => s"val `$cc`: Tile = ${cd.index.toString}").getOrElse("// Reserved char")}
+          s"""    ${c
+            .map(cc => s"val `$cc`: Tile = ${cd.index.toString}")
+            .getOrElse("// Reserved char")}
           |    val ${cd.name}: Tile = ${cd.index.toString}
           |""".stripMargin
         }
@@ -42,12 +47,27 @@ object TileCharGen {
 
     val lookUp = {
       val cs = chars
+        .filterNot(cd => cd.index == 0 || cd.index == 255)
         .map(cd => (s"""${charToString(cd.char)}""", cd.index))
         .map(p => s""""${p._1}" -> ${p._2.toString()},""")
         .dropRight(1) // remove last comma
         .mkString("\n      ")
 
       s"""    val charCodes: Map[String, Int] = Map(
+      |      $cs
+      |    )
+      |""".stripMargin
+    }
+
+    val crops = {
+      val cs = chars
+        .map(_.toCrop(charWidth, charHeight))
+        .map { t =>
+          s"""(${t._1.toString}, ${t._2.toString}, ${t._3.toString}, ${t._4.toString}),"""
+        }
+        .mkString("\n      ")
+
+      s"""    val charCrops: Array[(Int, Int, Int, Int)] = Array(
       |      $cs
       |    )
       |""".stripMargin
@@ -65,6 +85,9 @@ object TileCharGen {
     |$charString
     |
     |$lookUp
+    |
+    |$crops
+    |
     |  }
     |""".stripMargin
   }
@@ -92,7 +115,11 @@ object TileCharGen {
     println("Generating Tiles & Fonts")
 
     val contents: String =
-      genFont(charWidth, charHeight, CharMap.chars) + "\n" + genTiles(CharMap.chars)
+      genFont(charWidth, charHeight, CharMap.chars) + "\n" + genTiles(
+        charWidth,
+        charHeight,
+        CharMap.chars
+      )
 
     val file: File =
       sourceManagedDir / (moduleName + ".scala")
@@ -110,6 +137,14 @@ object TileCharGen {
 }
 
 final case class CharDetail(index: Int, unicode: Int, char: Char, name: String) {
+
+  def toCrop(charWidth: Int, charHeight: Int): (Int, Int, Int, Int) = {
+    val x: Int = (index % 16) * charWidth
+    val y: Int = (index / 16) * charWidth
+
+    (x, y, charWidth, charHeight)
+  }
+
   def toFontChar(charWidth: Int, charHeight: Int): String = {
     val x: Int     = (index % 16) * charWidth
     val y: Int     = (index / 16) * charWidth
@@ -122,7 +157,7 @@ final case class CharDetail(index: Int, unicode: Int, char: Char, name: String) 
 object CharMap {
 
   val chars = List(
-// CharDetail(0,0x00,'\x0',"NULL"),
+    CharDetail(0, 0x00, ' ', "NULL"),
     CharDetail(1, 0x263a, '☺', "WHITE_SMILING_FACE"),
     CharDetail(2, 0x263b, '☻', "BLACK_SMILING_FACE"),
     CharDetail(3, 0x2665, '♥', "BLACK_HEART_SUIT"),
@@ -376,8 +411,8 @@ object CharMap {
     CharDetail(251, 0x221a, '√', "SQUARE_ROOT"),
     CharDetail(252, 0x207f, 'ⁿ', "SUPERSCRIPT_LATIN_SMALL_LETTER_N"),
     CharDetail(253, 0xb2, '²', "SUPERSCRIPT_TWO"),
-    CharDetail(254, 0x25a0, '■', "BLACK_SQUARE") //,
-// CharDetail(255,0xA0,'\xa0',"NO_BREAK_SPACE")
+    CharDetail(254, 0x25a0, '■', "BLACK_SQUARE"),
+    CharDetail(255, 0xa0, ' ', "NO_BREAK_SPACE")
   )
 
 }

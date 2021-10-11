@@ -2,6 +2,7 @@ package roguelike
 
 import indigo._
 import indigo.scenes._
+import indigoextras.subsystems.FPSCounter
 import roguelike.terminal.TerminalEntity
 import roguelike.terminal.TerminalText
 
@@ -14,10 +15,12 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
     Option(StartScene.name)
 
   def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Unit, Unit]] =
-    NonEmptyList(StartScene, GameScene)
+    NonEmptyList(StartScene, GameScene, CloneScene)
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
+
+  val fps: Int = 60
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(
@@ -25,7 +28,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .noData(
           GameConfig.default
             .withMagnification(1)
-            .withFrameRate(30)
+            .withFrameRate(fps)
         )
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
@@ -33,6 +36,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
           TerminalEntity.shader(Assets.Required.mapFragShader),
           TerminalText.shader(Assets.Required.textFragShader)
         )
+        .withSubSystems(FPSCounter(Point(10, 350), fps))
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =

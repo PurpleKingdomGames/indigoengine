@@ -7,13 +7,13 @@ import roguelike.terminal.TerminalEmulator
 import roguelike.terminal.TerminalEntity
 import roguelike.terminal.TerminalText
 
-object GameScene extends Scene[Unit, Unit, Unit]:
+object CloneScene extends Scene[Unit, Unit, Unit]:
 
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("game scene")
+    SceneName("clone scene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -29,7 +29,7 @@ object GameScene extends Scene[Unit, Unit, Unit]:
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(CloneScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
 
     case _ =>
       Outcome(model)
@@ -56,8 +56,8 @@ object GameScene extends Scene[Unit, Unit, Unit]:
         Point(2, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
       )
 
-  val entity =
-    terminal.draw(Assets.tileMap, Size(10, 10), MapTile(DfTiles.Tile.SPACE))
+  val cloneId    = CloneId("tile clone")
+  val cloneBlank = CloneBlank(cloneId, Graphic(10, 10, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)))
 
   def present(
       context: FrameContext[Unit],
@@ -66,6 +66,6 @@ object GameScene extends Scene[Unit, Unit, Unit]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        entity
-      )
+        CloneTiles(cloneId, terminal.toCloneTileData(DfTiles.Tile.SPACE))
+      ).addCloneBlanks(cloneBlank)
     )
