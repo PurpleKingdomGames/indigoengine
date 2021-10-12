@@ -12,7 +12,8 @@ final case class TerminalEntity(
     mask: RGBA,
     map: Array[MapTile],
     position: Point,
-    depth: Depth
+    depth: Depth,
+    maxTileCount: Int
 ) extends EntityNode:
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
@@ -53,8 +54,7 @@ final case class TerminalEntity(
     this.copy(depth = newDepth)
 
   private val count       = gridSize.width * gridSize.height
-  private val total       = 4000
-  private val emptyColors = Array.fill((total - count) * 4)(0.0f)
+  private val emptyColors = Array.fill((maxTileCount - count) * 4)(0.0f)
 
   private lazy val fgArray: Array[Float] =
     (map.flatMap { t =>
@@ -99,24 +99,30 @@ final case class TerminalEntity(
 
 object TerminalEntity:
 
-  def apply(tileSheet: AssetName, gridSize: Size, charSize: Size): TerminalEntity =
-    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Array(), Point.zero, Depth(1))
+  def apply(
+      tileSheet: AssetName,
+      gridSize: Size,
+      charSize: Size,
+      maxTileCount: Int
+  ): TerminalEntity =
+    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Array(), Point.zero, Depth(1), maxTileCount)
 
   def apply(
       tileSheet: AssetName,
       gridSize: Size,
       charSize: Size,
-      map: Array[MapTile]
+      map: Array[MapTile],
+      maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1))
+    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1), maxTileCount)
 
   val shaderId: ShaderId =
     ShaderId("roguelike terminal map shader")
 
-  def shader: EntityShader =
+  def shader(maxTileCount: Int): EntityShader =
     EntityShader
       .Source(shaderId)
-      .withFragmentProgram(TerminalShaders.TerminalFragment)
+      .withFragmentProgram(TerminalShaders.TerminalFragment(maxTileCount.toString))
 
 final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA):
   def withChar(newChar: DfTiles.Tile): MapTile =

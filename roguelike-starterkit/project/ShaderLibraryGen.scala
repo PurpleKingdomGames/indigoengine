@@ -39,7 +39,19 @@ object ShaderLibraryGen {
       .toSeq
       .map(_.toString)
       .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))
-      .map(program => ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, program))
+      .map { program =>
+        val lines =
+          program.split('\n')
+            .toList
+            .map { ln =>
+              if(ln.startsWith("#define")) {
+                val arg = ln.split(" ")(1)
+                ShaderLine.Define(arg, arg.toLowerCase)
+              } else ShaderLine.Normal(ln)
+            }
+
+        ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, lines)
+      }
 
   def makeShaderLibrary(moduleName: String, fullyQualifiedPath: String, files: Set[File], sourceManagedDir: File): Seq[File] = {
     println("Generating Indigo RawShaderCode Library...")
@@ -80,10 +92,36 @@ object ShaderLibraryGen {
             extractShaderCode(d.shaderCode, "composite", d.originalName + d.ext, d.newName)
         }
         .map { snippet =>
-          s"""  val ${snippet.variableName}: String =
-             |    ${tripleQuotes}${snippet.snippet}${tripleQuotes}
-             |
-          """.stripMargin
+          if(snippet.containsDefineStatements) {
+            val defines: List[ShaderLine.Define] =
+              snippet.lines.collect {
+                case d: ShaderLine.Define => d
+              }
+
+            def program: String =
+              defines.map(d => s"#define ${d.originalName} $${${d.argName}}").mkString("\n") + "\n" +
+              snippet.lines.flatMap {
+                case ShaderLine.Normal(c) => List(c)
+                case _ => Nil
+              }.mkString("\n")
+  
+            val args: String = defines.map(d => d.argName + ": String").mkString(", ")
+
+            s"""  def ${snippet.variableName}(${args}): String =
+               |    s${tripleQuotes}${program}${tripleQuotes}
+               |
+            """.stripMargin
+          } else {
+            val program: String = snippet.lines.flatMap {
+              case ShaderLine.Normal(c) => List(c)
+              case _ => Nil
+            }.mkString("\n")
+  
+            s"""  val ${snippet.variableName}: String =
+               |    ${tripleQuotes}${program}${tripleQuotes}
+               |
+            """.stripMargin
+          }
         }
         .mkString("\n")
 
@@ -101,5 +139,14 @@ object ShaderLibraryGen {
   }
 
   case class ShaderDetails(newName: String, originalName: String, ext: String, shaderCode: String)
-  case class ShaderSnippet(variableName: String, snippet: String)
+  case class ShaderSnippet(variableName: String, lines: List[ShaderLine]) {
+    val containsDefineStatements: Boolean =
+      lines.collect { case l: ShaderLine.Define => l}.nonEmpty
+  }
+}
+
+sealed trait ShaderLine extends Product with Serializable
+object ShaderLine {
+  final case class Normal(code: String) extends ShaderLine
+  final case class Define(originalName: String, argName: String) extends ShaderLine
 }

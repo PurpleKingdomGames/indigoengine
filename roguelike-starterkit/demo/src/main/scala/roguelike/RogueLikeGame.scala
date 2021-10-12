@@ -11,6 +11,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 @JSExportTopLevel("IndigoGame")
 object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
 
+  val maxTileCount: Int = 4000
+
   def initialScene(bootData: Unit): Option[SceneName] =
     Option(StartScene.name)
 
@@ -33,7 +35,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .withFonts(DfTiles.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
-          TerminalEntity.shader,
+          TerminalEntity.shader(maxTileCount),
           TerminalText.shader
         )
         .withSubSystems(FPSCounter(Point(10, 350), fps))

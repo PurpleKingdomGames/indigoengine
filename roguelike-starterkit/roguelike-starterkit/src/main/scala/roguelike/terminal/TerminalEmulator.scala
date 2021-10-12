@@ -87,8 +87,8 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def toTileList(default: MapTile): Array[MapTile] =
     coordsList.map(pt => get(pt).getOrElse(default))
 
-  def draw(tileSheet: AssetName, charSize: Size, default: MapTile): TerminalEntity =
-    TerminalEntity(tileSheet, screenSize, charSize, toTileList(default))
+  def draw(tileSheet: AssetName, charSize: Size, default: MapTile, maxTileCount: Int): TerminalEntity =
+    TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
 
   def toCloneTileData(default: DfTiles.Tile): Array[CloneTileData] =
     toPositionedList.toArray.map { case (pt, t) =>

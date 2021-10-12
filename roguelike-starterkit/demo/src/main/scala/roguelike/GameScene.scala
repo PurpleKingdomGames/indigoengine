@@ -57,7 +57,12 @@ object GameScene extends Scene[Unit, Unit, Unit]:
       )
 
   val entity =
-    terminal.draw(Assets.tileMap, Size(10, 10), MapTile(DfTiles.Tile.SPACE))
+    terminal.draw(
+      Assets.tileMap,
+      Size(10, 10),
+      MapTile(DfTiles.Tile.SPACE),
+      RogueLikeGame.maxTileCount
+    )
 
   def present(
       context: FrameContext[Unit],
