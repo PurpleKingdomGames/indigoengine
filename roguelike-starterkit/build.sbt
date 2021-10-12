@@ -75,11 +75,10 @@ lazy val roguelike =
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "DfTiles",   // Class/module name.
+            "RoguelikeTiles",   // Class/module name.
             "roguelike", // fully qualified package name
             (Compile / sourceManaged).value, // Managed sources (output) directory for the generated classes
-            10, // Character width
-            10  // Character height
+            Seq((10, 10)) // By default, will generate lots of square sizes.
           )
       }.taskValue
     )

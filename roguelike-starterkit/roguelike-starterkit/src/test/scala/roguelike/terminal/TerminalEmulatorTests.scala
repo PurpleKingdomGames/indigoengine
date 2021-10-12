@@ -4,7 +4,7 @@ import indigo.Point
 import indigo.RGB
 import indigo.RGBA
 import indigo.Size
-import roguelike.DfTiles.Tile
+import roguelike.Tile
 
 class TerminalEmulatorTests extends munit.FunSuite {
 

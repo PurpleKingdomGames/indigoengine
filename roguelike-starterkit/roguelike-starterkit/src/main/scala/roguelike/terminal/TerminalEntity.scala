@@ -2,8 +2,8 @@ package roguelike.terminal
 
 import indigo.ShaderPrimitive._
 import indigo._
-import roguelike.DfTiles
 import roguelike.TerminalShaders
+import roguelike.Tile
 
 final case class TerminalEntity(
     tileSheet: AssetName,
@@ -59,7 +59,7 @@ final case class TerminalEntity(
   private lazy val fgArray: Array[Float] =
     (map.flatMap { t =>
       val color = t.foreground
-      Array(t.char.toInt.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
+      Array(t.char.toFloat, color.r.toFloat, color.g.toFloat, color.b.toFloat)
     } ++ emptyColors).toArray
 
   private lazy val bgArray: Array[Float] =
@@ -105,7 +105,16 @@ object TerminalEntity:
       charSize: Size,
       maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, Array(), Point.zero, Depth(1), maxTileCount)
+    TerminalEntity(
+      tileSheet,
+      gridSize,
+      charSize,
+      RGBA.Magenta,
+      Array(),
+      Point.zero,
+      Depth(1),
+      maxTileCount
+    )
 
   def apply(
       tileSheet: AssetName,
@@ -114,7 +123,16 @@ object TerminalEntity:
       map: Array[MapTile],
       maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, gridSize, charSize, RGBA.Magenta, map, Point.zero, Depth(1), maxTileCount)
+    TerminalEntity(
+      tileSheet,
+      gridSize,
+      charSize,
+      RGBA.Magenta,
+      map,
+      Point.zero,
+      Depth(1),
+      maxTileCount
+    )
 
   val shaderId: ShaderId =
     ShaderId("roguelike terminal map shader")
@@ -124,8 +142,8 @@ object TerminalEntity:
       .Source(shaderId)
       .withFragmentProgram(TerminalShaders.TerminalFragment(maxTileCount.toString))
 
-final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA):
-  def withChar(newChar: DfTiles.Tile): MapTile =
+final case class MapTile(char: Tile, foreground: RGB, background: RGBA):
+  def withChar(newChar: Tile): MapTile =
     this.copy(char = newChar)
 
   def withForegroundColor(newColor: RGB): MapTile =
@@ -135,8 +153,8 @@ final case class MapTile(char: DfTiles.Tile, foreground: RGB, background: RGBA):
     this.copy(background = newColor)
 
 object MapTile:
-  def apply(char: DfTiles.Tile): MapTile =
+  def apply(char: Tile): MapTile =
     MapTile(char, RGB.White, RGBA.Zero)
 
-  def apply(char: DfTiles.Tile, foreground: RGB): MapTile =
+  def apply(char: Tile, foreground: RGB): MapTile =
     MapTile(char, foreground, RGBA.Zero)

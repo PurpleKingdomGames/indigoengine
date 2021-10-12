@@ -6,7 +6,7 @@ import indigoextras.trees.QuadTree
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf
-import roguelike.DfTiles
+import roguelike.Tile
 
 import scala.annotation.tailrec
 
@@ -19,13 +19,13 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       }
     }.toArray
 
-  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+  def put(coords: Point, tile: Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     this.copy(charMap =
       charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords))
     )
-  def put(coords: Point, tile: DfTiles.Tile, fgColor: RGB): TerminalEmulator =
+  def put(coords: Point, tile: Tile, fgColor: RGB): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor), Vertex.fromPoint(coords)))
-  def put(coords: Point, tile: DfTiles.Tile): TerminalEmulator =
+  def put(coords: Point, tile: Tile): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile), Vertex.fromPoint(coords)))
 
   def put(tiles: List[(Point, MapTile)]): TerminalEmulator =
@@ -39,13 +39,13 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def putLine(startCoords: Point, text: String, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
     val tiles: List[(Point, MapTile)] =
       text.toCharArray.toList.zipWithIndex.map { case (c, i) =>
-        DfTiles.Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
+        Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
           case None =>
             // Couldn't find character, skip it.
-            (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile.SPACE, fgColor, bgColor))
+            (startCoords + Point(i, 0) -> MapTile(Tile.SPACE, fgColor, bgColor))
 
           case Some(char) =>
-            (startCoords + Point(i, 0) -> MapTile(DfTiles.Tile(char), fgColor, bgColor))
+            (startCoords + Point(i, 0) -> MapTile(Tile(char), fgColor, bgColor))
       }
     put(tiles)
 
@@ -87,12 +87,17 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def toTileList(default: MapTile): Array[MapTile] =
     coordsList.map(pt => get(pt).getOrElse(default))
 
-  def draw(tileSheet: AssetName, charSize: Size, default: MapTile, maxTileCount: Int): TerminalEntity =
+  def draw(
+      tileSheet: AssetName,
+      charSize: Size,
+      default: MapTile,
+      maxTileCount: Int
+  ): TerminalEntity =
     TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
 
-  def toCloneTileData(default: DfTiles.Tile): Array[CloneTileData] =
+  def toCloneTileData(default: Tile, charCrops: Array[(Int, Int, Int, Int)]): Array[CloneTileData] =
     toPositionedList.toArray.map { case (pt, t) =>
-      val crop = DfTiles.Tile.charCrops(t.char.toInt)
+      val crop = charCrops(t.char.toInt)
       CloneTileData(
         pt.x * crop._3,
         pt.y * crop._4,

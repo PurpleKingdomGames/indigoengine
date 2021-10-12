@@ -32,7 +32,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
             .withMagnification(1)
             .withFrameRate(fps)
         )
-        .withFonts(DfTiles.Fonts.fontInfo)
+        .withFonts(RoguelikeTiles10x10.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
           TerminalEntity.shader(maxTileCount),

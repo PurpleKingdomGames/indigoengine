@@ -45,22 +45,22 @@ object GameScene extends Scene[Unit, Unit, Unit]:
   val terminal: TerminalEmulator =
     TerminalEmulator(Size(3, 3))
       .put(
-        Point(0, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 0) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 1) -> MapTile(DfTiles.Tile.`@`, RGB.Magenta),
-        Point(2, 1) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 2) -> MapTile(DfTiles.Tile.`░`, RGB.Cyan, RGBA.Blue)
+        Point(0, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 1) -> MapTile(Tile.`@`, RGB.Magenta),
+        Point(2, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(0, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(1, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
+        Point(2, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue)
       )
 
   val entity =
     terminal.draw(
       Assets.tileMap,
       Size(10, 10),
-      MapTile(DfTiles.Tile.SPACE),
+      MapTile(Tile.SPACE),
       RogueLikeGame.maxTileCount
     )
 

@@ -55,10 +55,14 @@ object StartScene extends Scene[Unit, Unit, Unit]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Text(message, DfTiles.Fonts.fontKey, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)),
         Text(
           message,
-          DfTiles.Fonts.fontKey,
+          RoguelikeTiles10x10.Fonts.fontKey,
+          TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)
+        ),
+        Text(
+          message,
+          RoguelikeTiles10x10.Fonts.fontKey,
           TerminalText(Assets.tileMap, RGB.Yellow, RGBA.Red).withShaderId(ShaderId("my shader"))
         ).moveBy(0, 40)
       )
