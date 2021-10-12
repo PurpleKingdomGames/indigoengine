@@ -17,7 +17,8 @@ final case class TerminalText(
     tileMap: AssetName,
     foreground: RGB,
     background: RGBA,
-    mask: RGBA
+    mask: RGBA,
+    shaderId: Option[ShaderId]
 ) extends Material:
 
   def withForeground(newColor: RGB): TerminalText =
@@ -33,9 +34,12 @@ final case class TerminalText(
   def withMask(newColor: RGB): TerminalText =
     this.copy(mask = newColor.toRGBA)
 
+  def withShaderId(newShaderId: ShaderId): TerminalText =
+    this.copy(shaderId = Option(newShaderId))
+
   def toShaderData: ShaderData =
     ShaderData(
-      TerminalText.shaderId,
+      shaderId.getOrElse(TerminalText.shaderId),
       List(
         UniformBlock(
           "RogueLikeTextData",
@@ -54,19 +58,30 @@ final case class TerminalText(
 
 object TerminalText:
 
-  val shaderId: ShaderId =
-    ShaderId("roguelike terminal text")
+  val defaultMask: RGBA =
+    RGBA.Magenta
 
-  def shader: EntityShader.Source =
+  val shaderId: ShaderId =
+    ShaderId("roguelike standard terminal text")
+
+  def standardShader: EntityShader.Source =
     EntityShader
       .Source(shaderId)
       .withFragmentProgram(TerminalShaders.TerminalTextFragment)
 
+  def customShader(shaderId: ShaderId, fragProgram: AssetName): EntityShader.External =
+    EntityShader
+      .External(shaderId)
+      .withFragmentProgram(fragProgram)
+
   def apply(tileMap: AssetName): TerminalText =
-    TerminalText(tileMap, RGB.White, RGBA.Zero, RGBA.Magenta)
+    TerminalText(tileMap, RGB.White, RGBA.Zero, defaultMask, None)
 
   def apply(tileMap: AssetName, color: RGB): TerminalText =
-    TerminalText(tileMap, color, RGBA.Zero, RGBA.Magenta)
+    TerminalText(tileMap, color, RGBA.Zero, defaultMask, None)
 
   def apply(tileMap: AssetName, foreground: RGB, background: RGBA): TerminalText =
-    TerminalText(tileMap, foreground, background, RGBA.Magenta)
+    TerminalText(tileMap, foreground, background, defaultMask, None)
+
+  def apply(tileMap: AssetName, foreground: RGB, background: RGBA, mask: RGBA): TerminalText =
+    TerminalText(tileMap, foreground, background, mask, None)
