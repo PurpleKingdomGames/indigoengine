@@ -4,13 +4,13 @@ import indigo._
 import indigo.scenes._
 import io.indigoengine.roguelike.starterkit.*
 
-object CloneScene extends Scene[Unit, Unit, Unit]:
+object CloneTilesScene extends Scene[Unit, Unit, Unit]:
 
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("clone scene")
+    SceneName("CloneTiles scene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -26,7 +26,7 @@ object CloneScene extends Scene[Unit, Unit, Unit]:
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(TerminalTextScene.name))
 
     case _ =>
       Outcome(model)

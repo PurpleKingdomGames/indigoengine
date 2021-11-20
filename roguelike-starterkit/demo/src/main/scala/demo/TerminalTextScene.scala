@@ -2,15 +2,15 @@ package demo
 
 import indigo._
 import indigo.scenes._
-import io.indigoengine.roguelike.starterkit._
+import io.indigoengine.roguelike.starterkit.*
 
-object StartScene extends Scene[Unit, Unit, Unit]:
+object TerminalTextScene extends Scene[Unit, Unit, Unit]:
 
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("start scene")
+    SceneName("TerminalText scene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -26,7 +26,7 @@ object StartScene extends Scene[Unit, Unit, Unit]:
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(TerminalEmulatorScene.name))
 
     case _ =>
       Outcome(model)
