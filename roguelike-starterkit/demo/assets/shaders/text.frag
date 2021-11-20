@@ -8,7 +8,7 @@ vec4 CHANNEL_0;
 vec4 COLOR;
 vec2 UV;
 vec2 SIZE;
-// vec2 SCREEN_COORDS; // Example custom mod
+vec2 SCREEN_COORDS; // Example custom mod
 
 //<indigo-fragment>
 layout (std140) uniform RogueLikeTextData {
@@ -30,7 +30,7 @@ void fragment(){
     COLOR = vec4(CHANNEL_0.rgb * (FOREGROUND.rgb * CHANNEL_0.a), CHANNEL_0.a);
   }
 
-  // COLOR = COLOR * (1.0 - (vec4(SCREEN_COORDS.x) / 50.0)); // Example custom mod
+  COLOR = COLOR * (1.0 - (vec4(SCREEN_COORDS.x) / 250.0)); // Example custom mod
 
 }
 //</indigo-fragment>
