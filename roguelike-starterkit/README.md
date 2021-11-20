@@ -18,6 +18,12 @@ Then add the following dependency to your project (alongside the usual indigo on
 
 `"io.indigoengine" %%% "roguelike-starterkit" % "0.1.0-SNAPSHOT"`
 
+Everything can be accessed via this import:
+
+```scala
+import io.indigoengine.roguelike.starterkit.*
+```
+
 ## Running the demo
 
 Download the repo, `cd` into the demo directory and (assuming you have electron installed), run `sbt runGame`.
