@@ -61,7 +61,7 @@ lazy val roguelike =
           ShaderLibraryGen
             .makeShaderLibrary(
               "TerminalShaders",
-              "roguelike",
+              "io.indigoengine.roguelike.starterkit.tiles",
               files,
               (Compile / sourceManaged).value
             )
@@ -75,8 +75,8 @@ lazy val roguelike =
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "RoguelikeTiles", // Class/module name.
-            "roguelike",      // fully qualified package name
+            "RoguelikeTiles",                       // Class/module name.
+            "io.indigoengine.roguelike.starterkit.tiles", // fully qualified package name
             (Compile / sourceManaged).value // Managed sources (output) directory for the generated classes
           )
       }.taskValue
@@ -106,7 +106,7 @@ lazy val demo =
     )
     .dependsOn(roguelike)
 
-lazy val roguelikeProject =
+lazy val roguelikeStarterKit =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)

@@ -1,10 +1,9 @@
-package roguelike
+package demo
 
 import indigo._
 import indigo.scenes._
 import indigoextras.subsystems.FPSCounter
-import roguelike.terminal.TerminalEntity
-import roguelike.terminal.TerminalText
+import io.indigoengine.roguelike.starterkit.*
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -32,7 +31,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
             .withMagnification(1)
             .withFrameRate(fps)
         )
-        .withFonts(RoguelikeTiles10x10.Fonts.fontInfo)
+        .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
           TerminalEntity.shader(maxTileCount),

@@ -1,9 +1,9 @@
-package roguelike.terminal
+package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.ShaderPrimitive._
 import indigo._
-import roguelike.TerminalShaders
-import roguelike.Tile
+import io.indigoengine.roguelike.starterkit.TerminalShaders
+import io.indigoengine.roguelike.starterkit.Tile
 
 final case class TerminalEntity(
     tileSheet: AssetName,

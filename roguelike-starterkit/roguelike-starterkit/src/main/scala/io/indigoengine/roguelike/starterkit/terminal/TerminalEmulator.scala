@@ -1,4 +1,4 @@
-package roguelike.terminal
+package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo._
 import indigoextras.geometry.Vertex
@@ -6,7 +6,7 @@ import indigoextras.trees.QuadTree
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf
-import roguelike.Tile
+import io.indigoengine.roguelike.starterkit.Tile
 
 import scala.annotation.tailrec
 

@@ -1,10 +1,10 @@
-package roguelike.terminal
+package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.Point
 import indigo.RGB
 import indigo.RGBA
 import indigo.Size
-import roguelike.Tile
+import io.indigoengine.roguelike.starterkit.Tile
 
 class TerminalEmulatorTests extends munit.FunSuite {
 

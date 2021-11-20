@@ -1,10 +1,10 @@
-package roguelike
+package demo
 
 import indigo._
 
 object Assets:
 
-  val tileMap = AssetName("Anikki_square_10x10")
+  val tileMap        = AssetName("Anikki_square_10x10")
   val textFragShader = AssetName("terminal text frag")
 
   val assets: Set[AssetType] =

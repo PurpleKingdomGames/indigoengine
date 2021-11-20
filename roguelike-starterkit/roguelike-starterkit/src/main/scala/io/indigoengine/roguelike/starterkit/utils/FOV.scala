@@ -1,4 +1,4 @@
-package roguelike.utils
+package io.indigoengine.roguelike.starterkit.utils
 
 import indigo.shared.datatypes.Point
 

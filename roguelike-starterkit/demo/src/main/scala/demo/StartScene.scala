@@ -1,9 +1,8 @@
-package roguelike
+package demo
 
 import indigo._
 import indigo.scenes._
-import roguelike.terminal.TerminalEntity
-import roguelike.terminal.TerminalText
+import io.indigoengine.roguelike.starterkit._
 
 object StartScene extends Scene[Unit, Unit, Unit]:
 
@@ -57,12 +56,12 @@ object StartScene extends Scene[Unit, Unit, Unit]:
       SceneUpdateFragment(
         Text(
           message,
-          RoguelikeTiles10x10.Fonts.fontKey,
+          RoguelikeTiles.Size10x10.Fonts.fontKey,
           TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)
         ),
         Text(
           message,
-          RoguelikeTiles10x10.Fonts.fontKey,
+          RoguelikeTiles.Size10x10.Fonts.fontKey,
           TerminalText(Assets.tileMap, RGB.Yellow, RGBA.Red).withShaderId(ShaderId("my shader"))
         ).moveBy(0, 40)
       )
