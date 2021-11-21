@@ -117,9 +117,7 @@ Three ways to improve performance / reduce GC pressure:
 
 Another way to use the `TerminalEmulator` is to have is output a `CloneTiles`.
 
-This is very fast, but has the drawbacks as the `TerminalText` option because it uses the same shader, namely, that the output is monochrome. You can choose a foreground and background color but it will be applied to all.
-
-A future improvement here is to have the `TerminalEmulator` automatically output batches of `CloneTiles` instances based on color values.
+This is as capable as the previous method, but does not have the 4096 tile limit. Performance will vary by scene complexity, specifically how many unique colour combinations you have in place. Please note that this method allows much more flexible rendering, but will not work well with primitives of difference sizes as it is designed to render a grid.
 
 [Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/CloneTilesScene.scala)
 

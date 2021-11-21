@@ -95,8 +95,13 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   ): TerminalEntity =
     TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
 
-  def toCloneTileData(default: Tile, position: Point, charCrops: Array[(Int, Int, Int, Int)]): Array[CloneTileData] =
-    toPositionedList.toArray.map { case (pt, t) =>
+  private def toCloneTileData(
+      default: Tile,
+      position: Point,
+      charCrops: Array[(Int, Int, Int, Int)],
+      data: Array[(Point, MapTile)]
+  ): Array[CloneTileData] =
+    data.map { case (pt, t) =>
       val crop = charCrops(t.char.toInt)
       CloneTileData(
         (pt.x * crop._3) + position.x,
@@ -107,6 +112,29 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
         crop._4
       )
     }
+
+  def toCloneTiles(
+      default: Tile,
+      position: Point,
+      charCrops: Array[(Int, Int, Int, Int)]
+  )(makeBlank: (RGB, RGBA) => Cloneable): TerminalClones =
+    val makeId: (RGB, RGBA) => CloneId = (rgb, rgba) =>
+      CloneId(s"""term_cb_${rgb.hashCode}_${rgba.hashCode}""")
+
+    val combinations: List[((CloneId, RGB, RGBA), Array[(Point, MapTile)])] =
+      toPositionedList.toArray
+        .groupBy(p => (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background))
+        .toList
+
+    val stuff =
+      combinations.map { c =>
+        (
+          CloneBlank(c._1._1, makeBlank(c._1._2, c._1._3)),
+          CloneTiles(c._1._1, toCloneTileData(default, position, charCrops, c._2))
+        )
+      }
+
+    TerminalClones(stuff.map(_._1), stuff.map(_._2))
 
   def toList: List[MapTile] =
     @tailrec
@@ -190,3 +218,5 @@ object TerminalEmulator:
       screenSize,
       QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
     )
+
+final case class TerminalClones(blanks: List[CloneBlank], clones: List[CloneTiles])

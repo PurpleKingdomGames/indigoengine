@@ -42,31 +42,29 @@ object CloneTilesScene extends Scene[Unit, Unit, Unit]:
   val terminal: TerminalEmulator =
     TerminalEmulator(Size(3, 3))
       .put(
-        Point(0, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 1) -> MapTile(Tile.`@`, RGB.Magenta),
-        Point(2, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue)
+        Point(0, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(1, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(2, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(0, 1) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(1, 1) -> MapTile(Tile.`@`, RGB.Cyan),
+        Point(2, 1) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(0, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(1, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
+        Point(2, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange)
       )
-
-  val cloneId = CloneId("tile clone")
-  val cloneBlank =
-    CloneBlank(cloneId, Graphic(10, 10, TerminalText(Assets.tileMap, RGB.Cyan, RGBA.Blue)))
 
   def present(
       context: FrameContext[Unit],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
+    val tiles =
+      terminal.toCloneTiles(Tile.SPACE, Point.zero, RoguelikeTiles.Size10x10.charCrops) {
+        (fg, bg) =>
+          Graphic(10, 10, TerminalText(Assets.tileMap, fg, bg))
+      }
+
     Outcome(
-      SceneUpdateFragment(
-        CloneTiles(
-          cloneId,
-          terminal.toCloneTileData(Tile.SPACE, Point.zero, RoguelikeTiles.Size10x10.charCrops)
-        )
-      ).addCloneBlanks(cloneBlank)
+      SceneUpdateFragment(tiles.clones)
+        .addCloneBlanks(tiles.blanks)
     )
