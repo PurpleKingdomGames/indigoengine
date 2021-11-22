@@ -220,3 +220,7 @@ object TerminalEmulator:
     )
 
 final case class TerminalClones(blanks: List[CloneBlank], clones: List[CloneTiles])
+
+object TerminalClones:
+  def empty: TerminalClones =
+    TerminalClones(Nil, Nil)
