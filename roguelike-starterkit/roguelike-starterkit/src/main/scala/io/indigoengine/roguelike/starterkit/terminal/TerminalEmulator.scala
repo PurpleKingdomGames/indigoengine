@@ -96,7 +96,6 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     TerminalEntity(tileSheet, screenSize, charSize, toTileList(default), maxTileCount)
 
   private def toCloneTileData(
-      default: Tile,
       position: Point,
       charCrops: Array[(Int, Int, Int, Int)],
       data: Array[(Point, MapTile)]
@@ -114,7 +113,6 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     }
 
   def toCloneTiles(
-      default: Tile,
       position: Point,
       charCrops: Array[(Int, Int, Int, Int)]
   )(makeBlank: (RGB, RGBA) => Cloneable): TerminalClones =
@@ -130,7 +128,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       combinations.map { c =>
         (
           CloneBlank(c._1._1, makeBlank(c._1._2, c._1._3)),
-          CloneTiles(c._1._1, toCloneTileData(default, position, charCrops, c._2))
+          CloneTiles(c._1._1, toCloneTileData(position, charCrops, c._2))
         )
       }
 
