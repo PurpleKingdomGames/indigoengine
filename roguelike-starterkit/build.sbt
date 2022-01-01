@@ -5,7 +5,7 @@ Global / onChangedBuildSource                              := ReloadOnSourceChan
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 val scala3Version = "3.1.0"
-val indigoVersion = "0.10.1-SNAPSHOT"
+val indigoVersion = "0.11.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version      := "0.1.0-SNAPSHOT",
@@ -76,7 +76,7 @@ lazy val roguelike =
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "RoguelikeTiles",                       // Class/module name.
+            "RoguelikeTiles",                             // Class/module name.
             "io.indigoengine.roguelike.starterkit.tiles", // fully qualified package name
             (Compile / sourceManaged).value // Managed sources (output) directory for the generated classes
           )
