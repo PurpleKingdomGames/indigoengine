@@ -112,7 +112,7 @@ object TerminalEntity:
       RGBA.Magenta,
       Array(),
       Point.zero,
-      Depth(1),
+      Depth.zero,
       maxTileCount
     )
 
@@ -130,7 +130,7 @@ object TerminalEntity:
       RGBA.Magenta,
       map,
       Point.zero,
-      Depth(1),
+      Depth.zero,
       maxTileCount
     )
 
