@@ -1,8 +1,8 @@
-# Roguelike Starter Kit for Indigo
+# Roguelike Starter-Kit for Indigo
 
 A library for use with [Indigo](https://indigoengine.io/) to provide some terminal-like rendering functionality specifically for ASCII art style games, and roguelike games in particular.
 
-An early version of this code was used to build the [follow along examples](https://github.com/davesmith00000/roguelike-tutorial) to the [Roguelike tutorials](http://rogueliketutorials.com/).
+An early version of this code was used to build the [follow along examples](https://github.com/davesmith00000/roguelike-tutorial) to the [Roguelike tutorials](http://rogueliketutorials.com/). I'm still using this library in my revised [Roguelike demo game](https://github.com/davesmith00000/roguelike).
 
 > Please note that follow along tutorials will be upgraded to use this library at some point.
 
@@ -10,13 +10,9 @@ An early version of this code was used to build the [follow along examples](http
 
 ## Installation
 
-This library is not currently published (coming soon), so you'll need to do that yourself to use it. Download the repo (even as a zip), and do:
+Add the following dependency to your Indigo based game project (alongside the usual indigo ones):
 
-`sbt publishLocal`
-
-Then add the following dependency to your project (alongside the usual indigo ones):
-
-`"io.indigoengine" %%% "roguelike-starterkit" % "0.1.0-SNAPSHOT"`
+`"io.indigoengine" %%% "roguelike-starterkit" % "0.1.0"`
 
 Everything can be accessed via this import:
 
@@ -62,7 +58,7 @@ You can go ahead and build a game and it will look ...exactly like all the other
 
 This starter pack takes a Dwarf Fortress image that looks like this:
 
-![A dwarf fortress tile map](/assets/Anikki_square_10x10.png "A dwarf fortress tile map")
+![A dwarf fortress tile map](demo/assets/Anikki_square_10x10.png "A dwarf fortress tile map")
 
 ([There are lots more of them to choose from!](https://dwarffortresswiki.org/Tileset_repository))
 
@@ -126,4 +122,4 @@ This is as capable as the previous method, but does not have the 4096 tile limit
 The starter kit also provides:
 
 1. An implementation of Bresenham's Line algorithm, used in the tutorial for line of sight across a grid.
-2. A very simplistic path finding algorithm.
+2. A very, very simplistic path finding algorithm (just enough for the roguelike-tutorials).
