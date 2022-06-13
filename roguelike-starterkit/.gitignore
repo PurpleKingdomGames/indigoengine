@@ -17,3 +17,4 @@ metals.sbt
 .vscode
 .bsp
 node_modules/
+credentials.sbt
