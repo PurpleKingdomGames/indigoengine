@@ -6,7 +6,7 @@ import sbtwelcome._
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
-val scala3Version = "3.1.2"
+val scala3Version = "3.2.0"
 val indigoVersion = "0.13.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
