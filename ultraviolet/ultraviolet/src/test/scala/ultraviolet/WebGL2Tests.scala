@@ -7,19 +7,13 @@ class WebGL2Tests extends munit.FunSuite {
 
   test("Can generate the simplest valid WebGL 2.0 fragment shader") {
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-    case class Env(var outColor: vec4)
-
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-    inline def fragment: Shader[Env, Unit] =
-      Shader { env =>
-
-        @out val foo: vec4 = vec4(1.0f)
-        @in val bar: vec4 = vec4(1.0f)
+    inline def fragment: Shader[Unit, Unit] =
+      Shader { _ =>
         @out var outColor: vec4 = null;
 
         def main: Unit = 
-          env.outColor = vec4(1.0f, 0.0f, 0.5f, 1.0f)
+          outColor = vec4(1.0f, 0.0f, 0.5f, 1.0f)
       }
 
     val actual =
@@ -33,7 +27,7 @@ class WebGL2Tests extends munit.FunSuite {
       |#version 300 es
       |precision highp float;
       |out vec4 outColor;
-      |void main(){outColor = vec4(1, 0, 0.5, 1);}
+      |void main(){outColor=vec4(1.0,0.0,0.5,1.0);}
       |""".stripMargin.trim
 
     assertEquals(actual, expected)
