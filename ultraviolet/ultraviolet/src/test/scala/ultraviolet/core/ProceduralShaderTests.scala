@@ -1,4 +1,4 @@
-package indigo.macroshaders
+package ultraviolet.core
 
 class ProceduralShaderTests extends munit.FunSuite {
   import ShaderAST.*

@@ -1,6 +1,8 @@
-package indigo.macroshaders
+package ultraviolet
 
-object ShaderDSL extends ShaderDSLOps:
+import ultraviolet.core.ShaderDSLOps
+
+object syntax extends ShaderDSLOps:
 
   extension (f: Float)
     def +(v: vec2): vec2 = vec2(f + v.x, f + v.y)
@@ -18,4 +20,4 @@ object ShaderDSL extends ShaderDSLOps:
     def *(v: vec4): vec4 = vec4(f * v.x, f * v.y, f * v.z, f * v.w)
     def /(v: vec4): vec4 = vec4(f / v.x, f / v.y, f / v.z, f / v.w)
 
-end ShaderDSL
+end syntax

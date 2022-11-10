@@ -1,4 +1,4 @@
-// package indigo.macroshaders
+// package ultraviolet.core
 
 // class ShaderTests extends munit.FunSuite {
 

@@ -1,4 +1,4 @@
-package indigo.macroshaders
+package ultraviolet.core
 
 import scala.quoted.*
 

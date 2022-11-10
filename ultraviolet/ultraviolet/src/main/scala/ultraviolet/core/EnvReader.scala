@@ -1,6 +1,6 @@
-package indigo.macroshaders
+package ultraviolet.core
 
-import indigo.macroshaders.ShaderDSL.*
+import ultraviolet.syntax.*
 
 import scala.compiletime.erasedValue
 import scala.compiletime.summonInline

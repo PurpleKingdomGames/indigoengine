@@ -81,9 +81,9 @@ final case class CustomShader(x: Int, y: Int, width: Int, height: Int, depth: De
   def eventHandler: ((CustomShader, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object CustomShader:
-  import indigo.macroshaders.Shader
-  import indigo.macroshaders.IndigoEntityFragment as FragEnv
-  import indigo.macroshaders.ShaderDSL.*
+  import ultraviolet.core.Shader
+  import ultraviolet.core.IndigoEntityFragment as FragEnv
+  import ultraviolet.syntax.*
 
   val shaderId: ShaderId =
     ShaderId("custom shader")

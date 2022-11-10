@@ -1,4 +1,4 @@
-// package indigo.macroshaders
+// package ultraviolet.core
 
 // /** A `Pipeline` is very similar to a `SignalFunction` but for shader programs.
 //   *

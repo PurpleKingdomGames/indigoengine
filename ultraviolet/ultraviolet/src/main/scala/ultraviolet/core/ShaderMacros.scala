@@ -1,11 +1,11 @@
-package indigo.macroshaders
+package ultraviolet.core
+
+import ultraviolet.syntax.*
 
 import scala.annotation.tailrec
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.quoted.*
-
-import ShaderDSL.*
 
 object ShaderMacros:
 

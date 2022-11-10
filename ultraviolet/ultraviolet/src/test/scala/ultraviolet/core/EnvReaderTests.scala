@@ -1,6 +1,6 @@
-package indigo.macroshaders
+package ultraviolet.core
 
-import ShaderDSL.*
+import ultraviolet.syntax.*
 
 class EnvReaderTests extends munit.FunSuite {
 

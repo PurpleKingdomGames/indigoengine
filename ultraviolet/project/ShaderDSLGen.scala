@@ -9,9 +9,9 @@ object ShaderDSLGen {
       name: String,
       contents: String
   ): String =
-    s"""package indigo.macroshaders
+    s"""package ultraviolet.core
     |
-    |import indigo.macroshaders.ShaderDSL.*
+    |import ultraviolet.syntax.*
     |
     |trait ${name} extends ShaderDSLTypes:
     |$contents
@@ -23,7 +23,7 @@ object ShaderDSLGen {
     val name = "ShaderDSLTypeExtensions"
 
     val file: File =
-      sourceManagedDir / "indigo" / "macroshaders" / (name + ".scala")
+      sourceManagedDir / "ultraviolet" / "core" / (name + ".scala")
 
     if (!file.exists()) {
       val newContents: String =
