@@ -42,6 +42,7 @@ object ShaderMacros:
       case v: ShaderAST.Switch            => None
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.Annotated         => findReturnType(v.value)
+      case v: ShaderAST.RawLiteral        => None
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
       case v: ShaderAST.DataTypes.float   => v.typeIdent
@@ -247,6 +248,13 @@ object ShaderMacros:
               ShaderAST.DataTypes.vec4(args2.map(p => walkTerm(p)))
             case _ =>
               ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+
+        // Raw
+
+        case Apply(Select(Ident("RawGLSL"), "apply"), List(Literal(StringConstant(raw)))) =>
+          ShaderAST.RawLiteral(raw)
+
+        //
 
         case Apply(Select(Ident(id), "apply"), args) =>
           val (fnName, rt) = proxies.lookUp(id, id -> Option(ShaderAST.DataTypes.ident("void")))

@@ -25,6 +25,7 @@ object ShaderAST:
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
         case v: Annotated    => Expr(v)
+        case v: RawLiteral   => Expr(v)
   }
 
   final case class Empty() extends ShaderAST
@@ -170,6 +171,13 @@ object ShaderAST:
         '{ Annotated(${ Expr(x.name) }, ${ Expr(x.value) }) }
     }
 
+  final case class RawLiteral(value: String) extends ShaderAST
+  object RawLiteral:
+    given ToExpr[RawLiteral] with {
+      def apply(x: RawLiteral)(using Quotes): Expr[RawLiteral] =
+        '{ RawLiteral(${ Expr(x.value) }) }
+    }
+
   enum DataTypes extends ShaderAST:
     case closure(body: ShaderAST, typeOf: Option[String])
     case ident(id: String)
@@ -269,6 +277,7 @@ object ShaderAST:
               case Switch(_, cs)            => rec(cs.map(_._2) ++ xs)
               case Val(_, body, _)          => rec(body :: xs)
               case Annotated(_, body)       => rec(body :: xs)
+              case RawLiteral(_)            => rec(xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
               case v: DataTypes.float       => rec(xs)
@@ -306,6 +315,7 @@ object ShaderAST:
         case v @ Switch(c, cs)                        => f(Switch(c, cs.map(p => p._1 -> f(p._2))))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ Annotated(id, value)                 => f(Annotated(id, f(value)))
+        case v @ RawLiteral(_)                        => f(v)
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
         case v @ DataTypes.int(_)                     => f(v)
@@ -332,6 +342,7 @@ object ShaderAST:
         case Switch(_, _)                 => None
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case Annotated(_, value)          => value.typeIdent
+        case RawLiteral(_)                => None
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
@@ -364,6 +375,7 @@ object ShaderAST:
           case Switch(_, _)                 => None
           case Val(id, value, typeOf)       => typeOf
           case Annotated(id, value)         => decideType(value)
+          case RawLiteral(_)                => None
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
           case DataTypes.float(v)           => Option("float")
@@ -377,9 +389,14 @@ object ShaderAST:
         val out = statements
           .map(_.prune)
           .filterNot(_.isEmpty) // Empty()
-          .map(_.render)
+          .map {
+            case ShaderAST.RawLiteral(raw) => raw
+            case x =>
+              val r = x.render
+              if r.isEmpty() then r else r + ";"
+          }
           .filterNot(_.isEmpty) // empty String
-          .mkString(";")
+          .mkString
 
         if out.trim.isEmpty then out.replace(";;", ";")
         else (out + ";").replace(";;", ";")
@@ -525,5 +542,8 @@ object ShaderAST:
 
               case _ =>
                 s"""${value.render}"""
+
+          case RawLiteral(body) =>
+            body
 
       res
