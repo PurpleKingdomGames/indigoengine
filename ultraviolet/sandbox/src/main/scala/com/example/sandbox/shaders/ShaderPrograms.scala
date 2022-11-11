@@ -1,9 +1,11 @@
 package com.example.sandbox.shaders
 
-import ultraviolet.core.IndigoEntityFragment as FragEnv
 import ultraviolet.syntax.*
 
 object ShaderPrograms:
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  final case class FragEnv(UV: vec2, var COLOR: vec4)
 
   inline def fragment1: Shader[FragEnv, vec4] =
     Shader { env =>

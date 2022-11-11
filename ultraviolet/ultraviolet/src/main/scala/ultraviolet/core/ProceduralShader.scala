@@ -1,6 +1,7 @@
 package ultraviolet.core
 
 import scala.annotation.tailrec
+import scala.deriving.Mirror
 import scala.quoted.*
 
 final case class ProceduralShader(defs: List[ShaderAST], main: ShaderAST)
@@ -12,7 +13,9 @@ object ProceduralShader:
   }
 
   extension (p: ProceduralShader)
-    def render: String =
+    inline def render[In](using Mirror.ProductOf[In]): String =
+      // println(EnvReader.readUBO[In]) // TODO: Use this.
+
       import ShaderAST.*
       def envName(ast: ShaderAST): Option[String] =
         ast

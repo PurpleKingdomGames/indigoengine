@@ -1,6 +1,7 @@
 package ultraviolet.core
 
 import scala.annotation.tailrec
+import scala.deriving.Mirror
 import scala.quoted.*
 
 sealed trait ShaderAST derives CanEqual
@@ -66,7 +67,7 @@ object ShaderAST:
     def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
       ShaderBlock(Option(envVarName), statements.toList)
 
-  final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[ShaderAST])
+  final case class Function(id: String, args: List[(ShaderAST, String)], body: ShaderAST, returnType: Option[ShaderAST])
       extends ShaderAST
   object Function:
     given ToExpr[Function] with {
@@ -77,7 +78,7 @@ object ShaderAST:
   final case class CallFunction(
       id: String,
       args: List[ShaderAST],
-      argNames: List[String],
+      argNames: List[ShaderAST],
       returnType: Option[ShaderAST]
   ) extends ShaderAST
   object CallFunction:
@@ -164,7 +165,7 @@ object ShaderAST:
         '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }, ${ Expr(x.typeOf) }) }
     }
 
-  final case class Annotated(name: String, value: ShaderAST) extends ShaderAST
+  final case class Annotated(name: ShaderAST, value: ShaderAST) extends ShaderAST
   object Annotated:
     given ToExpr[Annotated] with {
       def apply(x: Annotated)(using Quotes): Expr[Annotated] =
@@ -353,7 +354,7 @@ object ShaderAST:
         case DataTypes.swizzle(v, _, _)   => v.typeIdent
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def render: String =
+    def render[In](using Mirror.ProductOf[In]): String =
       def rf(f: Float): String =
         val s = f.toString
         if s.contains(".") then s else s + ".0"
@@ -456,15 +457,15 @@ object ShaderAST:
 
           case Function(id, args, Block(statements), returnType) =>
             val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
-            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in ${s._1.render} ${s._2}").mkString(",")}){$body}"""
 
           case Function(id, args, NamedBlock(_, _, statements), returnType) =>
             val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
-            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in ${s._1.render} ${s._2}").mkString(",")}){$body}"""
 
           case Function(id, args, statement, returnType) =>
             val (body, rt) = processFunctionStatements(List(statement), returnType.map(_.render))
-            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in ${s._1.render} ${s._2}").mkString(",")}){$body}"""
 
           case CallFunction(id, args, _, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
@@ -538,7 +539,7 @@ object ShaderAST:
                 s"""$tOf $id=${value.render}"""
 
           case Annotated(label, value) =>
-            label match
+            label.render match
               case "in" | "out" =>
                 s"""$label ${value.render}"""
 

@@ -2,6 +2,7 @@ package ultraviolet.core
 
 import ultraviolet.syntax.*
 
+// TODO: This will need to be a case class...
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 trait IndigoEntityFragment:
 

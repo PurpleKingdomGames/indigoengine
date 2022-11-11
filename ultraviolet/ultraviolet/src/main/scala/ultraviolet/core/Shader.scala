@@ -1,6 +1,7 @@
 package ultraviolet.core
 
 import scala.annotation.targetName
+import scala.deriving.Mirror
 
 /** Out `Shader` is a program that can be run on a graphics card as part of the rendering pipeline. Indigo supports two
   * kinds of shaders: Vertex and Fragment
@@ -20,7 +21,9 @@ object Shader:
   // inline def join[In, B](ctx: Shader[In, Shader[In, B]]): Shader[In, B] =
   //   (env: In) => ctx(env).run(env)
 
-  extension [In, Out](inline ctx: Shader[In, Out]) inline def toGLSL: String = ShaderMacros.toAST(ctx).render
+  extension [In, Out](inline ctx: Shader[In, Out])
+    inline def toGLSL(using Mirror.ProductOf[In]): String =
+      ShaderMacros.toAST(ctx).render[In]
 //   inline def apply(env: In): Out                                                   = run(env)
 //   inline def map[B](f: Out => B): Shader[In, B]                                    = (e: In) => f(ctx(e))
 //   inline def ap[B](f: Shader[In, Out => B]): Shader[In, B]                        = (e: In) => map(f.run(e))(e)

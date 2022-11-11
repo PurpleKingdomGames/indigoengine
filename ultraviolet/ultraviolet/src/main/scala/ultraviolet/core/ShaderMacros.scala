@@ -109,12 +109,12 @@ object ShaderMacros:
                   fProxy._2
                 )
               ),
-              List(fProxy._1),
+              List(ShaderAST.DataTypes.ident(fProxy._1)),
               gProxy._2
             )
 
           shaderDefs += FunctionLookup(
-            ShaderAST.Function(fnName, List(fnInType.render + " " + vName), body, fnOutType),
+            ShaderAST.Function(fnName, List(fnInType -> vName), body, fnOutType),
             false
           )
           proxies.add(name, fnName, fnOutType)
@@ -140,7 +140,7 @@ object ShaderMacros:
                 case None =>
                   ShaderAST.Val(name, body, typeOf)
                 case Some(label) =>
-                  ShaderAST.Annotated(label.render, ShaderAST.Val(name, body, typeOf))
+                  ShaderAST.Annotated(label, ShaderAST.Val(name, body, typeOf))
 
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
@@ -174,12 +174,23 @@ object ShaderMacros:
 
             case _ =>
               shaderDefs += FunctionLookup(
-                ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType),
+                ShaderAST.Function(
+                  fn,
+                  argNamesTypes.map(p => ShaderAST.DataTypes.ident(p._1) -> p._2),
+                  body,
+                  returnType
+                ),
                 !isAnon
               )
 
               if isAnon then ShaderAST.FunctionRef(fn, returnType)
-              else ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
+              else
+                ShaderAST.Function(
+                  fn,
+                  argNamesTypes.map(p => ShaderAST.DataTypes.ident(p._1) -> p._2),
+                  body,
+                  returnType
+                )
 
         case DefDef(_, _, _, _) =>
           throw new Exception("Unexpected def construction")
@@ -303,9 +314,9 @@ object ShaderMacros:
 
         // Native method call.
         case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
-          val (fnName, _) = proxies.lookUp(defRef)
-          val args        = List(ShaderAST.DataTypes.ident(fnName))
-          ShaderAST.CallFunction(name, args, args.map(_.render), None)
+          val (fnName, _)           = proxies.lookUp(defRef)
+          val args: List[ShaderAST] = List(ShaderAST.DataTypes.ident(fnName))
+          ShaderAST.CallFunction(name, args, args, None)
 
         // Annotations
 
@@ -377,10 +388,10 @@ object ShaderMacros:
           val argNames   = args.map(_ => proxies.makeVarName)
           val callArgs   = args.map(tt => walkTerm(tt))
           val pairedArgs = callArgs.zip(argNames)
-          val fnArgs =
+          val fnArgs: List[(ShaderAST, String)] =
             pairedArgs.map { p =>
-              val typ = p._1.typeIdent.map(_.render).getOrElse("void")
-              s"$typ ${p._2}"
+              val typ = p._1.typeIdent.getOrElse(ShaderAST.DataTypes.ident("void"))
+              typ -> p._2
             }
 
           ds.map(s => walkStatement(s))
@@ -404,7 +415,8 @@ object ShaderMacros:
             ShaderAST.Function(name, fnArgs, body, returnType),
             false // Should be true, refactor when I revisit inline defs...
           )
-          ShaderAST.CallFunction(name, callArgs, argNames, returnType)
+          val nmes = argNames.map(ShaderAST.DataTypes.ident.apply)
+          ShaderAST.CallFunction(name, callArgs, nmes, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
           walkTerm(term)
@@ -433,14 +445,15 @@ object ShaderMacros:
           val arguments = typesRendered
             .dropRight(1)
             .zip(argNames)
-            .map { case (typ, nme) => s"""${typ.render} $nme""" }
+            .map { case (typ, nme) => typ -> nme }
 
           val fn = proxies.makeDefName
           shaderDefs += FunctionLookup(
             ShaderAST.Function(fn, arguments, walkTerm(term), returnType),
             false
           )
-          ShaderAST.CallFunction(fn, Nil, argNames, returnType)
+          val nmes = argNames.map(ShaderAST.DataTypes.ident.apply)
+          ShaderAST.CallFunction(fn, Nil, nmes, returnType)
 
         case Typed(term, _) =>
           walkTerm(term)
