@@ -31,14 +31,14 @@ object syntax extends ShaderDSLOps:
   final class out extends StaticAnnotation
   final class in  extends StaticAnnotation
 
-  // object glsl:
+  object glsl:
 
-  //   inline def Version300ES: RawGLSL = RawGLSL("#version 300 es\n")
+    inline def Version300ES: RawGLSL = RawGLSL("#version 300 es\n")
 
-  //   inline def PrecisionHighPFloat: RawGLSL   = RawGLSL("precision highp float;\n")
-  //   inline def PrecisionMediumPFloat: RawGLSL = RawGLSL("precision mediump float;\n")
-  //   inline def PrecisionLowPFloat: RawGLSL    = RawGLSL("precision lowp float;\n")
+    inline def PrecisionHighPFloat: RawGLSL   = RawGLSL("precision highp float;\n")
+    inline def PrecisionMediumPFloat: RawGLSL = RawGLSL("precision mediump float;\n")
+    inline def PrecisionLowPFloat: RawGLSL    = RawGLSL("precision lowp float;\n")
 
-  // end glsl
+  end glsl
 
 end syntax

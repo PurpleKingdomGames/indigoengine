@@ -258,11 +258,6 @@ object ShaderMacros:
             case _ =>
               ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
 
-        // Raw
-
-        case Apply(Select(Ident("RawGLSL"), "apply"), List(Literal(StringConstant(raw)))) =>
-          ShaderAST.RawLiteral(raw)
-
         //
 
         case Apply(Select(Ident(id), "apply"), args) =>
@@ -352,6 +347,14 @@ object ShaderMacros:
 
         case Inlined(Some(Ident(_)), _, term) =>
           walkTerm(term)
+
+        // Raw
+        case Inlined(
+              Some(Select(Ident(_), _)),
+              Nil,
+              Typed(Apply(Select(_, _), List(Literal(StringConstant(raw)))), TypeIdent("RawGLSL"))
+            ) =>
+          ShaderAST.RawLiteral(raw)
 
         // Swizzle
         case Inlined(Some(Apply(Ident(name), List(gt @ Apply(Select(Ident(genType), "apply"), args)))), _, _)
