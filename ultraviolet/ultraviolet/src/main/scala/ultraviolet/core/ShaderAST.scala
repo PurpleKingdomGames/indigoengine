@@ -386,20 +386,28 @@ object ShaderAST:
           case DataTypes.swizzle(v, _, rt)  => rt.map(_.render)
 
       def processStatements(statements: List[ShaderAST]): String =
-        val out = statements
+        statements
           .map(_.prune)
           .filterNot(_.isEmpty) // Empty()
           .map {
-            case ShaderAST.RawLiteral(raw) => raw
+            case ShaderAST.RawLiteral(raw) =>
+              raw
+
+            case f: ShaderAST.Function =>
+              "\n" + f.render + "\n"
+
+            case ShaderAST.Block(ss) =>
+              processStatements(ss)
+
             case x =>
               val r = x.render
-              if r.isEmpty() then r else r + ";"
+              if r.isEmpty then r else r + ";"
           }
           .filterNot(_.isEmpty) // empty String
           .mkString
-
-        if out.trim.isEmpty then out.replace(";;", ";")
-        else (out + ";").replace(";;", ";")
+          .trim
+          .replace("\n\n", "\n")
+          .replace(";;", ";")
 
       def processFunctionStatements(statements: List[ShaderAST], maybeReturnType: Option[String]): (String, String) =
         val nonEmpty = statements
@@ -415,19 +423,13 @@ object ShaderAST:
             case None        => last.headOption.flatMap(decideType).getOrElse("void")
             case Some(value) => value
 
-        val body = {
-          val out =
-            if init.isEmpty then ""
-            else init.map(_.render).filterNot(_.isEmpty).mkString(";")
-          if out.trim.isEmpty then out else out + ";"
-        } +
-          last.headOption
-            .map { ss =>
-              val out = (if returnType != "void" then "return " else "") + ss.render
-              if out.trim.isEmpty then out else out + ";"
-            }
-            .getOrElse("")
-            .replace(";;", ";") // Some Scala elements are removed completely, but still are a statement techincally.
+        val body =
+          processStatements(init) +
+            last.headOption
+              .map { ss =>
+                (if returnType != "void" then "return " else "") + processStatements(List(ss))
+              }
+              .getOrElse("")
 
         (
           body,

@@ -18,7 +18,7 @@ object ShaderMacros:
 
     val proxies = new ProxyManager
 
-    val shaderDefs: ListBuffer[ShaderAST.Function] = new ListBuffer()
+    val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
 
     var inputClassType: Option[String]  = None
     var outputClassType: Option[String] = None
@@ -113,7 +113,10 @@ object ShaderMacros:
               gProxy._2
             )
 
-          shaderDefs += ShaderAST.Function(fnName, List(fnInType.render + " " + vName), body, fnOutType)
+          shaderDefs += FunctionLookup(
+            ShaderAST.Function(fnName, List(fnInType.render + " " + vName), body, fnOutType),
+            false
+          )
           proxies.add(name, fnName, fnOutType)
           ShaderAST.Empty()
 
@@ -152,8 +155,9 @@ object ShaderMacros:
                 (typeOf.getOrElse("void"), name)
               }
 
-          val fn   = if fnName == "$anonfun" then proxies.makeDefName else fnName
-          val body = walkTerm(term)
+          val isAnon = fnName == "$anonfun"
+          val fn     = if isAnon then proxies.makeDefName else fnName
+          val body   = walkTerm(term)
 
           val returnType =
             rt match
@@ -169,8 +173,13 @@ object ShaderMacros:
               ShaderAST.Empty()
 
             case _ =>
-              shaderDefs += ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
-              ShaderAST.FunctionRef(fn, returnType)
+              shaderDefs += FunctionLookup(
+                ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType),
+                !isAnon
+              )
+
+              if isAnon then ShaderAST.FunctionRef(fn, returnType)
+              else ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
 
         case DefDef(_, _, _, _) =>
           throw new Exception("Unexpected def construction")
@@ -388,7 +397,10 @@ object ShaderMacros:
           val body       = walkTerm(term)
           val returnType = findReturnType(walkTree(typeTree))
 
-          shaderDefs += ShaderAST.Function(name, fnArgs, body, returnType)
+          shaderDefs += FunctionLookup(
+            ShaderAST.Function(name, fnArgs, body, returnType),
+            false // Should be true, refactor when I revisit inline defs...
+          )
           ShaderAST.CallFunction(name, callArgs, argNames, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
@@ -421,7 +433,10 @@ object ShaderMacros:
             .map { case (typ, nme) => s"""${typ.render} $nme""" }
 
           val fn = proxies.makeDefName
-          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), returnType)
+          shaderDefs += FunctionLookup(
+            ShaderAST.Function(fn, arguments, walkTerm(term), returnType),
+            false
+          )
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
         case Typed(term, _) =>
@@ -459,10 +474,12 @@ object ShaderMacros:
         // Refs
 
         case Ident(name) =>
-          val resolvedName = proxies.lookUp(name)._1 // proxyLookUp.get(name).getOrElse((name -> None))._1
+          val resolvedName = proxies.lookUp(name)._1
 
-          shaderDefs.toList.find(_.id == resolvedName) match
-            case None => ShaderAST.DataTypes.ident(resolvedName)
+          shaderDefs.toList.find(_.fn.id == resolvedName).map(_.fn) match
+            case None =>
+              ShaderAST.DataTypes.ident(resolvedName)
+
             case Some(ShaderAST.Function(_, _, _, rt)) =>
               ShaderAST.CallFunction(resolvedName, Nil, Nil, rt)
 
@@ -549,7 +566,7 @@ object ShaderMacros:
 
     val res           = walkTerm(expr.asTerm)
     val shaderDefList = shaderDefs.toList
-    Expr(ProceduralShader(shaderDefList, res))
+    Expr(ProceduralShader(shaderDefList.filterNot(_.userDefined).map(_.fn), res))
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -585,5 +602,7 @@ object ShaderMacros:
       add(originalName, newName, None)
 
   end ProxyManager
+
+  final case class FunctionLookup(fn: ShaderAST.Function, userDefined: Boolean)
 
 end ShaderMacros
