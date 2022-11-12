@@ -64,9 +64,6 @@ object ShaderAST:
         '{ ShaderBlock(${ Expr(x.envVarName) }, ${ Expr(x.statements) }) }
     }
 
-    def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
-      ShaderBlock(Option(envVarName), statements.toList)
-
   final case class Function(id: String, args: List[(ShaderAST, String)], body: ShaderAST, returnType: Option[ShaderAST])
       extends ShaderAST
   object Function:
@@ -446,8 +443,13 @@ object ShaderAST:
             processStatements(statements)
 
           case ShaderBlock(envVarName, statements) =>
-            val (body, _) = processFunctionStatements(statements, None)
-            body // s"""void fragment(){COLOR=$body}"""
+            envVarName match
+              case None =>
+                processStatements(statements)
+
+              case Some(value) =>
+                val (body, _) = processFunctionStatements(statements, None)
+                body
 
           case NamedBlock(namespace, id, statements) =>
             s"""$namespace$id {${processStatements(statements)}}"""

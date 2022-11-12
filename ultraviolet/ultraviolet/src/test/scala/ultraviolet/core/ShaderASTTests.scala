@@ -8,15 +8,23 @@ class ShaderASTTests extends munit.FunSuite {
   case class FragEnv(UV: vec2, var COLOR: vec4)
 
   test("Simple conversion to GLSL") {
-    inline def shader: Shader[Unit, Unit] =
+    inline def fragment =
       Shader {
         vec4(1.0f, 1.0f, 0.0f, 1.0f)
       }
 
     val actual =
-      ShaderMacros.toAST(shader)
+      fragment.toGLSL
 
-    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |vec4(1.0,1.0,0.0,1.0);
+      |""".stripMargin.trim
+    )
   }
 
   test("Inlined external val") {
@@ -271,10 +279,13 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       s"""
       |COLOR=vec4(1.0,0.0,0.0,1.0);
       |""".stripMargin.trim

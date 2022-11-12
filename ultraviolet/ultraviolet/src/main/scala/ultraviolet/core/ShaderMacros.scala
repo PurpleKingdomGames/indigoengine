@@ -20,9 +20,6 @@ object ShaderMacros:
 
     val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
 
-    var inputClassType: Option[String]  = None
-    var outputClassType: Option[String] = None
-
     val isSwizzle     = "^([xyzw]+)$".r
     val isSwizzleable = "^(vec2|vec3|vec4)$".r
 
@@ -223,9 +220,9 @@ object ShaderMacros:
 
         // Specific hooks we care about
 
-        // Entry point
+        // Entry point (with in/out type params)
         case Apply(
-              TypeApply(Select(Ident("Shader"), "apply"), List(inType, outType)),
+              TypeApply(Select(Ident("Shader"), "apply"), _),
               List(
                 Block(
                   Nil,
@@ -243,10 +240,11 @@ object ShaderMacros:
                 )
               )
             ) =>
-          inputClassType = inType.tpe.classSymbol.map(_.name)
-          outputClassType = outType.tpe.classSymbol.map(_.name)
+          ShaderAST.ShaderBlock(Option(envVarName), List(walkTerm(term)))
 
-          ShaderAST.ShaderBlock(envVarName, walkTerm(term))
+        // Entry point (no type params)
+        case Apply(Select(Ident("Shader"), "apply"), args) =>
+          ShaderAST.ShaderBlock(None, args.map(walkTerm))
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           args match
