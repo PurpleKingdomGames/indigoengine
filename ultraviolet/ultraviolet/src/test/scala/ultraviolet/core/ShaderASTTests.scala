@@ -8,15 +8,15 @@ class ShaderASTTests extends munit.FunSuite {
   case class FragEnv(UV: vec2, var COLOR: vec4)
 
   test("Simple conversion to GLSL") {
-    inline def shader =
-      Shader[FragEnv, vec4] { _ =>
+    inline def shader: Shader[Unit, Unit] =
+      Shader {
         vec4(1.0f, 1.0f, 0.0f, 1.0f)
       }
 
     val actual =
       ShaderMacros.toAST(shader)
 
-    assert(clue(actual.render[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
+    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
   }
 
   test("Inlined external val") {
@@ -31,7 +31,7 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    assert(clue(actual.render[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
+    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
   }
 
   test("Inlined external val (as def)") {
@@ -46,7 +46,7 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    assert(clue(actual.render[FragEnv]) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
+    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
   }
 
   test("Inlined external function") {
@@ -66,7 +66,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |vec2 xy(in float val0){return vec2(1.0);}
       |vec2 def0(in float alpha){return vec2(0.0,alpha);}
@@ -94,7 +94,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |vec2 xy(in float val0,in float val1){return vec2(1.0,0.25);}
       |vec2 def0(in float blue,in float alpha){return vec2(blue,alpha);}
@@ -113,7 +113,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |vec4(UV,0.0,1.0);
       |""".stripMargin.trim
@@ -130,7 +130,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment1)
 
     assertEquals(
-      actual1.render[FragEnv],
+      actual1.toGLSL[FragEnv],
       s"""
       |vec4(1.0,2.0,3.0,4.0).wzyx;
       |""".stripMargin.trim
@@ -145,7 +145,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment2)
 
     assertEquals(
-      actual2.render[FragEnv],
+      actual2.toGLSL[FragEnv],
       s"""
       |vec3(1.0,2.0,3.0).xxy;
       |""".stripMargin.trim
@@ -161,7 +161,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment3)
 
     assertEquals(
-      actual3.render[FragEnv],
+      actual3.toGLSL[FragEnv],
       s"""
       |vec3 fill=vec3(1.0,2.0,3.0);fill.xyz;
       |""".stripMargin.trim
@@ -182,7 +182,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(circleShader)
 
     assertEquals(
-      actual1.render[FragEnv],
+      actual1.toGLSL[FragEnv],
       s"""
       |float circleSdf(in vec2 val0,in float val1){return (length(val0))-(3.0);}
       |circleSdf(vec2(1.0,2.0),3.0);
@@ -201,7 +201,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(circleShader2)
 
     assertEquals(
-      actual2.render[FragEnv],
+      actual2.toGLSL[FragEnv],
       s"""
       |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
       |circleSdf(UV,3.0);
@@ -225,7 +225,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(shader)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |calculateColour(UV,3.0);
@@ -254,7 +254,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
       |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
@@ -265,8 +265,8 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Output a color / Assign") {
 
-    inline def fragment: Shader[FragEnv, Unit] =
-      Shader { env =>
+    inline def fragment =
+      Shader[FragEnv] { env =>
         env.COLOR = vec4(1.0f, 0.0f, 0.0f, 1.0f)
       }
 
@@ -274,7 +274,7 @@ class ShaderASTTests extends munit.FunSuite {
       ShaderMacros.toAST(fragment)
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       s"""
       |COLOR=vec4(1.0,0.0,0.0,1.0);
       |""".stripMargin.trim
@@ -283,8 +283,8 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Small procedural shader with fragment function") {
 
-    inline def fragment: Shader[FragEnv, Unit] =
-      Shader { env =>
+    inline def fragment =
+      Shader[FragEnv] { env =>
         def circleSdf(p: vec2, r: Float): Float =
           length(p) - r
 
@@ -309,7 +309,7 @@ class ShaderASTTests extends munit.FunSuite {
       |""".stripMargin.trim
 
     assertEquals(
-      actual.render[FragEnv],
+      actual.toGLSL[FragEnv],
       expected
     )
   }
@@ -343,8 +343,8 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("if (no else) statements") {
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-    inline def fragment: Shader[FragEnv, Unit] =
-      Shader { _ =>
+    inline def fragment =
+      Shader[FragEnv] { _ =>
         var x: Int = 1
         if x <= 10 then x = 15
         x
@@ -389,8 +389,8 @@ class ShaderASTTests extends munit.FunSuite {
   test("switch statements / pattern matching") {
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-    inline def fragment: Shader[FragEnv, Unit] =
-      Shader { _ =>
+    inline def fragment =
+      Shader[FragEnv] { _ =>
         val flag: Int = 2
 
         var res: Int = -1
@@ -629,11 +629,11 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Can define a UBO struct") {
 
-    case class MyCustomData(TIME: Float, val VIEWPORT_SIZE: vec2)
+    case class MyCustomData(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
 
-    inline def fragment: Shader[MyCustomData, vec4] =
-      Shader { env =>
-        vec4(env.TIME, 0.0, 0.0f, 1.0f)
+    inline def fragment =
+      Shader[MyCustomData, vec4] { env =>
+        vec4( /*env.UV*/ 1.0f, 0.0f, env.TIME, 1.0f)
       }
 
     val actual =
@@ -646,10 +646,10 @@ class ShaderASTTests extends munit.FunSuite {
       actual,
       s"""
       |layout (std140) uniform MyCustomData {
-      |  highp float TIME;
+      |  float TIME;
       |  vec2 VIEWPORT_SIZE;
       |};
-      |COLOR=vec4(TIME,0.0,1.0);
+      |COLOR=vec4(UV,TIME,1.0);
       |""".stripMargin.trim
     )
 

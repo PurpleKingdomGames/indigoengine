@@ -7,8 +7,8 @@ object ShaderPrograms:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class FragEnv(UV: vec2, var COLOR: vec4)
 
-  inline def fragment1: Shader[FragEnv, vec4] =
-    Shader { env =>
+  inline def fragment1 =
+    Shader[FragEnv, vec4] { env =>
       val zero  = 0.0f
       val alpha = 1.0f
       vec4(env.UV, zero, alpha)
@@ -16,8 +16,8 @@ object ShaderPrograms:
 
   val frag1: String = fragment2.toGLSL
 
-  inline def fragment2: Shader[FragEnv, Unit] =
-    Shader { env =>
+  inline def fragment2 =
+    Shader[FragEnv] { env =>
       def circleSdf(p: vec2, r: Float): Float =
         length(p) - r
 

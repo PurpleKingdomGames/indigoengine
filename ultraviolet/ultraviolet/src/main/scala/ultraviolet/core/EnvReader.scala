@@ -9,22 +9,41 @@ import scala.deriving.Mirror
 
 object EnvReader:
 
+  inline private def summonPrecision[T <: Tuple]: List[String] =
+    inline erasedValue[T] match
+      case _: EmptyTuple =>
+        Nil
+
+      case _: (t *: ts) =>
+        FindPrecision.findPrecision[t].getOrElse("") :: summonPrecision[ts]
+
   inline private def summonLabels[T <: Tuple]: List[String] =
     inline erasedValue[T] match
-      case _: EmptyTuple => Nil
-      case _: (t *: ts)  => summonInline[ValueOf[t]].value.asInstanceOf[String] :: summonLabels[ts]
+      case _: EmptyTuple =>
+        Nil
+
+      case _: (t *: ts) =>
+        summonInline[ValueOf[t]].value.asInstanceOf[String] :: summonLabels[ts]
 
   inline private def summonTypeName[T <: Tuple]: List[ShaderTypeOf[_]] =
     inline erasedValue[T] match
-      case _: EmptyTuple => Nil
-      case _: (t *: ts)  => summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
+      case _: EmptyTuple =>
+        Nil
 
+      case _: (t *: ts) =>
+        summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
+
+  // TODO: Write a macro to disect Env 'T' and call this function foreach part
   inline def readUBO[T](using m: Mirror.ProductOf[T]): UBODef =
-    val labels  = summonLabels[m.MirroredElemLabels]
-    val typeOfs = summonTypeName[m.MirroredElemTypes]
+    val precisions = summonPrecision[m.MirroredElemTypes]
+    val labels     = summonLabels[m.MirroredElemLabels]
+    val typeOfs    = summonTypeName[m.MirroredElemTypes]
+
     UBODef(
       constValue[m.MirroredLabel],
-      labels.zip(typeOfs.map(_.typeOf)).map(p => UBOField(p._1, p._2))
+      precisions
+        .zip(labels.zip(typeOfs.map(_.typeOf)))
+        .map(p => UBOField(p._1, p._2._1, p._2._2))
     )
 
   trait ShaderTypeOf[A]:
@@ -48,4 +67,4 @@ object EnvReader:
       def typeOf: String = "vec4"
 
   final case class UBODef(name: String, fields: List[UBOField])
-  final case class UBOField(name: String, typeOf: String)
+  final case class UBOField(precision: String, name: String, typeOf: String)

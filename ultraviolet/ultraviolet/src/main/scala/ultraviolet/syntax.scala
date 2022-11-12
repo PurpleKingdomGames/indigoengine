@@ -22,6 +22,12 @@ object syntax extends ShaderDSLOps:
     def *(v: vec4): vec4 = vec4(f * v.x, f * v.y, f * v.z, f * v.w)
     def /(v: vec4): vec4 = vec4(f / v.x, f / v.y, f / v.z, f / v.w)
 
+  type UBO[A] = A
+
+  type highp[A]   = A
+  type mediump[A] = A
+  type lowp[A]    = A
+
   type RawGLSL = ultraviolet.core.RawGLSL
   val RawGLSL: ultraviolet.core.RawGLSL.type = ultraviolet.core.RawGLSL
 

@@ -13,9 +13,11 @@ object ProceduralShader:
   }
 
   extension (p: ProceduralShader)
-    inline def render[In](using Mirror.ProductOf[In]): String =
+    inline def toGLSL[In](using Mirror.ProductOf[In]): String =
       // println(EnvReader.readUBO[In]) // TODO: Use this.
+      p.render
 
+    inline def render: String =
       import ShaderAST.*
       def envName(ast: ShaderAST): Option[String] =
         ast

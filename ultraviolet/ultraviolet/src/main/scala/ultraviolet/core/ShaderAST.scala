@@ -354,7 +354,7 @@ object ShaderAST:
         case DataTypes.swizzle(v, _, _)   => v.typeIdent
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def render[In](using Mirror.ProductOf[In]): String =
+    def render: String =
       def rf(f: Float): String =
         val s = f.toString
         if s.contains(".") then s else s + ".0"

@@ -12,7 +12,9 @@ import scala.deriving.Mirror
   */
 opaque type Shader[In, Out] = In => Out
 object Shader:
+  inline def apply[In](f: In => Unit): Shader[In, Unit]    = f
   inline def apply[In, Out](f: In => Out): Shader[In, Out] = f
+  inline def apply(body: => Any): Shader[Unit, Unit]       = (_: Unit) => body
   // inline def apply[In, Out](value: Out): Shader[In, Out]    = _ => value
   // inline def pure[In, Out](value: Out): Shader[In, Out]     = _ => value
   // inline def fixed[In, Out](value: Out): Shader[In, Out]    = _ => value
@@ -21,9 +23,13 @@ object Shader:
   // inline def join[In, B](ctx: Shader[In, Shader[In, B]]): Shader[In, B] =
   //   (env: In) => ctx(env).run(env)
 
+  extension (inline ctx: Shader[Unit, Unit])
+    inline def toGLSL: String =
+      ShaderMacros.toAST(ctx).render
+
   extension [In, Out](inline ctx: Shader[In, Out])
     inline def toGLSL(using Mirror.ProductOf[In]): String =
-      ShaderMacros.toAST(ctx).render[In]
+      ShaderMacros.toAST(ctx).toGLSL[In]
 //   inline def apply(env: In): Out                                                   = run(env)
 //   inline def map[B](f: Out => B): Shader[In, B]                                    = (e: In) => f(ctx(e))
 //   inline def ap[B](f: Shader[In, Out => B]): Shader[In, B]                        = (e: In) => map(f.run(e))(e)
