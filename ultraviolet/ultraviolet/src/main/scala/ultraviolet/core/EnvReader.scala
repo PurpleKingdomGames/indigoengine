@@ -2,6 +2,7 @@ package ultraviolet.core
 
 import ultraviolet.syntax.*
 
+import scala.compiletime.constValue
 import scala.compiletime.erasedValue
 import scala.compiletime.summonInline
 import scala.deriving.Mirror
@@ -18,10 +19,13 @@ object EnvReader:
       case _: EmptyTuple => Nil
       case _: (t *: ts)  => summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
 
-  inline def readUBO[T](using m: Mirror.ProductOf[T]): List[UBOField] =
+  inline def readUBO[T](using m: Mirror.ProductOf[T]): UBODef =
     val labels  = summonLabels[m.MirroredElemLabels]
     val typeOfs = summonTypeName[m.MirroredElemTypes]
-    labels.zip(typeOfs.map(_.typeOf)).map(p => UBOField(p._1, p._2))
+    UBODef(
+      constValue[m.MirroredLabel],
+      labels.zip(typeOfs.map(_.typeOf)).map(p => UBOField(p._1, p._2))
+    )
 
   trait ShaderTypeOf[A]:
     def typeOf: String
@@ -43,4 +47,5 @@ object EnvReader:
     given ShaderTypeOf[vec4] with
       def typeOf: String = "vec4"
 
+  final case class UBODef(name: String, fields: List[UBOField])
   final case class UBOField(name: String, typeOf: String)

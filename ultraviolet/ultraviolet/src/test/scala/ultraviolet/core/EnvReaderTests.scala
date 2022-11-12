@@ -4,7 +4,7 @@ import ultraviolet.syntax.*
 
 class EnvReaderTests extends munit.FunSuite {
 
-  test("Read UBO (case class)") {
+  test("Create a UBO definition from a case class)") {
 
     case class FragEnv(
         alpha: Float,
@@ -18,12 +18,15 @@ class EnvReaderTests extends munit.FunSuite {
       EnvReader.readUBO[FragEnv]
 
     val expected =
-      List(
-        EnvReader.UBOField("alpha", "float"),
-        EnvReader.UBOField("count", "int"),
-        EnvReader.UBOField("UV", "vec2"),
-        EnvReader.UBOField("pos", "vec3"),
-        EnvReader.UBOField("COLOR", "vec4")
+      EnvReader.UBODef(
+        "FragEnv",
+        List(
+          EnvReader.UBOField("alpha", "float"),
+          EnvReader.UBOField("count", "int"),
+          EnvReader.UBOField("UV", "vec2"),
+          EnvReader.UBOField("pos", "vec3"),
+          EnvReader.UBOField("COLOR", "vec4")
+        )
       )
 
     assertEquals(actual, expected)
