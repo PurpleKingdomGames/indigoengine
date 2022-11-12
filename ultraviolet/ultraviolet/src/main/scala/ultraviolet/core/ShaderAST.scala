@@ -543,7 +543,7 @@ object ShaderAST:
           case Annotated(label, value) =>
             label.render match
               case "in" | "out" =>
-                s"""$label ${value.render}"""
+                s"""${label.render} ${value.render}"""
 
               case _ =>
                 s"""${value.render}"""
