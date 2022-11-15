@@ -33,7 +33,6 @@ object EnvReader:
       case _: (t *: ts) =>
         summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
 
-  // TODO: Write a macro to disect Env 'T' and call this function foreach part
   inline def readUBO[T](using m: Mirror.ProductOf[T]): UBODef =
     val precisions = summonPrecision[m.MirroredElemTypes]
     val labels     = summonLabels[m.MirroredElemLabels]
@@ -65,16 +64,3 @@ object EnvReader:
 
     given ShaderTypeOf[vec4] with
       def typeOf: String = "vec4"
-
-  final case class UBODef(name: String, fields: List[UBOField]):
-    def render: String =
-      s"""
-      |layout (std140) uniform $name {
-      |${fields.map(f => "  " + f.render).mkString("\n")}
-      |};
-      |""".stripMargin.trim
-
-  final case class UBOField(precision: Option[String], typeOf: String, name: String):
-    def render: String =
-      val p = precision.map(_ + " ").getOrElse("")
-      s"$p$typeOf $name;"
