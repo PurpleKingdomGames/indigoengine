@@ -37,9 +37,9 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
-    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,0.0,1.0);"))
+    assert(clue(actual) == clue("vec4(1.0,1.0,0.0,1.0);"))
   }
 
   test("Inlined external val (as def)") {
@@ -52,9 +52,9 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
-    assert(clue(actual.toGLSL[FragEnv]) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
+    assert(clue(actual) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
   }
 
   test("Inlined external function") {
@@ -102,10 +102,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       s"""
       |vec2 xy(in float val0,in float val1){return vec2(1.0,0.25);}
       |vec2 def0(in float blue,in float alpha){return vec2(blue,alpha);}
@@ -121,10 +121,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       s"""
       |vec4(UV,0.0,1.0);
       |""".stripMargin.trim
@@ -138,10 +138,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual1 =
-      ShaderMacros.toAST(fragment1)
+      fragment1.toGLSL
 
     assertEquals(
-      actual1.toGLSL[FragEnv],
+      actual1,
       s"""
       |vec4(1.0,2.0,3.0,4.0).wzyx;
       |""".stripMargin.trim
@@ -153,10 +153,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual2 =
-      ShaderMacros.toAST(fragment2)
+      fragment2.toGLSL
 
     assertEquals(
-      actual2.toGLSL[FragEnv],
+      actual2,
       s"""
       |vec3(1.0,2.0,3.0).xxy;
       |""".stripMargin.trim
@@ -169,10 +169,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual3 =
-      ShaderMacros.toAST(fragment3)
+      fragment3.toGLSL
 
     assertEquals(
-      actual3.toGLSL[FragEnv],
+      actual3,
       s"""
       |vec3 fill=vec3(1.0,2.0,3.0);fill.xyz;
       |""".stripMargin.trim
@@ -190,10 +190,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual1 =
-      ShaderMacros.toAST(circleShader)
+      circleShader.toGLSL
 
     assertEquals(
-      actual1.toGLSL[FragEnv],
+      actual1,
       s"""
       |float circleSdf(in vec2 val0,in float val1){return (length(val0))-(3.0);}
       |circleSdf(vec2(1.0,2.0),3.0);
@@ -209,10 +209,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual2 =
-      ShaderMacros.toAST(circleShader2)
+      circleShader2.toGLSL
 
     assertEquals(
-      actual2.toGLSL[FragEnv],
+      actual2,
       s"""
       |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
       |circleSdf(UV,3.0);
@@ -233,10 +233,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(shader)
+      shader.toGLSL
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       s"""
       |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |calculateColour(UV,3.0);
@@ -262,10 +262,10 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       s"""
       |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
       |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
@@ -313,7 +313,7 @@ class ShaderASTTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment)
+      fragment.toGLSL
 
     val expected =
       s"""
@@ -323,7 +323,7 @@ class ShaderASTTests extends munit.FunSuite {
       |""".stripMargin.trim
 
     assertEquals(
-      actual.toGLSL[FragEnv],
+      actual,
       expected
     )
   }
@@ -616,41 +616,16 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
-  // TODO: Bring back...?
-  // test("UBO structs as case class intersections") {
-  //   case class Env1(UV: vec2)
-  //   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  //   case class Env2(var COLOR: vec4)
-
-  //   inline def fragment: Shader[Env1 & Env2, Unit] =
-  //     Shader { env =>
-  //       env.COLOR = vec4(env.UV, 0.0f, 1.0f)
-  //     }
-
-  //   val actual =
-  //     fragment.toGLSL
-
-  //   // DebugAST.toAST(fragment)
-  //   // println(actual)
-
-  //   assertEquals(
-  //     actual,
-  //     s"""
-  //     |COLOR=vec4(UV,0.0,1.0);
-  //     |""".stripMargin.trim
-  //   )
-  // }
-
   test("Can define a UBO struct") {
 
     case class MyCustomData(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
 
     inline def fragment =
-      Shader[MyCustomData, vec4](
+      Shader[MyCustomData & FragEnv, Unit](
         GLSLHeader.Version300ES,
         GLSLHeader.PrecisionHighPFloat
       ) { env =>
-        vec4( /*env.UV*/ 1.0f, 0.0f, env.TIME, 1.0f)
+        env.COLOR = vec4(env.UV, env.TIME, 1.0f)
       }
 
     val actual =
