@@ -1,8 +1,10 @@
 package ultraviolet
 
+import ultraviolet.core.EnvReader
 import ultraviolet.core.ShaderDSLOps
 
 import scala.annotation.StaticAnnotation
+import scala.deriving.Mirror
 
 object syntax extends ShaderDSLOps:
 
@@ -40,5 +42,7 @@ object syntax extends ShaderDSLOps:
 
   def raw(body: String): RawGLSL =
     RawGLSL(body)
+
+  inline def ubo[A](using Mirror.ProductOf[A]) = EnvReader.readUBO[A]
 
 end syntax

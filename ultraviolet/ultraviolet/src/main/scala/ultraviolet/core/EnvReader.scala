@@ -11,37 +11,27 @@ object EnvReader:
 
   inline private def summonPrecision[T <: Tuple]: List[Option[String]] =
     inline erasedValue[T] match
-      case _: EmptyTuple =>
-        Nil
-
-      case _: (t *: ts) =>
-        FindPrecision.findPrecision[t] :: summonPrecision[ts]
+      case _: EmptyTuple => Nil
+      case _: (t *: ts)  => FindPrecision.findPrecision[t] :: summonPrecision[ts]
 
   inline private def summonLabels[T <: Tuple]: List[String] =
     inline erasedValue[T] match
-      case _: EmptyTuple =>
-        Nil
-
-      case _: (t *: ts) =>
-        summonInline[ValueOf[t]].value.asInstanceOf[String] :: summonLabels[ts]
+      case _: EmptyTuple => Nil
+      case _: (t *: ts)  => summonInline[ValueOf[t]].value.asInstanceOf[String] :: summonLabels[ts]
 
   inline private def summonTypeName[T <: Tuple]: List[ShaderTypeOf[_]] =
     inline erasedValue[T] match
-      case _: EmptyTuple =>
-        Nil
-
-      case _: (t *: ts) =>
-        summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
+      case _: EmptyTuple => Nil
+      case _: (t *: ts)  => summonInline[ShaderTypeOf[t]] :: summonTypeName[ts]
 
   inline def readUBO[T](using m: Mirror.ProductOf[T]): UBODef =
-    val precisions = summonPrecision[m.MirroredElemTypes]
-    val labels     = summonLabels[m.MirroredElemLabels]
-    val typeOfs    = summonTypeName[m.MirroredElemTypes]
-
     UBODef(
       constValue[m.MirroredLabel],
-      precisions
-        .zip(labels.zip(typeOfs.map(_.typeOf)))
+      summonPrecision[m.MirroredElemTypes]
+        .zip(
+          summonLabels[m.MirroredElemLabels]
+            .zip(summonTypeName[m.MirroredElemTypes].map(_.typeOf))
+        )
         .map(p => UBOField(p._1, p._2._2, p._2._1))
     )
 

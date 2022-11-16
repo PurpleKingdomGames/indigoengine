@@ -618,13 +618,16 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Can define a UBO struct") {
 
-    case class MyCustomData(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
+    case class UBO1(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
+    case class UBO2(customColor: vec4, pos: lowp[vec3])
 
     inline def fragment =
-      Shader[MyCustomData & FragEnv, Unit](
+      Shader[UBO1 & UBO2 & FragEnv, Unit](
         GLSLHeader.Version300ES,
         GLSLHeader.PrecisionHighPFloat
       ) { env =>
+        ubo[UBO1]
+        ubo[UBO2]
         env.COLOR = vec4(env.UV, env.TIME, 1.0f)
       }
 
@@ -639,9 +642,13 @@ class ShaderASTTests extends munit.FunSuite {
       s"""
       |#version 300 es
       |precision highp float;
-      |layout (std140) uniform MyCustomData {
-      |  float TIME;
+      |layout (std140) uniform UBO1 {
+      |  highp float TIME;
       |  vec2 VIEWPORT_SIZE;
+      |};
+      |layout (std140) uniform UBO2 {
+      |  vec4 customColor;
+      |  lowp vec3 pos;
       |};
       |COLOR=vec4(UV,TIME,1.0);
       |""".stripMargin.trim
