@@ -278,9 +278,6 @@ object ShaderMacros:
         case Apply(term, _) =>
           walkUBOTerm(term)
 
-        // case Block(List(statement), _) =>
-        //   walkUBOStatement(statement)
-
         case Inlined(_, _, term) =>
           walkUBOTerm(term)
 
