@@ -21,11 +21,13 @@ object shadertoy:
   var fragColor: vec4    = null // output variable // Unoffical, from the main function definition
 
   given ShaderTemplate with
-    def render(headers: String, functions: List[String], body: String): String =
+    def print(headers: List[String], functions: List[String], body: List[String]): String =
+      val (main, last) = body.splitAt(body.length - 1)
       s"""
-      |$headers
+      |${headers.mkString("\n")}
       |${functions.mkString("\n")}
       |void mainImage(out vec4 fragColor, in vec2 fragCoord){
-      |  $body
+      |${main.map(b => "  " + b).mkString("\n")}
+      |  fragColor=${last.mkString}
       |}
       |""".stripMargin.trim

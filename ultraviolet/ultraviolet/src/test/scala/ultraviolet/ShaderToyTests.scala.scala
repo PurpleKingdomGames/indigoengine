@@ -9,8 +9,7 @@ class ShaderToyTests extends munit.FunSuite {
     import ultraviolet.predef.shadertoy.given
 
     inline def fragment =
-      Shader {
-
+      Shader[Unit, vec4] { _ =>
         // Normalized pixel coordinates (from 0 to 1)
         val uv: vec2 = fragCoord / iResolution.xy
 
@@ -18,19 +17,21 @@ class ShaderToyTests extends munit.FunSuite {
         val col: vec3 = 0.5f + 0.5f * cos(iTime + uv.xyx + vec3(0.0f, 2.0f, 4.0f))
 
         // Output to screen
-        fragColor = vec4(col, 1.0f)
+        vec4(col, 1.0f)
       }
 
     val actual =
       fragment.toGLSL
 
     // DebugAST.toAST(fragment)
-    // println(actual)
+    println(actual)
 
     val expected: String =
       """
       |void mainImage(out vec4 fragColor, in vec2 fragCoord){
-      |  vec2 uv=(fragCoord)/(iResolution.xy);vec3 col=(0.5)+((0.5)*(cos(((iTime)+(uv.xyx))+(vec3(0.0,2.0,4.0)))));fragColor=vec4(col,1.0);
+      |  vec2 uv=(fragCoord)/(iResolution.xy);
+      |  vec3 col=(0.5)+((0.5)*(cos(((iTime)+(uv.xyx))+(vec3(0.0,2.0,4.0)))));
+      |  fragColor=vec4(col,1.0);
       |}
       |""".stripMargin.trim
 

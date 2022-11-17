@@ -454,7 +454,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             _,
             _
           ) =>
-        ShaderAST.RawLiteral(uboUtils.extractUBO(tt).render + "\n")
+        ShaderAST.RawLiteral(uboUtils.extractUBO(tt).render)
 
       case Inlined(Some(tree: Tree), _, _) =>
         walkTree(tree)
