@@ -640,6 +640,8 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Can define a UBO struct") {
 
+    import ultraviolet.predef.glsl300.*
+
     case class UBO1(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
     case class UBO2(customColor: vec4, pos: lowp[vec3])
 
@@ -685,12 +687,12 @@ class ShaderASTTests extends munit.FunSuite {
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def fragment =
       Shader {
-        @attribute var a: Float = 0.0f // Scala doesn't allow for primitives.
-        @const var b: vec2      = null
-        @in var c: vec3         = null
-        @out var d: vec4        = null
-        @uniform var e: Float   = 0.0f
-        @varying var f: Float   = 0.0f
+        // @attribute var a: Float = 0.0f // Scala doesn't allow for primitives. // WebGL 1.0 only
+        @const var b: vec2 = null
+        // @in var c: vec3         = null // WebGL 2.0 only
+        // @out var d: vec4        = null // WebGL 2.0 only
+        @uniform var e: Float = 0.0f
+        // @varying var f: Float   = 0.0f // WebGL 1.0 only
       }
 
     val actual =
@@ -702,7 +704,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |attribute float a;const vec2 b;in vec3 c;out vec4 d;uniform float e;varying float f;
+      |const vec2 b;uniform float e;
       |""".stripMargin.trim
     )
 
