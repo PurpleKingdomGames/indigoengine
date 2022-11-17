@@ -34,3 +34,28 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def fract(genType: vec2): vec2   = genType
   def floor(genType: vec2): vec2   = genType
   def dot(a: vec2, b: vec2): Float = 0.0f
+
+  def sin(genType: Float): Float = 0.0f
+  def sin(genType: vec2): vec2   = vec2(0.0f)
+  def sin(genType: vec3): vec3   = vec3(0.0f)
+  def sin(genType: vec4): vec4   = vec4(0.0f)
+
+  def cos(genType: Float): Float = 0.0f
+  def cos(genType: vec2): vec2   = vec2(0.0f)
+  def cos(genType: vec3): vec3   = vec3(0.0f)
+  def cos(genType: vec4): vec4   = vec4(0.0f)
+
+  def tan(genType: Float): Float = 0.0f
+  def tan(genType: vec2): vec2   = vec2(0.0f)
+  def tan(genType: vec3): vec3   = vec3(0.0f)
+  def tan(genType: vec4): vec4   = vec4(0.0f)
+
+  def atan(genType: Float): Float = 0.0f
+  def atan(genType: vec2): vec2   = vec2(0.0f)
+  def atan(genType: vec3): vec3   = vec3(0.0f)
+  def atan(genType: vec4): vec4   = vec4(0.0f)
+
+  def atan2(genType: Float): Float = 0.0f
+  def atan2(genType: vec2): vec2   = vec2(0.0f)
+  def atan2(genType: vec3): vec3   = vec3(0.0f)
+  def atan2(genType: vec4): vec4   = vec4(0.0f)
