@@ -7,6 +7,8 @@ class WebGL2Tests extends munit.FunSuite {
 
   test("Can generate the simplest valid WebGL 2.0 fragment shader") {
 
+    import ultraviolet.predef.glsl300.*
+
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
     inline def fragment =
       Shader(GLSLHeader.Version300ES, GLSLHeader.PrecisionHighPFloat) {
