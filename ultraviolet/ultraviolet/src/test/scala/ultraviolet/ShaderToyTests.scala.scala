@@ -5,10 +5,11 @@ import ultraviolet.syntax.*
 class ShaderToyTests extends munit.FunSuite {
 
   test("Able to fully define the default shadertoy example") {
+    import ultraviolet.predef.shadertoy.*
+    import ultraviolet.predef.shadertoy.given
 
     inline def fragment =
       Shader {
-        import ultraviolet.predef.shadertoy.*
 
         // Normalized pixel coordinates (from 0 to 1)
         val uv: vec2 = fragCoord / iResolution.xy

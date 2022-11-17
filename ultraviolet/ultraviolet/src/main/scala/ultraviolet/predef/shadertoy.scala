@@ -1,5 +1,6 @@
 package ultraviolet.predef
 
+import ultraviolet.datatypes.ShaderTemplate
 import ultraviolet.syntax.*
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -18,3 +19,13 @@ object shadertoy:
   def iSampleRate: Float = 0.0  // sound sample rate (i.e. = null 44100)
   def fragCoord: vec2    = null // UV coordinates // Unoffical, from the main function definition
   var fragColor: vec4    = null // output variable // Unoffical, from the main function definition
+
+  given ShaderTemplate with
+    def render(headers: String, functions: List[String], body: String): String =
+      s"""
+      |$headers
+      |${functions.mkString("\n")}
+      |void mainImage(out vec4 fragColor, in vec2 fragCoord){
+      |  $body
+      |}
+      |""".stripMargin.trim

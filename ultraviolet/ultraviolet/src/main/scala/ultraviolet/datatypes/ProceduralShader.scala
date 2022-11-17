@@ -13,7 +13,7 @@ object ProceduralShader:
   }
 
   extension (p: ProceduralShader)
-    inline def render: String =
+    inline def render(using template: ShaderTemplate): String =
       import ShaderAST.*
       def envName(ast: ShaderAST): Option[String] =
         ast
@@ -26,18 +26,16 @@ object ProceduralShader:
             case _                       => None
           }
 
-      val renderedHeaders = List(p.main.renderHeaders)
-      val renderedDefs    = p.defs.map(_.render)
-      val renderedBody    = List(p.main.render)
-
-      val res = (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
-
-      val shaderBody =
+      def stripOutEnvName(content: String): String =
         envName(p.main) match
-          case None       => res
-          case Some(name) => res.replace(name + ".", "").replace(name, "")
+          case None       => content
+          case Some(name) => content.replace(name + ".", "").replace(name, "")
 
-      shaderBody
+      val renderedHeaders = stripOutEnvName(p.main.renderHeaders)
+      val renderedDefs    = p.defs.map(_.render).map(stripOutEnvName)
+      val renderedBody    = stripOutEnvName(p.main.render)
+
+      template.render(renderedHeaders, renderedDefs, renderedBody)
 
     def exists(q: ShaderAST => Boolean): Boolean =
       p.main.exists(q) || p.defs.exists(_.exists(q))
