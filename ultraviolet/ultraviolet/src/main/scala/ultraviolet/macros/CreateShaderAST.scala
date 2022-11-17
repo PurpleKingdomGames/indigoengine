@@ -335,6 +335,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             ShaderAST.Block(xs.map(tt => walkTerm(tt)))
 
+      // Infix operations
+
       case Apply(Select(term, op), xs) =>
         op match
           case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" =>
@@ -345,6 +347,19 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
           case _ =>
             throw new Exception("Shaders do not support infix operator: " + op)
+
+      case Apply(Apply(Ident(op), List(l)), List(r)) =>
+        op match
+          case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" =>
+            val lhs = walkTerm(l)
+            val rhs = walkTerm(r)
+            val rt  = findReturnType(lhs)
+            ShaderAST.Infix(op, lhs, rhs, rt)
+
+          case _ =>
+            throw new Exception("Shaders do not support infix operator: " + op)
+
+      //
 
       case Apply(Ident(name), terms) =>
         ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt)), Nil, None)
