@@ -9,22 +9,24 @@ class ShaderToyTests extends munit.FunSuite {
     import ultraviolet.predef.shadertoy.given
 
     inline def fragment =
-      Shader[Unit, vec4] { _ =>
+      Shader[ShaderToyEnv, vec4] { env =>
         // Normalized pixel coordinates (from 0 to 1)
-        val uv: vec2 = fragCoord / iResolution.xy
+        val uv: vec2 = env.fragCoord / env.iResolution.xy
 
         // Time varying pixel color
-        val col: vec3 = 0.5f + 0.5f * cos(iTime + uv.xyx + vec3(0.0f, 2.0f, 4.0f))
+        val col: vec3 = 0.5f + 0.5f * cos(env.iTime + uv.xyx + vec3(0.0f, 2.0f, 4.0f))
 
         // Output to screen
         vec4(col, 1.0f)
       }
 
+    assertEquals(fragment.run(ShaderToyEnv.Default), vec4(vec3(0.5f), 1.0f))
+
     val actual =
       fragment.toGLSL
 
     // DebugAST.toAST(fragment)
-    println(actual)
+    // println(actual)
 
     val expected: String =
       """

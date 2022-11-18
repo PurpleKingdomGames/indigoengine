@@ -3,22 +3,41 @@ package ultraviolet.predef
 import ultraviolet.datatypes.ShaderTemplate
 import ultraviolet.syntax.*
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 object shadertoy:
 
-  def iResolution: vec3 = null // viewport resolution (in pixels)
-  def iTime: Float      = 0.0  // shader playback time (in seconds)
-  def iTimeDelta: Float = 0.0  // render time (in seconds)
-  def iFrameRate: Float = 0.0  // shader frame rate
-  def iFrame: Int       = 0    // shader playback frame
-  // def iChannelTime[4]: Float // channel playback time (in seconds)
-  // def iChannelResolution[4]: vec3 // channel resolution (in pixels)
-  def iMouse: vec4 = null // mouse pixel coords. xy: current (if MLB down) = null zw: click
-  // def iChannel0..3: samplerXX // input channel. XX = 2D/Cube
-  def iDate: vec4        = null // (year = null month = null day = null time in seconds)
-  def iSampleRate: Float = 0.0  // sound sample rate (i.e. = null 44100)
-  def fragCoord: vec2    = null // UV coordinates // Unoffical, from the main function definition
-  var fragColor: vec4    = null // output variable // Unoffical, from the main function definition
+  final case class ShaderToyEnv(
+      iResolution: vec3, // viewport resolution (in pixels)
+      iTime: Float,      // shader playback time (in seconds)
+      iTimeDelta: Float, // render time (in seconds)
+      iFrameRate: Float, // shader frame rate
+      iFrame: Int,       // shader playback frame
+      // iChannelTime[4]: Float, // channel playback time (in seconds)
+      // iChannelResolution[4]: vec3, // channel resolution (in pixels)
+      iMouse: vec4, // mouse pixel coords. xy: current (if MLB down) = null zw: click
+      // iChannel0..3: samplerXX, // input channel. XX = 2D/Cube
+      iDate: vec4,        // (year = null month = null day = null time in seconds)
+      iSampleRate: Float, // sound sample rate (i.e. = null 44100)
+      fragCoord: vec2,    // UV coordinates // Unoffical, from the main function definition
+      var fragColor: vec4 // output variable // Unoffical, from the main function definition
+  )
+  object ShaderToyEnv:
+    def Default: ShaderToyEnv =
+      ShaderToyEnv(
+        iResolution = vec3(640.0f, 480.0f, 0.0f),
+        iTime = 0.0f,
+        iTimeDelta = 0.0167,
+        iFrameRate = 60,
+        iFrame = 0,
+        // iChannelTime[4]: Float, // channel playback time (in seconds)
+        // iChannelResolution[4]: vec3, // channel resolution (in pixels)
+        iMouse = vec4(0.0f),
+        // iChannel0..3: samplerXX, // input channel. XX = 2D/Cube
+        iDate = vec4(0.0f),
+        iSampleRate = 44100.0f,
+        fragCoord = vec2(0.0),
+        fragColor = vec4(0.0f)
+      )
 
   given ShaderTemplate with
     def print(headers: List[String], functions: List[String], body: List[String]): String =
