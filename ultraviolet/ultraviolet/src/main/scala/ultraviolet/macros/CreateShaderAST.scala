@@ -351,6 +351,21 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Infix operations
 
+      case Apply(
+            Select(Ident(id), "update"),
+            List(
+              Ident(index),
+              rhs
+            )
+          ) =>
+        // Update mutable collections - array's in our case.
+        ShaderAST.Infix(
+          "=",
+          ShaderAST.DataTypes.ident(s"$id[$index]"),
+          walkTerm(rhs, envVarName),
+          None
+        )
+
       case Apply(Select(term, op), xs) =>
         op match
           case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" =>

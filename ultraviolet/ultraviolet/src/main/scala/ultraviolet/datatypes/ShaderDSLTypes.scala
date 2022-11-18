@@ -1,5 +1,7 @@
 package ultraviolet.datatypes
 
+import scala.reflect.ClassTag
+
 trait ShaderDSLTypes:
 
   final case class vec2(x: Float, y: Float):
@@ -72,5 +74,12 @@ trait ShaderDSLTypes:
   case object sampler2D
   case object samplerCube
 
-  final case class array[T, L <: Singleton](private val size: L)(using convert: L => Int):
-    def length: Int = convert(size)
+  final case class array[T, L <: Singleton](private val size: L, private val arr: Array[T])(using convert: L => Int):
+    def apply(index: Int): T = arr(index)
+    def length: Int          = convert(size)
+    def update(i: Int, value: T): Unit =
+      arr(i) = value
+
+  object array:
+    def apply[T: ClassTag, L <: Singleton](size: L)(using convert: L => Int): array[T, L] =
+      array[T, L](size, new Array[T](convert(size)))

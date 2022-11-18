@@ -167,9 +167,13 @@ object ShaderPrinter:
             List(s"""$tOf $id=${render(value).mkString}""")
 
       case Annotated(label, value) =>
+        val lbl = render(label).mkString
         value match
-          case Val(id, value, typeOf) =>
-            List(s"""${render(label).mkString} ${render(Val(id, Empty(), typeOf)).mkString}""")
+          case v @ Val(id, value, typeOf) if lbl == "const" =>
+            List(s"""$lbl ${render(v).mkString}""")
+
+          case v @ Val(id, value, typeOf) =>
+            List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
 
           case _ =>
             Nil

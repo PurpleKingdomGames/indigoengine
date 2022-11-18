@@ -886,6 +886,77 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  test("arrays - more complicated example") {
+    import ultraviolet.predef.glsl300.*
+
+    case class Env(
+        VERTICES: array[vec2, 16],
+        COUNT: Float,
+        SIZE: vec2
+    )
+
+    @SuppressWarnings(
+      Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+    )
+    inline def fragment =
+      Shader[Env, Unit] { env =>
+        @const val MAX_VERTICES: 16 = 16
+
+        def toUvSpace(count: Int, v: array[vec2, MAX_VERTICES.type]): array[vec2, MAX_VERTICES.type] =
+          val polygon: array[vec2, MAX_VERTICES.type] = null
+
+          var i = 0
+          while i < count do
+            polygon(i) = v(i) / env.SIZE;
+            i += 1
+
+          polygon
+
+        val iCount: Int                             = env.COUNT.toInt;
+        val polygon: array[vec2, MAX_VERTICES.type] = toUvSpace(iCount, env.VERTICES);
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |const int MAX_VERTICES=16;
+      |vec2[MAX_VERTICES] toUvSpace(in int count,in vec2[MAX_VERTICES] v){
+      |  vec2[MAX_VERTICES] polygon;
+      |  int i=0;
+      |  while(i<count){
+      |    polygon[i]=(v(i)/SIZE);
+      |    i=i+1;
+      |  }
+      |  return polygon;
+      |}
+      |int iCount=int(COUNT);
+      |vec2[MAX_VERTICES] polygon=toUvSpace(iCount,VERTICES);
+      |""".stripMargin.trim
+    )
+    /*
+const int MAX_VERTICES = 16;
+uniform vec2[MAX_VERTICES] VERTICES;
+
+vec2[MAX_VERTICES] toUvSpace(int count, vec2[MAX_VERTICES] v) {
+  vec2[MAX_VERTICES] polygon;
+
+  for(int i = 0; i < count; i++) {
+    polygon[i] = v[i] / SIZE;
+  }
+
+  return polygon;
+}
+
+vec2[MAX_VERTICES] polygon = toUvSpace(iCount, VERTICES);
+     */
+  }
+
 }
 
 object Importable:
