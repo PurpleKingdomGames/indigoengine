@@ -773,8 +773,6 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Annotated variables render correctly") {
 
-    import scala.language.implicitConversions.*
-
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def fragment =
       Shader {
@@ -797,6 +795,45 @@ class ShaderASTTests extends munit.FunSuite {
       s"""
       |const vec2 b;
       |uniform float e;
+      |""".stripMargin.trim
+    )
+
+  }
+
+  test("Supports samplers") {
+
+    import ultraviolet.predef.glsl300.*
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    case class Env(var COLOR: vec4)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    inline def fragment =
+      Shader[Env, Unit] { env =>
+        @in val v_texcoord: vec2   = null
+        @in val v_normal: vec3     = null
+        @uniform val u_texture2d   = sampler2D
+        @uniform val u_textureCube = samplerCube
+
+        val c: vec4 = texture2D(u_texture2d, v_texcoord);
+        env.COLOR = textureCube(u_textureCube, normalize(v_normal)) * c
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |in vec2 v_texcoord;
+      |in vec3 v_normal;
+      |uniform sampler2D u_texture2d;
+      |uniform samplerCube u_textureCube;
+      |vec4 c=texture2D(u_texture2d,v_texcoord);
+      |COLOR=(textureCube(u_textureCube,normalize(v_normal)))*(c);
       |""".stripMargin.trim
     )
 
