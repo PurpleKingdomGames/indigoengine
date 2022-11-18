@@ -19,13 +19,18 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
     typ.tpe.classSymbol
       .map(_.name)
       .map {
-        case "Float" => "float"
-        case "Int"   => "int"
-        case n       => n
+        case "Float"        => "float"
+        case "Int"          => "int"
+        case "vec2"         => "vec2"
+        case "vec3"         => "vec3"
+        case "vec4"         => "vec4"
+        case "sampler2D$"   => "sampler2D"
+        case "samplerCube$" => "samplerCube"
+        case n              => n
       }
       .filter {
-        case "float" | "int" | "vec2" | "vec3" | "vec4" => true
-        case _                                          => false
+        case "float" | "int" | "vec2" | "vec3" | "vec4" | "sampler2D" | "samplerCube" => true
+        case _                                                                        => false
       }
 
   def walkStatement(s: Statement, envVarName: Option[String]): ShaderAST =
