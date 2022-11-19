@@ -163,11 +163,11 @@ object ShaderAST:
         '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }, ${ Expr(x.typeOf) }) }
     }
 
-  final case class Annotated(name: ShaderAST, value: ShaderAST) extends ShaderAST
+  final case class Annotated(name: ShaderAST, param: ShaderAST, value: ShaderAST) extends ShaderAST
   object Annotated:
     given ToExpr[Annotated] with {
       def apply(x: Annotated)(using Quotes): Expr[Annotated] =
-        '{ Annotated(${ Expr(x.name) }, ${ Expr(x.value) }) }
+        '{ Annotated(${ Expr(x.name) }, ${ Expr(x.param) }, ${ Expr(x.value) }) }
     }
 
   final case class RawLiteral(value: String) extends ShaderAST
@@ -281,7 +281,7 @@ object ShaderAST:
               case While(_, b)              => rec(b :: xs)
               case Switch(_, cs)            => rec(cs.map(_._2) ++ xs)
               case Val(_, body, _)          => rec(body :: xs)
-              case Annotated(_, body)       => rec(body :: xs)
+              case Annotated(_, _, body)    => rec(body :: xs)
               case RawLiteral(_)            => rec(xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -320,7 +320,7 @@ object ShaderAST:
         case v @ While(c, b)                          => f(While(c, f(b)))
         case v @ Switch(c, cs)                        => f(Switch(c, cs.map(p => p._1 -> f(p._2))))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
-        case v @ Annotated(id, value)                 => f(Annotated(id, f(value)))
+        case v @ Annotated(id, param, value)          => f(Annotated(id, param, f(value)))
         case v @ RawLiteral(_)                        => f(v)
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -348,7 +348,7 @@ object ShaderAST:
         case While(_, _)                  => None
         case Switch(_, _)                 => None
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
-        case Annotated(_, value)          => value.typeIdent
+        case Annotated(_, _, value)          => value.typeIdent
         case RawLiteral(_)                => None
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))

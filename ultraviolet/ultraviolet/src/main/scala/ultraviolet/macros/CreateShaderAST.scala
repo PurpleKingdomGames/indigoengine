@@ -119,9 +119,24 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                 ShaderAST.Val(name, body, typeOf)
 
               case Some(label) =>
-                ShaderAST.Annotated(label, ShaderAST.Val(name, body, typeOf))
+                ShaderAST.Annotated(label, ShaderAST.Empty(), ShaderAST.Val(name, body, typeOf))
 
-      case DefDef(fnName, args, rt, Some(term)) =>
+      case d @ DefDef(fnName, args, rt, Some(term)) =>
+        val maybeAnnotation: Option[ShaderAST.Annotated] =
+          d.symbol.annotations.headOption.flatMap {
+            case Apply(Select(New(TypeIdent(id @ "ShaderDef")), _), List(namespace)) =>
+              Option(
+                ShaderAST.Annotated(
+                  ShaderAST.DataTypes.ident(id),
+                  walkTerm(namespace, envVarName),
+                  ShaderAST.Empty()
+                )
+              )
+
+            case x =>
+              None
+          }
+
         val argNamesTypes =
           args
             .collect { case TermParamClause(ps) => ps }

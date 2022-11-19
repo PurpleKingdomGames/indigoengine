@@ -169,7 +169,7 @@ object ShaderPrinter:
           case _ =>
             List(s"""$tOf $id=${render(value).mkString}""")
 
-      case Annotated(label, value) =>
+      case Annotated(label, _, value) =>
         val lbl = render(label).mkString
         value match
           case v @ Val(id, value, typeOf) if lbl == "const" =>
@@ -227,7 +227,7 @@ object ShaderPrinter:
         case While(_, _)                  => None
         case Switch(_, _)                 => None
         case Val(id, value, typeOf)       => typeOf
-        case Annotated(id, value)         => decideType(value)
+        case Annotated(_, _, value)       => decideType(value)
         case RawLiteral(_)                => None
         case n @ DataTypes.ident(_)       => None
         case DataTypes.closure(_, typeOf) => typeOf

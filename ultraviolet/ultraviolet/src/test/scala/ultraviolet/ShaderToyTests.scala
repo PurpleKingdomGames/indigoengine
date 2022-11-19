@@ -90,15 +90,17 @@ object Plasma:
   import ultraviolet.predef.shadertoy.given
 
   inline def bufferA =
-    Shader[ShaderToyEnv, vec4] { env =>
+    Shader[ShaderToyEnv, Unit] { env =>
       // TODO: This needs to appear outside the main() function in the template...
       @const val pi: Float = 3.1415926435f
 
-      val i: Float = env.fragCoord.x / env.iResolution.x
-      val t: vec3  = (env.iTime + env.iMouse.y) / vec3(63.0f, 78.0f, 45.0f)
-      val cs: vec3 = cos(i * pi * 2.0f + vec3(0.0f, 1.0f, -0.5f) * pi + t)
+      @ShaderDef("shadertoy.main")
+      def main: vec4 =
+        val i: Float = env.fragCoord.x / env.iResolution.x
+        val t: vec3  = (env.iTime + env.iMouse.y) / vec3(63.0f, 78.0f, 45.0f)
+        val cs: vec3 = cos(i * pi * 2.0f + vec3(0.0f, 1.0f, -0.5f) * pi + t)
 
-      vec4(0.5f + 0.5f * cs, 1.0f)
+        vec4(0.5f + 0.5f * cs, 1.0f)
     }
 
   val bufferAShader = bufferA.toGLSL
