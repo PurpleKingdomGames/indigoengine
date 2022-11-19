@@ -879,7 +879,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |float x[12];
+      |float[12] x;
       |int y=x.length();
       |y;
       |""".stripMargin.trim
@@ -939,22 +939,6 @@ class ShaderASTTests extends munit.FunSuite {
       |vec2[MAX_VERTICES] polygon=toUvSpace(iCount,VERTICES);
       |""".stripMargin.trim
     )
-    /*
-const int MAX_VERTICES = 16;
-uniform vec2[MAX_VERTICES] VERTICES;
-
-vec2[MAX_VERTICES] toUvSpace(int count, vec2[MAX_VERTICES] v) {
-  vec2[MAX_VERTICES] polygon;
-
-  for(int i = 0; i < count; i++) {
-    polygon[i] = v[i] / SIZE;
-  }
-
-  return polygon;
-}
-
-vec2[MAX_VERTICES] polygon = toUvSpace(iCount, VERTICES);
-     */
   }
 
 }

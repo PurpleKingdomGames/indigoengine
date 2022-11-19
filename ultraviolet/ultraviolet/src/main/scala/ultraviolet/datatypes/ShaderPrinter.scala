@@ -155,10 +155,13 @@ object ShaderPrinter:
       case Val(id, value, typeOf) =>
         val tOf = typeOf.getOrElse("void")
         value match
-          case Empty() if tOf.endsWith("]") && tOf.contains("[") =>
-            // array
-            val (tName, tSize) = tOf.splitAt(tOf.indexOf("["))
-            List(s"""$tName $id$tSize""")
+          // This rearranges `vec2[16] foo` to `vec2 foo[16]`, both are valid,
+          // however the original is easier once we get to multidimensional arrays
+          // (not available until GLSL 4!)
+          // case Empty() if tOf.endsWith("]") && tOf.contains("[") =>
+          //   // array
+          //   val (tName, tSize) = tOf.splitAt(tOf.indexOf("["))
+          //   List(s"""$tName $id$tSize""")
 
           case Empty() =>
             List(s"""$tOf $id""")

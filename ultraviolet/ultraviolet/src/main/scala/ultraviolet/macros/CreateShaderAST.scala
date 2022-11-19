@@ -37,6 +37,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case Applied(TypeIdent("array"), List(TypeIdent(typeName), Singleton(Literal(IntConstant(size))))) =>
         mapName(Option(typeName)).map(_ + s"[${size.toString()}]")
 
+      case Applied(TypeIdent("array"), List(TypeIdent(typeName), Singleton(Ident(varName)))) =>
+        mapName(Option(typeName)).map(_ + s"[$varName]")
+
       case _ =>
         mapName(typ.tpe.classSymbol.map(_.name))
 
@@ -133,12 +136,16 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         val body   = walkTerm(term, envVarName)
 
         val returnType =
-          rt match
-            case rtt @ TypeIdent(_) =>
-              Option(walkTree(rtt, envVarName))
+          extractInferredType(rt)
+            .map(s => ShaderAST.DataTypes.ident(s))
+            .orElse {
+              rt match
+                case rtt @ TypeIdent(_) =>
+                  Option(walkTree(rtt, envVarName))
 
-            case _ =>
-              findReturnType(body)
+                case _ =>
+                  findReturnType(body)
+            }
 
         body match
           case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
