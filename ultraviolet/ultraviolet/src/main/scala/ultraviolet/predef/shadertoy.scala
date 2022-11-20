@@ -46,7 +46,7 @@ object shadertoy:
   sealed trait ShaderToy
 
   given ShaderPrinter[ShaderToy] = new ShaderPrinter {
-    val webGL1Printer = summon[ShaderPrinter[WebGL1]]
+    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
     def isValid(
         inType: Option[String],
@@ -103,7 +103,7 @@ object shadertoy:
               )
             )
 
-      webGL1Printer.isValid(inType, outType, headers, functions, body) |+|
+      webGL2Printer.isValid(inType, outType, headers, functions, body) |+|
         (inTypeValid |+| outTypeValid |+| hasMainImageMethod)
 
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
@@ -153,7 +153,7 @@ object shadertoy:
           )
       }
 
-      pf.orElse(webGL1Printer.transformer)
+      pf.orElse(webGL2Printer.transformer)
 
-    def printer: PartialFunction[ShaderAST, List[String]] = webGL1Printer.printer
+    def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
   }

@@ -402,6 +402,10 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case Select(Ident(namespace), name) =>
         ShaderAST.DataTypes.ident(s"$namespace.$name")
 
+      // Read a field - but of something namespaced, e.g. env.Position.x
+      case Select(Select(Ident(namespace), name), field) =>
+        ShaderAST.DataTypes.ident(s"$namespace.$name.$field")
+
       // Native method call.
       case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
         val (fnName, _)           = proxies.lookUp(defRef)
