@@ -8,7 +8,7 @@ class ProceduralShaderTests extends munit.FunSuite {
 
     val actual =
       ProceduralShader(Nil, vec4(List(float(1), float(1), float(0), float(1))))
-        .exists(_ == vec4(List(float(1), float(1), float(0), float(1))))
+        .exists(vec4(List(float(1), float(1), float(0), float(1))))
 
     assert(actual)
 
@@ -18,7 +18,7 @@ class ProceduralShaderTests extends munit.FunSuite {
 
     val actual =
       ProceduralShader(Nil, vec4(List(float(1), float(1), float(0), float(1))))
-        .exists(_ == float(1))
+        .exists(float(1))
 
     assert(actual)
 
@@ -27,7 +27,7 @@ class ProceduralShaderTests extends munit.FunSuite {
   test("exists") {
 
     val actual =
-      ProceduralShaderSamples.sample1.exists(_ == vec4(List(float(1), float(1), float(0), float(1))))
+      ProceduralShaderSamples.sample1.exists(vec4(List(float(1), float(1), float(0), float(1))))
 
     assert(actual)
 
@@ -50,5 +50,9 @@ object ProceduralShaderSamples:
           None
         )
       ),
-      NamedBlock("", "Shader", List(Block(List(Block(List(CallFunction("fn0", Nil, List(ShaderAST.DataTypes.ident("env")), None), Empty()))))))
+      NamedBlock(
+        "",
+        "Shader",
+        List(Block(List(Block(List(CallFunction("fn0", Nil, List(ShaderAST.DataTypes.ident("env")), None), Empty())))))
+      )
     )

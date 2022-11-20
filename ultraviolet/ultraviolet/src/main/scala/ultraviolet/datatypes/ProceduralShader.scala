@@ -40,5 +40,5 @@ object ProceduralShader:
 
           (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
 
-    def exists(q: ShaderAST => Boolean): Boolean =
+    def exists(q: ShaderAST): Boolean =
       p.main.exists(q) || p.defs.exists(_.exists(q))

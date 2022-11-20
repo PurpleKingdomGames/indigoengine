@@ -269,8 +269,8 @@ object ShaderAST:
         case Empty() => true
         case _       => false
 
-    def exists(p: ShaderAST => Boolean): Boolean =
-      find(p).isDefined
+    def exists(p: ShaderAST): Boolean =
+      find(_ == p).isDefined
 
     def find(p: ShaderAST => Boolean): Option[ShaderAST] =
       @tailrec
