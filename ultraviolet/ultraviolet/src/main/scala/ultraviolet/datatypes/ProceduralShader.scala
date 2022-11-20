@@ -34,9 +34,9 @@ object ProceduralShader:
           throw ShaderError.ValidationError("Shader failed to validate because: " + reasons.mkString("[", ", ", "]"))
 
         case ShaderValid.Valid =>
-          val renderedHeaders = headers.flatMap(printer.print).map(stripOutEnvName)
-          val renderedDefs    = functions.map(d => printer.print(d).mkString("\n")).map(stripOutEnvName)
-          val renderedBody    = printer.print(body).map(stripOutEnvName)
+          val renderedHeaders = headers.flatMap(ShaderPrinter.print).map(stripOutEnvName)
+          val renderedDefs    = functions.map(d => ShaderPrinter.print(d).mkString("\n")).map(stripOutEnvName)
+          val renderedBody    = ShaderPrinter.print(body).map(stripOutEnvName)
 
           (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
 
