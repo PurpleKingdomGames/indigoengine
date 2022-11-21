@@ -3,7 +3,7 @@ package ultraviolet.shadertoyexamples
 import ultraviolet.predef.shadertoy.*
 import ultraviolet.syntax.*
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+@SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
 object Seascape:
 
   inline def image =
@@ -70,134 +70,127 @@ object Seascape:
         vec3(pow(1.0f - e.y, 2.0f), 1.0f - e.y, 0.6f + (1.0f - e.y) * 0.4f) * 1.1f
 
       // sea
-      def sea_octave(uv: vec2, choppy: Float): Float = {
-        uv += noise(uv)
-        val wv: vec2  = 1.0f - abs(sin(uv))
-        val swv: vec2 = abs(cos(uv))
+      def sea_octave(uv: vec2, choppy: Float): Float =
+        val n         = noise(uv)
+        val uv2       = vec2(uv.x + n, uv.y + n)
+        var wv: vec2  = 1.0f - abs(sin(uv2))
+        val swv: vec2 = abs(cos(uv2))
         wv = mix(wv, swv, wv)
         pow(1.0f - pow(wv.x * wv.y, 0.65f), choppy)
+
+      def map(p: vec3): Float = {
+        var freq: Float   = SEA_FREQ
+        var amp: Float    = SEA_HEIGHT
+        var choppy: Float = SEA_CHOPPY
+        var uv: vec2      = p.xz
+        uv = vec2(uv.x * 0.75f, uv.y)
+
+        var d: Float = 0.0f
+        var h        = 0.0f
+        cfor(0, _ < ITER_GEOMETRY, _ + 1) { _ =>
+          d = sea_octave((uv + SEA_TIME) * freq, choppy)
+          d += sea_octave((uv - SEA_TIME) * freq, choppy)
+          h += d * amp
+          uv = uv * octave_m
+          freq *= 1.9f
+          amp *= 0.22f
+          choppy = mix(choppy, 1.0f, 0.2f)
+        }
+
+        p.y - h
       }
 
-    // def map: Float(p: vec3) {
-    //     val freq: Float = SEA_FREQ
-    //     val amp: Float = SEA_HEIGHT
-    //     val choppy: Float = SEA_CHOPPY
-    //     val uv: vec2 = p.xz uv.x *= 0.75
+      def map_detailed(p: vec3): Float =
+        map(p) // I _think_ these are identical...
 
-    //     val d: Float, h = 0.0
-    //     for(i: Int = 0 i < ITER_GEOMETRY i++) {
-    //     	d = sea_octave((uv+SEA_TIME)*freq,choppy)
-    //     	d += sea_octave((uv-SEA_TIME)*freq,choppy)
-    //         h += d * amp
-    //     	uv *= octave_m freq *= 1.9 amp *= 0.22
-    //         choppy = mix(choppy,1.0,0.2)
-    //     }
-    //     return p.y - h
-    // }
+      def getSeaColor(p: vec3, n: vec3, l: vec3, eye: vec3, dist: vec3): vec3 =
+        var fresnel: Float = clamp(1.0f - dot(n, -eye), 0.0f, 1.0f)
+        fresnel = pow(fresnel, 3.0f) * 0.5f
 
-    // def map_detailed: Float(p: vec3) {
-    //     val freq: Float = SEA_FREQ
-    //     val amp: Float = SEA_HEIGHT
-    //     val choppy: Float = SEA_CHOPPY
-    //     val uv: vec2 = p.xz uv.x *= 0.75
+        val reflected: vec3 = getSkyColor(reflect(eye, n))
+        val refracted: vec3 = SEA_BASE + diffuse(n, l, 80.0f) * SEA_WATER_COLOR * 0.12f
 
-    //     val d: Float, h = 0.0
-    //     for(i: Int = 0 i < ITER_FRAGMENT i++) {
-    //     	d = sea_octave((uv+SEA_TIME)*freq,choppy)
-    //     	d += sea_octave((uv-SEA_TIME)*freq,choppy)
-    //         h += d * amp
-    //     	uv *= octave_m freq *= 1.9 amp *= 0.22
-    //         choppy = mix(choppy,1.0,0.2)
-    //     }
-    //     return p.y - h
-    // }
+        var color: vec3 = mix(refracted, reflected, fresnel)
 
-    // def getSeaColor: vec3(p: vec3, n: vec3, l: vec3, eye: vec3, dist: vec3) {
-    //     val fresnel: Float = clamp(1.0 - dot(n,-eye), 0.0, 1.0)
-    //     val fresnel = pow(fresnel,3.0) * 0.5
+        val atten: Float = max(1.0f - dot(dist, dist) * 0.001f, 0.0f)
+        color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18f * atten
 
-    //     val reflected: vec3 = getSkyColor(reflect(eye,n))
-    //     val refracted: vec3 = SEA_BASE + diffuse(n,l,80.0) * SEA_WATER_COLOR * 0.12
+        color += vec3(specular(n, l, eye, 60.0f))
 
-    //     val color: vec3 = mix(refracted,reflected,fresnel)
+        color
 
-    //     val atten: Float = max(1.0 - dot(dist,dist) * 0.001, 0.0)
-    //     color += SEA_WATER_COLOR * (p.y - SEA_HEIGHT) * 0.18 * atten
+      // tracing
+      def getNormal(p: vec3, eps: Float): vec3 =
+        var n: vec3 = null
+        n = vec3(n.x, map_detailed(p), n.z)
+        n = vec3(map_detailed(vec3(p.x + eps, p.y, p.z)) - n.y, n.y, n.z)
+        n = vec3(n.x, n.y, map_detailed(vec3(p.x, p.y, p.z + eps)) - n.y)
+        n = vec3(n.x, eps, n.z)
+        normalize(n)
 
-    //     color += vec3(specular(n,l,eye,60.0))
+      var pOut: vec3 = vec3(0.0)
+      def heightMapTracing(ori: vec3, dir: vec3): Float =
+        var tm: Float = 0.0f
+        var tx: Float = 1000.0f
+        var hx: Float = map(ori + dir * tx)
 
-    //     return color
-    // }
+        if (hx > 0.0f) {
+          pOut = ori + dir * tx
+          tx
+        } else {
 
-    // // tracing
-    // def getNormal: vec3(p: vec3, eps: Float) {
-    //     val n: vec3
-    //     n.y = map_detailed(p)
-    //     n.x = map_detailed(vec3(p.x+eps,p.y,p.z)) - n.y
-    //     n.z = map_detailed(vec3(p.x,p.y,p.z+eps)) - n.y
-    //     n.y = eps
-    //     return normalize(n)
-    // }
+          var hm: Float   = map(ori + dir * tm)
+          var tmid: Float = 0.0f
 
-    // def heightMapTracing: Float(ori: vec3, dir: vec3, out p: vec3) {
-    //     val tm: Float = 0.0
-    //     val tx: Float = 1000.0
-    //     val hx: Float = map(ori + dir * tx)
-    //     if(hx > 0.0) {
-    //         p = ori + dir * tx
-    //         return tx
-    //     }
-    //     val hm: Float = map(ori + dir * tm)
-    //     val tmid: Float = 0.0
-    //     for(i: Int = 0 i < NUM_STEPS i++) {
-    //         tmid = mix(tm,tx, hm/(hm-hx))
-    //         p = ori + dir * tmid
-    //     val hmid: Float = map(p)
-    // 		if(hmid < 0.0) {
-    //         	tx = tmid
-    //             hx = hmid
-    //         } else {
-    //             tm = tmid
-    //             hm = hmid
-    //         }
-    //     }
-    //     return tmid
-    // }
+          cfor(0, _ < NUM_STEPS, _ + 1) { _ =>
+            tmid = mix(tm, tx, hm / (hm - hx))
+            pOut = ori + dir * tmid
+            val hmid: Float = map(pOut)
+            if (hmid < 0.0f) {
+              tx = tmid
+              hx = hmid
+            } else {
+              tm = tmid
+              hm = hmid
+            }
+          }
 
-    // def getPixel: vec3(in coord: vec2, time: Float) {
-    //     val uv: vec2 = coord / iResolution.xy
-    //     uv = uv * 2.0 - 1.0
-    //     uv.x *= iResolution.x / iResolution.y
+          tmid
+        }
 
-    //     // ray
-    //     val ang: vec3 = vec3(sin(time*3.0)*0.1,sin(time)*0.2+0.3,time)
-    //     val ori: vec3 = vec3(0.0,3.5,time*5.0)
-    //     val dir: vec3 = normalize(vec3(uv.xy,-2.0)) dir.z += length(uv) * 0.14
-    //     dir = normalize(dir) * fromEuler(ang)
+      def getPixel(coord: vec2, time: Float): vec3 = {
+        var uv: vec2 = coord / env.iResolution.xy
+        uv = uv * 2.0f - 1.0f
+        uv = vec2(uv.x * (env.iResolution.x / env.iResolution.y), uv.y)
 
-    //     // tracing
-    //     val p: vec3
-    //     heightMapTracing(ori,dir,p)
-    //     val dist: vec3 = p - ori
-    //     val n: vec3 = getNormal(p, dot(dist,dist) * EPSILON_NRM)
-    //     val light: vec3 = normalize(vec3(0.0,1.0,0.8))
+        // ray
+        val ang: vec3 = vec3(sin(time * 3.0f) * 0.1f, sin(time) * 0.2f + 0.3f, time)
+        val ori: vec3 = vec3(0.0f, 3.5f, time * 5.0f)
+        var dir: vec3 = normalize(vec3(uv.xy, -2.0f))
+        dir = vec3(dir.xy, dir.z + (length(uv) * 0.14f))
+        dir = normalize(dir) * fromEuler(ang)
 
-    //     // color
-    //     return mix(
-    //         getSkyColor(dir),
-    //         getSeaColor(p,n,light,dir,dist),
-    //     	pow(smoothstep(0.0,-0.02,dir.y),0.2))
-    // }
+        // tracing
+        heightMapTracing(ori, dir)
+        val dist: vec3  = pOut - ori
+        val n: vec3     = getNormal(pOut, dot(dist, dist) * EPSILON_NRM)
+        val light: vec3 = normalize(vec3(0.0f, 1.0f, 0.8f))
 
-    // // main
-    // void mainImage( out fragColor: vec4, in fragCoord: vec2 ) {
-    //     time: Float = iTime * 0.3 + iMouse.x*0.01
+        // color
+        mix(
+          getSkyColor(dir),
+          getSeaColor(pOut, n, light, dir, dist),
+          pow(smoothstep(0.0f, -0.02f, dir.y), 0.2f)
+        )
+      }
 
-    //  val color: vec3 = getPixel(fragCoord, time)
+      // main
+      def mainImage(fragColor: vec4, fragCoord: vec2): vec4 =
+        val time: Float = env.iTime * 0.3f + env.iMouse.x * 0.01f
 
-    //     // post
-    // 	fragColor = vec4(pow(color,vec3(0.65)), 1.0)
-    // }
+        val color: vec3 = getPixel(fragCoord, time)
+
+        vec4(pow(color, vec3(0.65f)), 1.0f)
     }
 
   val imageShader = image.toGLSL[ShaderToy]

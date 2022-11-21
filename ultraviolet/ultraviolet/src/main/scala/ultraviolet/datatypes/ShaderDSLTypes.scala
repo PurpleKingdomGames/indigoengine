@@ -14,6 +14,11 @@ trait ShaderDSLTypes:
     def -(v: vec2): vec2 = vec2(x - v.x, y - v.y)
     def *(v: vec2): vec2 = vec2(x * v.x, y * v.y)
     def /(v: vec2): vec2 = vec2(x / v.x, y / v.y)
+
+    def `unary_-` : vec2 = vec2(-x, -y)
+
+    def *(v: mat2): vec2 = vec2(0.0) // TODO: Replace stub
+
   object vec2:
     inline def apply(xy: Float): vec2 =
       vec2(xy, xy)
@@ -28,6 +33,11 @@ trait ShaderDSLTypes:
     def -(v: vec3): vec3 = vec3(x - v.x, y - v.y, z - v.z)
     def *(v: vec3): vec3 = vec3(x * v.x, y * v.y, z * v.z)
     def /(v: vec3): vec3 = vec3(x / v.x, y / v.y, z / v.z)
+
+    def `unary_-` : vec3 = vec3(-x, -y, -z)
+
+    def *(v: mat3): vec3 = vec3(0.0) // TODO: Replace stub
+
   object vec3:
     inline def apply(xyz: Float): vec3 =
       vec3(xyz, xyz, xyz)
@@ -48,6 +58,10 @@ trait ShaderDSLTypes:
     def -(v: vec4): vec4 = vec4(x - v.x, y - v.y, z - v.z, w - v.w)
     def *(v: vec4): vec4 = vec4(x * v.x, y * v.y, z * v.z, w * v.w)
     def /(v: vec4): vec4 = vec4(x / v.x, y / v.y, z / v.z, w / v.w)
+
+    def `unary_-` : vec4 = vec4(-x, -y, -z, -w)
+
+    def *(v: mat4): vec4 = vec4(0.0) // TODO: Replace stub
 
   object vec4:
     inline def apply(xy: vec2, z: Float, w: Float): vec4 =
