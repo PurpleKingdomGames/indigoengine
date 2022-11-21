@@ -50,7 +50,7 @@ object syntax extends ShaderDSLOps:
   inline def raw(body: String): RawGLSL =
     RawGLSL(body)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   inline def cfor[A](init: A, cond: A => Boolean, next: A => A)(f: A => Unit) =
     var a = init
     while cond(a) do
