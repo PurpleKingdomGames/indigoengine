@@ -100,9 +100,6 @@ object Seascape:
         p.y - h
       }
 
-      def map_detailed(p: vec3): Float =
-        map(p) // I _think_ these are identical...
-
       def getSeaColor(p: vec3, n: vec3, l: vec3, eye: vec3, dist: vec3): vec3 =
         var fresnel: Float = clamp(1.0f - dot(n, -eye), 0.0f, 1.0f)
         fresnel = pow(fresnel, 3.0f) * 0.5f
@@ -122,9 +119,9 @@ object Seascape:
       // tracing
       def getNormal(p: vec3, eps: Float): vec3 =
         var n: vec3 = null
-        n = vec3(n.x, map_detailed(p), n.z)
-        n = vec3(map_detailed(vec3(p.x + eps, p.y, p.z)) - n.y, n.y, n.z)
-        n = vec3(n.x, n.y, map_detailed(vec3(p.x, p.y, p.z + eps)) - n.y)
+        n = vec3(n.x, map(p), n.z)
+        n = vec3(map(vec3(p.x + eps, p.y, p.z)) - n.y, n.y, n.z)
+        n = vec3(n.x, n.y, map(vec3(p.x, p.y, p.z + eps)) - n.y)
         n = vec3(n.x, eps, n.z)
         normalize(n)
 
@@ -270,9 +267,6 @@ object Seascape:
     |  }
     |  return p.y-h;
     |}
-    |float map_detailed(in vec3 p){
-    |  return map(p);
-    |}
     |vec3 getSeaColor(in vec3 p,in vec3 n,in vec3 l,in vec3 eye,in vec3 dist){
     |  float fresnel=clamp(1.0-(dot(n,-eye)),0.0,1.0);
     |  fresnel=pow(fresnel,3.0)*0.5;
@@ -286,9 +280,9 @@ object Seascape:
     |}
     |vec3 getNormal(in vec3 p,in float eps){
     |  vec3 n;
-    |  n=vec3(n.x,map_detailed(p),n.z);
-    |  n=vec3((map_detailed(vec3(p.x+eps,p.y,p.z)))-n.y,n.y,n.z);
-    |  n=vec3(n.x,n.y,(map_detailed(vec3(p.x,p.y,p.z+eps)))-n.y);
+    |  n=vec3(n.x,map(p),n.z);
+    |  n=vec3((map(vec3(p.x+eps,p.y,p.z)))-n.y,n.y,n.z);
+    |  n=vec3(n.x,n.y,(map(vec3(p.x,p.y,p.z+eps)))-n.y);
     |  n=vec3(n.x,eps,n.z);
     |  return normalize(n);
     |}
