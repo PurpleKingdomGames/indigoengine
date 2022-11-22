@@ -77,14 +77,8 @@ object ShaderPrinter:
       case ShaderBlock(_, _, envVarName, headers, statements) =>
         renderStatements(statements)
 
-      case b @ NamedBlock(namespace, id, statements) =>
-        throw new Exception("NamedBlock found, this is probably an error: " + b)
-
       case Function(id, args, body, returnType) if id.isEmpty =>
         throw new Exception("Failed to render shader, unnamed function definition found.")
-
-      case b @ Function(id, args, NamedBlock(_, _, statements), returnType) =>
-        throw new Exception("Function with a NamedBlock body found, this is probably an error: " + b)
 
       case Function(id, args, fnBody, returnType) =>
         val statements =
@@ -315,7 +309,6 @@ object ShaderPrinter:
     a match
       case Empty()                      => None
       case Block(_)                     => None
-      case NamedBlock(_, _, _)          => None
       case ShaderBlock(_, _, _, _, _)   => None
       case Function(_, _, _, rt)        => rt.toList.flatMap(render).headOption
       case CallFunction(_, _, _, rt)    => rt.toList.flatMap(render).headOption

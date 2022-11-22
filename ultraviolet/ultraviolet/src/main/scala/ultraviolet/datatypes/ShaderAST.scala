@@ -12,7 +12,6 @@ object ShaderAST:
       x match
         case v: Empty        => Expr(v)
         case v: Block        => Expr(v)
-        case v: NamedBlock   => Expr(v)
         case v: ShaderBlock  => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
@@ -46,16 +45,6 @@ object ShaderAST:
 
     def apply(statements: ShaderAST*): Block =
       Block(statements.toList)
-
-  final case class NamedBlock(namespace: String, id: String, statements: List[ShaderAST]) extends ShaderAST
-  object NamedBlock:
-    given ToExpr[NamedBlock] with {
-      def apply(x: NamedBlock)(using Quotes): Expr[NamedBlock] =
-        '{ NamedBlock(${ Expr(x.namespace) }, ${ Expr(x.id) }, ${ Expr(x.statements) }) }
-    }
-
-    def apply(namespace: String, id: String, statements: ShaderAST*): NamedBlock =
-      NamedBlock(namespace, id, statements.toList)
 
   // Specifically handles our 'Shader' type
   final case class ShaderBlock(
@@ -319,7 +308,6 @@ object ShaderAST:
               case v if p(v)                  => Option(v)
               case Empty()                    => rec(xs)
               case Block(s)                   => rec(s ++ xs)
-              case NamedBlock(_, _, s)        => rec(s ++ xs)
               case ShaderBlock(_, _, _, _, s) => rec(s ++ xs)
               case Function(_, _, body, _)    => rec(body :: xs)
               case CallFunction(_, _, _, _)   => rec(xs)
@@ -353,9 +341,8 @@ object ShaderAST:
     def prune: ShaderAST =
       def crush(statements: ShaderAST): ShaderAST =
         statements match
-          case b: Block      => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
-          case b: NamedBlock => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
-          case other         => other
+          case b: Block => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
+          case other    => other
 
       crush(ast)
 
@@ -363,7 +350,6 @@ object ShaderAST:
       ast match
         case v @ Empty()                              => f(v)
         case v @ Block(s)                             => f(Block(s.map(f)))
-        case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
         case v @ ShaderBlock(in, out, n, h, s)        => f(ShaderBlock(in, out, n, h, s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
@@ -396,7 +382,6 @@ object ShaderAST:
       ast match
         case Empty()                      => None
         case Block(_)                     => None
-        case NamedBlock(_, _, _)          => None
         case ShaderBlock(_, _, _, _, _)   => None
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)

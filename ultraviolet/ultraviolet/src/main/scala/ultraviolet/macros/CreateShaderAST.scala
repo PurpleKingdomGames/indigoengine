@@ -447,12 +447,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Generally walking the tree
 
-      case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
-        ShaderAST.NamedBlock("", id, walkTerm(x, envVarName))
-
-      case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
-        ShaderAST.NamedBlock(namespace, name, walkTerm(x, envVarName))
-
       case Apply(TypeApply(term, _), List(x)) =>
         walkTerm(x, envVarName)
 

@@ -46,13 +46,11 @@ object ProceduralShaderSamples:
         Function(
           "fn0",
           List(ShaderAST.DataTypes.ident("") -> "env"),
-          Block(List(NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1))))))),
+          Block(List(Block(List(vec4(List(float(1), float(1), float(0), float(1))))))),
           None
         )
       ),
-      NamedBlock(
-        "",
-        "Shader",
+      Block(
         List(Block(List(Block(List(CallFunction("fn0", Nil, List(ShaderAST.DataTypes.ident("env")), None), Empty())))))
       )
     )
