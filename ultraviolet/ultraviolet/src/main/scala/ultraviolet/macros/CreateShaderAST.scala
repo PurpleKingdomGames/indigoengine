@@ -343,7 +343,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             Apply(
               TypeApply(Ident("cfor"), _),
               List(
-                initial,
+                Literal(IntConstant(initial)),
                 Block(
                   List(DefDef("$anonfun", _, _, Some(condition))),
                   Closure(Ident("$anonfun"), None)
@@ -364,12 +364,36 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               )
             )
           ) =>
-        ShaderAST.For(
-          walkTerm(initial, envVarName),
-          walkTerm(condition, envVarName),
-          walkTerm(next, envVarName),
-          walkTerm(body, envVarName)
+        val varName = proxies.makeVarName
+        val i       = ShaderAST.Val(varName, ShaderAST.DataTypes.int(initial), Option("int"))
+
+        val c = walkTerm(condition, envVarName).traverse {
+          case ShaderAST.DataTypes.ident(id) if id.startsWith("_") =>
+            ShaderAST.DataTypes.ident(varName)
+
+          case ShaderAST.Infix(op, left, right, rt) =>
+            ShaderAST.Infix(op, left, right, Option(ShaderAST.DataTypes.ident("int")))
+
+          case x =>
+            x
+        }
+
+        def replaceName: ShaderAST => ShaderAST = {
+          case ShaderAST.DataTypes.ident(id) if id.startsWith("_") =>
+            ShaderAST.DataTypes.ident(varName)
+
+          case x =>
+            x
+        }
+
+        val n = ShaderAST.Assign(
+          ShaderAST.DataTypes.ident(varName),
+          walkTerm(next, envVarName).traverse(replaceName)
         )
+
+        val b = walkTerm(body, envVarName).traverse(replaceName)
+
+        ShaderAST.For(i, c, n, b)
 
       // Primitives
 

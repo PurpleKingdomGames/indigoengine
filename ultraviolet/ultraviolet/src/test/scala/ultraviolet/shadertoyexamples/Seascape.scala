@@ -258,7 +258,7 @@ object Seascape:
     |  uv=vec2(uv.x*0.75,uv.y);
     |  float d=0.0;
     |  float h=0.0;
-    |  for(int i=0;i<ITER_GEOMETRY;i=i+1){
+    |  for(int val0=0;val0<ITER_GEOMETRY;val0=val0+1){
     |    d=sea_octave((uv+SEA_TIME)*freq,choppy);
     |    d=d+(sea_octave((uv-SEA_TIME)*freq,choppy));
     |    h=h+(d*amp);
