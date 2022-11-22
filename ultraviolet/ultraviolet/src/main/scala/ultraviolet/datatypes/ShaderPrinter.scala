@@ -67,188 +67,190 @@ object ShaderPrinter:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def render(ast: ShaderAST)(using pp: ShaderPrinter[_]): List[String] =
-    val p =
-      pp.printer.orElse {
-        case Empty() =>
-          Nil
+    val r: ShaderAST => List[String] = {
+      case Empty() =>
+        Nil
 
-        case Block(statements) =>
-          renderStatements(statements)
+      case Block(statements) =>
+        renderStatements(statements)
 
-        case ShaderBlock(_, _, envVarName, headers, statements) =>
-          renderStatements(statements)
+      case ShaderBlock(_, _, envVarName, headers, statements) =>
+        renderStatements(statements)
 
-        case b @ NamedBlock(namespace, id, statements) =>
-          throw new Exception("NamedBlock found, this is probably an error: " + b)
+      case b @ NamedBlock(namespace, id, statements) =>
+        throw new Exception("NamedBlock found, this is probably an error: " + b)
 
-        case Function(id, args, body, returnType) if id.isEmpty =>
-          throw new Exception("Failed to render shader, unnamed function definition found.")
+      case Function(id, args, body, returnType) if id.isEmpty =>
+        throw new Exception("Failed to render shader, unnamed function definition found.")
 
-        case b @ Function(id, args, NamedBlock(_, _, statements), returnType) =>
-          throw new Exception("Function with a NamedBlock body found, this is probably an error: " + b)
+      case b @ Function(id, args, NamedBlock(_, _, statements), returnType) =>
+        throw new Exception("Function with a NamedBlock body found, this is probably an error: " + b)
 
-        case Function(id, args, fnBody, returnType) =>
-          val statements =
-            fnBody match
-              case Block(ss) => ss
-              case _         => List(fnBody)
+      case Function(id, args, fnBody, returnType) =>
+        val statements =
+          fnBody match
+            case Block(ss) => ss
+            case _         => List(fnBody)
 
-          val (body: List[String], rt: String) =
-            processFunctionStatements(statements, returnType.flatMap(r => render(r).headOption))
+        val (body: List[String], rt: String) =
+          processFunctionStatements(statements, returnType.flatMap(r => render(r).headOption))
 
-          val renderedArgs: String =
-            args
-              .map {
-                case (typ @ Annotated(_, _, _), name) =>
-                  s"${render(typ).mkString} $name"
+        val renderedArgs: String =
+          args
+            .map {
+              case (typ @ Annotated(_, _, _), name) =>
+                s"${render(typ).mkString} $name"
 
-                case (typ, name) =>
-                  s"in ${render(typ).mkString} $name"
-              }
-              .mkString(",")
-
-          List(
-            List(s"""$rt $id($renderedArgs){"""),
-            body.map(addIndent),
-            List("}")
-          ).flatten
-
-        case CallFunction(id, args, _, _) =>
-          List(s"""$id(${args.flatMap(render).mkString(",")})""")
-
-        case FunctionRef(_, _) =>
-          Nil
-
-        case Cast(value, as) =>
-          List(s"""$as(${render(value).mkString})""")
-
-        case Infix(op, left, right, returnType) =>
-          val isSimpleValue = """^([a-zA-Z0-9\[\]\(\)\.\,_]+)$""".r
-          val hasBrackets   = """^\((.*)\)$""".r
-
-          def cleanUp(str: String): String =
-            str match
-              case s if hasBrackets.matches(s) || isSimpleValue.matches(s) => s
-              case s                                                       => s"""($s)"""
-
-          val l = render(left).mkString
-          val r = render(right).mkString
-          List(s"""${cleanUp(l)}$op${cleanUp(r)}""")
-
-        case Assign(left, right) =>
-          List(s"""${render(left).mkString}=${render(right).mkString}""")
-
-        case If(cond, thenTerm, elseTerm) =>
-          elseTerm match
-            case None =>
-              List(
-                List(s"""if(${render(cond).mkString}){"""),
-                render(thenTerm).map(addIndent),
-                List(s"""}""")
-              ).flatten
-
-            case Some(els) =>
-              List(
-                List(s"""if(${render(cond).mkString}){"""),
-                render(thenTerm).map(addIndent),
-                List(s"""}else{"""),
-                render(els).map(addIndent),
-                List(s"""}""")
-              ).flatten
-
-        case While(cond, body) =>
-          List(
-            List(s"""while(${render(cond).mkString}){"""),
-            render(body).map(addIndent),
-            List("""}""")
-          ).flatten
-
-        case Switch(on, cases) =>
-          val cs =
-            cases.flatMap {
-              case (Some(i), body) =>
-                List(
-                  List(s"""case $i:"""),
-                  render(body).map(addIndent),
-                  List(s"""  break;""")
-                ).flatten
-
-              case (None, body) =>
-                List(
-                  List(s"""default:"""),
-                  render(body).map(addIndent),
-                  List(s"""  break;""")
-                ).flatten
+              case (typ, name) =>
+                s"in ${render(typ).mkString} $name"
             }
+            .mkString(",")
 
-          List(
-            List(s"""switch(${render(on).mkString}){"""),
-            cs.map(addIndent),
-            List(s"""}""")
-          ).flatten
+        List(
+          List(s"""$rt $id($renderedArgs){"""),
+          body.map(addIndent),
+          List("}")
+        ).flatten
 
-        case c @ DataTypes.closure(body, typeOf) =>
-          throw new Exception("Closure found, this is probably an error: " + c)
+      case CallFunction(id, args, _, _) =>
+        List(s"""$id(${args.flatMap(render).mkString(",")})""")
 
-        case DataTypes.ident(id) if id.endsWith(".length") =>
-          List(s"$id()")
+      case FunctionRef(_, _) =>
+        Nil
 
-        case DataTypes.ident(id) =>
-          List(s"$id")
+      case Cast(value, as) =>
+        List(s"""$as(${render(value).mkString})""")
 
-        case DataTypes.float(v) =>
-          List(s"${rf(v)}")
+      case Infix(op, left, right, returnType) =>
+        val isSimpleValue = """^([a-zA-Z0-9\[\]\(\)\.\,_]+)$""".r
+        val hasBrackets   = """^\((.*)\)$""".r
 
-        case DataTypes.int(v) =>
-          List(s"${v.toString}")
+        def cleanUp(str: String): String =
+          str match
+            case s if hasBrackets.matches(s) || isSimpleValue.matches(s) => s
+            case s                                                       => s"""($s)"""
 
-        case DataTypes.vec2(args) =>
-          List(s"vec2(${args.flatMap(render).mkString(",")})")
+        val l = render(left).mkString
+        val r = render(right).mkString
+        List(s"""${cleanUp(l)}$op${cleanUp(r)}""")
 
-        case DataTypes.vec3(args) =>
-          List(s"vec3(${args.flatMap(render).mkString(",")})")
+      case Assign(left, right) =>
+        List(s"""${render(left).mkString}=${render(right).mkString}""")
 
-        case DataTypes.vec4(args) =>
-          List(s"vec4(${args.flatMap(render).mkString(",")})")
+      case If(cond, thenTerm, elseTerm) =>
+        elseTerm match
+          case None =>
+            List(
+              List(s"""if(${render(cond).mkString}){"""),
+              render(thenTerm).map(addIndent),
+              List(s"""}""")
+            ).flatten
 
-        case DataTypes.array(size, typeOf) =>
-          List(s"array goes here...")
+          case Some(els) =>
+            List(
+              List(s"""if(${render(cond).mkString}){"""),
+              render(thenTerm).map(addIndent),
+              List(s"""}else{"""),
+              render(els).map(addIndent),
+              List(s"""}""")
+            ).flatten
 
-        case DataTypes.swizzle(genType, swizzle, returnType) =>
-          List(s"${render(genType).mkString}.$swizzle")
+      case While(cond, body) =>
+        List(
+          List(s"""while(${render(cond).mkString}){"""),
+          render(body).map(addIndent),
+          List("""}""")
+        ).flatten
 
-        case Val(id, value, typeOf) =>
-          val tOf = typeOf.getOrElse("void")
-          value match
-            // This rearranges `vec2[16] foo` to `vec2 foo[16]`, both are valid,
-            // however the original is easier once we get to multidimensional arrays
-            // (not available until GLSL 4!)
-            // case Empty() if tOf.endsWith("]") && tOf.contains("[") =>
-            //   // array
-            //   val (tName, tSize) = tOf.splitAt(tOf.indexOf("["))
-            //   List(s"""$tName $id$tSize""")
+      case Switch(on, cases) =>
+        val cs =
+          cases.flatMap {
+            case (Some(i), body) =>
+              List(
+                List(s"""case $i:"""),
+                render(body).map(addIndent),
+                List(s"""  break;""")
+              ).flatten
 
-            case Empty() =>
-              List(s"""$tOf $id""")
+            case (None, body) =>
+              List(
+                List(s"""default:"""),
+                render(body).map(addIndent),
+                List(s"""  break;""")
+              ).flatten
+          }
 
-            case _ =>
-              List(s"""$tOf $id=${render(value).mkString}""")
+        List(
+          List(s"""switch(${render(on).mkString}){"""),
+          cs.map(addIndent),
+          List(s"""}""")
+        ).flatten
 
-        case Annotated(label, _, value) =>
-          val lbl = render(label).mkString
-          value match
-            case v @ Val(id, value, typeOf) if lbl == "const" =>
-              List(s"""$lbl ${render(v).mkString}""")
+      case c @ DataTypes.closure(body, typeOf) =>
+        throw new Exception("Closure found, this is probably an error: " + c)
 
-            case v @ Val(id, value, typeOf) =>
-              List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
+      case DataTypes.ident(id) if id.endsWith(".length") =>
+        List(s"$id()")
 
-            case _ =>
-              List(s"""$lbl ${render(value).mkString}""")
+      case DataTypes.ident(id) =>
+        List(s"$id")
 
-        case RawLiteral(body) =>
-          List(body)
-      }
+      case DataTypes.float(v) =>
+        List(s"${rf(v)}")
+
+      case DataTypes.int(v) =>
+        List(s"${v.toString}")
+
+      case DataTypes.vec2(args) =>
+        List(s"vec2(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.vec3(args) =>
+        List(s"vec3(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.vec4(args) =>
+        List(s"vec4(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.array(size, typeOf) =>
+        List(s"array goes here...")
+
+      case DataTypes.swizzle(genType, swizzle, returnType) =>
+        List(s"${render(genType).mkString}.$swizzle")
+
+      case Val(id, value, typeOf) =>
+        val tOf = typeOf.getOrElse("void")
+        value match
+          // This rearranges `vec2[16] foo` to `vec2 foo[16]`, both are valid,
+          // however the original is easier once we get to multidimensional arrays
+          // (not available until GLSL 4!)
+          // case Empty() if tOf.endsWith("]") && tOf.contains("[") =>
+          //   // array
+          //   val (tName, tSize) = tOf.splitAt(tOf.indexOf("["))
+          //   List(s"""$tName $id$tSize""")
+
+          case Empty() =>
+            List(s"""$tOf $id""")
+
+          case _ =>
+            List(s"""$tOf $id=${render(value).mkString}""")
+
+      case Annotated(label, _, value) =>
+        val lbl = render(label).mkString
+        value match
+          case v @ Val(id, value, typeOf) if lbl == "const" =>
+            List(s"""$lbl ${render(v).mkString}""")
+
+          case v @ Val(id, value, typeOf) =>
+            List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
+
+          case _ =>
+            List(s"""$lbl ${render(value).mkString}""")
+
+      case RawLiteral(body) =>
+        List(body)
+    }
+
+    val p =
+      pp.printer.orElse { case x => r(x) }
 
     p(ast.traverse(pp.transformer.orElse(n => n)))
 
@@ -297,6 +299,7 @@ object ShaderPrinter:
       case Assign(_, _)                 => None
       case If(_, _, _)                  => None
       case While(_, _)                  => None
+      case For(_, _, _, _)              => None
       case Switch(_, _)                 => None
       case Val(id, value, typeOf)       => typeOf
       case Annotated(_, _, value)       => decideType(value)
