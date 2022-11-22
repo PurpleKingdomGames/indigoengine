@@ -193,7 +193,6 @@ object ShaderAST:
     }
 
   enum DataTypes extends ShaderAST:
-    case closure(body: ShaderAST, typeOf: Option[String])
     case ident(id: String)
     case index(id: String, at: ShaderAST)
     case float(v: Float)
@@ -222,7 +221,6 @@ object ShaderAST:
     given ToExpr[DataTypes] with {
       def apply(x: DataTypes)(using Quotes): Expr[DataTypes] =
         x match
-          case v: DataTypes.closure => Expr(v)
           case v: DataTypes.ident   => Expr(v)
           case v: DataTypes.index   => Expr(v)
           case v: DataTypes.float   => Expr(v)
@@ -243,10 +241,6 @@ object ShaderAST:
     given ToExpr[index] with {
       def apply(x: index)(using Quotes): Expr[index] =
         '{ index(${ Expr(x.id) }, ${ Expr(x.at) }) }
-    }
-    given ToExpr[closure] with {
-      def apply(x: closure)(using Quotes): Expr[closure] =
-        '{ closure(${ Expr(x.body) }, ${ Expr(x.typeOf) }) }
     }
     given ToExpr[float] with {
       def apply(x: float)(using Quotes): Expr[float] =
@@ -322,7 +316,6 @@ object ShaderAST:
               case Val(_, body, _)            => rec(body :: xs)
               case Annotated(_, _, body)      => rec(body :: xs)
               case RawLiteral(_)              => rec(xs)
-              case v: DataTypes.closure       => rec(v.body :: xs)
               case v: DataTypes.ident         => rec(xs)
               case v: DataTypes.index         => rec(xs)
               case v: DataTypes.float         => rec(xs)
@@ -364,7 +357,6 @@ object ShaderAST:
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ Annotated(id, param, value)          => f(Annotated(id, param, f(value)))
         case v @ RawLiteral(_)                        => f(v)
-        case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
         case v @ DataTypes.int(_)                     => f(v)
         case v @ DataTypes.ident(_)                   => f(v)
@@ -380,35 +372,34 @@ object ShaderAST:
 
     def typeIdent: Option[ShaderAST.DataTypes.ident] =
       ast match
-        case Empty()                      => None
-        case Block(_)                     => None
-        case ShaderBlock(_, _, _, _, _)   => None
-        case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
-        case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
-        case FunctionRef(_, rt)           => rt.flatMap(_.typeIdent)
-        case Cast(_, as)                  => Option(ShaderAST.DataTypes.ident(as))
-        case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
-        case Assign(_, _)                 => None
-        case If(_, _, _)                  => None
-        case While(_, _)                  => None
-        case For(_, _, _, _)              => None
-        case Switch(_, _)                 => None
-        case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
-        case Annotated(_, _, value)       => value.typeIdent
-        case RawLiteral(_)                => None
-        case n @ DataTypes.ident(_)       => Option(n)
-        case DataTypes.index(_, _)        => None
-        case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
-        case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
-        case DataTypes.int(_)             => Option(ShaderAST.DataTypes.ident("int"))
-        case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
-        case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
-        case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
-        case DataTypes.mat2(_)            => Option(ShaderAST.DataTypes.ident("mat2"))
-        case DataTypes.mat3(_)            => Option(ShaderAST.DataTypes.ident("mat3"))
-        case DataTypes.mat4(_)            => Option(ShaderAST.DataTypes.ident("mat4"))
-        case DataTypes.array(_, typeOf)   => typeOf.map(t => ShaderAST.DataTypes.ident(t + "[]"))
-        case DataTypes.swizzle(v, _, _)   => v.typeIdent
+        case Empty()                    => None
+        case Block(_)                   => None
+        case ShaderBlock(_, _, _, _, _) => None
+        case Function(_, _, _, rt)      => rt.flatMap(_.typeIdent)
+        case CallFunction(_, _, _, rt)  => rt.flatMap(_.typeIdent)
+        case FunctionRef(_, rt)         => rt.flatMap(_.typeIdent)
+        case Cast(_, as)                => Option(ShaderAST.DataTypes.ident(as))
+        case Infix(_, _, _, rt)         => rt.flatMap(_.typeIdent)
+        case Assign(_, _)               => None
+        case If(_, _, _)                => None
+        case While(_, _)                => None
+        case For(_, _, _, _)            => None
+        case Switch(_, _)               => None
+        case Val(id, value, typeOf)     => typeOf.map(t => ShaderAST.DataTypes.ident(t))
+        case Annotated(_, _, value)     => value.typeIdent
+        case RawLiteral(_)              => None
+        case n @ DataTypes.ident(_)     => Option(n)
+        case DataTypes.index(_, _)      => None
+        case DataTypes.float(_)         => Option(ShaderAST.DataTypes.ident("float"))
+        case DataTypes.int(_)           => Option(ShaderAST.DataTypes.ident("int"))
+        case DataTypes.vec2(_)          => Option(ShaderAST.DataTypes.ident("vec2"))
+        case DataTypes.vec3(_)          => Option(ShaderAST.DataTypes.ident("vec3"))
+        case DataTypes.vec4(_)          => Option(ShaderAST.DataTypes.ident("vec4"))
+        case DataTypes.mat2(_)          => Option(ShaderAST.DataTypes.ident("mat2"))
+        case DataTypes.mat3(_)          => Option(ShaderAST.DataTypes.ident("mat3"))
+        case DataTypes.mat4(_)          => Option(ShaderAST.DataTypes.ident("mat4"))
+        case DataTypes.array(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t + "[]"))
+        case DataTypes.swizzle(v, _, _) => v.typeIdent
 
     def envVarName: Option[String] =
       ast match

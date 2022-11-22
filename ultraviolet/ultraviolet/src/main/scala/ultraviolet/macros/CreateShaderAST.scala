@@ -803,11 +803,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case Some(ShaderAST.Function(_, _, _, rt)) =>
             ShaderAST.CallFunction(resolvedName, Nil, Nil, rt)
 
-      case Closure(Ident("$anonfun"), None) =>
+      case Closure(_, _) =>
         ShaderAST.Empty()
-
-      case Closure(term, typeRepr) =>
-        ShaderAST.DataTypes.closure(walkTerm(term, envVarName), typeRepr.map(_.toString))
 
       case Wildcard() =>
         throw ShaderError.Unsupported("Shaders do not support wildcards.")
