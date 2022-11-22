@@ -261,6 +261,9 @@ object ShaderPrinter:
           case v @ Val(id, value, typeOf) if lbl == "const" =>
             List(s"""$lbl ${render(v).mkString}""")
 
+          case v @ Val(id, value, typeOf) if lbl == "define" =>
+            List(s"""#$lbl $id ${render(value).mkString}""")
+
           case v @ Val(id, value, typeOf) =>
             List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
 
@@ -291,12 +294,13 @@ object ShaderPrinter:
         case x =>
           render(x)
             .map {
-              case s if s.isEmpty()     => s
-              case s if s.endsWith(";") => s
-              case s if s.endsWith(":") => s
-              case s if s.endsWith("{") => s
-              case s if s.endsWith("}") => s
-              case s                    => s + ";"
+              case s if s.isEmpty()       => s
+              case s if s.endsWith(";")   => s
+              case s if s.endsWith(":")   => s
+              case s if s.endsWith("{")   => s
+              case s if s.endsWith("}")   => s
+              case s if s.startsWith("#") => s
+              case s                      => s + ";"
             }
       }
 

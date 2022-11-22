@@ -8,10 +8,10 @@ object Seascape:
 
   inline def image =
     Shader[ShaderToyEnv, Unit] { env =>
-      @const val NUM_STEPS: Int     = 8
-      @const val PI: Float          = 3.141592f
-      @const val EPSILON: Float     = 1e-3f
-      @const val EPSILON_NRM: Float = 0.1f / env.iResolution.x
+      @const val NUM_STEPS: Int      = 8
+      @const val PI: Float           = 3.141592f
+      @const val EPSILON: Float      = 1e-3f
+      @define val EPSILON_NRM: Float = 0.1f / env.iResolution.x
 
       // sea
       @const val ITER_GEOMETRY: Int    = 3
@@ -22,7 +22,7 @@ object Seascape:
       @const val SEA_FREQ: Float       = 0.16f
       @const val SEA_BASE: vec3        = vec3(0.0f, 0.09f, 0.18f)
       @const val SEA_WATER_COLOR: vec3 = vec3(0.8f, 0.9f, 0.6f) * 0.6f
-      @const val SEA_TIME: Float       = 1.0f + env.iTime * SEA_SPEED
+      @define val SEA_TIME: Float      = 1.0f + env.iTime * SEA_SPEED
       @const val octave_m: mat2        = mat2(1.6f, 1.2f, -1.2f, 1.6f)
 
       // math
@@ -201,7 +201,7 @@ object Seascape:
     |const int NUM_STEPS=8;
     |const float PI=3.141592025756836;
     |const float EPSILON=0.0010000000474974513;
-    |const float EPSILON_NRM=0.10000000149011612/iResolution.x;
+    |#define EPSILON_NRM 0.10000000149011612/iResolution.x
     |const int ITER_GEOMETRY=3;
     |const int ITER_FRAGMENT=5;
     |const float SEA_HEIGHT=0.6000000238418579;
@@ -210,7 +210,7 @@ object Seascape:
     |const float SEA_FREQ=0.1599999964237213;
     |const vec3 SEA_BASE=vec3(0.0,0.09000000357627869,0.18000000715255737);
     |const vec3 SEA_WATER_COLOR=vec3(0.800000011920929,0.8999999761581421,0.6000000238418579)*0.6000000238418579;
-    |const float SEA_TIME=1.0+(iTime*SEA_SPEED);
+    |#define SEA_TIME 1.0+(iTime*SEA_SPEED)
     |const mat2 octave_m=mat2(1.600000023841858,1.2000000476837158,-1.2000000476837158,1.600000023841858);
     |mat3 fromEuler(in vec3 ang){
     |  vec2 a1=vec2(sin(ang.x),cos(ang.x));

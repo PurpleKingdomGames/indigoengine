@@ -37,4 +37,4 @@ Just writing these down during the development process, mostly for me! They may 
 - Pattern matching emulates switch statements, but they are side effecting, not used for setting `val`s.
 - If statements are side effecting and cannot set a variable or function return type.
 - Although Ultraviolet is based on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 and it is rewritten to `texture` for WebGL 2.0. This allows us to be more specific on the API.
-- Pragma's are going to be dropped for now.
+- Preprocessor directives largely don't exist, but `#define` supported for special cases where you need to define a global value based on a non-constant value.

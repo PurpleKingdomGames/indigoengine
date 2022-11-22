@@ -41,6 +41,7 @@ object syntax extends ShaderDSLOps:
 
   final class attribute extends StaticAnnotation
   final class const     extends StaticAnnotation
+  final class define    extends StaticAnnotation
   final class uniform   extends StaticAnnotation
   final class in        extends StaticAnnotation
   final class out       extends StaticAnnotation
