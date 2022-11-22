@@ -396,6 +396,35 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
         ShaderAST.For(i, c, n, b)
 
+      case Apply(
+            Apply(
+              TypeApply(Ident("cfor"), _),
+              List(
+                _,
+                Block(
+                  List(DefDef("$anonfun", _, _, Some(condition))),
+                  Closure(Ident("$anonfun"), None)
+                ),
+                Block(
+                  List(DefDef("$anonfun", _, _, Some(next))),
+                  Closure(Ident("$anonfun"), None)
+                )
+              )
+            ),
+            List(
+              Block(
+                Nil,
+                Block(
+                  List(DefDef("$anonfun", _, _, Some(body))),
+                  _
+                )
+              )
+            )
+          ) =>
+        throw ShaderError.Unsupported(
+          "Shaders do not support for-loops (cfor) constructed using types other than `Int`."
+        )
+
       // Primitives
 
       case Apply(Select(Ident("vec2"), "apply"), args) =>
