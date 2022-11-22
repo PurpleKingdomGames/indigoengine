@@ -206,11 +206,15 @@ object ShaderAST:
   enum DataTypes extends ShaderAST:
     case closure(body: ShaderAST, typeOf: Option[String])
     case ident(id: String)
+    case index(id: String, at: ShaderAST)
     case float(v: Float)
     case int(v: Int)
     case vec2(args: List[ShaderAST])
     case vec3(args: List[ShaderAST])
     case vec4(args: List[ShaderAST])
+    case mat2(args: List[ShaderAST])
+    case mat3(args: List[ShaderAST])
+    case mat4(args: List[ShaderAST])
     case array(size: Int, typeOf: Option[String])
     case swizzle(genType: ShaderAST, swizzle: String, returnType: Option[ShaderAST])
 
@@ -231,17 +235,25 @@ object ShaderAST:
         x match
           case v: DataTypes.closure => Expr(v)
           case v: DataTypes.ident   => Expr(v)
+          case v: DataTypes.index   => Expr(v)
           case v: DataTypes.float   => Expr(v)
           case v: DataTypes.int     => Expr(v)
           case v: DataTypes.vec2    => Expr(v)
           case v: DataTypes.vec3    => Expr(v)
           case v: DataTypes.vec4    => Expr(v)
+          case v: DataTypes.mat2    => Expr(v)
+          case v: DataTypes.mat3    => Expr(v)
+          case v: DataTypes.mat4    => Expr(v)
           case v: DataTypes.array   => Expr(v)
           case v: DataTypes.swizzle => Expr(v)
     }
     given ToExpr[ident] with {
       def apply(x: ident)(using Quotes): Expr[ident] =
         '{ ident(${ Expr(x.id) }) }
+    }
+    given ToExpr[index] with {
+      def apply(x: index)(using Quotes): Expr[index] =
+        '{ index(${ Expr(x.id) }, ${ Expr(x.at) }) }
     }
     given ToExpr[closure] with {
       def apply(x: closure)(using Quotes): Expr[closure] =
@@ -266,6 +278,18 @@ object ShaderAST:
     given ToExpr[vec4] with {
       def apply(x: vec4)(using Quotes): Expr[vec4] =
         '{ vec4(${ Expr(x.args) }) }
+    }
+    given ToExpr[mat2] with {
+      def apply(x: mat2)(using Quotes): Expr[mat2] =
+        '{ mat2(${ Expr(x.args) }) }
+    }
+    given ToExpr[mat3] with {
+      def apply(x: mat3)(using Quotes): Expr[mat3] =
+        '{ mat3(${ Expr(x.args) }) }
+    }
+    given ToExpr[mat4] with {
+      def apply(x: mat4)(using Quotes): Expr[mat4] =
+        '{ mat4(${ Expr(x.args) }) }
     }
     given ToExpr[array] with {
       def apply(x: array)(using Quotes): Expr[array] =
@@ -312,11 +336,15 @@ object ShaderAST:
               case RawLiteral(_)              => rec(xs)
               case v: DataTypes.closure       => rec(v.body :: xs)
               case v: DataTypes.ident         => rec(xs)
+              case v: DataTypes.index         => rec(xs)
               case v: DataTypes.float         => rec(xs)
               case v: DataTypes.int           => rec(xs)
               case v: DataTypes.vec2          => rec(v.args ++ xs)
               case v: DataTypes.vec3          => rec(v.args ++ xs)
               case v: DataTypes.vec4          => rec(v.args ++ xs)
+              case v: DataTypes.mat2          => rec(v.args ++ xs)
+              case v: DataTypes.mat3          => rec(v.args ++ xs)
+              case v: DataTypes.mat4          => rec(v.args ++ xs)
               case v: DataTypes.array         => rec(xs)
               case v: DataTypes.swizzle       => rec(v.genType :: xs)
 
@@ -354,9 +382,13 @@ object ShaderAST:
         case v @ DataTypes.float(_)                   => f(v)
         case v @ DataTypes.int(_)                     => f(v)
         case v @ DataTypes.ident(_)                   => f(v)
+        case v @ DataTypes.index(_, _)                => f(v)
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
         case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
+        case v @ DataTypes.mat2(vs)                   => f(DataTypes.mat2(vs.map(f)))
+        case v @ DataTypes.mat3(vs)                   => f(DataTypes.mat3(vs.map(f)))
+        case v @ DataTypes.mat4(vs)                   => f(DataTypes.mat4(vs.map(f)))
         case v @ DataTypes.array(_, _)                => f(v)
         case v @ DataTypes.swizzle(_, _, _)           => f(v)
 
@@ -380,12 +412,16 @@ object ShaderAST:
         case Annotated(_, _, value)       => value.typeIdent
         case RawLiteral(_)                => None
         case n @ DataTypes.ident(_)       => Option(n)
+        case DataTypes.index(_, _)        => None
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
         case DataTypes.int(_)             => Option(ShaderAST.DataTypes.ident("int"))
         case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
         case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
         case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
+        case DataTypes.mat2(_)            => Option(ShaderAST.DataTypes.ident("mat2"))
+        case DataTypes.mat3(_)            => Option(ShaderAST.DataTypes.ident("mat3"))
+        case DataTypes.mat4(_)            => Option(ShaderAST.DataTypes.ident("mat4"))
         case DataTypes.array(_, typeOf)   => typeOf.map(t => ShaderAST.DataTypes.ident(t + "[]"))
         case DataTypes.swizzle(v, _, _)   => v.typeIdent
 

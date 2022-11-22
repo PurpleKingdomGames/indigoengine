@@ -24,13 +24,17 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case "vec2"         => "vec2"
           case "vec3"         => "vec3"
           case "vec4"         => "vec4"
+          case "mat2"         => "mat2"
+          case "mat3"         => "mat3"
+          case "mat4"         => "mat4"
           case "sampler2D$"   => "sampler2D"
           case "samplerCube$" => "samplerCube"
           case n              => n
         }
         .filter {
-          case "float" | "int" | "vec2" | "vec3" | "vec4" | "sampler2D" | "samplerCube" => true
-          case _                                                                        => false
+          case "float" | "int" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube" =>
+            true
+          case _ => false
         }
 
     typ match
@@ -390,6 +394,27 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, envVarName)))
 
+      case Apply(Select(Ident("mat2"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.mat2(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.mat2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("mat3"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.mat3(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.mat3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("mat4"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.mat4(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.mat4(args.map(p => walkTerm(p, envVarName)))
+
       //
 
       case Apply(Select(Ident(id), "apply"), args) =>
@@ -416,6 +441,15 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
         ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "mat2"), "apply"), args) =>
+        ShaderAST.DataTypes.mat2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "mat3"), "apply"), args) =>
+        ShaderAST.DataTypes.mat3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "mat4"), "apply"), args) =>
+        ShaderAST.DataTypes.mat4(args.map(p => walkTerm(p, envVarName)))
 
       // Casting
 
@@ -476,10 +510,11 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               rhs
             )
           ) =>
-        // Update mutable collections - array's in our case.
+        // Update mutable collections - array's and mat's in our case.
+        val idx = walkTerm(index, envVarName)
         ShaderAST.Infix(
           "=",
-          ShaderAST.DataTypes.ident(s"$id[$index]"),
+          ShaderAST.DataTypes.index(id, idx),
           walkTerm(rhs, envVarName),
           None
         )

@@ -210,7 +210,7 @@ object Seascape:
     |const vec3 SEA_BASE=vec3(0.0,0.09000000357627869,0.18000000715255737);
     |const vec3 SEA_WATER_COLOR=vec3(0.800000011920929,0.8999999761581421,0.6000000238418579)*0.6000000238418579;
     |const float SEA_TIME=1.0+(iTime*SEA_SPEED);
-    |const void octave_m=mat2(1.600000023841858,1.2000000476837158,-1.2000000476837158,1.600000023841858);
+    |const mat2 octave_m=mat2(1.600000023841858,1.2000000476837158,-1.2000000476837158,1.600000023841858);
     |mat3 fromEuler(in vec3 ang){
     |  vec2 a1=vec2(sin(ang.x),cos(ang.x));
     |  vec2 a2=vec2(sin(ang.y),cos(ang.y));

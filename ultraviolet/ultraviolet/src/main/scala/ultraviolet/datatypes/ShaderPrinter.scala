@@ -205,6 +205,9 @@ object ShaderPrinter:
       case DataTypes.ident(id) =>
         List(s"$id")
 
+      case DataTypes.index(id, at) =>
+        render(at).map(idx => s"$id[$idx]")
+
       case DataTypes.float(v) =>
         List(s"${rf(v)}")
 
@@ -219,6 +222,15 @@ object ShaderPrinter:
 
       case DataTypes.vec4(args) =>
         List(s"vec4(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.mat2(args) =>
+        List(s"mat2(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.mat3(args) =>
+        List(s"mat3(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.mat4(args) =>
+        List(s"mat4(${args.flatMap(render).mkString(",")})")
 
       case DataTypes.array(size, typeOf) =>
         List(s"array goes here...")
@@ -314,13 +326,17 @@ object ShaderPrinter:
       case Val(id, value, typeOf)       => typeOf
       case Annotated(_, _, value)       => decideType(value)
       case RawLiteral(_)                => None
-      case n @ DataTypes.ident(_)       => None
+      case DataTypes.ident(_)           => None
+      case DataTypes.index(_, _)        => None
       case DataTypes.closure(_, typeOf) => typeOf
       case DataTypes.float(v)           => Option("float")
       case DataTypes.int(v)             => Option("int")
       case DataTypes.vec2(args)         => Option("vec2")
       case DataTypes.vec3(args)         => Option("vec3")
       case DataTypes.vec4(args)         => Option("vec4")
+      case DataTypes.mat2(args)         => Option("mat2")
+      case DataTypes.mat3(args)         => Option("mat3")
+      case DataTypes.mat4(args)         => Option("mat4")
       case DataTypes.array(_, typeOf)   => typeOf
       case DataTypes.swizzle(v, _, rt)  => rt.toList.flatMap(render).headOption
 
