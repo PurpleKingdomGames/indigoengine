@@ -16,6 +16,14 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
   val proxies                                = new ProxyManager
   val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
 
+  def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
+    case ShaderAST.Block(statements :+ last) =>
+      ShaderAST.Block(statements :+ ShaderAST.Assign(lhs, last))
+
+    case last =>
+      ShaderAST.Assign(lhs, last)
+  }
+
   def extractInferredType(typ: TypeTree): Option[String] =
     def mapName(name: Option[String]): Option[String] =
       name
@@ -141,14 +149,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             case _                            => None
           }
 
-        def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
-          case ShaderAST.Block(statements :+ last) =>
-            ShaderAST.Block(statements :+ ShaderAST.Assign(lhs, last))
-
-          case last =>
-            ShaderAST.Assign(lhs, last)
-        }
-
         body match
           case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
             proxies.add(name, id, rt)
@@ -272,8 +272,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
                   ShaderAST.If(
                     cond,
-                    ShaderAST.Assign(resVal, thn),
-                    els.map(e => ShaderAST.Assign(resVal, e))
+                    assignToLast(resVal)(thn),
+                    els.map(e => assignToLast(resVal)(e))
                   ),
                   resVal
                 )
@@ -296,8 +296,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
                   ShaderAST.If(
                     cond,
-                    ShaderAST.Assign(resVal, thn),
-                    els.map(e => ShaderAST.Assign(resVal, e))
+                    assignToLast(resVal)(thn),
+                    els.map(e => assignToLast(resVal)(e))
                   ),
                   resVal
                 )

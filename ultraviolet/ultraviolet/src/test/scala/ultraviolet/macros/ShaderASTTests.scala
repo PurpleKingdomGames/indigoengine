@@ -514,7 +514,10 @@ class ShaderASTTests extends munit.FunSuite {
 
         def p2(x: Int): Int =
           val amount = 10 // Forces a Block in the function body.
-          if x <= amount then 15 else 20
+          if x <= amount then
+            val y = 15
+            y
+          else 20
         p2(1)
       }
 
@@ -541,7 +544,8 @@ class ShaderASTTests extends munit.FunSuite {
       |  int amount=10;
       |  int val1;
       |  if(x<=amount){
-      |    val1=15;
+      |    int y=15;
+      |    val1=y;
       |  }else{
       |    val1=20;
       |  }
