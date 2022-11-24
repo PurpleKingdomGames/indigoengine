@@ -23,7 +23,7 @@ class ShaderToyTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[ShaderToy]
+      fragment.toGLSL[ShaderToy].code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -45,19 +45,19 @@ class ShaderToyTests extends munit.FunSuite {
     // Buffer A
     // DebugAST.toAST(Plasma.bufferA)
     // println(Plasma.bufferAShader)
-    assertEquals(Plasma.bufferAShader, Plasma.bufferAExpected)
+    assertEquals(Plasma.bufferAShader.code, Plasma.bufferAExpected)
 
     // Image
     // DebugAST.toAST(Plasma.image)
     // println(Plasma.imageShader)
-    assertEquals(Plasma.imageShader, Plasma.imageExpected)
+    assertEquals(Plasma.imageShader.code, Plasma.imageExpected)
   }
 
   test("Real example: Seascape") {
     // Image
     // DebugAST.toAST(Seascape.image)
     // println(Seascape.imageShader)
-    assertEquals(Seascape.imageShader, Seascape.imageExpected)
+    assertEquals(Seascape.imageShader.code, Seascape.imageExpected)
   }
 
 }

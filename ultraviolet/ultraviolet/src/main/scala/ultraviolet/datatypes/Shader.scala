@@ -25,5 +25,5 @@ object Shader:
     new Shader[Unit, Unit](headers.toList, (_: Unit) => body)
 
   extension [In, Out](inline ctx: Shader[In, Out])
-    inline def toGLSL[T](using ShaderPrinter[T]): String =
+    inline def toGLSL[T](using ShaderPrinter[T]): ShaderOutput =
       ShaderMacros.toAST(ctx).render

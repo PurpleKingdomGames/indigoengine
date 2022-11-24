@@ -17,7 +17,7 @@ class WebGL2Tests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2]
+      fragment.toGLSL[WebGL2].code
 
     // DebugAST.toAST(fragment)
     // println(actual)

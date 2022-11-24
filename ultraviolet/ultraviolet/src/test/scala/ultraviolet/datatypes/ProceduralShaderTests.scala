@@ -111,6 +111,78 @@ class ProceduralShaderTests extends munit.FunSuite {
 
   }
 
+  test("Output & Metadata") {
+    import ultraviolet.syntax.*
+
+    case class UBO1(position: vec2, color: vec4)
+    case class UBO2(direction: vec3, alpha: highp[Float])
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    inline def fragment =
+      Shader {
+        @uniform val TIME: Float = 0.0f;
+        ubo[UBO1]
+        @uniform val UV: vec2 = null;
+        @in val v_tex: vec2   = null;
+        ubo[UBO2]
+        @out val v_coords: vec3 = null;
+
+        vec4(1.0f)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2]
+
+    val expectedCode =
+      s"""
+      |uniform float TIME;
+      |layout (std140) uniform UBO1 {
+      |  vec2 position;
+      |  vec4 color;
+      |};
+      |uniform vec2 UV;
+      |in vec2 v_tex;
+      |layout (std140) uniform UBO2 {
+      |  vec3 direction;
+      |  highp float alpha;
+      |};
+      |out vec3 v_coords;
+      |vec4(1.0);
+      |""".stripMargin.trim
+
+    val expectedMetadata =
+      ShaderMetadata(
+        uniforms = List(
+          ShaderField("TIME", "float"),
+          ShaderField("UV", "vec2")
+        ),
+        ubos = List(
+          UBODef(
+            "UBO1",
+            List(
+              UBOField(None, "vec2", "position"),
+              UBOField(None, "vec4", "color")
+            )
+          ),
+          UBODef(
+            "UBO2",
+            List(
+              UBOField(None, "vec3", "direction"),
+              UBOField(Some("highp"), "float", "alpha")
+            )
+          )
+        ),
+        varyings = List(
+          ShaderField("v_tex", "vec2"),
+          ShaderField("v_coords", "vec3")
+        )
+      )
+
+    assertEquals(actual.code, expectedCode)
+    assertEquals(actual.metadata, expectedMetadata)
+
+  }
+
 }
 
 object ProceduralShaderSamples:

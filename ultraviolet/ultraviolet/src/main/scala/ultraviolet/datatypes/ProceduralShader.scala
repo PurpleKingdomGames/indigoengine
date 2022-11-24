@@ -14,7 +14,7 @@ object ProceduralShader:
 
   extension (p: ProceduralShader)
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    inline def render[T](using printer: ShaderPrinter[T]): String =
+    inline def render[T](using printer: ShaderPrinter[T]): ShaderOutput =
       import ShaderAST.*
 
       val inType    = p.main.inType
@@ -32,7 +32,61 @@ object ProceduralShader:
           val renderedDefs    = functions.map(d => ShaderPrinter.print(d).mkString("\n"))
           val renderedBody    = ShaderPrinter.print(body)
 
-          (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
+          val transformedBody: ShaderAST =
+            body.traverse(printer.transformer.orElse(n => n))
+
+          val code =
+            (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
+
+          ShaderOutput(
+            code,
+            ShaderMetadata(
+              uniforms = transformedBody
+                .findAll {
+                  case ShaderAST.Annotated(ShaderAST.DataTypes.ident("uniform"), _, ShaderAST.Val(_, _, _)) => true
+                  case _                                                                                    => false
+                }
+                .flatMap {
+                  case ShaderAST.Annotated(name, param, ShaderAST.Val(id, value, typeOf)) =>
+                    List(
+                      ShaderField(
+                        id,
+                        typeOf.getOrElse(throw ShaderError.Metadata("Uniform declaration missing return type."))
+                      )
+                    )
+
+                  case _ => Nil
+                },
+              ubos = transformedBody
+                .findAll {
+                  case ShaderAST.UBO(_) => true
+                  case _                => false
+                }
+                .flatMap {
+                  case ShaderAST.UBO(ubo) => List(ubo)
+                  case _                  => Nil
+                },
+              varyings = transformedBody
+                .findAll {
+                  case ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), _, ShaderAST.Val(_, _, _)) => true
+                  case ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), _, ShaderAST.Val(_, _, _))      => true
+                  case ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), _, ShaderAST.Val(_, _, _))     => true
+                  case _                                                                                    => false
+                }
+                .flatMap {
+                  case ShaderAST.Annotated(name, param, ShaderAST.Val(id, value, typeOf)) =>
+                    List(
+                      ShaderField(
+                        id,
+                        typeOf.getOrElse(throw ShaderError.Metadata("Varying declaration missing return type."))
+                      )
+                    )
+
+                  case _ =>
+                    Nil
+                }
+            )
+          )
 
     def exists(q: ShaderAST): Boolean =
       p.main.exists(q) || p.defs.exists(_.exists(q))
