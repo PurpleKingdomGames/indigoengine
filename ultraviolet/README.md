@@ -39,6 +39,8 @@ Just writing these down during the development process, mostly for me! They may 
 - Although Ultraviolet is based on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 and it is rewritten to `texture` for WebGL 2.0. This allows us to be more specific on the API.
 - Preprocessor directives largely don't exist, but `#define` supported for special cases where you need to define a global value based on a non-constant value.
 - Ultraviolet supports the % operator where GLSL does not.
+- We do not support unsigned integers (for now), hence `uint` and `uvec` are not supported.
+- GLSL does not consistenly support `double`s, and so we don't support `double` or `dvec` either.
 
 Inlining external stuff:
 - Here, 'external' means 'not inside the body of your shader'.
