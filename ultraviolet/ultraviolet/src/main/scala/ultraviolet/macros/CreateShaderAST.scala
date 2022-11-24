@@ -28,6 +28,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
     def mapName(name: Option[String]): Option[String] =
       name
         .map {
+          case "Boolean"      => "bool"
           case "Float"        => "float"
           case "Int"          => "int"
           case "vec2"         => "vec2"
@@ -41,7 +42,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case n              => n
         }
         .filter {
-          case "float" | "int" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube" =>
+          case "bool" | "float" | "int" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" |
+              "samplerCube" =>
             true
           case _ => false
         }
@@ -391,6 +393,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case TypeIdent("Unit") =>
         ShaderAST.DataTypes.ident("void")
 
+      case TypeIdent("Boolean") =>
+        ShaderAST.DataTypes.ident("bool")
+
       case TypeIdent("Float") =>
         ShaderAST.DataTypes.ident("float")
 
@@ -666,6 +671,18 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Select(term, "toFloat") =>
         ShaderAST.Cast(walkTerm(term, envVarName), "float")
+
+      case Select(term, "toBoolean") =>
+        ShaderAST.Cast(walkTerm(term, envVarName), "bool")
+
+      case Apply(Ident("toInt"), List(term)) =>
+        ShaderAST.Cast(walkTerm(term, envVarName), "int")
+
+      case Apply(Ident("toFloat"), List(term)) =>
+        ShaderAST.Cast(walkTerm(term, envVarName), "float")
+
+      case Apply(Ident("toBoolean"), List(term)) =>
+        ShaderAST.Cast(walkTerm(term, envVarName), "bool")
 
       // Read a field
 
@@ -967,6 +984,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Literal(IntConstant(i)) =>
         ShaderAST.DataTypes.int(i)
+
+      case Literal(BooleanConstant(b)) =>
+        ShaderAST.DataTypes.bool(b)
 
       case Literal(UnitConstant()) =>
         ShaderAST.Empty()

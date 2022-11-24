@@ -203,6 +203,7 @@ object ShaderAST:
   enum DataTypes extends ShaderAST:
     case ident(id: String)
     case index(id: String, at: ShaderAST)
+    case bool(b: Boolean)
     case float(v: Float)
     case int(v: Int)
     case vec2(args: List[ShaderAST])
@@ -231,6 +232,7 @@ object ShaderAST:
         x match
           case v: DataTypes.ident   => Expr(v)
           case v: DataTypes.index   => Expr(v)
+          case v: DataTypes.bool    => Expr(v)
           case v: DataTypes.float   => Expr(v)
           case v: DataTypes.int     => Expr(v)
           case v: DataTypes.vec2    => Expr(v)
@@ -249,6 +251,10 @@ object ShaderAST:
     given ToExpr[index] with {
       def apply(x: index)(using Quotes): Expr[index] =
         '{ index(${ Expr(x.id) }, ${ Expr(x.at) }) }
+    }
+    given ToExpr[bool] with {
+      def apply(x: bool)(using Quotes): Expr[bool] =
+        '{ bool(${ Expr(x.b) }) }
     }
     given ToExpr[float] with {
       def apply(x: float)(using Quotes): Expr[float] =
@@ -327,6 +333,7 @@ object ShaderAST:
               case RawLiteral(_)              => rec(xs)
               case v: DataTypes.ident         => rec(xs)
               case v: DataTypes.index         => rec(xs)
+              case v: DataTypes.bool          => rec(xs)
               case v: DataTypes.float         => rec(xs)
               case v: DataTypes.int           => rec(xs)
               case v: DataTypes.vec2          => rec(v.args ++ xs)
@@ -367,6 +374,7 @@ object ShaderAST:
               case RawLiteral(_)              => rec(xs, acc)
               case v: DataTypes.ident         => rec(xs, acc)
               case v: DataTypes.index         => rec(xs, acc)
+              case v: DataTypes.bool          => rec(xs, acc)
               case v: DataTypes.float         => rec(xs, acc)
               case v: DataTypes.int           => rec(xs, acc)
               case v: DataTypes.vec2          => rec(v.args ++ xs, acc)
@@ -407,6 +415,7 @@ object ShaderAST:
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ Annotated(id, param, value)          => f(Annotated(id, param, f(value)))
         case v @ RawLiteral(_)                        => f(v)
+        case v @ DataTypes.bool(_)                    => f(v)
         case v @ DataTypes.float(_)                   => f(v)
         case v @ DataTypes.int(_)                     => f(v)
         case v @ DataTypes.ident(_)                   => f(v)
@@ -441,6 +450,7 @@ object ShaderAST:
         case RawLiteral(_)              => None
         case n @ DataTypes.ident(_)     => Option(n)
         case DataTypes.index(_, _)      => None
+        case DataTypes.bool(_)          => Option(ShaderAST.DataTypes.ident("bool"))
         case DataTypes.float(_)         => Option(ShaderAST.DataTypes.ident("float"))
         case DataTypes.int(_)           => Option(ShaderAST.DataTypes.ident("int"))
         case DataTypes.vec2(_)          => Option(ShaderAST.DataTypes.ident("vec2"))

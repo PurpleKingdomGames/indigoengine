@@ -27,6 +27,7 @@ trait ShaderMacroUtils:
     case v: ShaderAST.RawLiteral        => None
     case v: ShaderAST.DataTypes.ident   => v.typeIdent
     case v: ShaderAST.DataTypes.index   => v.typeIdent
+    case v: ShaderAST.DataTypes.bool    => v.typeIdent
     case v: ShaderAST.DataTypes.float   => v.typeIdent
     case v: ShaderAST.DataTypes.int     => v.typeIdent
     case v: ShaderAST.DataTypes.vec2    => v.typeIdent

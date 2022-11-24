@@ -8,7 +8,15 @@ import scala.annotation.targetName
   */
 trait ShaderDSLOps extends ShaderDSLTypeExtensions:
 
+  extension (b: Boolean)
+    def toInt: Int     = if b then 1 else 0
+    def toFloat: Float = if b then 1.0f else 0.0f
+
+  extension (i: Int) def toBoolean: Boolean = if i == 0 then false else true
+
   extension (f: Float)
+    def toBoolean: Boolean = if f == 0.0f then false else true
+
     def +(v: vec2): vec2 = vec2(f + v.x, f + v.y)
     def -(v: vec2): vec2 = vec2(f - v.x, f - v.y)
     def *(v: vec2): vec2 = vec2(f * v.x, f * v.y)

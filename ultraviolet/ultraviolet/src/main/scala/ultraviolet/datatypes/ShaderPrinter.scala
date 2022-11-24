@@ -202,6 +202,9 @@ object ShaderPrinter:
       case DataTypes.index(id, at) =>
         render(at).map(idx => s"$id[$idx]")
 
+      case DataTypes.bool(b) =>
+        List(s"${b.toString}")
+
       case DataTypes.float(v) =>
         List(s"${rf(v)}")
 
@@ -326,8 +329,9 @@ object ShaderPrinter:
       case RawLiteral(_)               => None
       case DataTypes.ident(_)          => None
       case DataTypes.index(_, _)       => None
-      case DataTypes.float(v)          => Option("float")
-      case DataTypes.int(v)            => Option("int")
+      case DataTypes.bool(_)           => Option("bool")
+      case DataTypes.float(_)          => Option("float")
+      case DataTypes.int(_)            => Option("int")
       case DataTypes.vec2(args)        => Option("vec2")
       case DataTypes.vec3(args)        => Option("vec3")
       case DataTypes.vec4(args)        => Option("vec4")

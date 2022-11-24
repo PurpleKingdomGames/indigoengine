@@ -28,6 +28,32 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  test("bool") {
+    inline def fragment =
+      Shader {
+        val a = true
+        val b = vec2(false.toFloat, a.toFloat)
+        val c = 1 + a.toInt
+        val d = 1.0f.toBoolean
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |bool a=true;
+      |vec2 b=vec2(float(false),float(a));
+      |int c=1+int(a);
+      |bool d=bool(1.0);
+      |""".stripMargin.trim
+    )
+  }
+
   test("Inlined external def") {
 
     inline def alpha: Float = 1.0f
