@@ -5,7 +5,7 @@ import ultraviolet.datatypes.ShaderAST
 trait ShaderMacroUtils:
 
   val isSwizzle     = "^([xyzw]+)$".r
-  val isSwizzleable = "^(vec2|vec3|vec4)$".r
+  val isSwizzleable = "^(vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4)$".r
 
   def findReturnType: ShaderAST => Option[ShaderAST] =
     case v: ShaderAST.Empty             => None
@@ -33,6 +33,12 @@ trait ShaderMacroUtils:
     case v: ShaderAST.DataTypes.vec2    => v.typeIdent
     case v: ShaderAST.DataTypes.vec3    => v.typeIdent
     case v: ShaderAST.DataTypes.vec4    => v.typeIdent
+    case v: ShaderAST.DataTypes.bvec2   => v.typeIdent
+    case v: ShaderAST.DataTypes.bvec3   => v.typeIdent
+    case v: ShaderAST.DataTypes.bvec4   => v.typeIdent
+    case v: ShaderAST.DataTypes.ivec2   => v.typeIdent
+    case v: ShaderAST.DataTypes.ivec3   => v.typeIdent
+    case v: ShaderAST.DataTypes.ivec4   => v.typeIdent
     case v: ShaderAST.DataTypes.mat2    => v.typeIdent
     case v: ShaderAST.DataTypes.mat3    => v.typeIdent
     case v: ShaderAST.DataTypes.mat4    => v.typeIdent

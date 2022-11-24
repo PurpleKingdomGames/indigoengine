@@ -83,6 +83,8 @@ object ShaderDSLGen {
 
     List(
       extensionContent(
+        "",
+        "Float",
         "vec2",
         swizzles1(vec2) ++
           swizzles2(vec2) ++
@@ -96,6 +98,8 @@ object ShaderDSLGen {
         )
       ),
       extensionContent(
+        "",
+        "Float",
         "vec3",
         swizzles1(vec3) ++
           swizzles2(vec3) ++
@@ -109,7 +113,99 @@ object ShaderDSLGen {
         )
       ),
       extensionContent(
+        "",
+        "Float",
         "vec4",
+        swizzles1(vec4) ++
+          swizzles2(vec4) ++
+          swizzles3(vec4) ++
+          swizzles4(vec4),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "b",
+        "Boolean",
+        "bvec2",
+        swizzles1(vec2) ++
+          swizzles2(vec2) ++
+          swizzles3(vec2) ++
+          swizzles4(vec2),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "b",
+        "Boolean",
+        "bvec3",
+        swizzles1(vec3) ++
+          swizzles2(vec3) ++
+          swizzles3(vec3) ++
+          swizzles4(vec3),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "b",
+        "Boolean",
+        "bvec4",
+        swizzles1(vec4) ++
+          swizzles2(vec4) ++
+          swizzles3(vec4) ++
+          swizzles4(vec4),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "i",
+        "Int",
+        "ivec2",
+        swizzles1(vec2) ++
+          swizzles2(vec2) ++
+          swizzles3(vec2) ++
+          swizzles4(vec2),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "i",
+        "Int",
+        "ivec3",
+        swizzles1(vec3) ++
+          swizzles2(vec3) ++
+          swizzles3(vec3) ++
+          swizzles4(vec3),
+        Map(
+          "x" -> "x",
+          "y" -> "y",
+          "z" -> "z",
+          "w" -> "w"
+        )
+      ),
+      extensionContent(
+        "i",
+        "Int",
+        "ivec4",
         swizzles1(vec4) ++
           swizzles2(vec4) ++
           swizzles3(vec4) ++
@@ -124,26 +220,37 @@ object ShaderDSLGen {
     ).mkString("\n")
   }
 
-  def extensionContent(typeName: String, swizzles: List[List[String]], replace: Map[String, String]): String =
+  def extensionContent(
+      prefix: String,
+      baseType: String,
+      typeName: String,
+      swizzles: List[List[String]],
+      replace: Map[String, String]
+  ): String =
     s"""  extension (inline v: $typeName)
-    |${swizzlesToMethods(swizzles, replace)}
+    |${swizzlesToMethods(prefix, baseType, swizzles, replace)}
     |""".stripMargin
 
-  def swizzlesToMethods(swizzles: List[List[String]], replace: Map[String, String]): String =
+  def swizzlesToMethods(
+      prefix: String,
+      baseType: String,
+      swizzles: List[List[String]],
+      replace: Map[String, String]
+  ): String =
     swizzles
       .map { s =>
         s match {
           case x :: Nil =>
-            s"    inline def $x: Float = v.${replace(x)}"
+            s"    inline def $x: $baseType = v.${replace(x)}"
 
           case x :: y :: Nil =>
-            s"    inline def $x$y: vec2 = vec2(v.${replace(x)}, v.${replace(y)})"
+            s"    inline def $x$y: ${prefix}vec2 = ${prefix}vec2(v.${replace(x)}, v.${replace(y)})"
 
           case x :: y :: z :: Nil =>
-            s"    inline def $x$y$z: vec3 = vec3(v.${replace(x)}, v.${replace(y)}, v.${replace(z)})"
+            s"    inline def $x$y$z: ${prefix}vec3 = ${prefix}vec3(v.${replace(x)}, v.${replace(y)}, v.${replace(z)})"
 
           case x :: y :: z :: w :: Nil =>
-            s"    inline def $x$y$z$w: vec4 = vec4(v.${replace(x)}, v.${replace(y)}, v.${replace(z)}, v.${replace(w)})"
+            s"    inline def $x$y$z$w: ${prefix}vec4 = ${prefix}vec4(v.${replace(x)}, v.${replace(y)}, v.${replace(z)}, v.${replace(w)})"
 
           case _ =>
             ""

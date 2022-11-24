@@ -34,6 +34,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case "vec2"         => "vec2"
           case "vec3"         => "vec3"
           case "vec4"         => "vec4"
+          case "bvec2"        => "bvec2"
+          case "bvec3"        => "bvec3"
+          case "bvec4"        => "bvec4"
+          case "ivec2"        => "ivec2"
+          case "ivec3"        => "ivec3"
+          case "ivec4"        => "ivec4"
           case "mat2"         => "mat2"
           case "mat3"         => "mat3"
           case "mat4"         => "mat4"
@@ -42,8 +48,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case n              => n
         }
         .filter {
-          case "bool" | "float" | "int" | "vec2" | "vec3" | "vec4" | "mat2" | "mat3" | "mat4" | "sampler2D" |
-              "samplerCube" =>
+          case "bool" | "float" | "int" | "vec2" | "vec3" | "vec4" | "bvec2" | "bvec3" | "bvec4" | "ivec2" | "ivec3" |
+              "ivec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube" =>
             true
           case _ => false
         }
@@ -613,6 +619,48 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, envVarName)))
 
+      case Apply(Select(Ident("bvec2"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.bvec2(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.bvec2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("bvec3"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.bvec3(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.bvec3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("bvec4"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.bvec4(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.bvec4(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("ivec2"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.ivec2(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.ivec2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("ivec3"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.ivec3(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.ivec3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Ident("ivec4"), "apply"), args) =>
+        args match
+          case List(Typed(Repeated(args2, _), _)) =>
+            ShaderAST.DataTypes.ivec4(args2.map(p => walkTerm(p, envVarName)))
+          case _ =>
+            ShaderAST.DataTypes.ivec4(args.map(p => walkTerm(p, envVarName)))
+
       case Apply(Select(Ident("mat2"), "apply"), args) =>
         args match
           case List(Typed(Repeated(args2, _), _)) =>
@@ -654,6 +702,24 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
         ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "bvec2"), "apply"), args) =>
+        ShaderAST.DataTypes.bvec2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "bvec3"), "apply"), args) =>
+        ShaderAST.DataTypes.bvec3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "bvec4"), "apply"), args) =>
+        ShaderAST.DataTypes.bvec4(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "ivec2"), "apply"), args) =>
+        ShaderAST.DataTypes.ivec2(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "ivec3"), "apply"), args) =>
+        ShaderAST.DataTypes.ivec3(args.map(p => walkTerm(p, envVarName)))
+
+      case Apply(Select(Select(Inlined(_, _, _), "ivec4"), "apply"), args) =>
+        ShaderAST.DataTypes.ivec4(args.map(p => walkTerm(p, envVarName)))
 
       case Apply(Select(Select(Inlined(_, _, _), "mat2"), "apply"), args) =>
         ShaderAST.DataTypes.mat2(args.map(p => walkTerm(p, envVarName)))

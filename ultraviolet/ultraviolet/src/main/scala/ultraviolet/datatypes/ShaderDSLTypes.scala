@@ -85,6 +85,126 @@ trait ShaderDSLTypes:
     inline def apply(xyz: Float): vec4 =
       vec4(xyz, xyz, xyz, xyz)
 
+  final case class bvec2(x: Boolean, y: Boolean)
+  object bvec2:
+    inline def apply(xy: Boolean): bvec2 =
+      bvec2(xy, xy)
+
+  final case class bvec3(x: Boolean, y: Boolean, z: Boolean)
+  object bvec3:
+    inline def apply(xyz: Boolean): bvec3 =
+      bvec3(xyz, xyz, xyz)
+
+    inline def apply(xy: bvec3, z: Boolean): bvec3 =
+      bvec3(xy.x, xy.y, z)
+
+    inline def apply(x: Boolean, yz: bvec3): bvec3 =
+      bvec3(x, yz.x, yz.y)
+
+  final case class bvec4(x: Boolean, y: Boolean, z: Boolean, w: Boolean)
+  object bvec4:
+    inline def apply(xy: bvec2, z: Boolean, w: Boolean): bvec4 =
+      bvec4(xy.x, xy.y, z, w)
+
+    inline def apply(x: Boolean, yz: bvec2, w: Boolean): bvec4 =
+      bvec4(x, yz.x, yz.y, w)
+
+    inline def apply(x: Boolean, y: Boolean, zw: bvec2): bvec4 =
+      bvec4(x, y, zw.x, zw.y)
+
+    inline def apply(xy: bvec2, zw: bvec2): bvec4 =
+      bvec4(xy.x, xy.y, zw.x, zw.y)
+
+    inline def apply(xyz: bvec3, w: Boolean): bvec4 =
+      bvec4(xyz.x, xyz.y, xyz.z, w)
+
+    inline def apply(x: Boolean, yzw: bvec3): bvec4 =
+      bvec4(x, yzw.x, yzw.y, yzw.z)
+
+    inline def apply(xyz: Boolean): bvec4 =
+      bvec4(xyz, xyz, xyz, xyz)
+
+  final case class ivec2(x: Int, y: Int):
+    def +(f: Int): ivec2 = ivec2(x + f, y + f)
+    def -(f: Int): ivec2 = ivec2(x - f, y - f)
+    def *(f: Int): ivec2 = ivec2(x * f, y * f)
+    def /(f: Int): ivec2 = ivec2(x / f, y / f)
+
+    def +(v: ivec2): ivec2 = ivec2(x + v.x, y + v.y)
+    def -(v: ivec2): ivec2 = ivec2(x - v.x, y - v.y)
+    def *(v: ivec2): ivec2 = ivec2(x * v.x, y * v.y)
+    def /(v: ivec2): ivec2 = ivec2(x / v.x, y / v.y)
+
+    def `unary_-` : ivec2 = ivec2(-x, -y)
+
+    def *(v: mat2): ivec2 = ivec2(0) // TODO: Replace stub
+
+  object ivec2:
+    inline def apply(xy: Int): ivec2 =
+      ivec2(xy, xy)
+
+  final case class ivec3(x: Int, y: Int, z: Int):
+    def +(f: Int): ivec3 = ivec3(x + f, y + f, z + f)
+    def -(f: Int): ivec3 = ivec3(x - f, y - f, z - f)
+    def *(f: Int): ivec3 = ivec3(x * f, y * f, z * f)
+    def /(f: Int): ivec3 = ivec3(x / f, y / f, z / f)
+
+    def +(v: ivec3): ivec3 = ivec3(x + v.x, y + v.y, z + v.z)
+    def -(v: ivec3): ivec3 = ivec3(x - v.x, y - v.y, z - v.z)
+    def *(v: ivec3): ivec3 = ivec3(x * v.x, y * v.y, z * v.z)
+    def /(v: ivec3): ivec3 = ivec3(x / v.x, y / v.y, z / v.z)
+
+    def `unary_-` : ivec3 = ivec3(-x, -y, -z)
+
+    def *(v: mat3): ivec3 = ivec3(0) // TODO: Replace stub
+
+  object ivec3:
+    inline def apply(xyz: Int): ivec3 =
+      ivec3(xyz, xyz, xyz)
+
+    inline def apply(xy: ivec2, z: Int): ivec3 =
+      ivec3(xy.x, xy.y, z)
+
+    inline def apply(x: Int, yz: ivec2): ivec3 =
+      ivec3(x, yz.x, yz.y)
+
+  final case class ivec4(x: Int, y: Int, z: Int, w: Int):
+    def +(f: Int): ivec4 = ivec4(x + f, y + f, z + f, w + f)
+    def -(f: Int): ivec4 = ivec4(x - f, y - f, z - f, w - f)
+    def *(f: Int): ivec4 = ivec4(x * f, y * f, z * f, w * f)
+    def /(f: Int): ivec4 = ivec4(x / f, y / f, z / f, w / f)
+
+    def +(v: ivec4): ivec4 = ivec4(x + v.x, y + v.y, z + v.z, w + v.w)
+    def -(v: ivec4): ivec4 = ivec4(x - v.x, y - v.y, z - v.z, w - v.w)
+    def *(v: ivec4): ivec4 = ivec4(x * v.x, y * v.y, z * v.z, w * v.w)
+    def /(v: ivec4): ivec4 = ivec4(x / v.x, y / v.y, z / v.z, w / v.w)
+
+    def `unary_-` : ivec4 = ivec4(-x, -y, -z, -w)
+
+    def *(v: mat4): ivec4 = ivec4(0) // TODO: Replace stub
+
+  object ivec4:
+    inline def apply(xy: ivec2, z: Int, w: Int): ivec4 =
+      ivec4(xy.x, xy.y, z, w)
+
+    inline def apply(x: Int, yz: ivec2, w: Int): ivec4 =
+      ivec4(x, yz.x, yz.y, w)
+
+    inline def apply(x: Int, y: Int, zw: ivec2): ivec4 =
+      ivec4(x, y, zw.x, zw.y)
+
+    inline def apply(xy: ivec2, zw: ivec2): ivec4 =
+      ivec4(xy.x, xy.y, zw.x, zw.y)
+
+    inline def apply(xyz: ivec3, w: Int): ivec4 =
+      ivec4(xyz.x, xyz.y, xyz.z, w)
+
+    inline def apply(x: Int, yzw: ivec3): ivec4 =
+      ivec4(x, yzw.x, yzw.y, yzw.z)
+
+    inline def apply(xyz: Int): ivec4 =
+      ivec4(xyz, xyz, xyz, xyz)
+
   case object sampler2D
   case object samplerCube
 

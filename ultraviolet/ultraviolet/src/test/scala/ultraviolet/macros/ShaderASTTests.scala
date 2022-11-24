@@ -54,6 +54,58 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  test("bvec") {
+    inline def fragment =
+      Shader {
+        val a = bvec2(true, false)
+        val b = bvec3(true, false, true)
+        val c = bvec4(true, false, true, false)
+        a.yx
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |bvec2 a=bvec2(true,false);
+      |bvec3 b=bvec3(true,false,true);
+      |bvec4 c=bvec4(true,false,true,false);
+      |a.yx;
+      |""".stripMargin.trim
+    )
+  }
+
+  test("ivec") {
+    inline def fragment =
+      Shader {
+        val a = ivec2(0, 1)
+        val b = ivec3(0, 1, 2)
+        val c = ivec4(0, 1, 2, 3)
+        a.yx
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |ivec2 a=ivec2(0,1);
+      |ivec3 b=ivec3(0,1,2);
+      |ivec4 c=ivec4(0,1,2,3);
+      |a.yx;
+      |""".stripMargin.trim
+    )
+  }
+
   test("Inlined external def") {
 
     inline def alpha: Float = 1.0f

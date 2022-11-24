@@ -220,6 +220,24 @@ object ShaderPrinter:
       case DataTypes.vec4(args) =>
         List(s"vec4(${args.flatMap(render).mkString(",")})")
 
+      case DataTypes.bvec2(args) =>
+        List(s"bvec2(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.bvec3(args) =>
+        List(s"bvec3(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.bvec4(args) =>
+        List(s"bvec4(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.ivec2(args) =>
+        List(s"ivec2(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.ivec3(args) =>
+        List(s"ivec3(${args.flatMap(render).mkString(",")})")
+
+      case DataTypes.ivec4(args) =>
+        List(s"ivec4(${args.flatMap(render).mkString(",")})")
+
       case DataTypes.mat2(args) =>
         List(s"mat2(${args.flatMap(render).mkString(",")})")
 
@@ -335,6 +353,12 @@ object ShaderPrinter:
       case DataTypes.vec2(args)        => Option("vec2")
       case DataTypes.vec3(args)        => Option("vec3")
       case DataTypes.vec4(args)        => Option("vec4")
+      case DataTypes.bvec2(args)       => Option("bvec2")
+      case DataTypes.bvec3(args)       => Option("bvec3")
+      case DataTypes.bvec4(args)       => Option("bvec4")
+      case DataTypes.ivec2(args)       => Option("ivec2")
+      case DataTypes.ivec3(args)       => Option("ivec3")
+      case DataTypes.ivec4(args)       => Option("ivec4")
       case DataTypes.mat2(args)        => Option("mat2")
       case DataTypes.mat3(args)        => Option("mat3")
       case DataTypes.mat4(args)        => Option("mat4")

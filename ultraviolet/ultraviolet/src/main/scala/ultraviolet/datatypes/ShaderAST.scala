@@ -209,6 +209,12 @@ object ShaderAST:
     case vec2(args: List[ShaderAST])
     case vec3(args: List[ShaderAST])
     case vec4(args: List[ShaderAST])
+    case bvec2(args: List[ShaderAST])
+    case bvec3(args: List[ShaderAST])
+    case bvec4(args: List[ShaderAST])
+    case ivec2(args: List[ShaderAST])
+    case ivec3(args: List[ShaderAST])
+    case ivec4(args: List[ShaderAST])
     case mat2(args: List[ShaderAST])
     case mat3(args: List[ShaderAST])
     case mat4(args: List[ShaderAST])
@@ -238,6 +244,12 @@ object ShaderAST:
           case v: DataTypes.vec2    => Expr(v)
           case v: DataTypes.vec3    => Expr(v)
           case v: DataTypes.vec4    => Expr(v)
+          case v: DataTypes.bvec2   => Expr(v)
+          case v: DataTypes.bvec3   => Expr(v)
+          case v: DataTypes.bvec4   => Expr(v)
+          case v: DataTypes.ivec2   => Expr(v)
+          case v: DataTypes.ivec3   => Expr(v)
+          case v: DataTypes.ivec4   => Expr(v)
           case v: DataTypes.mat2    => Expr(v)
           case v: DataTypes.mat3    => Expr(v)
           case v: DataTypes.mat4    => Expr(v)
@@ -275,6 +287,30 @@ object ShaderAST:
     given ToExpr[vec4] with {
       def apply(x: vec4)(using Quotes): Expr[vec4] =
         '{ vec4(${ Expr(x.args) }) }
+    }
+    given ToExpr[bvec2] with {
+      def apply(x: bvec2)(using Quotes): Expr[bvec2] =
+        '{ bvec2(${ Expr(x.args) }) }
+    }
+    given ToExpr[bvec3] with {
+      def apply(x: bvec3)(using Quotes): Expr[bvec3] =
+        '{ bvec3(${ Expr(x.args) }) }
+    }
+    given ToExpr[bvec4] with {
+      def apply(x: bvec4)(using Quotes): Expr[bvec4] =
+        '{ bvec4(${ Expr(x.args) }) }
+    }
+    given ToExpr[ivec2] with {
+      def apply(x: ivec2)(using Quotes): Expr[ivec2] =
+        '{ ivec2(${ Expr(x.args) }) }
+    }
+    given ToExpr[ivec3] with {
+      def apply(x: ivec3)(using Quotes): Expr[ivec3] =
+        '{ ivec3(${ Expr(x.args) }) }
+    }
+    given ToExpr[ivec4] with {
+      def apply(x: ivec4)(using Quotes): Expr[ivec4] =
+        '{ ivec4(${ Expr(x.args) }) }
     }
     given ToExpr[mat2] with {
       def apply(x: mat2)(using Quotes): Expr[mat2] =
@@ -339,6 +375,12 @@ object ShaderAST:
               case v: DataTypes.vec2          => rec(v.args ++ xs)
               case v: DataTypes.vec3          => rec(v.args ++ xs)
               case v: DataTypes.vec4          => rec(v.args ++ xs)
+              case v: DataTypes.bvec2         => rec(v.args ++ xs)
+              case v: DataTypes.bvec3         => rec(v.args ++ xs)
+              case v: DataTypes.bvec4         => rec(v.args ++ xs)
+              case v: DataTypes.ivec2         => rec(v.args ++ xs)
+              case v: DataTypes.ivec3         => rec(v.args ++ xs)
+              case v: DataTypes.ivec4         => rec(v.args ++ xs)
               case v: DataTypes.mat2          => rec(v.args ++ xs)
               case v: DataTypes.mat3          => rec(v.args ++ xs)
               case v: DataTypes.mat4          => rec(v.args ++ xs)
@@ -380,6 +422,12 @@ object ShaderAST:
               case v: DataTypes.vec2          => rec(v.args ++ xs, acc)
               case v: DataTypes.vec3          => rec(v.args ++ xs, acc)
               case v: DataTypes.vec4          => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec2         => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec3         => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec4         => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec2         => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec3         => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec4         => rec(v.args ++ xs, acc)
               case v: DataTypes.mat2          => rec(v.args ++ xs, acc)
               case v: DataTypes.mat3          => rec(v.args ++ xs, acc)
               case v: DataTypes.mat4          => rec(v.args ++ xs, acc)
@@ -423,6 +471,12 @@ object ShaderAST:
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
         case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
+        case v @ DataTypes.bvec2(vs)                  => f(DataTypes.bvec2(vs.map(f)))
+        case v @ DataTypes.bvec3(vs)                  => f(DataTypes.bvec3(vs.map(f)))
+        case v @ DataTypes.bvec4(vs)                  => f(DataTypes.bvec4(vs.map(f)))
+        case v @ DataTypes.ivec2(vs)                  => f(DataTypes.ivec2(vs.map(f)))
+        case v @ DataTypes.ivec3(vs)                  => f(DataTypes.ivec3(vs.map(f)))
+        case v @ DataTypes.ivec4(vs)                  => f(DataTypes.ivec4(vs.map(f)))
         case v @ DataTypes.mat2(vs)                   => f(DataTypes.mat2(vs.map(f)))
         case v @ DataTypes.mat3(vs)                   => f(DataTypes.mat3(vs.map(f)))
         case v @ DataTypes.mat4(vs)                   => f(DataTypes.mat4(vs.map(f)))
@@ -456,6 +510,12 @@ object ShaderAST:
         case DataTypes.vec2(_)          => Option(ShaderAST.DataTypes.ident("vec2"))
         case DataTypes.vec3(_)          => Option(ShaderAST.DataTypes.ident("vec3"))
         case DataTypes.vec4(_)          => Option(ShaderAST.DataTypes.ident("vec4"))
+        case DataTypes.bvec2(_)         => Option(ShaderAST.DataTypes.ident("bvec2"))
+        case DataTypes.bvec3(_)         => Option(ShaderAST.DataTypes.ident("bvec3"))
+        case DataTypes.bvec4(_)         => Option(ShaderAST.DataTypes.ident("bvec4"))
+        case DataTypes.ivec2(_)         => Option(ShaderAST.DataTypes.ident("ivec2"))
+        case DataTypes.ivec3(_)         => Option(ShaderAST.DataTypes.ident("ivec3"))
+        case DataTypes.ivec4(_)         => Option(ShaderAST.DataTypes.ident("ivec4"))
         case DataTypes.mat2(_)          => Option(ShaderAST.DataTypes.ident("mat2"))
         case DataTypes.mat3(_)          => Option(ShaderAST.DataTypes.ident("mat3"))
         case DataTypes.mat4(_)          => Option(ShaderAST.DataTypes.ident("mat4"))

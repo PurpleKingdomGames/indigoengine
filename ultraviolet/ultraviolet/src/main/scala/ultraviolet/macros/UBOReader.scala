@@ -42,6 +42,9 @@ object UBOReader:
 
   object ShaderTypeOf:
 
+    given ShaderTypeOf[Boolean] with
+      def typeOf: String = "bool"
+
     given ShaderTypeOf[Int] with
       def typeOf: String = "int"
 
@@ -56,3 +59,21 @@ object UBOReader:
 
     given ShaderTypeOf[vec4] with
       def typeOf: String = "vec4"
+
+    given ShaderTypeOf[bvec2] with
+      def typeOf: String = "bvec2"
+
+    given ShaderTypeOf[bvec3] with
+      def typeOf: String = "bvec3"
+
+    given ShaderTypeOf[bvec4] with
+      def typeOf: String = "bvec4"
+
+    given ShaderTypeOf[ivec2] with
+      def typeOf: String = "ivec2"
+
+    given ShaderTypeOf[ivec3] with
+      def typeOf: String = "ivec3"
+
+    given ShaderTypeOf[ivec4] with
+      def typeOf: String = "ivec4"
