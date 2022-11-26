@@ -1261,7 +1261,7 @@ class ShaderASTTests extends munit.FunSuite {
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     inline def fragment =
       Shader {
-        val x: array[Float, 12] = null
+        val x: array[12, Float] = null
         val y                   = x.length
         y
       }
@@ -1285,7 +1285,7 @@ class ShaderASTTests extends munit.FunSuite {
   test("arrays - more complicated example") {
 
     case class Env(
-        VERTICES: array[vec2, 16],
+        VERTICES: array[16, vec2],
         COUNT: Float,
         SIZE: vec2
     )
@@ -1297,8 +1297,8 @@ class ShaderASTTests extends munit.FunSuite {
       Shader[Env, Unit] { env =>
         @const val MAX_VERTICES: 16 = 16
 
-        def toUvSpace(count: Int, v: array[vec2, MAX_VERTICES.type]): array[vec2, MAX_VERTICES.type] =
-          val polygon: array[vec2, MAX_VERTICES.type] = null
+        def toUvSpace(count: Int, v: array[MAX_VERTICES.type, vec2]): array[MAX_VERTICES.type, vec2] =
+          val polygon: array[MAX_VERTICES.type, vec2] = null
 
           var i = 0
           while i < count do
@@ -1308,7 +1308,7 @@ class ShaderASTTests extends munit.FunSuite {
           polygon
 
         val iCount: Int                             = env.COUNT.toInt;
-        val polygon: array[vec2, MAX_VERTICES.type] = toUvSpace(iCount, env.VERTICES);
+        val polygon: array[MAX_VERTICES.type, vec2] = toUvSpace(iCount, env.VERTICES);
       }
 
     val actual =
@@ -1332,6 +1332,27 @@ class ShaderASTTests extends munit.FunSuite {
       |}
       |int iCount=int(COUNT);
       |vec2[MAX_VERTICES] polygon=toUvSpace(iCount,VERTICES);
+      |""".stripMargin.trim
+    )
+  }
+
+  test("arrays - constructors") {
+
+    inline def fragment =
+      Shader {
+        @const val foo = array[3, Float](2.5f, 7.0f, 1.5f)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |const float foo[3]=float[3](2.5,7.0,1.5);
       |""".stripMargin.trim
     )
   }
@@ -1365,7 +1386,7 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("Shader blocks can be nested") {
 
-    inline def foo = 
+    inline def foo =
       Shader[FragEnv, Unit] { env2 =>
         val f = env2.COLOR.x
       }

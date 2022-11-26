@@ -218,7 +218,7 @@ object ShaderAST:
     case mat2(args: List[ShaderAST])
     case mat3(args: List[ShaderAST])
     case mat4(args: List[ShaderAST])
-    case array(size: Int, typeOf: Option[String])
+    case array(size: Int, args: List[ShaderAST], typeOf: Option[String])
     case swizzle(genType: ShaderAST, swizzle: String, returnType: Option[ShaderAST])
 
   object DataTypes:
@@ -326,7 +326,7 @@ object ShaderAST:
     }
     given ToExpr[array] with {
       def apply(x: array)(using Quotes): Expr[array] =
-        '{ array(${ Expr(x.size) }, ${ Expr(x.typeOf) }) }
+        '{ array(${ Expr(x.size) }, ${ Expr(x.args) }, ${ Expr(x.typeOf) }) }
     }
     given ToExpr[swizzle] with {
       def apply(x: swizzle)(using Quotes): Expr[swizzle] =
@@ -480,47 +480,47 @@ object ShaderAST:
         case v @ DataTypes.mat2(vs)                   => f(DataTypes.mat2(vs.map(f)))
         case v @ DataTypes.mat3(vs)                   => f(DataTypes.mat3(vs.map(f)))
         case v @ DataTypes.mat4(vs)                   => f(DataTypes.mat4(vs.map(f)))
-        case v @ DataTypes.array(_, _)                => f(v)
+        case v @ DataTypes.array(s, vs, t)            => f(DataTypes.array(s, vs.map(f), t))
         case v @ DataTypes.swizzle(_, _, _)           => f(v)
 
     def typeIdent: Option[ShaderAST.DataTypes.ident] =
       ast match
-        case Empty()                    => None
-        case Block(_)                   => None
-        case UBO(_)                     => None
-        case ShaderBlock(_, _, _, _, _) => None
-        case Function(_, _, _, rt)      => rt.flatMap(_.typeIdent)
-        case CallFunction(_, _, _, rt)  => rt.flatMap(_.typeIdent)
-        case FunctionRef(_, rt)         => rt.flatMap(_.typeIdent)
-        case Cast(_, as)                => Option(ShaderAST.DataTypes.ident(as))
-        case Infix(_, _, _, rt)         => rt.flatMap(_.typeIdent)
-        case Assign(_, _)               => None
-        case If(_, _, _)                => None
-        case While(_, _)                => None
-        case For(_, _, _, _)            => None
-        case Switch(_, _)               => None
-        case Val(id, value, typeOf)     => typeOf.map(t => ShaderAST.DataTypes.ident(t))
-        case Annotated(_, _, value)     => value.typeIdent
-        case RawLiteral(_)              => None
-        case n @ DataTypes.ident(_)     => Option(n)
-        case DataTypes.index(_, _)      => None
-        case DataTypes.bool(_)          => Option(ShaderAST.DataTypes.ident("bool"))
-        case DataTypes.float(_)         => Option(ShaderAST.DataTypes.ident("float"))
-        case DataTypes.int(_)           => Option(ShaderAST.DataTypes.ident("int"))
-        case DataTypes.vec2(_)          => Option(ShaderAST.DataTypes.ident("vec2"))
-        case DataTypes.vec3(_)          => Option(ShaderAST.DataTypes.ident("vec3"))
-        case DataTypes.vec4(_)          => Option(ShaderAST.DataTypes.ident("vec4"))
-        case DataTypes.bvec2(_)         => Option(ShaderAST.DataTypes.ident("bvec2"))
-        case DataTypes.bvec3(_)         => Option(ShaderAST.DataTypes.ident("bvec3"))
-        case DataTypes.bvec4(_)         => Option(ShaderAST.DataTypes.ident("bvec4"))
-        case DataTypes.ivec2(_)         => Option(ShaderAST.DataTypes.ident("ivec2"))
-        case DataTypes.ivec3(_)         => Option(ShaderAST.DataTypes.ident("ivec3"))
-        case DataTypes.ivec4(_)         => Option(ShaderAST.DataTypes.ident("ivec4"))
-        case DataTypes.mat2(_)          => Option(ShaderAST.DataTypes.ident("mat2"))
-        case DataTypes.mat3(_)          => Option(ShaderAST.DataTypes.ident("mat3"))
-        case DataTypes.mat4(_)          => Option(ShaderAST.DataTypes.ident("mat4"))
-        case DataTypes.array(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t + "[]"))
-        case DataTypes.swizzle(v, _, _) => v.typeIdent
+        case Empty()                       => None
+        case Block(_)                      => None
+        case UBO(_)                        => None
+        case ShaderBlock(_, _, _, _, _)    => None
+        case Function(_, _, _, rt)         => rt.flatMap(_.typeIdent)
+        case CallFunction(_, _, _, rt)     => rt.flatMap(_.typeIdent)
+        case FunctionRef(_, rt)            => rt.flatMap(_.typeIdent)
+        case Cast(_, as)                   => Option(ShaderAST.DataTypes.ident(as))
+        case Infix(_, _, _, rt)            => rt.flatMap(_.typeIdent)
+        case Assign(_, _)                  => None
+        case If(_, _, _)                   => None
+        case While(_, _)                   => None
+        case For(_, _, _, _)               => None
+        case Switch(_, _)                  => None
+        case Val(id, value, typeOf)        => typeOf.map(t => ShaderAST.DataTypes.ident(t))
+        case Annotated(_, _, value)        => value.typeIdent
+        case RawLiteral(_)                 => None
+        case n @ DataTypes.ident(_)        => Option(n)
+        case DataTypes.index(_, _)         => None
+        case DataTypes.bool(_)             => Option(ShaderAST.DataTypes.ident("bool"))
+        case DataTypes.float(_)            => Option(ShaderAST.DataTypes.ident("float"))
+        case DataTypes.int(_)              => Option(ShaderAST.DataTypes.ident("int"))
+        case DataTypes.vec2(_)             => Option(ShaderAST.DataTypes.ident("vec2"))
+        case DataTypes.vec3(_)             => Option(ShaderAST.DataTypes.ident("vec3"))
+        case DataTypes.vec4(_)             => Option(ShaderAST.DataTypes.ident("vec4"))
+        case DataTypes.bvec2(_)            => Option(ShaderAST.DataTypes.ident("bvec2"))
+        case DataTypes.bvec3(_)            => Option(ShaderAST.DataTypes.ident("bvec3"))
+        case DataTypes.bvec4(_)            => Option(ShaderAST.DataTypes.ident("bvec4"))
+        case DataTypes.ivec2(_)            => Option(ShaderAST.DataTypes.ident("ivec2"))
+        case DataTypes.ivec3(_)            => Option(ShaderAST.DataTypes.ident("ivec3"))
+        case DataTypes.ivec4(_)            => Option(ShaderAST.DataTypes.ident("ivec4"))
+        case DataTypes.mat2(_)             => Option(ShaderAST.DataTypes.ident("mat2"))
+        case DataTypes.mat3(_)             => Option(ShaderAST.DataTypes.ident("mat3"))
+        case DataTypes.mat4(_)             => Option(ShaderAST.DataTypes.ident("mat4"))
+        case DataTypes.array(_, _, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t + "[]"))
+        case DataTypes.swizzle(v, _, _)    => v.typeIdent
 
     def headers: List[ShaderAST] =
       ast match

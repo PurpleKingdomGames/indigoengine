@@ -55,10 +55,10 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         }
 
     typ match
-      case Applied(TypeIdent("array"), List(TypeIdent(typeName), Singleton(Literal(IntConstant(size))))) =>
+      case Applied(TypeIdent("array"), List(Singleton(Literal(IntConstant(size))), TypeIdent(typeName))) =>
         mapName(Option(typeName)).map(_ + s"[${size.toString()}]")
 
-      case Applied(TypeIdent("array"), List(TypeIdent(typeName), Singleton(Ident(varName)))) =>
+      case Applied(TypeIdent("array"), List(Singleton(Ident(varName)), TypeIdent(typeName))) =>
         mapName(Option(typeName)).map(_ + s"[$varName]")
 
       case _ =>
@@ -217,12 +217,31 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             )
 
           case _ =>
+            val v =
+              body match
+                case arr @ ShaderAST.DataTypes.array(size, args, typeOfArray) =>
+                  typeOfArray match
+                    case None =>
+                      throw ShaderError.Unsupported("Shader arrays must be fully typed")
+
+                    case Some(tOf) =>
+                      val (tName, tSize) = tOf.splitAt(tOf.indexOf("["))
+
+                      ShaderAST.Val(
+                        name + tSize,
+                        body,
+                        Some(tName)
+                      )
+
+                case _ =>
+                  ShaderAST.Val(name, body, typeOf)
+
             maybeAnnotation match
               case None =>
-                ShaderAST.Val(name, body, typeOf)
+                v
 
               case Some(label) =>
-                ShaderAST.Annotated(label, ShaderAST.Empty(), ShaderAST.Val(name, body, typeOf))
+                ShaderAST.Annotated(label, ShaderAST.Empty(), v)
 
       case d @ DefDef(fnName, args, rt, Some(term)) =>
         val maybeAnnotation: Option[ShaderAST.Annotated] =
@@ -887,6 +906,35 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
           case _ =>
             throw ShaderError.Unsupported("Shaders do not support infix operator: " + op)
+
+      // Arrays
+
+      case Apply(
+            Apply(
+              foo @ TypeApply(
+                Select(Ident("array"), "apply"),
+                List(Singleton(Literal(IntConstant(size))), typ)
+              ),
+              List(Typed(Repeated(args, _), _))
+            ),
+            _
+          ) =>
+        val typeOf = extractInferredType(typ).map(_ + s"[${size.toString()}]")
+        ShaderAST.DataTypes.array(size, args.map(a => walkTerm(a, envVarName)), typeOf)
+
+      case Apply(
+            Apply(
+              TypeApply(
+                Select(Ident("array"), "apply"),
+                _
+              ),
+              _
+            ),
+            _
+          ) =>
+        throw ShaderError.UnexpectedConstruction(
+          "Shader arrays must be constructed with full type information, e.g.: array[3, Float] (where 3 is the size of the array)"
+        )
 
       //
 

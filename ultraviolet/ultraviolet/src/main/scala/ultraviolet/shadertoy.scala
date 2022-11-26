@@ -14,8 +14,8 @@ object shadertoy:
       iTimeDelta: Float,                  // render time (in seconds)
       iFrameRate: Float,                  // shader frame rate
       iFrame: Int,                        // shader playback frame
-      iChannelTime: array[Float, 4],      // channel playback time (in seconds)
-      iChannelResolution: array[vec3, 4], // channel resolution (in pixels)
+      iChannelTime: array[4, Float],      // channel playback time (in seconds)
+      iChannelResolution: array[4, vec3], // channel resolution (in pixels)
       iMouse: vec4,                       // mouse pixel coords. xy: current (if MLB down) = null zw: click
       iChannel0: sampler2D.type,          // input channel. XX = 2D/Cube
       iChannel1: sampler2D.type,          // input channel. XX = 2D/Cube
@@ -32,8 +32,8 @@ object shadertoy:
         iTimeDelta = 0.0167,
         iFrameRate = 60,
         iFrame = 0,
-        iChannelTime = array[Float, 4](4),      // channel playback time (in seconds)
-        iChannelResolution = array[vec3, 4](4), // channel resolution (in pixels)
+        iChannelTime = array[4, Float],      // channel playback time (in seconds)
+        iChannelResolution = array[4, vec3], // channel resolution (in pixels)
         iMouse = vec4(0.0f),
         iChannel0 = sampler2D,
         iChannel1 = sampler2D,

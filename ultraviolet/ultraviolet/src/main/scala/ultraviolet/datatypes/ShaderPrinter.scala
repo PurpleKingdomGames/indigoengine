@@ -247,8 +247,8 @@ object ShaderPrinter:
       case DataTypes.mat4(args) =>
         List(s"mat4(${args.flatMap(render).mkString(",")})")
 
-      case DataTypes.array(size, typeOf) =>
-        List(s"array goes here...")
+      case DataTypes.array(size, args, typeOf) =>
+        List(s"""${typeOf.getOrElse("void")}(${args.flatMap(render).mkString(",")})""")
 
       case DataTypes.swizzle(genType, swizzle, returnType) =>
         List(s"${render(genType).mkString}.$swizzle")
@@ -328,42 +328,42 @@ object ShaderPrinter:
 
   private def decideType(a: ShaderAST)(using pp: ShaderPrinter[_]): Option[String] =
     a match
-      case Empty()                     => None
-      case Block(_)                    => None
-      case UBO(_)                      => None
-      case ShaderBlock(_, _, _, _, _)  => None
-      case Function(_, _, _, rt)       => rt.toList.flatMap(render).headOption
-      case CallFunction(_, _, _, rt)   => rt.toList.flatMap(render).headOption
-      case FunctionRef(_, rt)          => rt.toList.flatMap(render).headOption
-      case Cast(_, as)                 => Option(as)
-      case Infix(_, _, _, rt)          => rt.toList.flatMap(render).headOption
-      case Assign(_, _)                => None
-      case If(_, _, _)                 => None
-      case While(_, _)                 => None
-      case For(_, _, _, _)             => None
-      case Switch(_, _)                => None
-      case Val(id, value, typeOf)      => typeOf
-      case Annotated(_, _, value)      => decideType(value)
-      case RawLiteral(_)               => None
-      case DataTypes.ident(_)          => None
-      case DataTypes.index(_, _)       => None
-      case DataTypes.bool(_)           => Option("bool")
-      case DataTypes.float(_)          => Option("float")
-      case DataTypes.int(_)            => Option("int")
-      case DataTypes.vec2(args)        => Option("vec2")
-      case DataTypes.vec3(args)        => Option("vec3")
-      case DataTypes.vec4(args)        => Option("vec4")
-      case DataTypes.bvec2(args)       => Option("bvec2")
-      case DataTypes.bvec3(args)       => Option("bvec3")
-      case DataTypes.bvec4(args)       => Option("bvec4")
-      case DataTypes.ivec2(args)       => Option("ivec2")
-      case DataTypes.ivec3(args)       => Option("ivec3")
-      case DataTypes.ivec4(args)       => Option("ivec4")
-      case DataTypes.mat2(args)        => Option("mat2")
-      case DataTypes.mat3(args)        => Option("mat3")
-      case DataTypes.mat4(args)        => Option("mat4")
-      case DataTypes.array(_, typeOf)  => typeOf
-      case DataTypes.swizzle(v, _, rt) => rt.toList.flatMap(render).headOption
+      case Empty()                       => None
+      case Block(_)                      => None
+      case UBO(_)                        => None
+      case ShaderBlock(_, _, _, _, _)    => None
+      case Function(_, _, _, rt)         => rt.toList.flatMap(render).headOption
+      case CallFunction(_, _, _, rt)     => rt.toList.flatMap(render).headOption
+      case FunctionRef(_, rt)            => rt.toList.flatMap(render).headOption
+      case Cast(_, as)                   => Option(as)
+      case Infix(_, _, _, rt)            => rt.toList.flatMap(render).headOption
+      case Assign(_, _)                  => None
+      case If(_, _, _)                   => None
+      case While(_, _)                   => None
+      case For(_, _, _, _)               => None
+      case Switch(_, _)                  => None
+      case Val(_, _, typeOf)             => typeOf
+      case Annotated(_, _, value)        => decideType(value)
+      case RawLiteral(_)                 => None
+      case DataTypes.ident(_)            => None
+      case DataTypes.index(_, _)         => None
+      case DataTypes.bool(_)             => Option("bool")
+      case DataTypes.float(_)            => Option("float")
+      case DataTypes.int(_)              => Option("int")
+      case DataTypes.vec2(_)             => Option("vec2")
+      case DataTypes.vec3(_)             => Option("vec3")
+      case DataTypes.vec4(_)             => Option("vec4")
+      case DataTypes.bvec2(_)            => Option("bvec2")
+      case DataTypes.bvec3(_)            => Option("bvec3")
+      case DataTypes.bvec4(_)            => Option("bvec4")
+      case DataTypes.ivec2(_)            => Option("ivec2")
+      case DataTypes.ivec3(_)            => Option("ivec3")
+      case DataTypes.ivec4(_)            => Option("ivec4")
+      case DataTypes.mat2(_)             => Option("mat2")
+      case DataTypes.mat3(_)             => Option("mat3")
+      case DataTypes.mat4(_)             => Option("mat4")
+      case DataTypes.array(_, _, typeOf) => typeOf
+      case DataTypes.swizzle(_, _, rt)   => rt.toList.flatMap(render).headOption
 
   private def rf(f: Float): String =
     val s = f.toString
