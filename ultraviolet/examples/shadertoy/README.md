@@ -1,5 +1,7 @@
 # ShaderToy Examples
 
+> Warning: Ultraviolet has not yet been released, so to run these examples you will first need to run `sbt localPublish` (that isn't a typo!) in the main project directory.
+
 There are three [ShaderToy](https://www.shadertoy.com/) examples that have been ported to Ultraviolet in this directory:
 
 1. Default - this is the default shader you are given when you make a new shader toy project.

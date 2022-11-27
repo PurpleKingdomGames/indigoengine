@@ -1,4 +1,6 @@
-# Ultraviolet Example
+# Indigo + Ultraviolet Example
+
+> Warning: Ultraviolet has not yet been released, so to run these examples you will first need to run `sbt localPublish` (that isn't a typo!) in the main project directory.
 
 This is a simple example of using an Ultraviolet generated shader inside Indigo.
 
