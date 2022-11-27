@@ -16,9 +16,18 @@ object ShaderMacros:
   private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using q: Quotes): Expr[ProceduralShader] = {
     import q.reflect.*
 
-    val createAST     = new CreateShaderAST[q.type](using q)
-    val res           = createAST.walkTerm(expr.asTerm, None)
+    val createAST = new CreateShaderAST[q.type](using q)
+
+    val main =
+      expr.asTerm match
+        // Skip the initial noise...
+        case Inlined(_, _, Inlined(_, _, Inlined(_, _, term))) =>
+          createAST.walkTerm(term, None)
+
+        case term =>
+          createAST.walkTerm(term, None)
+
     val shaderDefList = createAST.shaderDefs.toList
 
-    Expr(ProceduralShader(shaderDefList.filterNot(_.userDefined).map(_.fn), res))
+    Expr(ProceduralShader(shaderDefList.filterNot(_.userDefined).map(_.fn), main))
   }
