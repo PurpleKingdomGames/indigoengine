@@ -82,6 +82,25 @@ object ShaderPrinter:
       case UBO(uboDef) =>
         List(uboDef.render)
 
+      case Struct(name, members) =>
+        List(
+          List(
+            s"""struct $name{""".stripMargin.trim
+          ),
+          renderStatements(members).map(addIndent),
+          List(
+            s"""};""".stripMargin.trim
+          )
+        ).flatten
+
+      case New(name, args) =>
+        val renderedArgs: String =
+          args
+            .map(arg => s"${render(arg).mkString}")
+            .mkString(",")
+
+        List(s"""$name($renderedArgs)""")
+
       case ShaderBlock(_, _, envVarName, headers, statements) =>
         renderStatements(statements)
 
@@ -329,6 +348,8 @@ object ShaderPrinter:
       case Block(_)                      => None
       case Neg(v)                        => decideType(v)
       case UBO(_)                        => None
+      case Struct(name, _)               => Option(name)
+      case New(name, _)                  => Option(name)
       case ShaderBlock(_, _, _, _, _)    => None
       case Function(_, _, _, rt)         => rt.toList.flatMap(render).headOption
       case CallFunction(_, _, _, rt)     => rt.toList.flatMap(render).headOption

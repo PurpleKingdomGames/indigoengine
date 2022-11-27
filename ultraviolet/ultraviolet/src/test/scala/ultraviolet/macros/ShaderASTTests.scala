@@ -1501,7 +1501,7 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].code
 
-    DebugAST.toAST(fragment)
+    // DebugAST.toAST(fragment)
     // println(actual)
 
     assertEquals(

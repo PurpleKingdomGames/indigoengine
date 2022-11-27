@@ -14,6 +14,8 @@ object ShaderAST:
         case v: Block        => Expr(v)
         case v: Neg          => Expr(v)
         case v: UBO          => Expr(v)
+        case v: Struct       => Expr(v)
+        case v: New          => Expr(v)
         case v: ShaderBlock  => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
@@ -60,6 +62,20 @@ object ShaderAST:
     given ToExpr[UBO] with {
       def apply(x: UBO)(using Quotes): Expr[UBO] =
         '{ UBO(${ Expr(x.uboDef) }) }
+    }
+
+  final case class Struct(name: String, members: List[ShaderAST]) extends ShaderAST
+  object Struct:
+    given ToExpr[Struct] with {
+      def apply(x: Struct)(using Quotes): Expr[Struct] =
+        '{ Struct(${ Expr(x.name) }, ${ Expr(x.members) }) }
+    }
+
+  final case class New(name: String, args: List[ShaderAST]) extends ShaderAST
+  object New:
+    given ToExpr[New] with {
+      def apply(x: New)(using Quotes): Expr[New] =
+        '{ New(${ Expr(x.name) }, ${ Expr(x.args) }) }
     }
 
   // Specifically handles our 'Shader' type
@@ -362,6 +378,8 @@ object ShaderAST:
               case Block(s)                   => rec(s ++ xs)
               case Neg(s)                     => rec(s :: xs)
               case UBO(_)                     => rec(xs)
+              case Struct(_, _)               => rec(xs)
+              case New(_, _)                  => rec(xs)
               case ShaderBlock(_, _, _, _, s) => rec(s ++ xs)
               case Function(_, _, body, _)    => rec(body :: xs)
               case CallFunction(_, _, _, _)   => rec(xs)
@@ -410,6 +428,8 @@ object ShaderAST:
               case Block(s)                   => rec(s ++ xs, acc)
               case Neg(s)                     => rec(s :: xs, acc)
               case UBO(_)                     => rec(xs, acc)
+              case Struct(_, _)               => rec(xs, acc)
+              case New(_, _)                  => rec(xs, acc)
               case ShaderBlock(_, _, _, _, s) => rec(s ++ xs, acc)
               case Function(_, _, body, _)    => rec(body :: xs, acc)
               case CallFunction(_, _, _, _)   => rec(xs, acc)
@@ -460,6 +480,8 @@ object ShaderAST:
         case v @ Block(s)                             => f(Block(s.map(f)))
         case v @ Neg(s)                               => f(Neg(f(s)))
         case v @ UBO(_)                               => f(v)
+        case v @ Struct(_, _)                         => f(v)
+        case v @ New(_, _)                            => f(v)
         case v @ ShaderBlock(in, out, n, h, s)        => f(ShaderBlock(in, out, n, h, s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
@@ -500,6 +522,8 @@ object ShaderAST:
         case Block(_)                      => None
         case Neg(v)                        => v.typeIdent
         case UBO(_)                        => None
+        case Struct(name, _)               => Option(ShaderAST.DataTypes.ident(name))
+        case New(name, _)                  => Option(ShaderAST.DataTypes.ident(name))
         case ShaderBlock(_, _, _, _, _)    => None
         case Function(_, _, _, rt)         => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)     => rt.flatMap(_.typeIdent)

@@ -47,11 +47,13 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case "samplerCube$" => "samplerCube"
           case n              => n
         }
-        .filter {
-          case "bool" | "float" | "int" | "vec2" | "vec3" | "vec4" | "bvec2" | "bvec3" | "bvec4" | "ivec2" | "ivec3" |
-              "ivec4" | "mat2" | "mat3" | "mat4" | "sampler2D" | "samplerCube" =>
+        .filterNot {
+          case "Unit" | "array" =>
             true
-          case _ => false
+          case n if n.startsWith("Function") =>
+            true
+          case _ =>
+            false
         }
 
     typ match
@@ -100,8 +102,11 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case Export(_, _) =>
         throw ShaderError.Unsupported("Shaders do not support exports.")
 
+      case ClassDef(name, DefDef("<init>", List(TermParamClause(params)), _, None), _, _, _) =>
+        ShaderAST.Struct(name, params.map(p => walkTree(p, envVarName)))
+
       case ClassDef(_, _, _, _, _) =>
-        throw ShaderError.Unsupported("Shaders do not support classes.")
+        throw ShaderError.Unsupported("Shaders only support simple, flat classes.")
 
       case TypeDef(_, _) =>
         throw ShaderError.Unsupported("Shaders do not support fancy types. :-)")
@@ -242,6 +247,24 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
               case Some(label) =>
                 ShaderAST.Annotated(label, ShaderAST.Empty(), v)
+
+      case v @ ValDef(name, typ, None) =>
+        val typeOf = extractInferredType(typ)
+
+        val maybeAnnotation: Option[ShaderAST.DataTypes.ident] =
+          v.symbol.annotations.headOption.map(p => walkTerm(p, envVarName)).flatMap {
+            case a: ShaderAST.DataTypes.ident => Option(a)
+            case _                            => None
+          }
+
+        val vv = ShaderAST.Val(name, ShaderAST.Empty(), typeOf)
+
+        maybeAnnotation match
+          case None =>
+            vv
+
+          case Some(label) =>
+            ShaderAST.Annotated(label, ShaderAST.Empty(), vv)
 
       case d @ DefDef(fnName, args, rt, Some(term)) =>
         val maybeAnnotation: Option[ShaderAST.Annotated] =
@@ -843,6 +866,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       //
 
       // Infix operations
+
+      case Apply(
+            Select(New(TypeIdent(name)), "<init>"),
+            args
+          ) =>
+        ShaderAST.New(name, args.map(a => walkTerm(a, envVarName)))
 
       case Apply(
             Select(Ident(id), "update"),

@@ -12,6 +12,8 @@ trait ShaderMacroUtils:
     case v: ShaderAST.Block             => v.statements.reverse.headOption.flatMap(findReturnType)
     case v: ShaderAST.Neg               => findReturnType(v.value)
     case v: ShaderAST.UBO               => None
+    case v: ShaderAST.Struct            => Option(ShaderAST.DataTypes.ident(v.name))
+    case v: ShaderAST.New               => Option(ShaderAST.DataTypes.ident(v.name))
     case v: ShaderAST.ShaderBlock       => v.statements.reverse.headOption.flatMap(findReturnType)
     case v: ShaderAST.Function          => v.returnType
     case v: ShaderAST.CallFunction      => v.returnType
