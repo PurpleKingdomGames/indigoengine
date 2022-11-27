@@ -53,7 +53,6 @@ lazy val publishSettings = {
 // Root
 lazy val ultravioletProject =
   (project in file("."))
-    .enablePlugins(ScalaJSPlugin)
     .settings(
       neverPublish,
       commonSettings,
@@ -62,14 +61,14 @@ lazy val ultravioletProject =
       usefulTasks := customTasksAliases,
       presentationSettings(version)
     )
-    .aggregate(ultraviolet, sandbox)
+    .aggregate(ultraviolet.js, ultraviolet.jvm, sandbox)
 
 // Testing
 
 lazy val sandbox =
   project
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
-    .dependsOn(ultraviolet)
+    .dependsOn(ultraviolet.js)
     .settings(
       neverPublish,
       commonSettings,
@@ -95,9 +94,9 @@ lazy val sandbox =
 
 // Shader
 lazy val ultraviolet =
-  project
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Full)
     .in(file("ultraviolet"))
-    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "ultraviolet",
       commonSettings ++ publishSettings,

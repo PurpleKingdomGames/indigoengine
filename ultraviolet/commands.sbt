@@ -1,6 +1,7 @@
 lazy val releaseProjects: List[String] =
   List(
-    "ultraviolet"
+    "ultravioletJS",
+    "ultravioletJVM"
   )
 
 lazy val coreProjects: List[String] =
