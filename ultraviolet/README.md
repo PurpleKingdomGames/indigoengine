@@ -3,11 +3,17 @@
 [![Discord Chat](https://img.shields.io/discord/716435281208672356?color=blue&label=discord)](https://discord.gg/b5CD47g)
 [![CI](https://github.com/PurpleKingdomGames/ultraviolet/actions/workflows/ci.yml/badge.svg)](https://github.com/PurpleKingdomGames/ultraviolet/actions/workflows/ci.yml)
 
-# 🚧 Ultraviolet 🚧
+# Ultraviolet
 
-> Under construction!
+Ultraviolet is a Scala 3 to GLSL transpiler library built on top of Scala 3 inline macros.
 
-Ultraviolet is a Scala 3 to GLSL transpiler library.
+## Uses & Examples
+
+Examples can be found in the examples directory of this repo. You can use Ultraviolet to generate GLSL shader code for Indigo, and also for ShaderToy.
+
+## Status: "It works on my machine"
+
+Ultraviolet is in early stage development. It appears to be working well but there will be many, many corner cases that haven't been found yet. Please report bugs and issues!
 
 ## Motivation
 
@@ -16,38 +22,55 @@ This project is motivated from two needs:
 1. The most pressing need is that GLSL tooling is patchy, and I'd like to have a much better shadering writing experience both for myself and any other Scala devs whether they're writing shaders for [Indigo](https://indigoengine.io/), [ShaderToy](https://www.shadertoy.com/), or some other Scala frontend web framework.
 2. Indigo is currently locked into WebGL 2.0, and to move to other platforms or rendering technologies means having some way to abstract away from that. 
 
-# Current Goals & Status
+## Current Goals
 
-Right now, the goal is almost a like for like experience of writing GLSL for WebGL 2.0 (and 1.0 shortly after) in Scala 3, in all it's very specific procedural glory. I'd like to add a few quality of life improvements (like lambdas and function composition - done!) but nothing fancy. I would like to be able to write unit tests. It will be contrived and riddled with corner cases, but even just being able to do that will be super useful (to me).
+Right now, the goal is an almost a like for like experience of writing GLSL for WebGL in Scala 3, in all it's very specific procedural glory. It will include a few quality of life improvements such as lambdas and function composition, but nothing fancy for now. You will also be able to write unit tests after a fashion.
 
-It is _not_ a goal to be able to write arbirary Scala and have it turned into GLSL. In other ways this isn't a 'full' transpiler (like Scala.js), it's a useful cross-over subset of Scala and GLSL. As many GLSL language features as can sensibly be represented (expect 90%), and as much Scala as GLSL can be coerced into expressing.
+It is _not_ a goal to be able to write arbirary Scala and have it turned into GLSL. In other words this isn't a 'full' transpiler (like Scala.js), it's a useful cross-over subset of Scala and GLSL. As many GLSL language features as can sensibly be represented, and as much Scala as GLSL can be coerced into expressing.
 
 Ultimately I'd like to be able to write Shaders in FP friendly Scala that can target more than just GLSL 300 - but that is a lot of work and not necessary for a first useful shippable version of Ultraviolet.
 
----
+# Language feature comparison
 
-## Notes and limitations
+Only including the differences or note worthy features. If they're the same they are omitted.
 
-Just writing these down during the development process, mostly for me! They may not stay this way...
+| Feature                           | Scala | GLSL | Ultraviolet | Notes                                                                                            |
+| --------------------------------- | ----- | ---- | ----------- | ------------------------------------------------------------------------------------------------ |
+| Recursion                         | ✅     | ❌    | ❌           |
+| A stack!                          | ✅     | ❌    | ❌           |
+| `String` and `Char`               | ✅     | ❌    | ❌           |
+| `uint` / `uvec`                   | ❌     | ✅    | ❌           |
+| `Double` / `dvec`                 | ✅     | ❌    | ❌           |
+| `struct`                          | ❌     | ✅    | 💡           | You can define structs by declaring classes.                                                     |
+| for loops                         | ❌     | ✅    | 💡           | In Scala, use the `cfor` method provided.                                                        |
+| Imports                           | ✅     | ❌    | ✅           | Imported methods and values must be inlined.                                                     |
+| Switch statements                 | ❌     | ✅    | 💡           | Scala does not have switch statements, but they can be expressed using pattern matching instead. |
+| If statements can return values   | ✅     | ❌    | ✅           |
+| Pattern matches can return values | ✅     | ❌    | ✅           |
+| `#define`                         | ❌     | ✅    | ✅           | Use the `@define` annotation. (see note below)                                                   |
+| `const`                           | ❌     | ✅    | ✅           | `@const`                                                                                         |
+| `uniform`                         | ❌     | ✅    | ✅           | `@uniform`                                                                                       |
+| `varying`, `in`, `out`            | ❌     | ✅    | ✅           | `@in`, `@out`                                                                                    |
+| `%` (modulus op)                  | ✅     | ❌    | ✅           |
+| Lambda/Anonymous functions        | ✅     | ❌    | ✅           |
+| `compose`                         | ✅     | ❌    | ✅           |
+| `andThen`                         | ✅     | ❌    | ✅           |
 
-- GLSL does not support recursion
-- GLSL does not support product types, it does allow you to set multiple 'out' values from functions, but for now, we're limited to functions that return a single simple datatype.
-- GLSL supports for loops, but we have no way to represent the traditional 'for loop' in Scala, and 'for expressions' are pure syntactic sugar. So no for loops.
-- Imports work for free, but only if the things you're importing are inlined, which comes with the usual caveats.
-- Pattern matching emulates switch statements, but they are side effecting, not used for setting `val`s.
-- Unlike in GLSL, if statements can be used to return values and functions.
-- Although Ultraviolet is based on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 and it is rewritten to `texture` for WebGL 2.0. This allows us to be more specific on the API.
+
+Other comments:
+
+- Although Ultraviolet is based on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 for clarity, and these are rewritten to `texture` for WebGL 2.0. 
 - Preprocessor directives largely don't exist, but `#define` supported for special cases where you need to define a global value based on a non-constant value.
-- Ultraviolet supports the % operator where GLSL does not.
-- We do not support unsigned integers (for now), hence `uint` and `uvec` are not supported.
-- GLSL does not consistenly support `double`s, and so we don't support `double` or `dvec` either.
 
-Inlining external stuff:
-- Here, 'external' means 'not inside the body of your shader'.
-- Handy for testing!
+
+## Things to know about inlining
+
+Ultraviolet allows you to share / reuse code, as long as it is inlined following Scala 3's standard inlining rules. However there are things to know about how this will affect your GLSL!
+
+Here, 'external' means 'not inside the body of your shader'.
+
 - You cannot inline external `val`s.
-- You can inline external defs into your code and they turn up more or less as expected.
-- A def that is essentially a call but reference val such as `inline def x = 1.0f` will have it's value inlined.
-- A def that is a function, laid out like a method e.g. `inline def foo(c: Int): Int = c + 1` will be embedded as a function called `foo`, the argument `c` will be ignored however, and the value passed will be inlined. Bit weird.
-- A def that is a lambda however, will be embedded with a new name and will work exactly as you'd expect, recommend you do this! `inline def foo: Int => Int = c => c + 1`
-- Structs are supported via classes, DO NOT USE A CASE CLASS.
+- You can inline external `def`s into your code, but:
+  - A def that is essentially a call by reference val such as `inline def x = 1.0f` will have it's value inlined.
+  - A def that is a function, laid out like a method e.g. `inline def foo(c: Int): Int = c + 1` will be embedded as a function called `foo` as expected, but the argument `c` will be ignored, and the value passed will be inlined. Bit weird!
+  - A def that is a lambda, however, will be embedded with a new name and will work exactly as you'd expect, recommend you do this! `inline def foo: Int => Int = c => c + 1`
