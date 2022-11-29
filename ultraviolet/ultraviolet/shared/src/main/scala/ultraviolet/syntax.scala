@@ -45,9 +45,10 @@ object syntax extends ShaderDSLOps:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   sealed trait WebGLEnv:
     var gl_FragColor: vec4
+    var gl_Position: vec4
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  final case class WebGL1Env(var gl_FragColor: vec4) extends WebGLEnv
+  final case class WebGL1Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  final case class WebGL2Env(var gl_FragColor: vec4) extends WebGLEnv
+  final case class WebGL2Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
 
 end syntax
