@@ -15,6 +15,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
   val uboUtils                               = new ExtractUBOUtils[qq.type](using qq)
   val proxies                                = new ProxyManager
   val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
+  val structRegister: ListBuffer[String]     = new ListBuffer()
 
   def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
     case ShaderAST.Block(statements :+ last) =>
@@ -113,6 +114,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         )
 
       case ClassDef(name, DefDef("<init>", List(TermParamClause(params)), _, None), _, _, _) =>
+        structRegister += name
         ShaderAST.Struct(name, params.map(p => walkTree(p, envVarName)))
 
       case ClassDef(_, _, _, _, _) =>
@@ -889,7 +891,14 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             Select(New(TypeIdent(name)), "<init>"),
             args
           ) =>
-        ShaderAST.New(name, args.map(a => walkTerm(a, envVarName)))
+        // 'New' is allowed for layout annotations specifically (as they have arguments) or
+        // for any struct that has been previously registered.
+        if name == "layout" || structRegister.contains(name) then
+          ShaderAST.New(name, args.map(a => walkTerm(a, envVarName)))
+        else
+          throw ShaderError.UnexpectedConstruction(
+            "You cannot use classes (structs) not previously declared within the Shader body. This is either an illegal forward reference or you declared the class outside the shader."
+          )
 
       case Apply(
             Select(Ident(id), "update"),
