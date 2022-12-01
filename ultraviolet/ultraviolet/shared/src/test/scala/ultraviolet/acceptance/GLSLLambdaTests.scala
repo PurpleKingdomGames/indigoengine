@@ -141,9 +141,10 @@ class GLSLLambdaTests extends munit.FunSuite {
   test("compose (Function1)") {
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { _ =>
-        val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-        val g: vec3 => vec4  = val3 => vec4(val3, 0.5f)
-        val h: Float => vec4 = g compose f
+        val e: Float => Float = v => v - 0.5f
+        val f: Float => vec3  = r => vec3(r, 0.0f, 0.0f)
+        val g: vec3 => vec4   = val3 => vec4(val3, 0.5f)
+        val h: Float => vec4  = g compose f compose e
 
         h(1.0f)
       }
@@ -157,16 +158,22 @@ class GLSLLambdaTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(in float r){
+      |float def0(in float v){
+      |  return v-0.5;
+      |}
+      |vec3 def1(in float r){
       |  return vec3(r,0.0,0.0);
       |}
-      |vec4 def1(in vec3 val3){
+      |vec4 def2(in vec3 val3){
       |  return vec4(val3,0.5);
       |}
-      |vec4 def2(in float val0){
-      |  return def1(def0(val0));
+      |vec4 def3(in float val0){
+      |  return def2(def1(val0));
       |}
-      |def2(1.0);
+      |vec4 def4(in float val1){
+      |  return def3(def0(val1));
+      |}
+      |def4(1.0);
       |""".stripMargin.trim
     )
   }
@@ -174,11 +181,13 @@ class GLSLLambdaTests extends munit.FunSuite {
   test("andThen (Function1)") {
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { _ =>
-        val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-        val g: vec3 => vec4  = val3 => vec4(val3, 0.5f)
-        val h: Float => vec4 = f andThen g
+        val e: Float => Float = v => v - 0.5f
+        val f: Float => vec3  = r => vec3(r, 0.0f, 0.0f)
+        val g: vec3 => vec4   = val3 => vec4(val3, 0.5f)
+        val h: Float => vec4  = f andThen g
+        val i: Float => vec4  = e andThen h
 
-        h(1.0f)
+        i(1.0f)
       }
 
     val actual =
@@ -190,16 +199,22 @@ class GLSLLambdaTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(in float r){
+      |float def0(in float v){
+      |  return v-0.5;
+      |}
+      |vec3 def1(in float r){
       |  return vec3(r,0.0,0.0);
       |}
-      |vec4 def1(in vec3 val3){
+      |vec4 def2(in vec3 val3){
       |  return vec4(val3,0.5);
       |}
-      |vec4 def2(in float val0){
-      |  return def1(def0(val0));
+      |vec4 def3(in float val0){
+      |  return def2(def1(val0));
       |}
-      |def2(1.0);
+      |vec4 def4(in float val1){
+      |  return def3(def0(val1));
+      |}
+      |def4(1.0);
       |""".stripMargin.trim
     )
   }

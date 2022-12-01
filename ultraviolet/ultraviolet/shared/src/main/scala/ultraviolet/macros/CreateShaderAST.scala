@@ -727,9 +727,27 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         val proxy = proxies.lookUp(id, Proxy(id, Nil, Option(ShaderAST.DataTypes.ident("void"))))
         ShaderAST.CallFunction(proxy.name, args.map(x => walkTerm(x, envVarName)), Nil, proxy.returnType)
 
-      case Apply(TypeApply(Select(Ident(g), op), List(typ)), List(Ident(f))) if op == "compose" || op == "andThen" =>
-        val gProxy = if op == "compose" then proxies.lookUp(g) else proxies.lookUp(f)
-        val fProxy = if op == "compose" then proxies.lookUp(f) else proxies.lookUp(g)
+      case Apply(TypeApply(Select(g, op), _), List(f)) if op == "compose" || op == "andThen" =>
+        def toProxy(t: Term): Proxy =
+          t match
+            case Ident(name) =>
+              proxies.lookUp(name)
+
+            case x =>
+              walkTerm(x, envVarName) match
+                case r: ShaderAST.FunctionRef =>
+                  Proxy(r.id, r.arg, r.returnType)
+
+                case _ =>
+                  throw ShaderError.UnexpectedConstruction(
+                    "You appear to be composing something other that a function."
+                  )
+
+        val gg: Proxy = toProxy(g)
+        val ff: Proxy = toProxy(f)
+
+        val gProxy = if op == "compose" then gg else ff
+        val fProxy = if op == "compose" then ff else gg
 
         val fnName = proxies.makeDefName
         val vName  = proxies.makeVarName
