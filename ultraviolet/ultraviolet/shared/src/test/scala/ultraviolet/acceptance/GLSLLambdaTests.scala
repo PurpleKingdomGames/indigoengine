@@ -211,7 +211,6 @@ class GLSLLambdaTests extends munit.FunSuite {
 
   test("andThen (Function1 external)") {
 
-    // TODO: Adding 'e' doesn't work
     inline def e: Float => Float = r => r - 0.5f
     inline def f: Float => vec3  = r => vec3(r, 0.0f, 0.0f)
     inline def g: vec3 => vec4   = v3 => vec4(v3, 0.5f)
