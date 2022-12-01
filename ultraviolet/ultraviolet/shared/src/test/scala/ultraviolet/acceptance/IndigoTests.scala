@@ -1,4 +1,4 @@
-package ultraviolet
+package ultraviolet.acceptance
 
 import ultraviolet.indigoexamples.*
 import ultraviolet.syntax.*
