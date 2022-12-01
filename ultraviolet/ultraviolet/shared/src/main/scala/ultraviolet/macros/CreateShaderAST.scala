@@ -741,6 +741,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                 case ShaderAST.Block(List(r @ ShaderAST.FunctionRef(_, _, _))) =>
                   Proxy(r.id, r.arg, r.returnType)
 
+                case ShaderAST.CallFunction(id, args, _, returnType) =>
+                  Proxy(id, args, returnType)
+
                 case _ =>
                   throw ShaderError.UnexpectedConstruction(
                     "You appear to be composing something other that a function."
@@ -777,7 +780,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           ShaderAST.Function(fnName, List(fnInType -> vName), body, gProxy.returnType),
           false
         )
-
         ShaderAST.FunctionRef(fnName, gProxy.argType, gProxy.returnType)
 
       // Generally walking the tree
@@ -1029,80 +1031,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           "Shader arrays must be constructed with full type information, e.g.: array[3, Float] (where 3 is the size of the array)"
         )
 
-      // External inlined lambdas
-
-      case Inlined(
-            Some(Ident(name)),
-            Nil,
-            Typed(
-              theInterestingBit @ Apply(
-                TypeApply(
-                  Select(
-                    Inlined( // could be another repeat from 'Apply'
-                      Some(Ident(f)),
-                      _,
-                      Typed(
-                        Block(List(fTerm), _),
-                        _
-                      )
-                    ),
-                    op
-                  ),
-                  _
-                ),
-                List(Inlined(Some(Ident(g)), _, Typed(Block(List(gTerm), _), _)))
-              ),
-              Applied(_, List(argType, returnType))
-            )
-          ) if op == "compose" || op == "andThen" =>
-        // f
-        val fRef: ShaderAST.FunctionRef =
-          walkStatement(fTerm, envVarName) match
-            case r @ ShaderAST.FunctionRef(_, _, _) =>
-              r
-
-            case n =>
-              throw ShaderError.UnexpectedConstruction("Anon function build did not return a valid refernce.")
-
-        // g
-        val gRef: ShaderAST.FunctionRef =
-          walkStatement(gTerm, envVarName) match
-            case r @ ShaderAST.FunctionRef(_, _, _) =>
-              r
-
-            case n =>
-              throw ShaderError.UnexpectedConstruction("Anon function build did not return a valid refernce.")
-
-        val fnInType  = walkTree(argType, envVarName)
-        val fnOutType = Option(walkTree(returnType, envVarName))
-        val fnName    = proxies.makeDefName
-        val vName     = proxies.makeVarName
-
-        val ff = if op == "compose" then gRef else fRef
-        val gg = if op == "compose" then fRef else gRef
-
-        val body =
-          ShaderAST.CallFunction(
-            gg.id,
-            List(
-              ShaderAST.CallFunction(
-                ff.id,
-                List(ShaderAST.DataTypes.ident(vName)),
-                Nil,
-                ff.returnType
-              )
-            ),
-            List(ShaderAST.DataTypes.ident(ff.id)),
-            gg.returnType
-          )
-
-        shaderDefs += FunctionLookup(
-          ShaderAST.Function(fnName, List(fnInType -> vName), body, fnOutType),
-          false
-        )
-        proxies.add(name, fnName, List(fnInType), fnOutType)
-        ShaderAST.FunctionRef(fnName, List(fnInType), fnOutType)
-
       //
 
       case Apply(Ident(name), terms) =>
@@ -1232,7 +1160,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Anonymous function?
       case Typed(
-            Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)),
+            Block(
+              List(
+                DefDef(_, args, _, Some(term))
+              ),
+              Closure(Ident("$anonfun"), None)
+            ),
             Applied(_, types)
           ) =>
         val typesRendered: List[ShaderAST] = types.map(p => walkTree(p, envVarName))
@@ -1257,7 +1190,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           false
         )
         val nmes = argNames.map(ShaderAST.DataTypes.ident.apply)
-        ShaderAST.CallFunction(fn, Nil, nmes, returnType)
+        ShaderAST.CallFunction(fn, arguments.map(_._1), nmes, returnType)
 
       case Typed(term, _) =>
         walkTerm(term, envVarName)
