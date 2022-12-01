@@ -22,16 +22,20 @@ final class ProxyManager:
     res
   def makeVarName: String = nextVarName
 
-  private val proxyLookUp: HashMap[String, (String, Option[ShaderAST])] = new HashMap()
+  private val proxyLookUp: HashMap[String, Proxy] = new HashMap()
 
-  def lookUp(name: String, fallback: (String, Option[ShaderAST])): (String, Option[ShaderAST]) =
+  def lookUp(name: String, fallback: Proxy): Proxy =
     proxyLookUp.get(name).getOrElse(fallback)
-  def lookUp(name: String, fallback: String): (String, Option[ShaderAST]) =
-    lookUp(name, fallback -> None)
-  def lookUp(name: String): (String, Option[ShaderAST]) =
+  def lookUp(name: String, fallback: String): Proxy =
+    lookUp(name, Proxy(fallback))
+  def lookUp(name: String): Proxy =
     lookUp(name, name)
 
-  def add(originalName: String, newName: String, returnType: Option[ShaderAST]): Unit =
-    proxyLookUp += originalName -> (newName -> returnType)
+  def add(originalName: String, newName: String, arg: List[ShaderAST], returnType: Option[ShaderAST]): Unit =
+    proxyLookUp += originalName -> Proxy(newName, arg, returnType)
   def add(originalName: String, newName: String): Unit =
-    add(originalName, newName, None)
+    add(originalName, newName, Nil, None)
+
+final case class Proxy(name: String, argType: List[ShaderAST], returnType: Option[ShaderAST])
+object Proxy:
+  def apply(name: String): Proxy = Proxy(name, Nil, None)

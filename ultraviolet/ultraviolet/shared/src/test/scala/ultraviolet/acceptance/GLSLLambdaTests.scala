@@ -31,44 +31,56 @@ class GLSLLambdaTests extends munit.FunSuite {
     )
   }
 
-  // test("local unary lambda function fun") {
-  //   inline def fragment: Shader[FragEnv, vec4] =
-  //     Shader { _ =>
-  //       val p = ((r: Float, g: Float) => vec4(r, g, 0.0f, 1.0f))(10.0f, 20.0f)
+//   test("local unary lambda function fun") {
+//     inline def fragment: Shader[FragEnv, vec4] =
+//       Shader { _ =>
+//         val p = ((r: Float, g: Float) => vec4(r, g, 0.0f, 1.0f))(10.0f, 20.0f)
 
-  //       val q = ((v: Float) => vec2(v)) andThen ((vv: vec2) => vec4(vv, vv))
-  //       q(1.0)
+//         val q = (((v: Float) => vec2(v)) andThen ((vv: vec2) => vec4(vv, vv)))(1.0)
 
-  //       ((b: Float) => vec4(vec2(1.0), b, 0.5f))(30.0f) + p
-  //     }
+//         ((b: Float) => vec4(vec2(1.0), b, 0.5f))(30.0f) + p + q
+//       }
 
-  //   val actual =
-  //     fragment.toGLSL[WebGL2].code
+//     val actual =
+//       fragment.toGLSL[WebGL2].code
 
-  //   // DebugAST.toAST(fragment)
-  //   // println(actual)
-
-  //   assertEquals(
-  //     actual,
-  //     s"""
-  //     |vec4 def0(in float r,in float g){
-  //     |  return vec4(r,g,0.0,1.0);
-  //     |}
-  //     |vec4 def1(in float v){
-  //     |  return def2(vec2(v));
-  //     |}
-  //     |vec4 def2(in vec2 vv){
-  //     |  return vec4(vv,vv);
-  //     |}
-  //     |vec4 def3(in float b){
-  //     |  return vec4(vec2(1.0),b,0.5);
-  //     |}
-  //     |vec4 p=def0(10.0,20.0);
-  //     |def1(1.0);
-  //     |def3(30.0)+p;
-  //     |""".stripMargin.trim
-  //   )
-  // }
+//     DebugAST.toAST(fragment)
+//     // println(actual)
+// /*
+// vec4 def0(in float r,in float g){
+//   return vec4(r,g,0.0,1.0);
+// }
+// vec4 def1(in vec2 vv){
+//   return vec4(vv,vv);
+// }
+// vec4 def2(in float b){
+//   return vec4(vec2(1.0),b,0.5);
+// }
+// vec4 p=def0(10.0,20.0);
+// vec4 q=def1(1.0);
+// (def2(30.0)+p)+q;
+// */
+//     assertEquals(
+//       actual,
+//       s"""
+//       |vec4 def0(in float r,in float g){
+//       |  return vec4(r,g,0.0,1.0);
+//       |}
+//       |vec2 def1(in float v){
+//       |  return vec2(v);
+//       |}
+//       |vec4 def2(in vec2 vv){
+//       |  return vec4(vv,vv);
+//       |}
+//       |vec4 def3(in float b){
+//       |  return vec4(vec2(1.0),b,0.5);
+//       |}
+//       |vec4 p=def0(10.0,20.0);
+//       |vec4 q=def2(def1(1.0));
+//       |def3(30.0)+p;
+//       |""".stripMargin.trim
+//     )
+//   }
 
   test("local unary lambda function (val)") {
     inline def fragment: Shader[FragEnv, vec3] =

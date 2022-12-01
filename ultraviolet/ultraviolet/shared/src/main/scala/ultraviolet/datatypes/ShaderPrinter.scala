@@ -136,7 +136,7 @@ object ShaderPrinter:
       case CallFunction(id, args, _, _) =>
         List(s"""$id(${args.flatMap(render).mkString(",")})""")
 
-      case FunctionRef(_, _) =>
+      case FunctionRef(_, _, _) =>
         Nil
 
       case Cast(value, as) =>
@@ -361,7 +361,7 @@ object ShaderPrinter:
       case ShaderBlock(_, _, _, _, _)    => None
       case Function(_, _, _, rt)         => rt.toList.flatMap(render).headOption
       case CallFunction(_, _, _, rt)     => rt.toList.flatMap(render).headOption
-      case FunctionRef(_, rt)            => rt.toList.flatMap(render).headOption
+      case FunctionRef(_, _, rt)         => rt.toList.flatMap(render).headOption
       case Cast(_, as)                   => Option(as)
       case Infix(_, _, _, rt)            => rt.toList.flatMap(render).headOption
       case Assign(_, _)                  => None

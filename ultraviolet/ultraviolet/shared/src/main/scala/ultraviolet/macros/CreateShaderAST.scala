@@ -136,49 +136,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case TypeDef(_, _) =>
         throw ShaderError.Unsupported("Shaders do not support fancy types. :-)")
 
-      // Compose
-      case ValDef(
-            name,
-            Applied(_, List(argType, returnType)),
-            Some(
-              Apply(TypeApply(Select(Ident(g), op), List(Inferred())), List(Ident(f)))
-            )
-          ) if op == "compose" || op == "andThen" =>
-        val fnInType  = walkTree(argType, envVarName)
-        val fnOutType = Option(walkTree(returnType, envVarName))
-        val fnName    = proxies.makeDefName
-        val vName     = proxies.makeVarName
-
-        val ff = if op == "compose" then f else g
-        val gg = if op == "compose" then g else f
-
-        val fProxy = proxies.lookUp(ff)
-        val gProxy = proxies.lookUp(gg)
-
-        val body =
-          ShaderAST.CallFunction(
-            gProxy._1,
-            List(
-              ShaderAST.CallFunction(
-                fProxy._1,
-                List(ShaderAST.DataTypes.ident(vName)),
-                Nil,
-                fProxy._2
-              )
-            ),
-            List(ShaderAST.DataTypes.ident(fProxy._1)),
-            gProxy._2
-          )
-
-        shaderDefs += FunctionLookup(
-          ShaderAST.Function(fnName, List(fnInType -> vName), body, fnOutType),
-          false
-        )
-        proxies.add(name, fnName, fnOutType)
-        ShaderAST.Empty()
-
-      //
-
       case v @ ValDef(name, typ, Some(term)) =>
         val typeOf = extractInferredType(typ)
         val body   = walkTerm(term, envVarName)
@@ -196,8 +153,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           }
 
         body match
-          case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
-            proxies.add(name, id, rt)
+          case ShaderAST.FunctionRef(fnName, fnArg, fnOutType) =>
+            proxies.add(name, fnName, fnArg, fnOutType)
+            ShaderAST.Empty()
+
+          case ShaderAST.Block(List(r @ ShaderAST.FunctionRef(id, arg, rt))) =>
+            proxies.add(name, id, arg, rt)
             ShaderAST.Empty()
 
           case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, els)) =>
@@ -332,8 +293,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             }
 
         body match
-          case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
-            proxies.add(fn, id, rt)
+          case ShaderAST.Block(List(ShaderAST.FunctionRef(id, arg, rt))) =>
+            proxies.add(fn, id, arg, rt)
             ShaderAST.Empty()
 
           case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, els)) =>
@@ -445,7 +406,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               !isAnon
             )
 
-            if isAnon then ShaderAST.FunctionRef(fn, returnType)
+            if isAnon then
+              ShaderAST.FunctionRef(fn, argNamesTypes.map(p => ShaderAST.DataTypes.ident(p._1)), returnType)
             else
               ShaderAST.Function(
                 fn,
@@ -762,8 +724,40 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       //
 
       case Apply(Select(Ident(id), "apply"), args) =>
-        val (fnName, rt) = proxies.lookUp(id, id -> Option(ShaderAST.DataTypes.ident("void")))
-        ShaderAST.CallFunction(fnName, args.map(x => walkTerm(x, envVarName)), Nil, rt)
+        val proxy = proxies.lookUp(id, Proxy(id, Nil, Option(ShaderAST.DataTypes.ident("void"))))
+        ShaderAST.CallFunction(proxy.name, args.map(x => walkTerm(x, envVarName)), Nil, proxy.returnType)
+
+      case Apply(TypeApply(Select(Ident(g), op), List(typ)), List(Ident(f))) if op == "compose" || op == "andThen" =>
+        val gProxy = if op == "compose" then proxies.lookUp(g) else proxies.lookUp(f)
+        val fProxy = if op == "compose" then proxies.lookUp(f) else proxies.lookUp(g)
+
+        val fnName = proxies.makeDefName
+        val vName  = proxies.makeVarName
+        val fnInType =
+          fProxy.argType.headOption
+            .getOrElse(ShaderAST.DataTypes.ident("void"))
+
+        val body =
+          ShaderAST.CallFunction(
+            id = gProxy.name,
+            args = List(
+              ShaderAST.CallFunction(
+                id = fProxy.name,
+                args = List(ShaderAST.DataTypes.ident(vName)),
+                argNames = Nil,
+                returnType = fProxy.returnType
+              )
+            ),
+            argNames = Nil,
+            returnType = gProxy.returnType
+          )
+
+        shaderDefs += FunctionLookup(
+          ShaderAST.Function(fnName, List(fnInType -> vName), body, gProxy.returnType),
+          false
+        )
+
+        ShaderAST.FunctionRef(fnName, gProxy.argType, gProxy.returnType)
 
       // Generally walking the tree
 
@@ -872,14 +866,14 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Native method call.
       case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
-        val (fnName, _)           = proxies.lookUp(defRef)
-        val args: List[ShaderAST] = List(ShaderAST.DataTypes.ident(fnName))
+        val proxy                 = proxies.lookUp(defRef)
+        val args: List[ShaderAST] = List(ShaderAST.DataTypes.ident(proxy.name))
         ShaderAST.CallFunction(name, args, args, None)
 
       case Apply(Select(term, "apply"), xs) =>
         walkTerm(term, envVarName).find {
           case ShaderAST.CallFunction(_, _, _, _) => true
-          case ShaderAST.FunctionRef(_, _)        => true
+          case ShaderAST.FunctionRef(_, _, _)     => true
           case _                                  => false
         } match
           case Some(ShaderAST.CallFunction(id, Nil, Nil, rt)) =>
@@ -888,7 +882,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case Some(ShaderAST.CallFunction(id, args, argNames, rt)) =>
             ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, envVarName)), argNames, rt)
 
-          case Some(ShaderAST.FunctionRef(id, rt)) =>
+          case Some(ShaderAST.FunctionRef(id, _, rt)) =>
             ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, envVarName)), Nil, rt)
 
           case _ =>
@@ -1043,7 +1037,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         // f
         val fRef: ShaderAST.FunctionRef =
           walkStatement(fTerm, envVarName) match
-            case r @ ShaderAST.FunctionRef(_, _) =>
+            case r @ ShaderAST.FunctionRef(_, _, _) =>
               r
 
             case n =>
@@ -1052,7 +1046,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         // g
         val gRef: ShaderAST.FunctionRef =
           walkStatement(gTerm, envVarName) match
-            case r @ ShaderAST.FunctionRef(_, _) =>
+            case r @ ShaderAST.FunctionRef(_, _, _) =>
               r
 
             case n =>
@@ -1085,8 +1079,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           ShaderAST.Function(fnName, List(fnInType -> vName), body, fnOutType),
           false
         )
-        proxies.add(name, fnName, fnOutType)
-        ShaderAST.FunctionRef(fnName, fnOutType)
+        proxies.add(name, fnName, List(fnInType), fnOutType)
+        ShaderAST.FunctionRef(fnName, List(fnInType), fnOutType)
 
       //
 
