@@ -170,4 +170,38 @@ class ShaderPrinterTests extends munit.FunSuite {
 
   }
 
+  test("Can print if statements at the end of functions") {
+
+    val ast =
+      ShaderAST.Block(
+        List(
+          ShaderAST.Function(
+            "move",
+            Nil,
+            ShaderAST.If(
+              ShaderAST.DataTypes.bool(true),
+              ShaderAST.Assign(ShaderAST.DataTypes.ident("pos"), ShaderAST.DataTypes.float(10.0f)),
+              None
+            ),
+            None
+          )
+        )
+      )
+
+    val actual =
+      ShaderPrinter.print[ShaderPrinter.WebGL2](ast)
+
+    val expected =
+      List(
+        "void move(){",
+        "  if(true){",
+        "    pos=10.0;",
+        "  }",
+        "}"
+      )
+
+    assertEquals(actual, expected)
+
+  }
+
 }

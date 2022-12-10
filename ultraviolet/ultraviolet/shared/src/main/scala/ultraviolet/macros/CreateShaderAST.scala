@@ -297,7 +297,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             proxies.add(fn, id, arg, rt)
             ShaderAST.Empty()
 
-          case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, els)) =>
+          case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, Some(els))) =>
             val name   = proxies.makeVarName
             val resVal = ShaderAST.DataTypes.ident(name)
             val typeOf = extractInferredType(rt)
@@ -308,7 +308,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   ShaderAST.If(
                     cond,
                     assignToLast(resVal)(thn),
-                    els.map(e => assignToLast(resVal)(e))
+                    Option(assignToLast(resVal)(els))
                   ),
                   resVal
                 )
@@ -321,7 +321,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               returnType
             )
 
-          case ShaderAST.Block(statements :+ ShaderAST.Switch(on, cases)) =>
+          case ShaderAST.Block(statements :+ ShaderAST.Switch(on, cases))
+              if returnType.isDefined && !returnType.contains(ShaderAST.DataTypes.ident("void")) =>
             val name   = proxies.makeVarName
             val resVal = ShaderAST.DataTypes.ident(name)
             val typeOf = extractInferredType(rt)
@@ -346,7 +347,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               returnType
             )
 
-          case ShaderAST.If(cond, thn, els) =>
+          case ShaderAST.If(cond, thn, Some(els)) =>
             val name   = proxies.makeVarName
             val resVal = ShaderAST.DataTypes.ident(name)
             val typeOf = extractInferredType(rt)
@@ -357,7 +358,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   ShaderAST.If(
                     cond,
                     assignToLast(resVal)(thn),
-                    els.map(e => assignToLast(resVal)(e))
+                    Option(assignToLast(resVal)(els))
                   ),
                   resVal
                 )
@@ -370,7 +371,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               returnType
             )
 
-          case ShaderAST.Switch(on, cases) =>
+          case ShaderAST.Switch(on, cases)
+              if returnType.isDefined && !returnType.contains(ShaderAST.DataTypes.ident("void")) =>
             val name   = proxies.makeVarName
             val resVal = ShaderAST.DataTypes.ident(name)
             val typeOf = extractInferredType(rt)
@@ -1071,8 +1073,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           Option(walkTree(rt, envVarName))
         )
 
-      case Inlined(Some(Apply(Ident(name), List(term))), _, _)
-          if isSwizzle.matches(name) =>
+      case Inlined(Some(Apply(Ident(name), List(term))), _, _) if isSwizzle.matches(name) =>
         val body = walkTerm(term, envVarName)
         ShaderAST.DataTypes.swizzle(
           body,

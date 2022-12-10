@@ -229,4 +229,60 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     )
   }
 
+  test("Unit pattern matching works in return position of unit function") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment =
+      Shader {
+        var foo: Int = 0
+        def p1(flag: Int): Unit =
+          flag match
+            case 0 => foo = 10
+            case _ => foo = -100
+        p1(2)
+        def p2(flag: Int): Unit =
+          var bar: Int = 0
+          flag match
+            case 0 => bar = 10
+            case _ => bar = -100
+        p2(2)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int foo=0;
+      |void p1(in int flag){
+      |  switch(flag){
+      |    case 0:
+      |      foo=10;
+      |      break;
+      |    default:
+      |      foo=-100;
+      |      break;
+      |  }
+      |}
+      |p1(2);
+      |void p2(in int flag){
+      |  int bar=0;
+      |  switch(flag){
+      |    case 0:
+      |      bar=10;
+      |      break;
+      |    default:
+      |      bar=-100;
+      |      break;
+      |  }
+      |}
+      |p2(2);
+      |""".stripMargin.trim
+    )
+  }
+
 }

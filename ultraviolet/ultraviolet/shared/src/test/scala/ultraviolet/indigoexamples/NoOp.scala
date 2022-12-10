@@ -16,7 +16,6 @@ object NoOp:
     val expected: String =
       """
       |void vertex(){
-      |  
       |}
       |""".stripMargin.trim
 
@@ -34,15 +33,11 @@ object NoOp:
     val expected: String =
       """
       |void fragment(){
-      |  
       |}
       |void prepare(){
-      |  
       |}
       |void light(){
-      |  
       |}
       |void composite(){
-      |  
       |}
       |""".stripMargin.trim

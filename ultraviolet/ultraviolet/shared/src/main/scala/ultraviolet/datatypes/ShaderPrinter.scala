@@ -419,14 +419,23 @@ object ShaderPrinter:
         case None        => last.headOption.flatMap(decideType).getOrElse("void")
         case Some(value) => value
 
+    val end: List[String] =
+      last.headOption
+        .map { ss =>
+          renderStatements(List(ss)) match
+            case x :: Nil =>
+              List((if returnType != "void" then "return " else "") + x)
+
+            case x :: xs =>
+              // This case covers things like if statements
+              ((if returnType != "void" then "return " else "") + x) :: xs
+
+            case xs =>
+              xs
+        }
+        .getOrElse(Nil)
+
     val body =
-      renderStatements(init) ++
-        List(
-          last.headOption
-            .map { ss =>
-              (if returnType != "void" then "return " else "") + renderStatements(List(ss)).mkString("\n")
-            }
-            .getOrElse("")
-        )
+      renderStatements(init) ++ end
 
     (body, returnType)

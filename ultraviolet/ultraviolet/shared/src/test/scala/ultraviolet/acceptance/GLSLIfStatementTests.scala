@@ -164,4 +164,46 @@ class GLSLIfStatementTests extends munit.FunSuite {
     )
   }
 
+  test("Unit if statements at the end of unit functions") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment =
+      Shader {
+        def p1(x: Int): Unit =
+          var foo: Int = 0
+          if x <= 10 then foo = 15
+        p1(5)
+        var bar: Int = 0
+        def p2(x: Int): Unit =
+          if x <= 10 then bar = 15
+        p2(5)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |void p1(in int x){
+      |  int foo=0;
+      |  if(x<=10){
+      |    foo=15;
+      |  }
+      |}
+      |p1(5);
+      |int bar=0;
+      |void p2(in int x){
+      |  if(x<=10){
+      |    bar=15;
+      |  }
+      |}
+      |p2(5);
+      |""".stripMargin.trim
+    )
+  }
+
 }
