@@ -30,7 +30,18 @@ It is _not_ a goal to be able to write arbirary Scala and have it turned into GL
 
 Ultimately I'd like to be able to write Shaders in FP friendly Scala that can target more than just GLSL 300 - but that is a lot of work and not necessary for a first useful shippable version of Ultraviolet.
 
+
 # Language feature comparison
+
+## Unofficial reserved words
+
+When writing shaders in Scala, Scala reserved words will be checked and errors shown by the compiler.
+
+You shouldn't have too much trouble with GLSL reserved words because many of them have the same status in Scala, but it's worth noting the GLSL is like C and that there will be words to avoid.
+
+One thing to avoid: Do not call a function something like `def xy(v: vec4): ???` because this will likely interfere with the Swizzle mechanisms. Not at the point of definition but at the point of use.
+
+## Comparison table
 
 Only including the differences or note worthy features. If they're the same they are omitted.
 
