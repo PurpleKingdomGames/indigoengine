@@ -74,4 +74,38 @@ class GLSLSwizzleTests extends munit.FunSuite {
     )
   }
 
+  test("Brackets can be swizzled") {
+    case class Env(ROTATION: Float)
+
+    inline def fragment: Shader[Env, Unit] =
+      Shader { env =>
+        // format: off
+        def rotationZ(angle: Float): mat4 =
+          mat4(cos(angle),  -sin(angle), 0, 0,
+               sin(angle),  cos(angle),  0, 0,
+               0,           0,           1, 0,
+               0,           0,           0, 1)
+
+        val normal: vec3 = vec3(1.0)
+        val rotatedNormal: vec3 = (vec4(normal, 1.0f) * rotationZ(env.ROTATION)).xyz
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |mat4 rotationZ(in float angle){
+      |  return mat4(cos(angle),-sin(angle),0.0,0.0,sin(angle),cos(angle),0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0);
+      |}
+      |vec3 normal=vec3(1.0);
+      |vec3 rotatedNormal=(vec4(normal,1.0)*rotationZ(ROTATION)).xyz;
+      |""".stripMargin.trim
+    )
+  }
+
 }

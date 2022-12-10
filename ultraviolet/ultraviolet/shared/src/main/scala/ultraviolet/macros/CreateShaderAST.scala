@@ -1071,12 +1071,13 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           Option(walkTree(rt, envVarName))
         )
 
-      case Inlined(Some(Apply(Ident(name), List(gt @ Apply(Select(Ident(genType), _), args)))), _, _)
+      case Inlined(Some(Apply(Ident(name), List(term))), _, _)
           if isSwizzle.matches(name) =>
+        val body = walkTerm(term, envVarName)
         ShaderAST.DataTypes.swizzle(
-          walkTerm(gt, envVarName),
+          body,
           name,
-          Option(ShaderAST.DataTypes.ident(genType))
+          body.typeIdent
         )
 
       case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
