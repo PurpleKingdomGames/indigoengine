@@ -8,23 +8,24 @@ class GLSLNativeTests extends munit.FunSuite {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   case class FragEnv(UV: vec2, var COLOR: vec4)
 
-  test("can call a native function 1") {
+  test("can call a native function") {
 
     inline def circleSdf(p: vec2, r: Float): Float =
       length(p) - r
 
-    inline def circleShader =
+    inline def fragment =
       Shader[FragEnv, Float] { env =>
         circleSdf(vec2(1.0, 2.0), 3.0)
       }
 
-    val actual1 =
-      circleShader.toGLSL[WebGL2].code
+    val actual =
+      fragment.toGLSL[WebGL2].code
 
-    // println(ShaderMacros.toAST(circleShader))
+    // DebugAST.toAST(fragment)
+    // println(actual)
 
     assertEquals(
-      actual1,
+      actual,
       s"""
       |float circleSdf(in vec2 val0,in float val1){
       |  return length(val0)-3.0;
@@ -34,9 +35,9 @@ class GLSLNativeTests extends munit.FunSuite {
     )
   }
 
-  test("can call a native function 2") {
+  test("can call an internal function") {
 
-    inline def circleShader2: Shader[FragEnv, Float] =
+    inline def fragment: Shader[FragEnv, Float] =
       Shader { env =>
         def circleSdf(p: vec2, r: Float): Float =
           length(p) - r
@@ -44,17 +45,43 @@ class GLSLNativeTests extends munit.FunSuite {
         circleSdf(env.UV, 3.0)
       }
 
-    val actual2 =
-      circleShader2.toGLSL[WebGL2].code
+    val actual =
+      fragment.toGLSL[WebGL2].code
 
-    // println(ShaderMacros.toAST(circleShader2))
+    // DebugAST.toAST(fragment)
+    // println(actual)
 
     assertEquals(
-      actual2,
+      actual,
       s"""
       |float circleSdf(in vec2 p,in float r){
       |  return length(p)-r;
       |}
+      |circleSdf(UV,3.0);
+      |""".stripMargin.trim
+    )
+  }
+
+  test("can call a stub function from the environment") {
+
+    case class Env():
+      def circleSdf(p: vec2, r: Float): Float =
+        length(p) - r
+
+    inline def fragment: Shader[FragEnv & Env, Float] =
+      Shader { env =>
+        env.circleSdf(env.UV, 3.0)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
       |circleSdf(UV,3.0);
       |""".stripMargin.trim
     )

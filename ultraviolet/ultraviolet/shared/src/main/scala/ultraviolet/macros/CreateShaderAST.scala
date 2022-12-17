@@ -932,6 +932,11 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               case _ =>
                 ShaderAST.Block(xs.map(tt => walkTerm(tt, envVarName)))
 
+      case Apply(Select(Ident(maybeEnv), funcName), args) if envVarName.isDefined && maybeEnv == envVarName.get =>
+        ShaderAST.CallFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), Nil, None)
+
+      //
+
       case Select(term, "unary_-") =>
         ShaderAST.Neg(walkTerm(term, envVarName))
 
