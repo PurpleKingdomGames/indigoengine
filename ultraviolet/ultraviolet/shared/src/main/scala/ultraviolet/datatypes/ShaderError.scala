@@ -13,3 +13,4 @@ object ShaderError:
   final case class Unsupported(msg: String)            extends Exception(makeMsg(msg)) with NoStackTrace
   final case class Validation(msg: String)             extends Exception(makeMsg(msg)) with NoStackTrace
   final case class Metadata(msg: String)               extends Exception(makeMsg(msg)) with NoStackTrace
+  final case class OnFileLoad(msg: String)             extends Exception(makeMsg(msg)) with NoStackTrace

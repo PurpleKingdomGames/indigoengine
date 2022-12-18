@@ -474,6 +474,41 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Specific hooks we care about
 
+      // Entry point 'from file'
+      case Inlined(
+            Some(
+              Apply(Select(Ident("Shader"), "fromFile"), List(Literal(StringConstant(_))))
+            ),
+            Nil,
+            Typed(
+              Inlined(
+                Some(
+                  Apply(
+                    Select(Ident("Shader"), "apply"),
+                    List(
+                      Inlined(
+                        Some(_),
+                        Nil,
+                        Typed(
+                          Inlined(
+                            Some(TypeIdent(_)),
+                            Nil,
+                            term
+                          ),
+                          _
+                        )
+                      )
+                    )
+                  )
+                ),
+                _,
+                _
+              ),
+              _
+            )
+          ) =>
+        walkTree(term, None)
+
       // Entry point (with type params, no headers)
       case Apply(
             TypeApply(Select(Ident("Shader"), "apply"), types),
