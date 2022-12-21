@@ -64,13 +64,10 @@ class GLSLExternalTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec2 fn1(in float val0){
-      |  return vec2(1.0);
-      |}
       |vec2 def0(in float alpha){
       |  return vec2(0.0,alpha);
       |}
-      |vec4(fn1(1.0),def0(1.0));
+      |vec4(vec2(1.0),def0(1.0));
       |""".stripMargin.trim
     )
   }
@@ -96,13 +93,10 @@ class GLSLExternalTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec2 fn1(in float val0,in float val1){
-      |  return vec2(1.0,0.25);
-      |}
       |vec2 def0(in float blue,in float alpha){
       |  return vec2(blue,alpha);
       |}
-      |vec4(fn1(1.0,0.25),def0(0.5,1.0));
+      |vec4(vec2(1.0,0.25),def0(0.5,1.0));
       |""".stripMargin.trim
     )
   }

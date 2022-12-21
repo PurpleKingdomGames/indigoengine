@@ -13,7 +13,9 @@ class GLSLImportsTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, Int] =
       Shader { _ =>
-        addOne(10)
+        val value = 10
+        addOneAnon(value)
+        addOneInline(value)
       }
 
     val actual =
@@ -25,10 +27,12 @@ class GLSLImportsTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |int addOne(in int val0){
-      |  return 11;
+      |int def0(in int i){
+      |  return i+1;
       |}
-      |addOne(10);
+      |int value=10;
+      |def0(value);
+      |value+1;
       |""".stripMargin.trim
     )
   }
@@ -37,4 +41,5 @@ class GLSLImportsTests extends munit.FunSuite {
 
 object Importable:
 
-  inline def addOne(i: Int): Int = i + 1
+  inline def addOneAnon = (i: Int) => i + 1
+  inline def addOneInline(i: Int): Int = i + 1

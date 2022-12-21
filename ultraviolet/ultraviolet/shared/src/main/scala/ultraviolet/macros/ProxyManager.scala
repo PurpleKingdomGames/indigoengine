@@ -38,6 +38,13 @@ final class ProxyManager:
   def add(name: String, proxy: Proxy): Unit =
     proxyLookUp += name -> proxy
 
+  private val proxyInlineReplace: HashMap[String, ShaderAST] = new HashMap()
+
+  def addInlineReplace(id: String, value: ShaderAST): Unit =
+    proxyInlineReplace += id -> value
+  def lookUpInlineReplace(id: String): Option[ShaderAST] =
+    proxyInlineReplace.get(id)
+
 final case class Proxy(name: String, argType: List[ShaderAST], returnType: Option[ShaderAST])
 object Proxy:
   def apply(name: String): Proxy = Proxy(name, Nil, None)

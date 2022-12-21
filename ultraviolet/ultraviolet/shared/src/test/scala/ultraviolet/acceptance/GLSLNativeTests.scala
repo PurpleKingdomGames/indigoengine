@@ -8,14 +8,16 @@ class GLSLNativeTests extends munit.FunSuite {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   case class FragEnv(UV: vec2, var COLOR: vec4)
 
-  test("can call a native function") {
+  test("inlined external functions are inlined") {
 
     inline def circleSdf(p: vec2, r: Float): Float =
       length(p) - r
 
     inline def fragment =
       Shader[FragEnv, Float] { env =>
-        circleSdf(vec2(1.0, 2.0), 3.0)
+        val x = 1.0f
+
+        circleSdf(vec2(x, 2.0f), 3.0f)
       }
 
     val actual =
@@ -27,10 +29,38 @@ class GLSLNativeTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |float circleSdf(in vec2 val0,in float val1){
-      |  return length(val0)-3.0;
+      |float x=1.0;
+      |length(vec2(x,2.0))-3.0;
+      |""".stripMargin.trim
+    )
+  }
+
+  test("can call an external lambda function") {
+
+    inline def circleSdf = (p: vec2, r: Float) =>
+      length(p) - r
+
+    inline def fragment =
+      Shader[FragEnv, Float] { env =>
+        val x = 1.0f
+
+        circleSdf(vec2(x, 2.0), 3.0)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |float def0(in vec2 p,in float r){
+      |  return length(p)-r;
       |}
-      |circleSdf(vec2(1.0,2.0),3.0);
+      |float x=1.0;
+      |def0(vec2(x,2.0),3.0);
       |""".stripMargin.trim
     )
   }

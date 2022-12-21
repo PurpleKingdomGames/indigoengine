@@ -938,8 +938,15 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       // Native method call.
       case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
-        val proxy                 = proxies.lookUp(defRef)
-        val args: List[ShaderAST] = List(ShaderAST.DataTypes.ident(proxy.name))
+        val proxy = proxies.lookUp(defRef)
+        val args: List[ShaderAST] =
+          proxies.lookUpInlineReplace(proxy.name) match
+            case Some(value) =>
+              List(value)
+
+            case None =>
+              List(ShaderAST.DataTypes.ident(proxy.name))
+
         ShaderAST.CallFunction(name, args, args, None)
 
       case Apply(Select(term, "apply"), xs) =>
@@ -1171,41 +1178,22 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           name,
           None
         )
-      //
 
-      case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
-        val argNames   = args.map(_ => proxies.makeVarName)
-        val callArgs   = args.map(tt => walkTerm(tt, envVarName))
-        val pairedArgs = callArgs.zip(argNames)
-        val fnArgs: List[(ShaderAST, String)] =
-          pairedArgs.map { p =>
-            val typ = p._1.typeIdent.getOrElse(ShaderAST.DataTypes.ident("void"))
-            typ -> p._2
-          }
+      // Inlined external def
 
+      case Inlined(Some(Apply(Ident(name), args)), ds, x @ Typed(term, typeTree)) =>
         ds.map(s => walkStatement(s, envVarName))
           .flatMap {
-            case ShaderAST.Val(proxy, value, _) =>
-              pairedArgs.find(p => p._1 == value) match
-                case None    => Nil
-                case Some(v) => List(proxy -> v._2)
-
+            case v @ ShaderAST.Val(proxy, value, _) =>
+              List(v)
             case _ =>
               Nil
           }
-          .foreach { case (originalName, refName) =>
-            proxies.add(originalName, refName)
+          .foreach { case ShaderAST.Val(proxy, value, _) =>
+            proxies.addInlineReplace(proxy, value)
           }
 
-        val body       = walkTerm(term, envVarName)
-        val returnType = findReturnType(walkTree(typeTree, envVarName))
-
-        shaderDefs += FunctionLookup(
-          ShaderAST.Function(name, fnArgs, body, returnType),
-          false // Should be true, refactor when I revisit inline defs...
-        )
-        val nmes = argNames.map(ShaderAST.DataTypes.ident.apply)
-        ShaderAST.CallFunction(name, callArgs, nmes, returnType)
+        walkTerm(x, envVarName)
 
       case Inlined(Some(Select(This(_), _)), _, term) =>
         walkTerm(term, envVarName)
