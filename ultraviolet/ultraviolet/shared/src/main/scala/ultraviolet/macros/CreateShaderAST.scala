@@ -1240,9 +1240,19 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               ),
               Closure(Ident("$anonfun"), None)
             ),
-            Applied(_, types)
+            typeInfo
           ) =>
-        val typesRendered: List[ShaderAST] = types.map(p => walkTree(p, envVarName))
+        val typesRendered: List[ShaderAST] =
+          typeInfo match
+            case Applied(_, types) =>
+              types.map(p => walkTree(p, envVarName))
+
+            case _ =>
+              args
+                .collect { case TermParamClause(ps) => ps }
+                .flatten
+                .collect { case ValDef(_, t, _) => extractInferredType(t) }
+                .collect { case Some(s) => ShaderAST.DataTypes.ident(s) }
 
         val returnType: Option[ShaderAST] =
           typesRendered.reverse.headOption
