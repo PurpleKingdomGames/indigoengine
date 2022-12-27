@@ -4,7 +4,7 @@ import ultraviolet.datatypes.ShaderAST
 
 trait ShaderMacroUtils:
 
-  val isSwizzle                                 = "^([xyzw]+)$".r
+  val isSwizzle                                 = "^([xyzwrgba]+)$".r
   val isSwizzleable                             = "^(vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4)$".r
   def isGLSLReservedWord(word: String): Boolean = allReservedWords.contains(word)
 

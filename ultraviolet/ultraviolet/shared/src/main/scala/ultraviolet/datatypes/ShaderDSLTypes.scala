@@ -5,6 +5,9 @@ import scala.reflect.ClassTag
 trait ShaderDSLTypes:
 
   final case class vec2(x: Float, y: Float):
+    lazy val r: Float = x
+    lazy val g: Float = y
+
     def +(f: Float): vec2 = vec2(x + f, y + f)
     def -(f: Float): vec2 = vec2(x - f, y - f)
     def *(f: Float): vec2 = vec2(x * f, y * f)
@@ -24,6 +27,10 @@ trait ShaderDSLTypes:
       vec2(xy, xy)
 
   final case class vec3(x: Float, y: Float, z: Float):
+    lazy val r: Float = x
+    lazy val g: Float = y
+    lazy val b: Float = z
+
     def +(f: Float): vec3 = vec3(x + f, y + f, z + f)
     def -(f: Float): vec3 = vec3(x - f, y - f, z - f)
     def *(f: Float): vec3 = vec3(x * f, y * f, z * f)
@@ -49,6 +56,11 @@ trait ShaderDSLTypes:
       vec3(x, yz.x, yz.y)
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float):
+    lazy val r: Float = x
+    lazy val g: Float = y
+    lazy val b: Float = z
+    lazy val a: Float = w
+
     def +(f: Float): vec4 = vec4(x + f, y + f, z + f, w + f)
     def -(f: Float): vec4 = vec4(x - f, y - f, z - f, w - f)
     def *(f: Float): vec4 = vec4(x * f, y * f, z * f, w * f)
@@ -85,12 +97,17 @@ trait ShaderDSLTypes:
     inline def apply(xyz: Float): vec4 =
       vec4(xyz, xyz, xyz, xyz)
 
-  final case class bvec2(x: Boolean, y: Boolean)
+  final case class bvec2(x: Boolean, y: Boolean):
+    lazy val r: Boolean = x
+    lazy val g: Boolean = y
   object bvec2:
     inline def apply(xy: Boolean): bvec2 =
       bvec2(xy, xy)
 
-  final case class bvec3(x: Boolean, y: Boolean, z: Boolean)
+  final case class bvec3(x: Boolean, y: Boolean, z: Boolean):
+    lazy val r: Boolean = x
+    lazy val g: Boolean = y
+    lazy val b: Boolean = z
   object bvec3:
     inline def apply(xyz: Boolean): bvec3 =
       bvec3(xyz, xyz, xyz)
@@ -101,7 +118,11 @@ trait ShaderDSLTypes:
     inline def apply(x: Boolean, yz: bvec3): bvec3 =
       bvec3(x, yz.x, yz.y)
 
-  final case class bvec4(x: Boolean, y: Boolean, z: Boolean, w: Boolean)
+  final case class bvec4(x: Boolean, y: Boolean, z: Boolean, w: Boolean):
+    lazy val r: Boolean = x
+    lazy val g: Boolean = y
+    lazy val b: Boolean = z
+    lazy val a: Boolean = w
   object bvec4:
     inline def apply(xy: bvec2, z: Boolean, w: Boolean): bvec4 =
       bvec4(xy.x, xy.y, z, w)
@@ -125,6 +146,9 @@ trait ShaderDSLTypes:
       bvec4(xyz, xyz, xyz, xyz)
 
   final case class ivec2(x: Int, y: Int):
+    lazy val r: Int = x
+    lazy val g: Int = y
+
     def +(f: Int): ivec2 = ivec2(x + f, y + f)
     def -(f: Int): ivec2 = ivec2(x - f, y - f)
     def *(f: Int): ivec2 = ivec2(x * f, y * f)
@@ -144,6 +168,10 @@ trait ShaderDSLTypes:
       ivec2(xy, xy)
 
   final case class ivec3(x: Int, y: Int, z: Int):
+    lazy val r: Int = x
+    lazy val g: Int = y
+    lazy val b: Int = z
+
     def +(f: Int): ivec3 = ivec3(x + f, y + f, z + f)
     def -(f: Int): ivec3 = ivec3(x - f, y - f, z - f)
     def *(f: Int): ivec3 = ivec3(x * f, y * f, z * f)
@@ -169,6 +197,11 @@ trait ShaderDSLTypes:
       ivec3(x, yz.x, yz.y)
 
   final case class ivec4(x: Int, y: Int, z: Int, w: Int):
+    lazy val r: Int = x
+    lazy val g: Int = y
+    lazy val b: Int = z
+    lazy val a: Int = w
+
     def +(f: Int): ivec4 = ivec4(x + f, y + f, z + f, w + f)
     def -(f: Int): ivec4 = ivec4(x - f, y - f, z - f, w - f)
     def *(f: Int): ivec4 = ivec4(x * f, y * f, z * f, w * f)

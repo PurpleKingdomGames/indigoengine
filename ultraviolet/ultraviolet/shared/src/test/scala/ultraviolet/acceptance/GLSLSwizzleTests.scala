@@ -57,6 +57,55 @@ class GLSLSwizzleTests extends munit.FunSuite {
     )
   }
 
+  test("swizzling (rgba)") {
+    inline def fragment1: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        vec4(1.0f, 2.0f, 3.0f, 4.0f).abgr
+      }
+
+    val actual1 =
+      fragment1.toGLSL[WebGL2].code
+
+    assertEquals(
+      actual1,
+      s"""
+      |vec4(1.0,2.0,3.0,4.0).abgr;
+      |""".stripMargin.trim
+    )
+
+    inline def fragment2: Shader[FragEnv, vec3] =
+      Shader { _ =>
+        vec3(1.0f, 2.0f, 3.0f).rrg
+      }
+
+    val actual2 =
+      fragment2.toGLSL[WebGL2].code
+
+    assertEquals(
+      actual2,
+      s"""
+      |vec3(1.0,2.0,3.0).rrg;
+      |""".stripMargin.trim
+    )
+
+    inline def fragment3: Shader[FragEnv, vec3] =
+      Shader { _ =>
+        val fill = vec3(1.0f, 2.0f, 3.0f)
+        fill.rgb
+      }
+
+    val actual3 =
+      fragment3.toGLSL[WebGL2].code
+
+    assertEquals(
+      actual3,
+      s"""
+      |vec3 fill=vec3(1.0,2.0,3.0);
+      |fill.rgb;
+      |""".stripMargin.trim
+    )
+  }
+
   test("swizzling an env var") {
     inline def fragment: Shader[FragEnv, vec3] =
       Shader { env =>

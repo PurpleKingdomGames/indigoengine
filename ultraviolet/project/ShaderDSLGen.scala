@@ -41,9 +41,12 @@ object ShaderDSLGen {
 
   def makeContents(): String = {
 
-    val vec2 = List("x", "y")
-    val vec3 = List("x", "y", "z")
-    val vec4 = List("x", "y", "z", "w")
+    val vec2     = List("x", "y")
+    val vec2RGBA = List("r", "g")
+    val vec3     = List("x", "y", "z")
+    val vec3RGBA = List("r", "g", "b")
+    val vec4     = List("x", "y", "z", "w")
+    val vec4RGBA = List("r", "g", "b", "a")
 
     def swizzles1(input: List[String]): List[List[String]] =
       input.map(c => List(c))
@@ -89,12 +92,20 @@ object ShaderDSLGen {
         swizzles1(vec2) ++
           swizzles2(vec2) ++
           swizzles3(vec2) ++
-          swizzles4(vec2),
+          swizzles4(vec2) ++
+          swizzles1(vec2RGBA) ++
+          swizzles2(vec2RGBA) ++
+          swizzles3(vec2RGBA) ++
+          swizzles4(vec2RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -104,12 +115,20 @@ object ShaderDSLGen {
         swizzles1(vec3) ++
           swizzles2(vec3) ++
           swizzles3(vec3) ++
-          swizzles4(vec3),
+          swizzles4(vec3) ++
+          swizzles1(vec3RGBA) ++
+          swizzles2(vec3RGBA) ++
+          swizzles3(vec3RGBA) ++
+          swizzles4(vec3RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -119,12 +138,20 @@ object ShaderDSLGen {
         swizzles1(vec4) ++
           swizzles2(vec4) ++
           swizzles3(vec4) ++
-          swizzles4(vec4),
+          swizzles4(vec4) ++
+          swizzles1(vec4RGBA) ++
+          swizzles2(vec4RGBA) ++
+          swizzles3(vec4RGBA) ++
+          swizzles4(vec4RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -134,12 +161,20 @@ object ShaderDSLGen {
         swizzles1(vec2) ++
           swizzles2(vec2) ++
           swizzles3(vec2) ++
-          swizzles4(vec2),
+          swizzles4(vec2) ++
+          swizzles1(vec2RGBA) ++
+          swizzles2(vec2RGBA) ++
+          swizzles3(vec2RGBA) ++
+          swizzles4(vec2RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -149,12 +184,20 @@ object ShaderDSLGen {
         swizzles1(vec3) ++
           swizzles2(vec3) ++
           swizzles3(vec3) ++
-          swizzles4(vec3),
+          swizzles4(vec3) ++
+          swizzles1(vec3RGBA) ++
+          swizzles2(vec3RGBA) ++
+          swizzles3(vec3RGBA) ++
+          swizzles4(vec3RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -164,12 +207,20 @@ object ShaderDSLGen {
         swizzles1(vec4) ++
           swizzles2(vec4) ++
           swizzles3(vec4) ++
-          swizzles4(vec4),
+          swizzles4(vec4) ++
+          swizzles1(vec4RGBA) ++
+          swizzles2(vec4RGBA) ++
+          swizzles3(vec4RGBA) ++
+          swizzles4(vec4RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -179,12 +230,20 @@ object ShaderDSLGen {
         swizzles1(vec2) ++
           swizzles2(vec2) ++
           swizzles3(vec2) ++
-          swizzles4(vec2),
+          swizzles4(vec2) ++
+          swizzles1(vec2RGBA) ++
+          swizzles2(vec2RGBA) ++
+          swizzles3(vec2RGBA) ++
+          swizzles4(vec2RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -194,12 +253,20 @@ object ShaderDSLGen {
         swizzles1(vec3) ++
           swizzles2(vec3) ++
           swizzles3(vec3) ++
-          swizzles4(vec3),
+          swizzles4(vec3) ++
+          swizzles1(vec3RGBA) ++
+          swizzles2(vec3RGBA) ++
+          swizzles3(vec3RGBA) ++
+          swizzles4(vec3RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       ),
       extensionContent(
@@ -209,12 +276,20 @@ object ShaderDSLGen {
         swizzles1(vec4) ++
           swizzles2(vec4) ++
           swizzles3(vec4) ++
-          swizzles4(vec4),
+          swizzles4(vec4) ++
+          swizzles1(vec4RGBA) ++
+          swizzles2(vec4RGBA) ++
+          swizzles3(vec4RGBA) ++
+          swizzles4(vec4RGBA),
         Map(
           "x" -> "x",
           "y" -> "y",
           "z" -> "z",
-          "w" -> "w"
+          "w" -> "w",
+          "r" -> "r",
+          "g" -> "g",
+          "b" -> "b",
+          "a" -> "a"
         )
       )
     ).mkString("\n")
