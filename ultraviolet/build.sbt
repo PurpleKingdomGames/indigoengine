@@ -17,7 +17,6 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   crossScalaVersions := Seq(scala3Version),
   organization       := "io.indigoengine",
   libraryDependencies ++= Shared.munit.value,
-  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
   scalafixOnCompile := true,
   semanticdbEnabled := true,
