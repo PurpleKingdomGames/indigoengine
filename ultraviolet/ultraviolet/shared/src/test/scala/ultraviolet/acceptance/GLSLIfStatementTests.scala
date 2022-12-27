@@ -17,8 +17,11 @@ class GLSLIfStatementTests extends munit.FunSuite {
         val x: Int = 1
 
         if x <= 0 then red
-        else if x == 1 then blue
-        else green
+        else {
+          val y = 10
+          if x == 1 && y == 10 then blue
+          else green
+        }
       }
 
     val actual =
@@ -37,7 +40,8 @@ class GLSLIfStatementTests extends munit.FunSuite {
       |if(x<=0){
       |  red;
       |}else{
-      |  if(x==1){
+      |  int y=10;
+      |  if((x==1)&&(y==10)){
       |    blue;
       |  }else{
       |    green;
@@ -202,6 +206,88 @@ class GLSLIfStatementTests extends munit.FunSuite {
       |  }
       |}
       |p2(5);
+      |""".stripMargin.trim
+    )
+  }
+
+  test("if-else-if-else that sets a value") {
+
+    inline def fragment =
+      Shader {
+        val amount        = 0.0f
+        val checkedAmount = abs(clamp(amount, 0.0f, 3.0f)).toInt
+
+        val borderAmount: Int =
+          if checkedAmount == 1 then 10
+          else if checkedAmount == 2 then 20
+          else if checkedAmount == 3 then 30
+          else 40
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |float amount=0.0;
+      |int checkedAmount=int(abs(clamp(amount,0.0,3.0)));
+      |int borderAmount;
+      |if(checkedAmount==1){
+      |  borderAmount=10;
+      |}else if(checkedAmount==2){
+      |  borderAmount=20;
+      |}else if(checkedAmount==3){
+      |  borderAmount=30;
+      |}else{
+      |  borderAmount=40;
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
+  test("if-else-if-else that returns a value") {
+
+    inline def fragment =
+      Shader {
+        val amount = 0.0f
+
+        def foo(checkedAmount: Int): Int =
+          if checkedAmount == 1 then 10
+          else if checkedAmount == 2 then 20
+          else if checkedAmount == 3 then 30
+          else 40
+
+        foo(abs(clamp(amount, 0.0f, 3.0f)).toInt)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |float amount=0.0;
+      |int foo(in int checkedAmount){
+      |  int val0;
+      |  if(checkedAmount==1){
+      |    val0=10;
+      |  }else if(checkedAmount==2){
+      |    val0=20;
+      |  }else if(checkedAmount==3){
+      |    val0=30;
+      |  }else{
+      |    val0=40;
+      |  }
+      |  return val0;
+      |}
+      |foo(int(abs(clamp(amount,0.0,3.0))));
       |""".stripMargin.trim
     )
   }

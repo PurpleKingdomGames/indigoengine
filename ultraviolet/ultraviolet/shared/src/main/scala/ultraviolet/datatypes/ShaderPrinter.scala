@@ -161,23 +161,33 @@ object ShaderPrinter:
       case Assign(left, right) =>
         List(s"""${render(left).mkString}=${render(right).mkString}""")
 
-      case If(cond, thenTerm, elseTerm) =>
-        elseTerm match
-          case None =>
-            List(
-              List(s"""if(${render(cond).mkString}){"""),
-              render(thenTerm).map(addIndent),
-              List(s"""}""")
-            ).flatten
+      case If(cond, thenTerm, None) =>
+        List(
+          List(s"""if(${render(cond).mkString}){"""),
+          render(thenTerm).map(addIndent),
+          List(s"""}""")
+        ).flatten
 
-          case Some(els) =>
+      case If(cond, thenTerm, Some(nextIf @ If(_, _, Some(_)))) =>
+        render(nextIf) match
+          case x :: xs =>
             List(
               List(s"""if(${render(cond).mkString}){"""),
               render(thenTerm).map(addIndent),
-              List(s"""}else{"""),
-              render(els).map(addIndent),
-              List(s"""}""")
-            ).flatten
+              List(s"""}else $x""")
+            ).flatten ++ xs
+
+          case _ =>
+            throw ShaderError.UnexpectedConstruction("Found an else-if that was badly constructed.")
+
+      case If(cond, thenTerm, Some(els)) =>
+        List(
+          List(s"""if(${render(cond).mkString}){"""),
+          render(thenTerm).map(addIndent),
+          List(s"""}else{"""),
+          render(els).map(addIndent),
+          List(s"""}""")
+        ).flatten
 
       case While(cond, body) =>
         List(

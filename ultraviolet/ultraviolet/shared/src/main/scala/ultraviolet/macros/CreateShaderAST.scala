@@ -17,14 +17,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
   val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
   val structRegister: ListBuffer[String]     = new ListBuffer()
 
-  def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
-    case ShaderAST.Block(statements :+ last) =>
-      ShaderAST.Block(statements :+ ShaderAST.Assign(lhs, last))
-
-    case last =>
-      ShaderAST.Assign(lhs, last)
-  }
-
   def extractInferredType(typ: TypeTree): Option[String] =
     def mapName(name: Option[String]): Option[String] =
       name
@@ -108,6 +100,33 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           false
       }
 
+  def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
+    case ShaderAST.Block(statements :+ last) =>
+      ShaderAST.Block(statements :+ ShaderAST.Assign(lhs, last))
+
+    case last =>
+      ShaderAST.Assign(lhs, last)
+  }
+
+  def recursivelyAssignIf(assignTo: ShaderAST.DataTypes.ident, maybeIf: ShaderAST): ShaderAST =
+    maybeIf match
+      case ShaderAST.If(cond, thn, Some(els @ ShaderAST.If(_, _, _))) =>
+        ShaderAST.If(
+          cond,
+          assignToLast(assignTo)(recursivelyAssignIf(assignTo, thn)),
+          Option(recursivelyAssignIf(assignTo, els))
+        )
+
+      case ShaderAST.If(cond, thn, Some(els)) =>
+        ShaderAST.If(
+          cond,
+          assignToLast(assignTo)(recursivelyAssignIf(assignTo, thn)),
+          Option(assignToLast(assignTo)(recursivelyAssignIf(assignTo, els)))
+        )
+
+      case x =>
+        x
+
   def walkStatement(s: Statement, envVarName: Option[String]): ShaderAST =
     s match
       case Import(_, _) =>
@@ -172,16 +191,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             proxies.add(name, id, arg, rt)
             ShaderAST.Empty()
 
-          case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, els)) =>
-            val resVal = ShaderAST.DataTypes.ident(name)
+          case ShaderAST.Block(statements :+ (ifs @ ShaderAST.If(_, _, Some(_)))) =>
+            val resVal: ShaderAST.DataTypes.ident = ShaderAST.DataTypes.ident(name)
             ShaderAST.Block(
               statements ++ List(
                 ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
-                ShaderAST.If(
-                  cond,
-                  assignToLast(resVal)(thn),
-                  els.map(e => assignToLast(resVal)(e))
-                )
+                recursivelyAssignIf(resVal, ifs)
               )
             )
 
@@ -199,16 +214,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               )
             )
 
-          case ShaderAST.If(cond, thn, els) =>
-            val resVal = ShaderAST.DataTypes.ident(name)
+          case ifs @ ShaderAST.If(_, _, Some(_)) =>
+            val resVal: ShaderAST.DataTypes.ident = ShaderAST.DataTypes.ident(name)
             ShaderAST.Block(
               List(
                 ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
-                ShaderAST.If(
-                  cond,
-                  assignToLast(resVal)(thn),
-                  els.map(e => assignToLast(resVal)(e))
-                )
+                recursivelyAssignIf(resVal, ifs)
               )
             )
 
@@ -314,19 +325,15 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             proxies.add(fn, id, arg, rt)
             ShaderAST.Empty()
 
-          case ShaderAST.Block(statements :+ ShaderAST.If(cond, thn, Some(els))) =>
-            val name   = proxies.makeVarName
-            val resVal = ShaderAST.DataTypes.ident(name)
-            val typeOf = extractInferredType(rt).map(s => ShaderAST.DataTypes.ident(s))
+          case ShaderAST.Block(statements :+ (ifs @ ShaderAST.If(_, _, Some(_)))) =>
+            val name                              = proxies.makeVarName
+            val resVal: ShaderAST.DataTypes.ident = ShaderAST.DataTypes.ident(name)
+            val typeOf                            = extractInferredType(rt).map(s => ShaderAST.DataTypes.ident(s))
             val fnBody =
               ShaderAST.Block(
                 List(
                   ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
-                  ShaderAST.If(
-                    cond,
-                    assignToLast(resVal)(thn),
-                    Option(assignToLast(resVal)(els))
-                  ),
+                  recursivelyAssignIf(resVal, ifs),
                   resVal
                 )
               )
@@ -370,19 +377,15 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               isAnon
             )
 
-          case ShaderAST.If(cond, thn, Some(els)) =>
-            val name   = proxies.makeVarName
-            val resVal = ShaderAST.DataTypes.ident(name)
-            val typeOf = extractInferredType(rt).map(s => ShaderAST.DataTypes.ident(s))
+          case ifs @ ShaderAST.If(_, _, Some(_)) =>
+            val name                              = proxies.makeVarName
+            val resVal: ShaderAST.DataTypes.ident = ShaderAST.DataTypes.ident(name)
+            val typeOf                            = extractInferredType(rt).map(s => ShaderAST.DataTypes.ident(s))
             val fnBody =
               ShaderAST.Block(
                 List(
                   ShaderAST.Val(name, ShaderAST.Empty(), typeOf),
-                  ShaderAST.If(
-                    cond,
-                    assignToLast(resVal)(thn),
-                    Option(assignToLast(resVal)(els))
-                  ),
+                  recursivelyAssignIf(resVal, ifs),
                   resVal
                 )
               )
