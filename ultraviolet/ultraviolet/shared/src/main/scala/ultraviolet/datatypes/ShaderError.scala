@@ -14,3 +14,6 @@ object ShaderError:
   final case class Validation(msg: String)             extends Exception(makeMsg(msg)) with NoStackTrace
   final case class Metadata(msg: String)               extends Exception(makeMsg(msg)) with NoStackTrace
   final case class OnFileLoad(msg: String)             extends Exception(makeMsg(msg)) with NoStackTrace
+  final case class GLSLReservedWord(word: String)
+      extends Exception(makeMsg(s"'$word' is a reserved word in GLSL, please choose a different name."))
+      with NoStackTrace
