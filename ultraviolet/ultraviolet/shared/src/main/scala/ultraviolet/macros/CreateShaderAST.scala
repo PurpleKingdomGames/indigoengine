@@ -110,11 +110,22 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
   def recursivelyAssignIf(assignTo: ShaderAST.DataTypes.ident, maybeIf: ShaderAST): ShaderAST =
     maybeIf match
-      case ShaderAST.If(cond, thn, Some(els @ ShaderAST.If(_, _, _))) =>
+      case ShaderAST.If(cond, thn, Some(els @ ShaderAST.If(_, _, Some(_)))) =>
         ShaderAST.If(
           cond,
           assignToLast(assignTo)(recursivelyAssignIf(assignTo, thn)),
           Option(recursivelyAssignIf(assignTo, els))
+        )
+
+      case ShaderAST.If(cond, thn, Some(ShaderAST.Block(statements :+ (els @ ShaderAST.If(_, _, Some(_)))))) =>
+        ShaderAST.If(
+          cond,
+          assignToLast(assignTo)(recursivelyAssignIf(assignTo, thn)),
+          Option(
+            ShaderAST.Block(
+              statements :+ recursivelyAssignIf(assignTo, els)
+            )
+          )
         )
 
       case ShaderAST.If(cond, thn, Some(els)) =>

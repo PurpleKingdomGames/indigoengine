@@ -292,4 +292,51 @@ class GLSLIfStatementTests extends munit.FunSuite {
     )
   }
 
+  test("nested if else statements can return") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        val red    = vec4(1.0, 0.0, 0.0, 1.0)
+        val green  = vec4(0.0, 1.0, 0.0, 1.0)
+        val blue   = vec4(0.0, 0.0, 1.0, 1.0)
+        val x: Int = 1
+
+        val color =
+          if x <= 0 then red
+          else {
+            val y = 10
+            if x == 1 && y == 10 then blue
+            else green
+          }
+        color
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |vec4 red=vec4(1.0,0.0,0.0,1.0);
+      |vec4 green=vec4(0.0,1.0,0.0,1.0);
+      |vec4 blue=vec4(0.0,0.0,1.0,1.0);
+      |int x=1;
+      |vec4 color;
+      |if(x<=0){
+      |  color=red;
+      |}else{
+      |  int y=10;
+      |  if((x==1)&&(y==10)){
+      |    color=blue;
+      |  }else{
+      |    color=green;
+      |  }
+      |}
+      |color;
+      |""".stripMargin.trim
+    )
+  }
+
 }
