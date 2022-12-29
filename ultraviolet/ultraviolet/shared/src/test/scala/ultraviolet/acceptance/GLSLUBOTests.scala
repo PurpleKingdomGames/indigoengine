@@ -11,7 +11,7 @@ class GLSLUBOTests extends munit.FunSuite {
   test("Can define a UBO struct") {
 
     case class UBO1(TIME: highp[Float], val VIEWPORT_SIZE: vec2)
-    case class UBO2(customColor: vec4, pos: lowp[vec3])
+    case class UBO2(customColor: vec4, pos: lowp[vec3], VERTICES: array[16, vec2])
 
     inline def fragment =
       Shader[UBO1 & UBO2 & FragEnv, Unit](
@@ -41,6 +41,7 @@ class GLSLUBOTests extends munit.FunSuite {
       |layout (std140) uniform UBO2 {
       |  vec4 customColor;
       |  lowp vec3 pos;
+      |  vec2[16] VERTICES;
       |};
       |COLOR=vec4(UV,TIME,1.0);
       |""".stripMargin.trim

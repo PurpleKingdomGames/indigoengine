@@ -10,6 +10,8 @@ import scala.quoted.Quotes
 class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
   import qq.reflect.*
 
+  val isArray = "^array([0-9]+)$".r
+
   def extractUBO(uboTerm: Term): UBODef =
     def extractTypeNames(terms: List[Term]): List[String] =
       terms.flatMap {
@@ -25,6 +27,35 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
             case l       => l
 
           List(label)
+
+        case Inlined(
+              _,
+              Nil,
+              Typed(
+                Block(
+                  List(
+                    ValDef(
+                      _,
+                      _,
+                      Some(Apply(TypeApply(Ident(arrayInstanceName), List(Inferred())), List(Ident(typeclassName))))
+                    )
+                  ),
+                  _
+                ),
+                _
+              )
+            ) if isArray.matches(arrayInstanceName)  =>
+          // e.g. "given_ShaderTypeOf_Float"
+          val label = typeclassName.split("_").last match
+            case "Int"   => "int"
+            case "Float" => "float"
+            case l       => l
+
+          // e.g. "array16"
+          val arraySize =
+            arrayInstanceName.substring(5)
+
+          List(s"$label[$arraySize]")
 
         case _ =>
           Nil
@@ -184,10 +215,12 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
         val lb = extractLabels(findTermsOf("summonLabels")(term))
         val tn = extractTypeNames(findTermsOf("summonTypeName")(term))
 
-        UBODef(
-          uboName,
-          pn.zip(lb.zip(tn)).map(p => UBOField(p._1, p._2._2, p._2._1))
-        )
+        if pn.length == lb.length && lb.length == tn.length then
+          UBODef(
+            uboName,
+            pn.zip(lb.zip(tn)).map(p => UBOField(p._1, p._2._2, p._2._1))
+          )
+        else throw ShaderError.UBORead("A UBO field was misread.")
 
       // General traversal
 
