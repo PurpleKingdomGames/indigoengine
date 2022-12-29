@@ -940,7 +940,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case Select(
             term @ Apply(
               Apply(TypeApply(Select(Ident("array"), "apply"), _), List(_)),
-              List(Literal(IntConstant(_)))
+              List(_)
             ),
             component
           ) =>

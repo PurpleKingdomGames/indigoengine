@@ -184,6 +184,57 @@ class GLSLArrayTests extends munit.FunSuite {
     )
   }
 
+  test("arrays - component access from function argument") {
+
+    inline def fragment =
+      Shader {
+        val i = 0
+        def func(v: array[3, vec2]): Float =
+          v(i).y
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int i=0;
+      |float func(in vec2[3] v){
+      |  return v[i].y;
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
+  test("arrays - component access from array in env") {
+
+    case class Env(v: array[3, vec2])
+
+    inline def fragment =
+      Shader[Env] { env =>
+        val i = 0
+        env.v(i).y
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int i=0;
+      |v[i].y;
+      |""".stripMargin.trim
+    )
+  }
+
   test("arrays - swizzle") {
 
     inline def fragment =
