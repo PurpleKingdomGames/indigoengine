@@ -60,4 +60,26 @@ class UBOReaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("Create a UBO definition containing an array)") {
+
+    case class FragEnv(
+        VERTICES: array[16, vec2],
+        COLORS: array[8, vec4]
+    )
+
+    val actual =
+      UBOReader.readUBO[FragEnv]
+
+    val expected =
+      UBODef(
+        "FragEnv",
+        List(
+          UBOField(None, "vec2[16]", "VERTICES"),
+          UBOField(None, "vec4[8]", "COLORS")
+        )
+      )
+
+    assertEquals(actual, expected)
+  }
+
 }
