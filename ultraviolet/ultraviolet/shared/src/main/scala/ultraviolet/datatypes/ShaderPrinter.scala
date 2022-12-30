@@ -6,7 +6,6 @@ trait ShaderPrinter[T]:
   def isValid(
       inType: Option[String],
       outType: Option[String],
-      headers: List[ShaderAST],
       functions: List[ShaderAST],
       body: ShaderAST
   ): ShaderValid
@@ -28,7 +27,6 @@ object ShaderPrinter:
     def isValid(
         inType: Option[String],
         outType: Option[String],
-        headers: List[ShaderAST],
         functions: List[ShaderAST],
         body: ShaderAST
     ): ShaderValid = ShaderValid.Valid
@@ -51,7 +49,6 @@ object ShaderPrinter:
     def isValid(
         inType: Option[String],
         outType: Option[String],
-        headers: List[ShaderAST],
         functions: List[ShaderAST],
         body: ShaderAST
     ): ShaderValid = ShaderValid.Valid
@@ -112,7 +109,7 @@ object ShaderPrinter:
 
         List(s"""$name($renderedArgs)""")
 
-      case ShaderBlock(_, _, envVarName, headers, statements) =>
+      case ShaderBlock(_, _, envVarName, statements) =>
         renderStatements(statements)
 
       case Function(id, args, body, returnType) if id.isEmpty =>
@@ -388,7 +385,7 @@ object ShaderPrinter:
       case UBO(_)                        => None
       case Struct(name, _)               => Option(name)
       case New(name, _)                  => Option(name)
-      case ShaderBlock(_, _, _, _, _)    => None
+      case ShaderBlock(_, _, _, _)       => None
       case Function(_, _, _, rt)         => rt.toList.flatMap(render).headOption
       case CallFunction(_, _, _, rt)     => rt.toList.flatMap(render).headOption
       case FunctionRef(_, _, rt)         => rt.toList.flatMap(render).headOption

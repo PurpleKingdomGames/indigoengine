@@ -48,7 +48,6 @@ object shadertoy:
     def isValid(
         inType: Option[String],
         outType: Option[String],
-        headers: List[ShaderAST],
         functions: List[ShaderAST],
         body: ShaderAST
     ): ShaderValid =
@@ -100,7 +99,7 @@ object shadertoy:
               )
             )
 
-      webGL2Printer.isValid(inType, outType, headers, functions, body) |+|
+      webGL2Printer.isValid(inType, outType, functions, body) |+|
         (inTypeValid |+| outTypeValid |+| hasMainImageMethod)
 
     def transformer: PartialFunction[ShaderAST, ShaderAST] =

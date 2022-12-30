@@ -43,7 +43,6 @@ class ShaderPrinterTests extends munit.FunSuite {
       def isValid(
           inType: Option[String],
           outType: Option[String],
-          headers: List[ShaderAST],
           functions: List[ShaderAST],
           body: ShaderAST
       ): ShaderValid = ShaderValid.Valid

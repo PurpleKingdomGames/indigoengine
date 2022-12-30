@@ -114,11 +114,10 @@ object indigo:
     def isValid(
         inType: Option[String],
         outType: Option[String],
-        headers: List[ShaderAST],
         functions: List[ShaderAST],
         body: ShaderAST
     ): ShaderValid =
-      webGL2Printer.isValid(inType, outType, headers, functions, body)
+      webGL2Printer.isValid(inType, outType, functions, body)
 
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       val pf: PartialFunction[ShaderAST, ShaderAST] = {

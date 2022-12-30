@@ -19,24 +19,22 @@ object ProceduralShader:
 
       val inType    = p.main.inType
       val outType   = p.main.outType
-      val headers   = p.main.headers
       val functions = p.defs
       val body      = p.main
 
-      printer.isValid(inType, outType, headers, functions, body) match
+      printer.isValid(inType, outType, functions, body) match
         case ShaderValid.Invalid(reasons) =>
           throw ShaderError.Validation("Shader failed to validate because: " + reasons.mkString("[", ", ", "]"))
 
         case ShaderValid.Valid =>
-          val renderedHeaders = headers.flatMap(ShaderPrinter.print)
-          val renderedDefs    = functions.map(d => ShaderPrinter.print(d).mkString("\n"))
-          val renderedBody    = ShaderPrinter.print(body)
+          val renderedDefs = functions.map(d => ShaderPrinter.print(d).mkString("\n"))
+          val renderedBody = ShaderPrinter.print(body)
 
           val transformedBody: ShaderAST =
             body.traverse(printer.transformer.orElse(n => n))
 
           val code =
-            (renderedHeaders ++ renderedDefs ++ renderedBody).mkString("\n").trim
+            (renderedDefs ++ renderedBody).mkString("\n").trim
 
           ShaderOutput(
             code,
