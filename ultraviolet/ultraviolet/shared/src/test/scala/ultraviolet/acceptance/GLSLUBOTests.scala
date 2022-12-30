@@ -14,10 +14,9 @@ class GLSLUBOTests extends munit.FunSuite {
     case class UBO2(customColor: vec4, pos: lowp[vec3], VERTICES: array[16, vec2])
 
     inline def fragment =
-      Shader[UBO1 & UBO2 & FragEnv, Unit](
-        GLSLHeader.Version300ES,
-        GLSLHeader.PrecisionHighPFloat
-      ) { env =>
+      Shader[UBO1 & UBO2 & FragEnv, Unit] { env =>
+        Version300ES
+        PrecisionHighPFloat
         ubo[UBO1]
         ubo[UBO2]
         env.COLOR = vec4(env.UV, env.TIME, 1.0f)

@@ -20,9 +20,6 @@ object syntax extends ShaderDSLOps:
   type Shader[In, Out] = ultraviolet.datatypes.Shader[In, Out]
   val Shader: ultraviolet.datatypes.Shader.type = ultraviolet.datatypes.Shader
 
-  type GLSLHeader = ultraviolet.datatypes.GLSLHeader
-  val GLSLHeader: ultraviolet.datatypes.GLSLHeader.type = ultraviolet.datatypes.GLSLHeader
-
   type ShaderAST = ultraviolet.datatypes.ShaderAST
   val ShaderAST: ultraviolet.datatypes.ShaderAST.type = ultraviolet.datatypes.ShaderAST
 
@@ -69,5 +66,10 @@ object syntax extends ShaderDSLOps:
   final case class WebGL1Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class WebGL2Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
+
+  inline def Version300ES: RawGLSL          = RawGLSL("#version 300 es")
+  inline def PrecisionHighPFloat: RawGLSL   = RawGLSL("precision highp float;")
+  inline def PrecisionMediumPFloat: RawGLSL = RawGLSL("precision mediump float;")
+  inline def PrecisionLowPFloat: RawGLSL    = RawGLSL("precision lowp float;")
 
 end syntax

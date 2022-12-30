@@ -9,9 +9,8 @@ class WebGL1Tests extends munit.FunSuite {
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     inline def fragment =
-      Shader[WebGL1Env, Unit](
-        GLSLHeader.PrecisionMediumPFloat
-      ) { env =>
+      Shader[WebGL1Env, Unit] { env =>
+        PrecisionMediumPFloat
         @uniform val u_texture: sampler2D.type = sampler2D
         @in val v_texcoord: vec2               = null
 
