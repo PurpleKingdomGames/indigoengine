@@ -766,7 +766,61 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                 ShaderAST.CallFunction(fnName, List(last), Nil, rt)
             )
 
-          case _ =>
+          case (
+                ShaderAST.ShaderBlock(_, _, _, List(only)),
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), Nil, rt)
+            )
+
+          case (
+                ShaderAST.Block(List(only)),
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), Nil, rt)
+            )
+
+          case (
+                ShaderAST.ShaderBlock(
+                  _,
+                  _,
+                  _,
+                  List(
+                    ShaderAST.Block(statements :+ last)
+                  )
+                ),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              statements :+
+                ShaderAST.CallFunction(fnName, List(last), Nil, rt)
+            )
+
+          case (
+                ShaderAST.ShaderBlock(_, _, _, List(only)),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), Nil, rt)
+            )
+
+          case (
+                ShaderAST.Block(List(only)),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), Nil, rt)
+            )
+          /*
+ShaderBlock(Some(UBO1),Some(vec4),Some(env),List(vec4(List(ident(UV), float(2.0), float(1.0)))))
+FunctionRef(def0,List(ident(vec4)),Some(ident(float)))
+           */
+          case x =>
+            println("---------->")
+            println(x._1)
+            println(x._2)
             throw ShaderError.UnexpectedConstruction("Unexpected structure when processing Shader.map operation.")
 
       case Apply(TypeApply(Select(g, op), _), List(f)) if op == "compose" || op == "andThen" || op == "map" =>
@@ -892,15 +946,18 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         ShaderAST.DataTypes.ident(s"$obj.$fieldName")
 
       case Select(Ident(name), "unary_-") =>
-        ShaderAST.DataTypes.ident(s"-$name")
+        val n = proxies.lookUp(name).name
+        ShaderAST.DataTypes.ident(s"-$n")
 
       case Select(Ident(namespace), name) =>
+        val ns = proxies.lookUp(namespace).name
+        val n  = proxies.lookUp(name).name
         envVarName match
-          case Some(value) if value == namespace =>
-            ShaderAST.DataTypes.ident(s"$name")
+          case Some(value) if value == ns =>
+            ShaderAST.DataTypes.ident(s"$n")
 
           case _ =>
-            ShaderAST.DataTypes.ident(s"$namespace.$name")
+            ShaderAST.DataTypes.ident(s"$ns.$n")
 
       // Read a field - but of something namespaced, negated, e.g. -position.x
       case Select(Select(Ident(namespace), name), "unary_-") =>
@@ -1170,7 +1227,19 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           Option(walkTree(rt, envVarName))
         )
 
-      case Inlined(Some(Apply(Ident(name), List(term))), _, _) if isSwizzle.matches(name) =>
+      case Inlined(
+            Some(Apply(Ident(name), List(term))),
+            _,
+            Typed(
+              Apply(
+                Select(Select(Inlined(None, Nil, Ident("ShaderDSLTypeExtensions_this")), _), _),
+                _
+              ),
+              _
+            )
+          ) if isSwizzle.matches(name) =>
+        // if name == "g" then println("#######XXXXXX Swizzle: " + Printer.TreeStructure.show(x))
+        // else println("####### Swizzle: " + Printer.TreeStructure.show(x))
         val body = walkTerm(term, envVarName)
         ShaderAST.DataTypes.swizzle(
           body,
@@ -1178,12 +1247,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           body.typeIdent
         )
 
-      case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
-        ShaderAST.DataTypes.swizzle(
-          ShaderAST.DataTypes.ident(id),
-          name,
-          None
-        )
+      // case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
+      //   ShaderAST.DataTypes.swizzle(
+      //     ShaderAST.DataTypes.ident(id),
+      //     name,
+      //     None
+      //   )
 
       // Swizzle a function call
       case Select(term @ Apply(Ident(_), _), swzl) if isSwizzle.matches(swzl) =>
@@ -1333,7 +1402,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       // Refs
 
       case Ident(name) =>
-        val resolvedName = proxies.lookUp(name)._1
+        val resolvedName = proxies.lookUp(name).name
 
         shaderDefs.toList.find(_.fn.id == resolvedName).map(_.fn) match
           case None =>
