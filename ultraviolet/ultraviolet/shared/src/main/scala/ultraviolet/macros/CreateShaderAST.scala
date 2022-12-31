@@ -817,7 +817,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             throw ShaderError.UnexpectedConstruction("Unexpected structure when processing Shader.map operation.")
 
-      case Apply(TypeApply(Select(g, op), _), List(f)) if op == "compose" || op == "andThen" || op == "map" =>
+      case Apply(TypeApply(Select(g, op), _), List(f)) if op == "compose" || op == "andThen" =>
         def toProxy(t: Term): Proxy =
           t match
             case Ident(name) =>
