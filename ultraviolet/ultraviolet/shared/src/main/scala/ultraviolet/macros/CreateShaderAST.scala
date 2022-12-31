@@ -830,6 +830,92 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             throw ShaderError.UnexpectedConstruction("Unexpected structure when processing Shader.map operation.")
 
+      //
+      // flatMmap
+
+      case Apply(TypeApply(Apply(TypeApply(Select(Ident("Shader"), "flatMap"), _), List(shaderf)), _), List(mapf)) =>
+        (walkTerm(shaderf, envVarName), walkTerm(mapf, envVarName)) match
+          case (
+                ShaderAST.ShaderBlock(
+                  _,
+                  _,
+                  _,
+                  List(
+                    ShaderAST.Block(statements :+ last)
+                  )
+                ),
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+              ) =>
+            ShaderAST.Block(
+              statements :+
+                ShaderAST.CallFunction(fnName, List(last), rt)
+            )
+
+          case (
+                ShaderAST.ShaderBlock(_, _, _, List(only)),
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), rt)
+            )
+
+          case (
+                ShaderAST.Block(List(only)),
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), rt)
+            )
+
+          case (
+                ShaderAST.ShaderBlock(
+                  _,
+                  _,
+                  _,
+                  List(
+                    ShaderAST.Block(statements :+ last)
+                  )
+                ),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              statements :+
+                ShaderAST.CallFunction(fnName, List(last), rt)
+            )
+
+          case (
+                ShaderAST.ShaderBlock(_, _, _, List(only)),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), rt)
+            )
+
+          case (
+                ShaderAST.Block(List(only)),
+                ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), rt)
+            )
+
+          // case (
+          //       ShaderAST.CallFunction,
+          //       ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
+          //     ) =>
+          //   ShaderAST.Block(
+          //     ShaderAST.CallFunction(fnName, List(only), Nil, rt)
+          //   )
+
+          case x =>
+            println("-------> flatMap")
+            println(x._1)
+            println(x._2)
+            println(shaderDefs.mkString("\n"))
+            throw ShaderError.UnexpectedConstruction("Unexpected structure when processing Shader.flatMap operation.")
+
+      //
+
       case Apply(TypeApply(Select(g, op), _), List(f)) if op == "compose" || op == "andThen" =>
         def toProxy(t: Term): Proxy =
           t match
