@@ -293,57 +293,65 @@ class ShaderTests extends munit.FunSuite {
     )
   }
 
-  // test("(flatMap) Shader's can be flat mapped (for comp)") {
+  test("(flatMap) Shader's can be flat mapped (for comp)") {
 
-  //   case class UBO1(UV: vec2)
+    case class UBO1(UV: vec2)
 
-  //   inline def base: Float => Shader[UBO1, vec4] =
-  //     (z: Float) =>
-  //       Shader[UBO1, vec4] { env =>
-  //         ubo[UBO1]
-  //         vec4(env.UV, z, 1.0f)
-  //       }
+    inline def base: Float => Shader[UBO1, vec4] =
+      (z: Float) =>
+        Shader[UBO1, vec4] { env =>
+          vec4(env.UV, z, 1.0f)
+        }
 
-  //   inline def toVec2(v4: vec4): Shader[UBO1, vec2] =
-  //     Shader[UBO1, vec2] { env =>
-  //       v4.xy
-  //     }
+    inline def toVec2(v4: vec4): Shader[UBO1, vec2] =
+      Shader[UBO1, vec2] { env =>
+        v4.xy
+      }
 
-  //   inline def shader: Shader[UBO1, vec2] =
-  //     for
-  //       a <- base(20.0f)
-  //       b <- toVec2(a)
-  //     yield b
+    inline def calc: Shader[UBO1, vec2] =
+      for
+        a <- base(20.0f)
+        b <- toVec2(a)
+      yield b + 1.0f
 
-  //   val actual =
-  //     shader.run(UBO1(vec2(4.0f, 3.0f)))
+    inline def shader: Shader[UBO1, vec2] =
+      Shader[UBO1, vec2] { env =>
+        ubo[UBO1]
+        calc.run(env)
+      }
 
-  //   val expected =
-  //     vec2(4.0f, 3.0f)
+    val actual =
+      shader.run(UBO1(vec2(4.0f, 3.0f)))
 
-  //   assertEquals(actual, expected)
+    val expected =
+      vec2(5.0f, 4.0f)
 
-  //   val actualCode =
-  //     shader.toGLSL[WebGL2].code
+    assertEquals(actual, expected)
 
-  //   // DebugAST.toAST(shader)
-  //   // println(actualCode)
+    val actualCode =
+      shader.toGLSL[WebGL2].code
 
-  //   assertEquals(
-  //     actualCode,
-  //     s"""
-  //     |vec2 def1(in vec2 b){
-  //     |  return b;
-  //     |}
-  //     |vec2 def0(in vec4 a){
-  //     |  return def1(a.xy);
-  //     |}
-  //     |layout (std140) uniform UBO1 {
-  //     |  vec2 UV;
-  //     |};
-  //     |def0(vec4(UV,20.0,1.0));
-  //     |""".stripMargin.trim
-  //   )
-  // }
+    // DebugAST.toAST(shader)
+    // println(actualCode)
+
+    assertEquals(
+      actualCode,
+      s"""
+      |vec4 def0(in float z){
+      |  return vec4(UV,z,1.0);
+      |}
+      |vec2 def2(in vec2 b){
+      |  return b+1.0;
+      |}
+      |vec2 def1(in vec4 a){
+      |  return def2(a.xy);
+      |}
+      |layout (std140) uniform UBO1 {
+      |  vec2 UV;
+      |};
+      |def1(def0(20.0));
+      |""".stripMargin.trim
+    )
+  }
 
 }

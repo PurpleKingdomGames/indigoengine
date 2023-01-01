@@ -591,6 +591,10 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             ShaderAST.ShaderBlock(None, None, e, statements)
 
+      // Entry point 'run' ignored
+      case x @ Apply(Apply(TypeApply(Select(Ident("Shader"), "run"), _), List(term)), _) =>
+        walkTerm(term, envVarName)
+
       // Entry point (no type params)
       case Apply(Select(Ident("Shader"), "apply"), args) =>
         ShaderAST.ShaderBlock(None, None, None, args.map(p => walkTerm(p, envVarName)))
@@ -821,6 +825,14 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case (
                 ShaderAST.Block(List(only)),
                 ShaderAST.FunctionRef(fnName, _, rt)
+              ) =>
+            ShaderAST.Block(
+              ShaderAST.CallFunction(fnName, List(only), rt)
+            )
+
+          case (
+                only,
+                ShaderAST.Block(List(ShaderAST.FunctionRef(fnName, _, rt)))
               ) =>
             ShaderAST.Block(
               ShaderAST.CallFunction(fnName, List(only), rt)
