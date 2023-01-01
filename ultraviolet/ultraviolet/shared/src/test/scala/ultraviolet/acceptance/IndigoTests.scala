@@ -1,8 +1,8 @@
 package ultraviolet.acceptance
 
+import ultraviolet.indigoexamples.WebGL2Merge
 import ultraviolet.indigoexamples.*
 import ultraviolet.syntax.*
-
 class IndigoTests extends munit.FunSuite {
 
   test("Real example: NoOp") {
@@ -29,6 +29,16 @@ class IndigoTests extends munit.FunSuite {
     // DebugAST.toAST(WebGL2Merge.fragment.shader)
     // println(WebGL2Merge.fragment.shader)
     assertEquals(WebGL2Merge.fragment.output.code, WebGL2Merge.fragment.expected)
+  }
+
+  test("Real example: WebGL2Base") {
+    // DebugAST.toAST(WebGL2Base.vertex.shader)
+    // println(WebGL2Base.vertex.output.code)
+    assertEquals(WebGL2Base.vertex.output.code, WebGL2Base.vertex.expected)
+
+    // DebugAST.toAST(WebGL2Base.fragment.shader)
+    // println(WebGL2Base.fragment.shader)
+    assertEquals(WebGL2Base.fragment.output.code, WebGL2Base.fragment.expected)
   }
 
 }
