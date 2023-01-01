@@ -251,47 +251,47 @@ class ShaderTests extends munit.FunSuite {
     )
   }
 
-  // test("(flatMap) Shader's can be flat mapped (flatMap)") {
+  test("(flatMap) Shader's can be flat mapped (flatMap)") {
 
-  //   case class UBO1(UV: vec2)
+    case class UBO1(UV: vec2)
 
-  //   inline def shader: Shader[UBO1, vec2] =
-  //     Shader[UBO1, vec4] { env =>
-  //       ubo[UBO1]
-  //       vec4(env.UV, 2.0f, 1.0f)
-  //     }.flatMap { v4 =>
-  //       Shader[UBO1, vec2] { _ =>
-  //         v4.xy
-  //       }
-  //     }
+    inline def shader: Shader[UBO1, vec2] =
+      Shader[UBO1, vec4] { env =>
+        ubo[UBO1]
+        vec4(env.UV, 2.0f, 1.0f)
+      }.flatMap { v4 =>
+        Shader[UBO1, vec2] { _ =>
+          v4.xy
+        }
+      }
 
-  //   val actual =
-  //     shader.run(UBO1(vec2(4.0f, 3.0f)))
+    val actual =
+      shader.run(UBO1(vec2(4.0f, 3.0f)))
 
-  //   val expected =
-  //     vec2(4.0f, 3.0f)
+    val expected =
+      vec2(4.0f, 3.0f)
 
-  //   assertEquals(actual, expected)
+    assertEquals(actual, expected)
 
-  //   val actualCode =
-  //     shader.toGLSL[WebGL2].code
+    val actualCode =
+      shader.toGLSL[WebGL2].code
 
-  //   DebugAST.toAST(shader)
-  //   // println(actualCode)
+    // DebugAST.toAST(shader)
+    // println(actualCode)
 
-  //   assertEquals(
-  //     actualCode,
-  //     s"""
-  //     |vec2 def0(in vec4 v4){
-  //     |  return v4.xy;
-  //     |}
-  //     |layout (std140) uniform UBO1 {
-  //     |  vec2 UV;
-  //     |};
-  //     |def0(vec4(UV,2.0,1.0));
-  //     |""".stripMargin.trim
-  //   )
-  // }
+    assertEquals(
+      actualCode,
+      s"""
+      |vec2 def0(in vec4 v4){
+      |  return v4.xy;
+      |}
+      |layout (std140) uniform UBO1 {
+      |  vec2 UV;
+      |};
+      |def0(vec4(UV,2.0,1.0));
+      |""".stripMargin.trim
+    )
+  }
 
   // test("(flatMap) Shader's can be flat mapped (for comp)") {
 

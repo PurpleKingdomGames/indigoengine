@@ -520,7 +520,7 @@ object ShaderAST:
         case DataTypes.mat3(_)             => ShaderAST.DataTypes.ident("mat3")
         case DataTypes.mat4(_)             => ShaderAST.DataTypes.ident("mat4")
         case DataTypes.array(_, _, typeOf) => ShaderAST.DataTypes.ident(typeOf.typeIdent.id + "[]")
-        case DataTypes.swizzle(v, _, _)    => v.typeIdent
+        case DataTypes.swizzle(_, _, rt)   => rt.typeIdent
 
     def inType: Option[String] =
       ast match
