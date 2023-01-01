@@ -78,6 +78,15 @@ object UBOReader:
     given ShaderTypeOf[ivec4] with
       def typeOf: String = "ivec4"
 
+    given ShaderTypeOf[mat2] with
+      def typeOf: String = "mat2"
+
+    given ShaderTypeOf[mat3] with
+      def typeOf: String = "mat3"
+
+    given ShaderTypeOf[mat4] with
+      def typeOf: String = "mat4"
+
   given array0[A](using sto: ShaderTypeOf[A]): ShaderTypeOf[array[0, A]] with
     def typeOf: String = s"${sto.typeOf}[0]"
   given array1[A](using sto: ShaderTypeOf[A]): ShaderTypeOf[array[1, A]] with
