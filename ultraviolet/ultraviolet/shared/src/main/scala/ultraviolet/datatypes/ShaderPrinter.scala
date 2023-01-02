@@ -3,6 +3,7 @@ package ultraviolet.datatypes
 import ShaderAST.*
 
 trait ShaderPrinter[T]:
+  def defaultConfig: ShaderPrinterConfig
   def isValid(
       inType: Option[String],
       outType: Option[String],
@@ -24,6 +25,9 @@ object ShaderPrinter:
   // on this page: https://webgl2fundamentals.org/webgl/lessons/webgl1-to-webgl2.html
 
   given ShaderPrinter[WebGL1] = new ShaderPrinter:
+    val defaultConfig: ShaderPrinterConfig =
+      ShaderPrinterConfig(Nil)
+
     def isValid(
         inType: Option[String],
         outType: Option[String],
@@ -46,6 +50,14 @@ object ShaderPrinter:
     def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
 
   given ShaderPrinter[WebGL2] = new ShaderPrinter:
+    val defaultConfig: ShaderPrinterConfig =
+      ShaderPrinterConfig(
+        List(
+          PrinterHeader.Version300ES,
+          PrinterHeader.PrecisionMediumPFloat
+        )
+      )
+
     def isValid(
         inType: Option[String],
         outType: Option[String],

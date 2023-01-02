@@ -45,6 +45,9 @@ object shadertoy:
   given ShaderPrinter[ShaderToy] = new ShaderPrinter[ShaderToy] {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
+    val defaultConfig: ShaderPrinterConfig =
+      ShaderPrinterConfig.noHeaders
+
     def isValid(
         inType: Option[String],
         outType: Option[String],

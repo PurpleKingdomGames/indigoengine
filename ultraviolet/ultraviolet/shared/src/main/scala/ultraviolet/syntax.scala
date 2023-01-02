@@ -1,5 +1,6 @@
 package ultraviolet
 
+import ultraviolet.datatypes.PrinterHeader
 import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.macros.UBOReader
 
@@ -25,6 +26,12 @@ object syntax extends ShaderDSLOps:
 
   type ShaderPrinter[T] = ultraviolet.datatypes.ShaderPrinter[T]
   val ShaderPrinter: ultraviolet.datatypes.ShaderPrinter.type = ultraviolet.datatypes.ShaderPrinter
+
+  type ShaderPrinterConfig = ultraviolet.datatypes.ShaderPrinterConfig
+  val ShaderPrinterConfig: ultraviolet.datatypes.ShaderPrinterConfig.type = ultraviolet.datatypes.ShaderPrinterConfig
+
+  type PrinterHeader = ultraviolet.datatypes.PrinterHeader
+  val PrinterHeader: ultraviolet.datatypes.PrinterHeader.type = ultraviolet.datatypes.PrinterHeader
 
   type ShaderValid = ultraviolet.datatypes.ShaderValid
   val ShaderValid: ultraviolet.datatypes.ShaderValid.type = ultraviolet.datatypes.ShaderValid
@@ -70,9 +77,9 @@ object syntax extends ShaderDSLOps:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class WebGL2Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
 
-  inline def Version300ES: RawGLSL          = RawGLSL("#version 300 es")
-  inline def PrecisionHighPFloat: RawGLSL   = RawGLSL("precision highp float;")
-  inline def PrecisionMediumPFloat: RawGLSL = RawGLSL("precision mediump float;")
-  inline def PrecisionLowPFloat: RawGLSL    = RawGLSL("precision lowp float;")
+  def Version300ES: PrinterHeader          = PrinterHeader.Version300ES
+  def PrecisionHighPFloat: PrinterHeader   = PrinterHeader.PrecisionHighPFloat
+  def PrecisionMediumPFloat: PrinterHeader = PrinterHeader.PrecisionMediumPFloat
+  def PrecisionLowPFloat: PrinterHeader    = PrinterHeader.PrecisionLowPFloat
 
 end syntax

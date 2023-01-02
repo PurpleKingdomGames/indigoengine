@@ -18,8 +18,6 @@ object WebGL2Merge:
   object vertex:
     inline def shader =
       Shader[IndigoMergeData & VertexEnv] { env =>
-        Version300ES
-        PrecisionMediumPFloat
 
         @layout(0) @in val a_verticesAndCoords: vec4 = null
 
@@ -72,7 +70,7 @@ object WebGL2Merge:
           env.gl_Position = env.u_projection * transform * VERTEX
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSLDefaultHeaders[Indigo]
 
     val expected: String =
       """
@@ -119,8 +117,6 @@ object WebGL2Merge:
   object fragment:
     inline def shader =
       Shader {
-        Version300ES
-        PrecisionMediumPFloat
 
         @in val SIZE: vec2 = null // In this case, screen size.
         @in val UV: vec2 = null // Unscaled texture coordinates
@@ -175,7 +171,7 @@ object WebGL2Merge:
         
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSLDefaultHeaders[Indigo]
 
     val expected: String =
       """

@@ -15,15 +15,13 @@ class GLSLUBOTests extends munit.FunSuite {
 
     inline def fragment =
       Shader[UBO1 & UBO2 & FragEnv, Unit] { env =>
-        Version300ES
-        PrecisionHighPFloat
         ubo[UBO1]
         ubo[UBO2]
         env.COLOR = vec4(env.UV, env.TIME, 1.0f)
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSLWithHeaders[WebGL2](Version300ES, PrecisionHighPFloat).code
 
     // DebugAST.toAST(fragment)
     // println(actual)

@@ -14,7 +14,7 @@ object ProceduralShader:
 
   extension (p: ProceduralShader)
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    inline def render[T](using printer: ShaderPrinter[T]): ShaderOutput =
+    inline def render[T](config: ShaderPrinterConfig)(using printer: ShaderPrinter[T]): ShaderOutput =
       import ShaderAST.*
 
       val inType    = p.main.inType
@@ -34,7 +34,7 @@ object ProceduralShader:
             body.traverse(printer.transformer.orElse(n => n))
 
           val code =
-            (renderedDefs ++ renderedBody).mkString("\n").trim
+            (config.headers.map(_.header) ++ renderedDefs ++ renderedBody).mkString("\n").trim
 
           ShaderOutput(
             code,

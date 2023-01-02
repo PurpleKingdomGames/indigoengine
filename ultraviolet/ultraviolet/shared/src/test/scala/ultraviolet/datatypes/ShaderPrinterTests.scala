@@ -40,6 +40,10 @@ class ShaderPrinterTests extends munit.FunSuite {
   test("A custom printer can partially match to modify the output of the print") {
 
     given ShaderPrinter[Any] = new ShaderPrinter[Any] {
+
+      val defaultConfig: ShaderPrinterConfig =
+        ShaderPrinterConfig.noHeaders
+
       def isValid(
           inType: Option[String],
           outType: Option[String],

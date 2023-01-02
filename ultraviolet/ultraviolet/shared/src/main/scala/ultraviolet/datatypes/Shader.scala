@@ -21,8 +21,17 @@ object Shader:
     }
 
   extension [In, Out](inline ctx: Shader[In, Out])
-    inline def toGLSL[T](using ShaderPrinter[T]): ShaderOutput = ShaderMacros.toAST(ctx).render
-    inline def run(in: In): Out                                = ctx(in)
+
+    inline def toGLSLDefaultHeaders[T](using p: ShaderPrinter[T]): ShaderOutput =
+      ShaderMacros.toAST(ctx).render(p.defaultConfig)
+    inline def toGLSLWithHeaders[T](headers: PrinterHeader*)(using p: ShaderPrinter[T]): ShaderOutput =
+      ShaderMacros.toAST(ctx).render(ShaderPrinterConfig(headers.toList))
+    inline def toGLSLNoHeaders[T](using ShaderPrinter[T]): ShaderOutput =
+      ShaderMacros.toAST(ctx).render(ShaderPrinterConfig.default)
+    inline def toGLSL[T](using ShaderPrinter[T]): ShaderOutput =
+      toGLSLNoHeaders
+
+    inline def run(in: In): Out = ctx(in)
 
     inline def map[B](f: Out => B): Shader[In, B]                 = (in: In) => f(ctx.run(in))
     inline def flatMap[B](f: Out => Shader[In, B]): Shader[In, B] = (in: In) => f(ctx.run(in)).run(in)

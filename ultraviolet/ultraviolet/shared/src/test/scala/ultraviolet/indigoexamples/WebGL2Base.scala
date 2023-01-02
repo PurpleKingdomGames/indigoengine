@@ -35,9 +35,6 @@ object WebGL2Base:
   object vertex:
     inline def shader =
       Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
-        Version300ES
-        PrecisionMediumPFloat
-
         @layout(0) @in val a_verticesAndCoords: vec4    = null
         @layout(1) @in val a_translateScale: vec4       = null
         @layout(2) @in val a_refFlip: vec4              = null
@@ -221,7 +218,7 @@ object WebGL2Base:
         
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSLDefaultHeaders[Indigo]
 
     val expected: String =
       """
@@ -382,9 +379,6 @@ object WebGL2Base:
   object fragment:
     inline def shader =
       Shader[IndigoDynamicLightingData] { env =>
-        Version300ES
-        PrecisionMediumPFloat
-        
         @layout(0) @out var fragColor: vec4 = null
 
         // ** Uniforms **
@@ -534,7 +528,7 @@ object WebGL2Base:
           fragColor = COLOR
         }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSLDefaultHeaders[Indigo]
 
     val expected: String =
       """
