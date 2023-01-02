@@ -103,8 +103,7 @@ object WebGL2Merge:
       |  return mat4(s.x,0.0,0.0,0.0,0.0,s.y,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0);
       |}
       |vec4 VERTEX;
-      |void vertex(){
-      |}
+      |void vertex(){}
       |void main(){
       |  UV=a_verticesAndCoords.zw;
       |  SIZE=u_scale;
@@ -201,14 +200,10 @@ object WebGL2Merge:
       |vec4 SRC;
       |vec4 DST;
       |vec4 COLOR;
-      |void fragment(){
-      |}
-      |void prepare(){
-      |}
-      |void light(){
-      |}
-      |void composite(){
-      |}
+      |void fragment(){}
+      |void prepare(){}
+      |void light(){}
+      |void composite(){}
       |void main(){
       |  SRC=texture(SRC_CHANNEL,UV);
       |  DST=texture(DST_CHANNEL,UV);

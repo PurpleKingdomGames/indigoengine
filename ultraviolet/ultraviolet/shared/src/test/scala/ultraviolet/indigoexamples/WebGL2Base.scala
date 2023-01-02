@@ -305,8 +305,7 @@ object WebGL2Base:
       |  mat4 transform=translate2d(offset)*scale2d(FRAME_SIZE);
       |  return (transform*vec4(texcoord,1.0,1.0)).xy;
       |}
-      |void vertex(){
-      |}
+      |void vertex(){}
       |void main(){
       |  INSTANCE_ID=gl_InstanceID;
       |  VERTEX=vec4(a_verticesAndCoords.xy,1.0,1.0);
@@ -606,14 +605,10 @@ object WebGL2Base:
       |const float TAU_4=PI_2;
       |const float TAU_8=PI_4;
       |vec4 COLOR;
-      |void fragment(){
-      |}
-      |void prepare(){
-      |}
-      |void light(){
-      |}
-      |void composite(){
-      |}
+      |void fragment(){}
+      |void prepare(){}
+      |void light(){}
+      |void composite(){}
       |void main(){
       |  INSTANCE_ID=v_instanceId;
       |  UV=v_uv_size.xy;

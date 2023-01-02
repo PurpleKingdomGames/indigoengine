@@ -135,11 +135,14 @@ object ShaderPrinter:
             }
             .mkString(",")
 
-        List(
-          List(s"""$rt $id($renderedArgs){"""),
-          body.map(addIndent),
-          List("}")
-        ).flatten
+        if body.isEmpty then
+          List(s"""$rt $id($renderedArgs){}""")
+        else
+          List(
+            List(s"""$rt $id($renderedArgs){"""),
+            body.map(addIndent),
+            List("}")
+          ).flatten
 
       case CallFunction(id, args, _) =>
         List(s"""$id(${args.flatMap(render).mkString(",")})""")
