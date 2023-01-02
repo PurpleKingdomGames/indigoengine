@@ -55,4 +55,29 @@ class GLSLAnnotationTests extends munit.FunSuite {
     )
   }
 
+  test("Can have multiple annotations") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+    inline def fragment =
+      Shader {
+        @flat @in var a: vec2 = null
+        @smooth @out val b: vec4 = null
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |flat in vec2 a;
+      |smooth out vec4 b;
+      |""".stripMargin.trim
+    )
+
+  }
+
 }

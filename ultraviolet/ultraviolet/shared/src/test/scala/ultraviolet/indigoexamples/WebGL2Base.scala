@@ -54,7 +54,7 @@ object WebGL2Base:
           null // Actual size of the atlas in pixels, and it's relative size in UV coords.
         @out var v_channel_pos_01: vec4         = null // Position on the atlas of channels 0 and 1.
         @out var v_channel_pos_23: vec4         = null // Position on the atlas of channels 2 and 3.
-        /*flat?!?!*/ @out var v_instanceId: Int = 0    // The current instance id
+        @flat @out var v_instanceId: Int = 0    // The current instance id
         // flat out int v_instanceId // The current instance id
 
         // Constants
