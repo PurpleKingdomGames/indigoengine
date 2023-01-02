@@ -37,7 +37,7 @@ class IndigoTests extends munit.FunSuite {
     assertEquals(WebGL2Base.vertex.output.code, WebGL2Base.vertex.expected)
 
     // DebugAST.toAST(WebGL2Base.fragment.shader)
-    // println(WebGL2Base.fragment.shader)
+    // println(WebGL2Base.fragment.output.code)
     assertEquals(WebGL2Base.fragment.output.code, WebGL2Base.fragment.expected)
   }
 

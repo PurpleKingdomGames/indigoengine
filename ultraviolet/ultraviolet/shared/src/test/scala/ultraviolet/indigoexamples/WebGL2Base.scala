@@ -22,6 +22,15 @@ object WebGL2Base:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   case class VertEnv(var gl_Position: vec4)
 
+  case class IndigoDynamicLightingData(
+      numOfLights: Float,
+      lightFlags: highp[array[8, vec4]], // vec4(active, type, far cut off, falloff type)
+      lightColor: array[8, vec4],
+      lightSpecular: array[8, vec4],
+      lightPositionRotation: array[8, vec4],     // vec4(x, y, rotation, ???)
+      lightNearFarAngleIntensity: array[8, vec4] // vec4(near, far, angle, intensity)
+  )
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   object vertex:
     inline def shader =
@@ -52,19 +61,19 @@ object WebGL2Base:
         @out var v_textureSize: vec2          = null // Actual size of the texture in pixels.
         @out var v_atlasSizeAsUV: vec4 =
           null // Actual size of the atlas in pixels, and it's relative size in UV coords.
-        @out var v_channel_pos_01: vec4         = null // Position on the atlas of channels 0 and 1.
-        @out var v_channel_pos_23: vec4         = null // Position on the atlas of channels 2 and 3.
+        @out var v_channel_pos_01: vec4  = null // Position on the atlas of channels 0 and 1.
+        @out var v_channel_pos_23: vec4  = null // Position on the atlas of channels 2 and 3.
         @flat @out var v_instanceId: Int = 0    // The current instance id
         // flat out int v_instanceId // The current instance id
 
         // Constants
-        @const val PI: Float    = 3.141592653589793f;
-        @const val PI_2: Float  = PI * 0.5f;
-        @const val PI_4: Float  = PI * 0.25f;
-        @const val TAU: Float   = 2.0f * PI;
-        @const val TAU_2: Float = PI;
-        @const val TAU_4: Float = PI_2;
-        @const val TAU_8: Float = PI_4;
+        @const val PI: Float    = 3.141592653589793f
+        @const val PI_2: Float  = PI * 0.5f
+        @const val PI_4: Float  = PI * 0.25f
+        @const val TAU: Float   = 2.0f * PI
+        @const val TAU_2: Float = PI
+        @const val TAU_4: Float = PI_2
+        @const val TAU_8: Float = PI_4
 
         // Variables
         var ATLAS_SIZE: vec2               = null
@@ -177,7 +186,7 @@ object WebGL2Base:
                 ()
             
 
-          vertex();
+          vertex()
 
           CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET)
           CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET)
@@ -187,7 +196,7 @@ object WebGL2Base:
           CHANNEL_1_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_1_ATLAS_OFFSET)
           CHANNEL_2_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_2_ATLAS_OFFSET)
           CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_3_ATLAS_OFFSET)
-          CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE;
+          CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE
 
           val transform: mat4 = 
             translate2d(POSITION) *
@@ -373,14 +382,280 @@ object WebGL2Base:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   object fragment:
     inline def shader =
-      Shader {
+      Shader[IndigoDynamicLightingData] { env =>
         Version300ES
         PrecisionMediumPFloat
-      }
+        
+        @layout(0) @out var fragColor: vec4 = null
+
+        // ** Uniforms **
+        // Currently we only ever bind one texture at a time.
+        // The texture is however an atlas of textures, so in
+        // practice you can read many sub-textures at once.
+        // Could remove this limitation.
+        @uniform val SRC_CHANNEL: sampler2D.type = sampler2D
+
+        // public
+        ubo[IndigoFrameData]
+        ubo[IndigoDynamicLightingData]
+
+        // ** Varyings **
+        @in var v_channel_coords_01: vec4 = null
+        @in var v_channel_coords_23: vec4 = null
+        @in var v_uv_size: vec4 = null // Unscaled texture coordinates + Width / height of the objects
+        @in var v_screenCoordsRotation: vec3 = null // Where is this pixel on the screen?
+        @in var v_textureSize: vec2 = null // Actual size of the texture in pixels.
+        @in var v_atlasSizeAsUV: vec4 = null // Actual size of the atlas in pixels, and it's relative size in UV coords.
+        @in var v_channel_pos_01: vec4 = null // Position on the atlas of channels 0 and 1.
+        @in var v_channel_pos_23: vec4 = null // Position on the atlas of channels 2 and 3.
+        @flat @in var v_instanceId: Int = 0 // The current instance id
+
+        // Variables
+        var UV: vec2 = null // Unscaled texture coordinates
+        var SIZE: vec2 = null // Width / height of the objects
+        var CHANNEL_0: vec4 = null // Pixel value from texture channel 0
+        var CHANNEL_1: vec4 = null // Pixel value from texture channel 1
+        var CHANNEL_2: vec4 = null // Pixel value from texture channel 2
+        var CHANNEL_3: vec4 = null // Pixel value from texture channel 3
+        var CHANNEL_0_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+        var CHANNEL_1_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+        var CHANNEL_2_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+        var CHANNEL_3_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+        var CHANNEL_0_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+        var CHANNEL_1_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+        var CHANNEL_2_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+        var CHANNEL_3_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+        var CHANNEL_0_SIZE: vec2 = null // size of this texture on the atlas in UV coords
+        var SCREEN_COORDS: vec2 = null
+        var ROTATION: Float = 0.0f
+        var TEXTURE_SIZE: vec2 = null // Size of the texture in pixels
+        var ATLAS_SIZE: vec2 = null // Size of the atlas this texture is on, in pixels
+        var INSTANCE_ID: Int = 0 // The current instance id
+
+        var LIGHT_INDEX: Int = 0
+        var LIGHT_COUNT: Int = 0
+        var LIGHT_ACTIVE: Int = 0
+        var LIGHT_TYPE: Int = 0
+        var LIGHT_FAR_CUT_OFF: Int = 0
+        var LIGHT_FALLOFF_TYPE: Int = 0
+        var LIGHT_COLOR: vec4 = null
+        var LIGHT_SPECULAR: vec4 = null
+        var LIGHT_POSITION: vec2 = null
+        var LIGHT_ROTATION: Float = 0.0f
+        var LIGHT_NEAR: Float = 0.0f
+        var LIGHT_FAR: Float = 0.0f
+        var LIGHT_ANGLE: Float = 0.0f
+        var LIGHT_INTENSITY: Float = 0.0f
+
+        // Constants
+        @const val PI: Float    = 3.141592653589793f
+        @const val PI_2: Float  = PI * 0.5f
+        @const val PI_4: Float  = PI * 0.25f
+        @const val TAU: Float   = 2.0f * PI
+        @const val TAU_2: Float = PI
+        @const val TAU_4: Float = PI_2
+        @const val TAU_8: Float = PI_4
+
+        // Outputs
+        var COLOR: vec4 = null
+
+        //#fragment_start
+        def fragment(): Unit = ()
+        //#fragment_end
+
+        //#prepare_start
+        def prepare(): Unit = ()
+        //#prepare_end
+
+        //#light_start
+        def light(): Unit = ()
+        //#light_end
+
+        //#composite_start
+        def composite(): Unit = ()
+        //#composite_end
+
+        def main: Unit =
+
+          INSTANCE_ID = v_instanceId
+
+          // Defaults
+          UV = v_uv_size.xy
+          SIZE = v_uv_size.zw
+          COLOR = vec4(0.0f)
+
+          SCREEN_COORDS = v_screenCoordsRotation.xy
+          ROTATION = v_screenCoordsRotation.z
+          TEXTURE_SIZE = v_textureSize
+          ATLAS_SIZE = v_atlasSizeAsUV.xy
+          CHANNEL_0_POSITION = v_channel_pos_01.xy
+          CHANNEL_1_POSITION = v_channel_pos_01.zw
+          CHANNEL_2_POSITION = v_channel_pos_23.xy
+          CHANNEL_3_POSITION = v_channel_pos_23.zw
+          CHANNEL_0_SIZE = v_atlasSizeAsUV.zw
+
+          CHANNEL_0_TEXTURE_COORDS = min(v_channel_coords_01.xy, CHANNEL_0_POSITION + CHANNEL_0_SIZE)
+          CHANNEL_1_TEXTURE_COORDS = min(v_channel_coords_01.zw, CHANNEL_1_POSITION + CHANNEL_0_SIZE)
+          CHANNEL_2_TEXTURE_COORDS = min(v_channel_coords_23.xy, CHANNEL_2_POSITION + CHANNEL_0_SIZE)
+          CHANNEL_3_TEXTURE_COORDS = min(v_channel_coords_23.zw, CHANNEL_3_POSITION + CHANNEL_0_SIZE)
+          CHANNEL_0 = texture2D(SRC_CHANNEL, CHANNEL_0_TEXTURE_COORDS)
+          CHANNEL_1 = texture2D(SRC_CHANNEL, CHANNEL_1_TEXTURE_COORDS)
+          CHANNEL_2 = texture2D(SRC_CHANNEL, CHANNEL_2_TEXTURE_COORDS)
+          CHANNEL_3 = texture2D(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS)
+
+          // Colour - build up the COLOR
+          fragment()
+
+          // Lighting - prepare, light, composite
+          prepare()
+
+          LIGHT_COUNT = min(8, max(0, round(env.numOfLights).toInt))
+          
+          _for(0, _ < LIGHT_COUNT, _ + 1) { i =>
+            LIGHT_INDEX = i
+            LIGHT_ACTIVE = round(env.lightFlags(i).x).toInt
+            LIGHT_TYPE = round(env.lightFlags(i).y).toInt
+            LIGHT_FAR_CUT_OFF = round(env.lightFlags(i).z).toInt
+            LIGHT_FALLOFF_TYPE = round(env.lightFlags(i).w).toInt
+            LIGHT_COLOR = env.lightColor(i)
+            LIGHT_SPECULAR = env.lightSpecular(i)
+            LIGHT_POSITION = env.lightPositionRotation(i).xy
+            LIGHT_ROTATION = env.lightPositionRotation(i).z
+            LIGHT_NEAR = env.lightNearFarAngleIntensity(i).x
+            LIGHT_FAR = env.lightNearFarAngleIntensity(i).y
+            LIGHT_ANGLE = env.lightNearFarAngleIntensity(i).z
+            LIGHT_INTENSITY = env.lightNearFarAngleIntensity(i).w
+
+            light()
+          }
+
+          // Composite - COMBINE COLOR + Lighting into final pixel color.
+          composite()
+          
+          fragColor = COLOR
+        }
 
     val output = shader.toGLSL[Indigo]
 
     val expected: String =
       """
-      |x
+      |#version 300 es
+      |precision mediump float;
+      |layout (location = 0) out vec4 fragColor;
+      |uniform sampler2D SRC_CHANNEL;
+      |layout (std140) uniform IndigoFrameData {
+      |  highp float TIME;
+      |  vec2 VIEWPORT_SIZE;
+      |};
+      |layout (std140) uniform IndigoDynamicLightingData {
+      |  float numOfLights;
+      |  highp vec4[8] lightFlags;
+      |  vec4[8] lightColor;
+      |  vec4[8] lightSpecular;
+      |  vec4[8] lightPositionRotation;
+      |  vec4[8] lightNearFarAngleIntensity;
+      |};
+      |in vec4 v_channel_coords_01;
+      |in vec4 v_channel_coords_23;
+      |in vec4 v_uv_size;
+      |in vec3 v_screenCoordsRotation;
+      |in vec2 v_textureSize;
+      |in vec4 v_atlasSizeAsUV;
+      |in vec4 v_channel_pos_01;
+      |in vec4 v_channel_pos_23;
+      |flat in int v_instanceId;
+      |vec2 UV;
+      |vec2 SIZE;
+      |vec4 CHANNEL_0;
+      |vec4 CHANNEL_1;
+      |vec4 CHANNEL_2;
+      |vec4 CHANNEL_3;
+      |vec2 CHANNEL_0_TEXTURE_COORDS;
+      |vec2 CHANNEL_1_TEXTURE_COORDS;
+      |vec2 CHANNEL_2_TEXTURE_COORDS;
+      |vec2 CHANNEL_3_TEXTURE_COORDS;
+      |vec2 CHANNEL_0_POSITION;
+      |vec2 CHANNEL_1_POSITION;
+      |vec2 CHANNEL_2_POSITION;
+      |vec2 CHANNEL_3_POSITION;
+      |vec2 CHANNEL_0_SIZE;
+      |vec2 SCREEN_COORDS;
+      |float ROTATION=0.0;
+      |vec2 TEXTURE_SIZE;
+      |vec2 ATLAS_SIZE;
+      |int INSTANCE_ID=0;
+      |int LIGHT_INDEX=0;
+      |int LIGHT_COUNT=0;
+      |int LIGHT_ACTIVE=0;
+      |int LIGHT_TYPE=0;
+      |int LIGHT_FAR_CUT_OFF=0;
+      |int LIGHT_FALLOFF_TYPE=0;
+      |vec4 LIGHT_COLOR;
+      |vec4 LIGHT_SPECULAR;
+      |vec2 LIGHT_POSITION;
+      |float LIGHT_ROTATION=0.0;
+      |float LIGHT_NEAR=0.0;
+      |float LIGHT_FAR=0.0;
+      |float LIGHT_ANGLE=0.0;
+      |float LIGHT_INTENSITY=0.0;
+      |const float PI=3.1415927;
+      |const float PI_2=PI*0.5;
+      |const float PI_4=PI*0.25;
+      |const float TAU=2.0*PI;
+      |const float TAU_2=PI;
+      |const float TAU_4=PI_2;
+      |const float TAU_8=PI_4;
+      |vec4 COLOR;
+      |void fragment(){
+      |}
+      |void prepare(){
+      |}
+      |void light(){
+      |}
+      |void composite(){
+      |}
+      |void main(){
+      |  INSTANCE_ID=v_instanceId;
+      |  UV=v_uv_size.xy;
+      |  SIZE=v_uv_size.zw;
+      |  COLOR=vec4(0.0);
+      |  SCREEN_COORDS=v_screenCoordsRotation.xy;
+      |  ROTATION=v_screenCoordsRotation.z;
+      |  TEXTURE_SIZE=v_textureSize;
+      |  ATLAS_SIZE=v_atlasSizeAsUV.xy;
+      |  CHANNEL_0_POSITION=v_channel_pos_01.xy;
+      |  CHANNEL_1_POSITION=v_channel_pos_01.zw;
+      |  CHANNEL_2_POSITION=v_channel_pos_23.xy;
+      |  CHANNEL_3_POSITION=v_channel_pos_23.zw;
+      |  CHANNEL_0_SIZE=v_atlasSizeAsUV.zw;
+      |  CHANNEL_0_TEXTURE_COORDS=min(v_channel_coords_01.xy,CHANNEL_0_POSITION+CHANNEL_0_SIZE);
+      |  CHANNEL_1_TEXTURE_COORDS=min(v_channel_coords_01.zw,CHANNEL_1_POSITION+CHANNEL_0_SIZE);
+      |  CHANNEL_2_TEXTURE_COORDS=min(v_channel_coords_23.xy,CHANNEL_2_POSITION+CHANNEL_0_SIZE);
+      |  CHANNEL_3_TEXTURE_COORDS=min(v_channel_coords_23.zw,CHANNEL_3_POSITION+CHANNEL_0_SIZE);
+      |  CHANNEL_0=texture(SRC_CHANNEL,CHANNEL_0_TEXTURE_COORDS);
+      |  CHANNEL_1=texture(SRC_CHANNEL,CHANNEL_1_TEXTURE_COORDS);
+      |  CHANNEL_2=texture(SRC_CHANNEL,CHANNEL_2_TEXTURE_COORDS);
+      |  CHANNEL_3=texture(SRC_CHANNEL,CHANNEL_3_TEXTURE_COORDS);
+      |  fragment();
+      |  prepare();
+      |  LIGHT_COUNT=min(8,max(0,int(round(numOfLights))));
+      |  for(int i=0;i<LIGHT_COUNT;i=i+1){
+      |    LIGHT_INDEX=i;
+      |    LIGHT_ACTIVE=int(round(lightFlags[i].x));
+      |    LIGHT_TYPE=int(round(lightFlags[i].y));
+      |    LIGHT_FAR_CUT_OFF=int(round(lightFlags[i].z));
+      |    LIGHT_FALLOFF_TYPE=int(round(lightFlags[i].w));
+      |    LIGHT_COLOR=lightColor[i];
+      |    LIGHT_SPECULAR=lightSpecular[i];
+      |    LIGHT_POSITION=lightPositionRotation[i].xy;
+      |    LIGHT_ROTATION=lightPositionRotation[i].z;
+      |    LIGHT_NEAR=lightNearFarAngleIntensity[i].x;
+      |    LIGHT_FAR=lightNearFarAngleIntensity[i].y;
+      |    LIGHT_ANGLE=lightNearFarAngleIntensity[i].z;
+      |    LIGHT_INTENSITY=lightNearFarAngleIntensity[i].w;
+      |    light();
+      |  }
+      |  composite();
+      |  fragColor=COLOR;
+      |}
       |""".stripMargin.trim

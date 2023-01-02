@@ -29,13 +29,13 @@ object WebGL2Merge:
         @out var SIZE: vec2 = null
         @out var UV: vec2   = null
 
-        @const val PI: Float    = 3.141592653589793f;
-        @const val PI_2: Float  = PI * 0.5f;
-        @const val PI_4: Float  = PI * 0.25f;
-        @const val TAU: Float   = 2.0f * PI;
-        @const val TAU_2: Float = PI;
-        @const val TAU_4: Float = PI_2;
-        @const val TAU_8: Float = PI_4;
+        @const val PI: Float    = 3.141592653589793f
+        @const val PI_2: Float  = PI * 0.5f
+        @const val PI_4: Float  = PI * 0.25f
+        @const val TAU: Float   = 2.0f * PI
+        @const val TAU_2: Float = PI
+        @const val TAU_4: Float = PI_2
+        @const val TAU_8: Float = PI_4
 
         // format: off
         def translate2d(t: vec2): mat4 =
