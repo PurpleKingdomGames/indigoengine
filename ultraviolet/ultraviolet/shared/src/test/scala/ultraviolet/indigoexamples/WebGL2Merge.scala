@@ -21,7 +21,7 @@ object WebGL2Merge:
         Version300ES
         PrecisionMediumPFloat
 
-        @layout(0) val a_verticesAndCoords: vec4 = null
+        @layout(0) @in val a_verticesAndCoords: vec4 = null
 
         ubo[IndigoMergeData]
         ubo[IndigoFrameData]

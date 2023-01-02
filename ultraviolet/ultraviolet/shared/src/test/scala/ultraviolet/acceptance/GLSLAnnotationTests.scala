@@ -38,7 +38,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
 
     inline def fragment =
       Shader { _ =>
-        @layout(7) val a_rotation: Float = 0.0;
+        @layout(7) @in val a_rotation: Float = 0.0;
       }
 
     val actual =

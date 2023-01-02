@@ -322,8 +322,8 @@ object ShaderPrinter:
           case v @ Val(id, value, typeOf) if lbl == "define" =>
             List(s"""#define $id ${render(value).mkString}""")
 
-          case v @ Val(id, value, typeOf) if lbl == "layout" =>
-            List(s"""layout (location = ${render(param).mkString}) in ${render(Val(id, Empty(), typeOf)).mkString}""")
+          case _ if lbl == "layout" =>
+            List(s"""layout (location = ${render(param).mkString}) ${render(value).mkString}""")
 
           case v @ Val(id, value, typeOf) =>
             List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")

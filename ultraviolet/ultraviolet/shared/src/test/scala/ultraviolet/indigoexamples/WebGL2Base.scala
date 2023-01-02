@@ -29,14 +29,14 @@ object WebGL2Base:
         Version300ES
         PrecisionMediumPFloat
 
-        @layout(0) val a_verticesAndCoords: vec4    = null
-        @layout(1) val a_translateScale: vec4       = null
-        @layout(2) val a_refFlip: vec4              = null
-        @layout(3) val a_sizeAndFrameScale: vec4    = null
-        @layout(4) val a_channelOffsets01: vec4     = null
-        @layout(5) val a_channelOffsets23: vec4     = null
-        @layout(6) val a_textureSizeAtlasSize: vec4 = null
-        @layout(7) val a_rotation: Float            = 0.0f
+        @layout(0) @in val a_verticesAndCoords: vec4    = null
+        @layout(1) @in val a_translateScale: vec4       = null
+        @layout(2) @in val a_refFlip: vec4              = null
+        @layout(3) @in val a_sizeAndFrameScale: vec4    = null
+        @layout(4) @in val a_channelOffsets01: vec4     = null
+        @layout(5) @in val a_channelOffsets23: vec4     = null
+        @layout(6) @in val a_textureSizeAtlasSize: vec4 = null
+        @layout(7) @in val a_rotation: Float            = 0.0f
 
         ubo[IndigoProjectionData]
         ubo[IndigoFrameData]
