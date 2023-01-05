@@ -76,7 +76,6 @@ object WebGL2Merge:
       """
       |#version 300 es
       |precision mediump float;
-      |layout (location = 0) in vec4 a_verticesAndCoords;
       |layout (std140) uniform IndigoMergeData {
       |  mat4 u_projection;
       |  vec2 u_scale;
@@ -85,6 +84,7 @@ object WebGL2Merge:
       |  highp float TIME;
       |  vec2 VIEWPORT_SIZE;
       |};
+      |layout (location = 0) in vec4 a_verticesAndCoords;
       |out vec2 SIZE;
       |out vec2 UV;
       |const float PI=3.1415927;
@@ -177,15 +177,15 @@ object WebGL2Merge:
       """
       |#version 300 es
       |precision mediump float;
+      |layout (std140) uniform IndigoFrameData {
+      |  highp float TIME;
+      |  vec2 VIEWPORT_SIZE;
+      |};
       |in vec2 SIZE;
       |in vec2 UV;
       |uniform sampler2D SRC_CHANNEL;
       |uniform sampler2D DST_CHANNEL;
       |out vec4 fragColor;
-      |layout (std140) uniform IndigoFrameData {
-      |  highp float TIME;
-      |  vec2 VIEWPORT_SIZE;
-      |};
       |const float PI=3.1415927;
       |const float PI_2=PI*0.5;
       |const float PI_4=PI*0.25;

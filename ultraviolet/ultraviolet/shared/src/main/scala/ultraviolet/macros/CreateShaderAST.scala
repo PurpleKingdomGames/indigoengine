@@ -2,8 +2,6 @@ package ultraviolet.macros
 
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderError
-import ultraviolet.datatypes.UBODef
-import ultraviolet.datatypes.UBOField
 
 import scala.collection.mutable.ListBuffer
 import scala.quoted.Quotes
@@ -16,6 +14,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
   val proxies                                = new ProxyManager
   val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
   val structRegister: ListBuffer[String]     = new ListBuffer()
+  val uboRegister: ListBuffer[ShaderAST.UBO] = new ListBuffer()
 
   def inferSwizzleType(swizzle: String): ShaderAST =
     swizzle.length match
@@ -1273,7 +1272,8 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             _,
             _
           ) =>
-        ShaderAST.UBO(uboUtils.extractUBO(tt))
+        uboRegister += ShaderAST.UBO(uboUtils.extractUBO(tt))
+        ShaderAST.Empty()
 
       // Inlined call to a method on a class
 

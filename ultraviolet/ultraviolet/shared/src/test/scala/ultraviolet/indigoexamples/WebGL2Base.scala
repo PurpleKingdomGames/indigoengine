@@ -224,14 +224,6 @@ object WebGL2Base:
       """
       |#version 300 es
       |precision mediump float;
-      |layout (location = 0) in vec4 a_verticesAndCoords;
-      |layout (location = 1) in vec4 a_translateScale;
-      |layout (location = 2) in vec4 a_refFlip;
-      |layout (location = 3) in vec4 a_sizeAndFrameScale;
-      |layout (location = 4) in vec4 a_channelOffsets01;
-      |layout (location = 5) in vec4 a_channelOffsets23;
-      |layout (location = 6) in vec4 a_textureSizeAtlasSize;
-      |layout (location = 7) in float a_rotation;
       |layout (std140) uniform IndigoProjectionData {
       |  mat4 u_projection;
       |};
@@ -246,6 +238,14 @@ object WebGL2Base:
       |  vec4 u_ref_channelOffsets23;
       |  vec4 u_ref_textureSizeAtlasSize;
       |};
+      |layout (location = 0) in vec4 a_verticesAndCoords;
+      |layout (location = 1) in vec4 a_translateScale;
+      |layout (location = 2) in vec4 a_refFlip;
+      |layout (location = 3) in vec4 a_sizeAndFrameScale;
+      |layout (location = 4) in vec4 a_channelOffsets01;
+      |layout (location = 5) in vec4 a_channelOffsets23;
+      |layout (location = 6) in vec4 a_textureSizeAtlasSize;
+      |layout (location = 7) in float a_rotation;
       |uniform mat4 u_baseTransform;
       |uniform int u_mode;
       |out vec4 v_channel_coords_01;
@@ -534,8 +534,6 @@ object WebGL2Base:
       """
       |#version 300 es
       |precision mediump float;
-      |layout (location = 0) out vec4 fragColor;
-      |uniform sampler2D SRC_CHANNEL;
       |layout (std140) uniform IndigoFrameData {
       |  highp float TIME;
       |  vec2 VIEWPORT_SIZE;
@@ -548,6 +546,8 @@ object WebGL2Base:
       |  vec4[8] lightPositionRotation;
       |  vec4[8] lightNearFarAngleIntensity;
       |};
+      |layout (location = 0) out vec4 fragColor;
+      |uniform sampler2D SRC_CHANNEL;
       |in vec4 v_channel_coords_01;
       |in vec4 v_channel_coords_23;
       |in vec4 v_uv_size;

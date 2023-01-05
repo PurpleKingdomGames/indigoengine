@@ -4,12 +4,12 @@ import scala.annotation.tailrec
 import scala.deriving.Mirror
 import scala.quoted.*
 
-final case class ProceduralShader(defs: List[ShaderAST], main: ShaderAST)
+final case class ProceduralShader(defs: List[ShaderAST], ubos: List[ShaderAST.UBO], main: ShaderAST)
 
 object ProceduralShader:
   given ToExpr[ProceduralShader] with {
     def apply(x: ProceduralShader)(using Quotes): Expr[ProceduralShader] =
-      '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.main) }) }
+      '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.main) }) }
   }
 
   extension (p: ProceduralShader)
@@ -28,19 +28,20 @@ object ProceduralShader:
 
         case ShaderValid.Valid =>
           val renderedDefs = functions.map(d => ShaderPrinter.print(d).mkString("\n"))
+          val renderedUBOs = p.ubos.map(u => ShaderPrinter.print(u).mkString("\n"))
           val renderedBody = ShaderPrinter.print(body)
 
           val transformedBody: ShaderAST =
             body.traverse(printer.transformer.orElse(n => n))
 
           val code =
-            (config.headers.map(_.header) ++ renderedDefs ++ renderedBody).mkString("\n").trim
+            (config.headers.map(_.header) ++ renderedDefs ++ renderedUBOs ++ renderedBody).mkString("\n").trim
 
           ShaderOutput(
             code,
             ShaderMetadata(
               printer.uniforms(transformedBody),
-              printer.ubos(transformedBody),
+              p.ubos.map(_.uboDef),
               printer.varyings(transformedBody)
             )
           )

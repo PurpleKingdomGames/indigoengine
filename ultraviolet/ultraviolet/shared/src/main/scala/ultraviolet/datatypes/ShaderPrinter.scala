@@ -12,7 +12,6 @@ trait ShaderPrinter[T]:
   ): ShaderValid
   def transformer: PartialFunction[ShaderAST, ShaderAST]
   def printer: PartialFunction[ShaderAST, List[String]]
-  def ubos(ast: ShaderAST): List[UBODef]
   def uniforms(ast: ShaderAST): List[ShaderField]
   def varyings(ast: ShaderAST): List[ShaderField]
 

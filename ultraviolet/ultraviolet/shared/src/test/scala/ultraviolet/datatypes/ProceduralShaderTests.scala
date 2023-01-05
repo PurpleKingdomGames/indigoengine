@@ -9,7 +9,7 @@ class ProceduralShaderTests extends munit.FunSuite {
   test("exists: whole result == search") {
 
     val actual =
-      ProceduralShader(Nil, vec4(List(float(1), float(1), float(0), float(1))))
+      ProceduralShader(Nil, Nil, vec4(List(float(1), float(1), float(0), float(1))))
         .exists(vec4(List(float(1), float(1), float(0), float(1))))
 
     assert(actual)
@@ -19,7 +19,7 @@ class ProceduralShaderTests extends munit.FunSuite {
   test("exists: component in vec4") {
 
     val actual =
-      ProceduralShader(Nil, vec4(List(float(1), float(1), float(0), float(1))))
+      ProceduralShader(Nil, Nil, vec4(List(float(1), float(1), float(0), float(1))))
         .exists(float(1))
 
     assert(actual)
@@ -135,17 +135,17 @@ class ProceduralShaderTests extends munit.FunSuite {
 
     val expectedCode =
       s"""
-      |uniform float TIME;
       |layout (std140) uniform UBO1 {
       |  vec2 position;
       |  vec4 color;
       |};
-      |uniform vec2 UV;
-      |in vec2 v_tex;
       |layout (std140) uniform UBO2 {
       |  vec3 direction;
       |  highp float alpha;
       |};
+      |uniform float TIME;
+      |uniform vec2 UV;
+      |in vec2 v_tex;
       |out vec3 v_coords;
       |vec4(1.0);
       |""".stripMargin.trim
@@ -200,6 +200,7 @@ object ProceduralShaderSamples:
           ShaderAST.DataTypes.ident("vec4")
         )
       ),
+      Nil,
       Block(
         List(Block(List(Block(List(CallFunction("fn0", Nil, ShaderAST.DataTypes.ident("vec4")), Empty())))))
       )

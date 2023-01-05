@@ -36,8 +36,9 @@ object ShaderMacros:
           createAST.walkTerm(term, None)
 
     val shaderDefList = createAST.shaderDefs.toList
+    val uboList = createAST.uboRegister.toList
 
-    Expr(ProceduralShader(shaderDefList.filterNot(_.userDefined).map(_.fn), main))
+    Expr(ProceduralShader(shaderDefList.filterNot(_.userDefined).map(_.fn), uboList, main))
   }
 
   inline def fromFile(inline expr: String): RawGLSL = ${ fromFileImpl('{ expr }) }
