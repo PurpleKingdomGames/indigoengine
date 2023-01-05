@@ -10,11 +10,12 @@ import scala.quoted.Quotes
 class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
   import qq.reflect.*
 
-  val uboUtils                               = new ExtractUBOUtils[qq.type](using qq)
-  val proxies                                = new ProxyManager
-  val shaderDefs: ListBuffer[FunctionLookup] = new ListBuffer()
-  val structRegister: ListBuffer[String]     = new ListBuffer()
-  val uboRegister: ListBuffer[ShaderAST.UBO] = new ListBuffer()
+  val uboUtils                                  = new ExtractUBOUtils[qq.type](using qq)
+  val proxies                                   = new ProxyManager
+  val shaderDefs: ListBuffer[FunctionLookup]    = new ListBuffer()
+  val structRegister: ListBuffer[String]        = new ListBuffer()
+  val uboRegister: ListBuffer[ShaderAST.UBO]    = new ListBuffer()
+  val annotationRegister: ListBuffer[ShaderAST] = new ListBuffer()
 
   def inferSwizzleType(swizzle: String): ShaderAST =
     swizzle.length match
@@ -282,13 +283,26 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                 case _ =>
                   ShaderAST.Val(name, body, typeOf)
 
-            buildAnnotations(v, envVarName, vv)
+            buildAnnotations(v, envVarName, vv) match
+              case a @ ShaderAST.Annotated(_, _, _) =>
+                annotationRegister += buildAnnotations(v, envVarName, vv)
+                ShaderAST.Empty()
+
+              case a =>
+                a
+
 
       case v @ ValDef(name, typ, None) =>
         val typeOf = ShaderAST.DataTypes.ident(extractInferredType(typ))
         val vv     = ShaderAST.Val(name, ShaderAST.Empty(), typeOf)
 
-        buildAnnotations(v, envVarName, vv)
+        buildAnnotations(v, envVarName, vv) match
+          case a @ ShaderAST.Annotated(_, _, _) =>
+            annotationRegister += buildAnnotations(v, envVarName, vv)
+            ShaderAST.Empty()
+
+          case a =>
+            a
 
       case DefDef(name, _, _, _) if isGLSLReservedWord(name) =>
         throw ShaderError.GLSLReservedWord(name)

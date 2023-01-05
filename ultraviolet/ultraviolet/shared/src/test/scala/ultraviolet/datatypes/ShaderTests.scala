@@ -75,12 +75,12 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
-      |vec2 def0(in vec4 val0){
-      |  return val0.xy;
-      |}
       |layout (std140) uniform UBO1 {
       |  vec2 UV;
       |};
+      |vec2 def0(in vec4 val0){
+      |  return val0.xy;
+      |}
       |def0(vec4(UV,2.0,1.0));
       |""".stripMargin.trim
     )
@@ -282,12 +282,12 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
-      |vec2 def0(in vec4 v4){
-      |  return v4.xy;
-      |}
       |layout (std140) uniform UBO1 {
       |  vec2 UV;
       |};
+      |vec2 def0(in vec4 v4){
+      |  return v4.xy;
+      |}
       |def0(vec4(UV,2.0,1.0));
       |""".stripMargin.trim
     )
@@ -337,6 +337,9 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
+      |layout (std140) uniform UBO1 {
+      |  vec2 UV;
+      |};
       |vec4 def0(in float z){
       |  return vec4(UV,z,1.0);
       |}
@@ -346,9 +349,6 @@ class ShaderTests extends munit.FunSuite {
       |vec2 def1(in vec4 a){
       |  return def2(a.xy);
       |}
-      |layout (std140) uniform UBO1 {
-      |  vec2 UV;
-      |};
       |def1(def0(20.0));
       |""".stripMargin.trim
     )
@@ -368,6 +368,7 @@ class ShaderTests extends munit.FunSuite {
 
     inline def toVec2(v4: vec4): Shader[UBO1, vec2] =
       Shader[UBO1, vec2] { env =>
+        @uniform val ALPHA: Float = 0.0f;
         val res = v4.xy
         ubo[UBO2]
         res
@@ -396,6 +397,13 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
+      |layout (std140) uniform UBO1 {
+      |  vec2 UV;
+      |};
+      |layout (std140) uniform UBO2 {
+      |  highp float TIME;
+      |};
+      |uniform float ALPHA;
       |vec4 def0(in float z){
       |  return vec4(UV,z,1.0);
       |}
@@ -406,12 +414,6 @@ class ShaderTests extends munit.FunSuite {
       |  vec2 res=a.xy;
       |  return def2(res);
       |}
-      |layout (std140) uniform UBO1 {
-      |  vec2 UV;
-      |};
-      |layout (std140) uniform UBO2 {
-      |  highp float TIME;
-      |};
       |def1(def0(20.0));
       |""".stripMargin.trim
     )

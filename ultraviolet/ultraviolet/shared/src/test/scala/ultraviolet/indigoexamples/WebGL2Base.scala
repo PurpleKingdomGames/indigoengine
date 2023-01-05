@@ -557,6 +557,13 @@ object WebGL2Base:
       |in vec4 v_channel_pos_01;
       |in vec4 v_channel_pos_23;
       |flat in int v_instanceId;
+      |const float PI=3.1415927;
+      |const float PI_2=PI*0.5;
+      |const float PI_4=PI*0.25;
+      |const float TAU=2.0*PI;
+      |const float TAU_2=PI;
+      |const float TAU_4=PI_2;
+      |const float TAU_8=PI_4;
       |vec2 UV;
       |vec2 SIZE;
       |vec4 CHANNEL_0;
@@ -591,13 +598,6 @@ object WebGL2Base:
       |float LIGHT_FAR=0.0;
       |float LIGHT_ANGLE=0.0;
       |float LIGHT_INTENSITY=0.0;
-      |const float PI=3.1415927;
-      |const float PI_2=PI*0.5;
-      |const float PI_4=PI*0.25;
-      |const float TAU=2.0*PI;
-      |const float TAU_2=PI;
-      |const float TAU_4=PI_2;
-      |const float TAU_8=PI_4;
       |vec4 COLOR;
       |void fragment(){}
       |void prepare(){}

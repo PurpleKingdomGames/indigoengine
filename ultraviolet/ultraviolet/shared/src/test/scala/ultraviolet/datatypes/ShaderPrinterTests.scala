@@ -56,9 +56,6 @@ class ShaderPrinterTests extends munit.FunSuite {
           ShaderAST.Val("xx", ShaderAST.DataTypes.float(100.0), ShaderAST.DataTypes.ident("float"))
       }
 
-      def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)
-      def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)
-
       def printer: PartialFunction[ShaderAST, List[String]] = {
         case ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float")) =>
           List("float foo")

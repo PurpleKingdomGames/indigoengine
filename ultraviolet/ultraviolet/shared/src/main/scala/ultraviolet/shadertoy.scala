@@ -154,8 +154,5 @@ object shadertoy:
 
       pf.orElse(webGL2Printer.transformer)
 
-    def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)
-    def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)
-
     def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
   }
