@@ -42,7 +42,6 @@ object ShaderPrinter:
         ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
     }
 
-    def ubos(ast: ShaderAST): List[UBODef]          = ShaderPrinter.extractUbos(ast)
     def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)(using this)
     def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)(using this)
 
@@ -75,7 +74,6 @@ object ShaderPrinter:
         ShaderAST.CallFunction("texture", args, returnType)
     }
 
-    def ubos(ast: ShaderAST): List[UBODef]          = ShaderPrinter.extractUbos(ast)
     def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)(using this)
     def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)(using this)
 
@@ -485,17 +483,6 @@ object ShaderPrinter:
       renderStatements(init) ++ end
 
     (body, returnType)
-
-  def extractUbos(ast: ShaderAST): List[UBODef] =
-    ast
-      .findAll {
-        case ShaderAST.UBO(_) => true
-        case _                => false
-      }
-      .flatMap {
-        case ShaderAST.UBO(ubo) => List(ubo)
-        case _                  => Nil
-      }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def extractUniforms(ast: ShaderAST)(using pp: ShaderPrinter[_]): List[ShaderField] =

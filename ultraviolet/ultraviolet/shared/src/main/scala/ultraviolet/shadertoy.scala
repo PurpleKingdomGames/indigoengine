@@ -154,7 +154,6 @@ object shadertoy:
 
       pf.orElse(webGL2Printer.transformer)
 
-    def ubos(ast: ShaderAST): List[UBODef]          = ShaderPrinter.extractUbos(ast)
     def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)
     def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)
 
