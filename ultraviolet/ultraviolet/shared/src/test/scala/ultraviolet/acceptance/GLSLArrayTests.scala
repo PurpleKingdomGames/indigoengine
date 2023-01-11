@@ -17,7 +17,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -44,7 +44,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -66,11 +66,12 @@ class GLSLArrayTests extends munit.FunSuite {
     inline def fragment =
       Shader[Env] { env =>
         def func(): array[16, vec2] = env.VERTICES
-        val foo                     = func()
+        def main: Unit =
+          val foo = func()
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -81,7 +82,9 @@ class GLSLArrayTests extends munit.FunSuite {
       |vec2[16] func(){
       |  return VERTICES;
       |}
-      |vec2 foo[16]=func();
+      |void main(){
+      |  vec2 foo[16]=func();
+      |}
       |""".stripMargin.trim
     )
   }
@@ -111,15 +114,16 @@ class GLSLArrayTests extends munit.FunSuite {
 
           polygon
 
-        val iCount: Int                             = env.COUNT.toInt;
-        val polygon: array[MAX_VERTICES.type, vec2] = toUvSpace(iCount, env.VERTICES);
+        def main: Unit =
+          val iCount: Int                             = env.COUNT.toInt;
+          val polygon: array[MAX_VERTICES.type, vec2] = toUvSpace(iCount, env.VERTICES);
       }
 
     // DebugAST.toAST(fragment)
     // println(actual)
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual,
@@ -134,8 +138,10 @@ class GLSLArrayTests extends munit.FunSuite {
       |  }
       |  return polygon;
       |}
-      |int iCount=int(COUNT);
-      |vec2 polygon[MAX_VERTICES]=toUvSpace(iCount,VERTICES);
+      |void main(){
+      |  int iCount=int(COUNT);
+      |  vec2 polygon[MAX_VERTICES]=toUvSpace(iCount,VERTICES);
+      |}
       |""".stripMargin.trim
     )
   }
@@ -148,7 +154,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -170,7 +176,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -194,7 +200,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -221,7 +227,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -244,7 +250,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

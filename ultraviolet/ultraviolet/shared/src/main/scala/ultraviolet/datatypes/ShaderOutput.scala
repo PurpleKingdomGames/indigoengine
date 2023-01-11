@@ -1,18 +1,16 @@
 package ultraviolet.datatypes
 
-final case class ShaderOutput(code: String, metadata: ShaderMetadata):
-  def withCode(newCode: String): ShaderOutput =
-    this.copy(code = newCode)
+enum ShaderResult:
+  case Error(reason: String)
+  case Output(code: String, metadata: ShaderMetadata)
 
-  def withMetaData(newMetadata: ShaderMetadata): ShaderOutput =
-    this.copy(metadata = newMetadata)
+object ShaderResult:
 
-object ShaderOutput:
-  def empty: ShaderOutput =
-    ShaderOutput("", ShaderMetadata.empty)
-
-  def apply(code: String): ShaderOutput =
-    ShaderOutput(code, ShaderMetadata.empty)
+  extension (r: ShaderResult)
+    def toOutput: ShaderResult.Output =
+      r match
+        case Error(reason)    => ShaderResult.Output(reason, ShaderMetadata.empty)
+        case o @ Output(_, _) => o
 
 final case class ShaderMetadata(
     uniforms: List[ShaderField],

@@ -21,7 +21,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       }
 
     val actual =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual,
@@ -38,7 +38,7 @@ class GLSLExamplesTests extends munit.FunSuite {
 
   test("Small procedural shader") {
 
-    inline def fragment: Shader[FragEnv, vec4] =
+    inline def fragment: Shader[FragEnv, Unit] =
       Shader { env =>
         def circleSdf(p: vec2, r: Float): Float =
           length(p) - r
@@ -48,13 +48,13 @@ class GLSLExamplesTests extends munit.FunSuite {
           val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
           vec4(fill.xyz * fillAmount, fillAmount)
 
-        val sdf = circleSdf(env.UV - 0.5f, 0.5f)
-
-        calculateColour(env.UV, sdf)
+        def main: Unit =
+          val sdf = circleSdf(env.UV - 0.5f, 0.5f)
+          calculateColour(env.UV, sdf)
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual,
@@ -67,8 +67,10 @@ class GLSLExamplesTests extends munit.FunSuite {
       |  float fillAmount=(1.0-step(0.0,sdf))*fill.w;
       |  return vec4(fill.xyz*fillAmount,fillAmount);
       |}
-      |float sdf=circleSdf(UV-0.5,0.5);
-      |calculateColour(UV,sdf);
+      |void main(){
+      |  float sdf=circleSdf(UV-0.5,0.5);
+      |  calculateColour(UV,sdf);
+      |}
       |""".stripMargin.trim
     )
   }
@@ -91,7 +93,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     val expected =
       s"""

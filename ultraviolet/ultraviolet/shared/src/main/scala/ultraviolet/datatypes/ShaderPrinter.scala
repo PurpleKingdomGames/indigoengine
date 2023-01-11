@@ -147,6 +147,9 @@ object ShaderPrinter:
       case CallFunction(id, args, _) =>
         List(s"""$id(${args.flatMap(render).mkString(",")})""")
 
+      case CallExternalFunction(id, args, _) =>
+        List(s"""$id(${args.flatMap(render).mkString(",")})""")
+
       case FunctionRef(_, _, _) =>
         Nil
 
@@ -230,13 +233,22 @@ object ShaderPrinter:
           List(s"""}""")
         ).flatten
 
-      case DataTypes.ident(id) if id.endsWith(".length") =>
+      case DataTypes.ident(id) if id == "length" || id.endsWith(".length") =>
         List(s"$id()")
 
       case DataTypes.ident(id) =>
         List(s"$id")
 
+      case DataTypes.external(id) if id == "length" || id.endsWith(".length") =>
+        List(s"$id()")
+
+      case DataTypes.external(id) =>
+        List(s"$id")
+
       case DataTypes.index(id, at) =>
+        render(at).map(idx => s"$id[$idx]")
+
+      case DataTypes.externalIndex(id, at) =>
         render(at).map(idx => s"$id[$idx]")
 
       case DataTypes.bool(b) =>
@@ -386,46 +398,49 @@ object ShaderPrinter:
 
   private def decideType(a: ShaderAST)(using pp: ShaderPrinter[_]): String =
     a match
-      case Empty()                       => "void"
-      case Block(_)                      => "void"
-      case Neg(v)                        => decideType(v)
-      case UBO(_)                        => "void"
-      case Struct(name, _)               => name
-      case New(name, _)                  => name
-      case ShaderBlock(_, _, _, _)       => "void"
-      case Function(_, _, _, rt)         => render(rt).headOption.getOrElse("void")
-      case CallFunction(_, _, rt)        => render(rt).headOption.getOrElse("void")
-      case FunctionRef(_, _, rt)         => render(rt).headOption.getOrElse("void")
-      case Cast(_, as)                   => as
-      case Infix(_, _, _, rt)            => render(rt).headOption.getOrElse("void")
-      case Assign(_, _)                  => "void"
-      case If(_, _, _)                   => "void"
-      case While(_, _)                   => "void"
-      case For(_, _, _, _)               => "void"
-      case Switch(_, _)                  => "void"
-      case Val(_, _, typeOf)             => render(typeOf).headOption.getOrElse("void")
-      case Annotated(_, _, value)        => decideType(value)
-      case RawLiteral(_)                 => "void"
-      case Field(_, _)                   => "void"
-      case DataTypes.ident(_)            => "void"
-      case DataTypes.index(_, _)         => "void"
-      case DataTypes.bool(_)             => "bool"
-      case DataTypes.float(_)            => "float"
-      case DataTypes.int(_)              => "int"
-      case DataTypes.vec2(_)             => "vec2"
-      case DataTypes.vec3(_)             => "vec3"
-      case DataTypes.vec4(_)             => "vec4"
-      case DataTypes.bvec2(_)            => "bvec2"
-      case DataTypes.bvec3(_)            => "bvec3"
-      case DataTypes.bvec4(_)            => "bvec4"
-      case DataTypes.ivec2(_)            => "ivec2"
-      case DataTypes.ivec3(_)            => "ivec3"
-      case DataTypes.ivec4(_)            => "ivec4"
-      case DataTypes.mat2(_)             => "mat2"
-      case DataTypes.mat3(_)             => "mat3"
-      case DataTypes.mat4(_)             => "mat4"
-      case DataTypes.array(_, _, typeOf) => render(typeOf).headOption.getOrElse("void")
-      case DataTypes.swizzle(_, _, rt)   => render(rt).headOption.getOrElse("void")
+      case Empty()                        => "void"
+      case Block(_)                       => "void"
+      case Neg(v)                         => decideType(v)
+      case UBO(_)                         => "void"
+      case Struct(name, _)                => name
+      case New(name, _)                   => name
+      case ShaderBlock(_, _, _, _)        => "void"
+      case Function(_, _, _, rt)          => render(rt).headOption.getOrElse("void")
+      case CallFunction(_, _, rt)         => render(rt).headOption.getOrElse("void")
+      case CallExternalFunction(_, _, rt) => render(rt).headOption.getOrElse("void")
+      case FunctionRef(_, _, rt)          => render(rt).headOption.getOrElse("void")
+      case Cast(_, as)                    => as
+      case Infix(_, _, _, rt)             => render(rt).headOption.getOrElse("void")
+      case Assign(_, _)                   => "void"
+      case If(_, _, _)                    => "void"
+      case While(_, _)                    => "void"
+      case For(_, _, _, _)                => "void"
+      case Switch(_, _)                   => "void"
+      case Val(_, _, typeOf)              => render(typeOf).headOption.getOrElse("void")
+      case Annotated(_, _, value)         => decideType(value)
+      case RawLiteral(_)                  => "void"
+      case Field(_, _)                    => "void"
+      case DataTypes.ident(_)             => "void"
+      case DataTypes.external(_)          => "void"
+      case DataTypes.index(_, _)          => "void"
+      case DataTypes.externalIndex(_, _)  => "void"
+      case DataTypes.bool(_)              => "bool"
+      case DataTypes.float(_)             => "float"
+      case DataTypes.int(_)               => "int"
+      case DataTypes.vec2(_)              => "vec2"
+      case DataTypes.vec3(_)              => "vec3"
+      case DataTypes.vec4(_)              => "vec4"
+      case DataTypes.bvec2(_)             => "bvec2"
+      case DataTypes.bvec3(_)             => "bvec3"
+      case DataTypes.bvec4(_)             => "bvec4"
+      case DataTypes.ivec2(_)             => "ivec2"
+      case DataTypes.ivec3(_)             => "ivec3"
+      case DataTypes.ivec4(_)             => "ivec4"
+      case DataTypes.mat2(_)              => "mat2"
+      case DataTypes.mat3(_)              => "mat3"
+      case DataTypes.mat4(_)              => "mat4"
+      case DataTypes.array(_, _, typeOf)  => render(typeOf).headOption.getOrElse("void")
+      case DataTypes.swizzle(_, _, rt)    => render(rt).headOption.getOrElse("void")
 
   private def rf(f: Float): String =
     val s = f.toString

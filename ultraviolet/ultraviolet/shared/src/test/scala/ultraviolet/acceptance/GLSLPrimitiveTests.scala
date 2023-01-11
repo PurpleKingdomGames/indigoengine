@@ -15,7 +15,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -41,7 +41,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -67,7 +67,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -90,7 +90,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -116,12 +116,13 @@ class GLSLPrimitiveTests extends munit.FunSuite {
         @uniform val u_texture2d   = sampler2D
         @uniform val u_textureCube = samplerCube
 
-        val c: vec4 = texture2D(u_texture2d, v_texcoord);
-        env.COLOR = textureCube(u_textureCube, normalize(v_normal)) * c
+        def main: Unit =
+          val c: vec4 = texture2D(u_texture2d, v_texcoord);
+          env.COLOR = textureCube(u_textureCube, normalize(v_normal)) * c
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -133,8 +134,10 @@ class GLSLPrimitiveTests extends munit.FunSuite {
       |in vec3 v_normal;
       |uniform sampler2D u_texture2d;
       |uniform samplerCube u_textureCube;
-      |vec4 c=texture(u_texture2d,v_texcoord);
-      |COLOR=texture(u_textureCube,normalize(v_normal))*c;
+      |void main(){
+      |  vec4 c=texture(u_texture2d,v_texcoord);
+      |  COLOR=texture(u_textureCube,normalize(v_normal))*c;
+      |}
       |""".stripMargin.trim
     )
 

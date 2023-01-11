@@ -107,14 +107,15 @@ class ShaderPrinterTests extends munit.FunSuite {
         @uniform val u_texture2d   = sampler2D
         @uniform val u_textureCube = samplerCube
 
-        val c: vec4 = texture2D(u_texture2d, v_texcoord);
-        env.COLOR = textureCube(u_textureCube, normalize(v_normal)) * c
+        def main: Unit =
+          val c: vec4 = texture2D(u_texture2d, v_texcoord);
+          env.COLOR = textureCube(u_textureCube, normalize(v_normal)) * c
       }
 
     // DebugAST.toAST(fragment)
 
     val webgl1 =
-      fragment.toGLSL[ShaderPrinter.WebGL1].code
+      fragment.toGLSL[ShaderPrinter.WebGL1].toOutput.code
 
     // println(webgl1)
 
@@ -126,13 +127,15 @@ class ShaderPrinterTests extends munit.FunSuite {
       |varying vec4 v_color;
       |uniform sampler2D u_texture2d;
       |uniform samplerCube u_textureCube;
-      |vec4 c=texture2D(u_texture2d,v_texcoord);
-      |COLOR=textureCube(u_textureCube,normalize(v_normal))*c;
+      |void main(){
+      |  vec4 c=texture2D(u_texture2d,v_texcoord);
+      |  COLOR=textureCube(u_textureCube,normalize(v_normal))*c;
+      |}
       |""".stripMargin.trim
     )
 
     val webgl2 =
-      fragment.toGLSL[ShaderPrinter.WebGL2].code
+      fragment.toGLSL[ShaderPrinter.WebGL2].toOutput.code
 
     // println(webgl2)
 
@@ -144,8 +147,10 @@ class ShaderPrinterTests extends munit.FunSuite {
       |out vec4 v_color;
       |uniform sampler2D u_texture2d;
       |uniform samplerCube u_textureCube;
-      |vec4 c=texture(u_texture2d,v_texcoord);
-      |COLOR=texture(u_textureCube,normalize(v_normal))*c;
+      |void main(){
+      |  vec4 c=texture(u_texture2d,v_texcoord);
+      |  COLOR=texture(u_textureCube,normalize(v_normal))*c;
+      |}
       |""".stripMargin.trim
     )
 

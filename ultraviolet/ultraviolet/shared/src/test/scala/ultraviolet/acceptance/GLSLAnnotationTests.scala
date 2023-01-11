@@ -19,7 +19,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -42,7 +42,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -60,12 +60,12 @@ class GLSLAnnotationTests extends munit.FunSuite {
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def fragment =
       Shader {
-        @flat @in var a: vec2 = null
+        @flat @in var a: vec2    = null
         @smooth @out val b: vec4 = null
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

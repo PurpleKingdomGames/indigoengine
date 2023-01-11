@@ -291,7 +291,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
               case a =>
                 a
 
-
       case v @ ValDef(name, typ, None) =>
         val typeOf = ShaderAST.DataTypes.ident(extractInferredType(typ))
         val vv     = ShaderAST.Val(name, ShaderAST.Empty(), typeOf)
@@ -959,48 +958,81 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       // Read a field
 
       case Select(Inlined(None, Nil, Ident(obj)), fieldName) =>
-        ShaderAST.DataTypes.ident(s"$obj.$fieldName")
+        ShaderAST.Field(
+          ShaderAST.DataTypes.ident(obj),
+          ShaderAST.DataTypes.ident(fieldName)
+        )
 
       case Select(Ident(name), "unary_-") =>
         val n = proxies.lookUp(name).name
-        ShaderAST.DataTypes.ident(s"-$n")
+        ShaderAST.Neg(ShaderAST.DataTypes.ident(n))
 
       case Select(Ident(namespace), name) =>
         val ns = proxies.lookUp(namespace).name
         val n  = proxies.lookUp(name).name
         envVarName match
           case Some(value) if value == ns =>
-            ShaderAST.DataTypes.ident(s"$n")
+            ShaderAST.DataTypes.external(n)
 
           case _ =>
-            ShaderAST.DataTypes.ident(s"$ns.$n")
+            ShaderAST.Field(
+              ShaderAST.DataTypes.ident(ns),
+              ShaderAST.DataTypes.ident(n)
+            )
 
       // Read a field - but of something namespaced, negated, e.g. -position.x
       case Select(Select(Ident(namespace), name), "unary_-") =>
         envVarName match
           case Some(value) if value == namespace =>
-            ShaderAST.DataTypes.ident(s"-$name")
+            ShaderAST.Neg(ShaderAST.DataTypes.external(s"$name"))
 
           case _ =>
-            ShaderAST.DataTypes.ident(s"-$namespace.$name")
+            ShaderAST.Neg(
+              ShaderAST.Field(
+                ShaderAST.DataTypes.ident(namespace),
+                ShaderAST.DataTypes.ident(name)
+              )
+            )
 
       // Read a field - but of something namespaced, e.g. env.Position.x
       case Select(Select(Ident(namespace), name), field) =>
         envVarName match
           case Some(value) if value == namespace =>
-            ShaderAST.DataTypes.ident(s"$name.$field")
+            ShaderAST.Field(
+              ShaderAST.DataTypes.external(name),
+              ShaderAST.DataTypes.ident(field)
+            )
 
           case _ =>
-            ShaderAST.DataTypes.ident(s"$namespace.$name.$field")
+            ShaderAST.Field(
+              ShaderAST.DataTypes.ident(namespace),
+              ShaderAST.Field(
+                ShaderAST.DataTypes.ident(name),
+                ShaderAST.DataTypes.ident(field)
+              )
+            )
 
       // Read a field - but of something namespaced, negated, e.g. -env.Position.x
       case Select(Select(Select(Ident(namespace), name), field), "unary_-") =>
         envVarName match
           case Some(value) if value == namespace =>
-            ShaderAST.DataTypes.ident(s"-$name.$field")
+            ShaderAST.Neg(
+              ShaderAST.Field(
+                ShaderAST.DataTypes.external(name),
+                ShaderAST.DataTypes.ident(field)
+              )
+            )
 
           case _ =>
-            ShaderAST.DataTypes.ident(s"-$namespace.$name.$field")
+            ShaderAST.Neg(
+              ShaderAST.Field(
+                ShaderAST.DataTypes.ident(namespace),
+                ShaderAST.Field(
+                  ShaderAST.DataTypes.ident(name),
+                  ShaderAST.DataTypes.ident(field)
+                )
+              )
+            )
 
       // Read a component of an array
       case Select(
@@ -1049,7 +1081,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             throw ShaderError.UnexpectedConstruction("Body was not a function reference.")
 
       case Apply(Select(Ident(maybeEnv), funcName), args) if envVarName.isDefined && maybeEnv == envVarName.get =>
-        ShaderAST.CallFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
+        ShaderAST.CallExternalFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
 
       //
 
@@ -1164,10 +1196,13 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         val idx = walkTerm(index, envVarName)
         envVarName match
           case Some(value) if value == namespace =>
-            ShaderAST.DataTypes.index(name, idx)
+            ShaderAST.DataTypes.externalIndex(name, idx)
 
           case _ =>
-            ShaderAST.DataTypes.index(s"$namespace.$name", idx)
+            ShaderAST.Field(
+              ShaderAST.DataTypes.ident(namespace),
+              ShaderAST.DataTypes.index(name, idx)
+            )
 
       // array component access
       case Apply(

@@ -15,7 +15,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual1 =
-      fragment1.toGLSL[WebGL2].code
+      fragment1.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual1,
@@ -30,7 +30,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual2 =
-      fragment2.toGLSL[WebGL2].code
+      fragment2.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual2,
@@ -46,7 +46,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual3 =
-      fragment3.toGLSL[WebGL2].code
+      fragment3.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual3,
@@ -64,7 +64,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual1 =
-      fragment1.toGLSL[WebGL2].code
+      fragment1.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual1,
@@ -79,7 +79,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual2 =
-      fragment2.toGLSL[WebGL2].code
+      fragment2.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual2,
@@ -95,7 +95,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual3 =
-      fragment3.toGLSL[WebGL2].code
+      fragment3.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual3,
@@ -113,7 +113,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual,
@@ -135,12 +135,13 @@ class GLSLSwizzleTests extends munit.FunSuite {
                0,           0,           1, 0,
                0,           0,           0, 1)
 
-        val normal: vec3 = vec3(1.0)
-        val rotatedNormal: vec3 = (vec4(normal, 1.0f) * rotationZ(env.ROTATION)).xyz
+        def main: Unit =
+          val normal: vec3 = vec3(1.0)
+          val rotatedNormal: vec3 = (vec4(normal, 1.0f) * rotationZ(env.ROTATION)).xyz
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -151,8 +152,10 @@ class GLSLSwizzleTests extends munit.FunSuite {
       |mat4 rotationZ(in float angle){
       |  return mat4(cos(angle),-sin(angle),0.0,0.0,sin(angle),cos(angle),0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0);
       |}
-      |vec3 normal=vec3(1.0);
-      |vec3 rotatedNormal=(vec4(normal,1.0)*rotationZ(ROTATION)).xyz;
+      |void main(){
+      |  vec3 normal=vec3(1.0);
+      |  vec3 rotatedNormal=(vec4(normal,1.0)*rotationZ(ROTATION)).xyz;
+      |}
       |""".stripMargin.trim
     )
   }
@@ -170,7 +173,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

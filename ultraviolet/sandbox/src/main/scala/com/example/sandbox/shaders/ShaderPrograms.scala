@@ -14,7 +14,7 @@ object ShaderPrograms:
       vec4(env.UV, zero, alpha)
     }
 
-  val frag1: String = fragment2.toGLSL[WebGL2].code
+  val frag1: String = fragment1.toGLSL[WebGL2].toOutput.code
 
   inline def fragment2 =
     Shader[FragEnv] { env =>
@@ -31,7 +31,7 @@ object ShaderPrograms:
         env.COLOR = calculateColour(env.UV, sdf)
     }
 
-  val frag2: String = fragment2.toGLSL[WebGL2].code
+  val frag2: String = fragment2.toGLSL[WebGL2].toOutput.code
 
   inline def glsl: String =
     """
@@ -49,4 +49,4 @@ object ShaderPrograms:
       )
     }
 
-  val frag3: String = fragment3.toGLSL[WebGL2].code
+  val frag3: String = fragment3.toGLSL[WebGL2].toOutput.code

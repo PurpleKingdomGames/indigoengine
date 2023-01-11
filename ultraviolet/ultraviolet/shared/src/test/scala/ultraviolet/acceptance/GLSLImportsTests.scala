@@ -19,7 +19,7 @@ class GLSLImportsTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -41,5 +41,5 @@ class GLSLImportsTests extends munit.FunSuite {
 
 object Importable:
 
-  inline def addOneAnon = (i: Int) => i + 1
+  inline def addOneAnon                = (i: Int) => i + 1
   inline def addOneInline(i: Int): Int = i + 1

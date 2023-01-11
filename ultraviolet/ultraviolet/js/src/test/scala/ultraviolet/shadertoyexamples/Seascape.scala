@@ -191,7 +191,7 @@ object Seascape:
         vec4(pow(color, vec3(0.65f)), 1.0f)
     }
 
-  val imageShader = image.toGLSL[ShaderToy].code
+  val imageShader = image.toGLSL[ShaderToy].toOutput.code
 
   val imageExpected: String =
     """

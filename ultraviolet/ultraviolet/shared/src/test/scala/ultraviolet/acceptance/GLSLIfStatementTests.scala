@@ -25,7 +25,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -61,7 +61,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -90,7 +90,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -134,7 +134,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -184,7 +184,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -215,17 +215,19 @@ class GLSLIfStatementTests extends munit.FunSuite {
     inline def fragment =
       Shader {
         val amount        = 0.0f
-        val checkedAmount = abs(clamp(amount, 0.0f, 3.0f)).toInt
+        
+        def main(): Unit =
+          val checkedAmount = abs(clamp(amount, 0.0f, 3.0f)).toInt
 
-        val borderAmount: Int =
-          if checkedAmount == 1 then 10
-          else if checkedAmount == 2 then 20
-          else if checkedAmount == 3 then 30
-          else 40
+          val borderAmount: Int =
+            if checkedAmount == 1 then 10
+            else if checkedAmount == 2 then 20
+            else if checkedAmount == 3 then 30
+            else 40
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -234,16 +236,18 @@ class GLSLIfStatementTests extends munit.FunSuite {
       actual,
       s"""
       |float amount=0.0;
-      |int checkedAmount=int(abs(clamp(amount,0.0,3.0)));
-      |int borderAmount;
-      |if(checkedAmount==1){
-      |  borderAmount=10;
-      |}else if(checkedAmount==2){
-      |  borderAmount=20;
-      |}else if(checkedAmount==3){
-      |  borderAmount=30;
-      |}else{
-      |  borderAmount=40;
+      |void main(){
+      |  int checkedAmount=int(abs(clamp(amount,0.0,3.0)));
+      |  int borderAmount;
+      |  if(checkedAmount==1){
+      |    borderAmount=10;
+      |  }else if(checkedAmount==2){
+      |    borderAmount=20;
+      |  }else if(checkedAmount==3){
+      |    borderAmount=30;
+      |  }else{
+      |    borderAmount=40;
+      |  }
       |}
       |""".stripMargin.trim
     )
@@ -265,7 +269,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -311,7 +315,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

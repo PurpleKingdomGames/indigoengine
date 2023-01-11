@@ -10,28 +10,29 @@ object ShaderAST:
   given ToExpr[ShaderAST] with {
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
       x match
-        case v: Empty        => Expr(v)
-        case v: Block        => Expr(v)
-        case v: Neg          => Expr(v)
-        case v: UBO          => Expr(v)
-        case v: Struct       => Expr(v)
-        case v: New          => Expr(v)
-        case v: ShaderBlock  => Expr(v)
-        case v: Function     => Expr(v)
-        case v: CallFunction => Expr(v)
-        case v: FunctionRef  => Expr(v)
-        case v: Cast         => Expr(v)
-        case v: Infix        => Expr(v)
-        case v: Assign       => Expr(v)
-        case v: If           => Expr(v)
-        case v: While        => Expr(v)
-        case v: For          => Expr(v)
-        case v: Switch       => Expr(v)
-        case v: DataTypes    => Expr(v)
-        case v: Val          => Expr(v)
-        case v: Annotated    => Expr(v)
-        case v: RawLiteral   => Expr(v)
-        case v: Field        => Expr(v)
+        case v: Empty                => Expr(v)
+        case v: Block                => Expr(v)
+        case v: Neg                  => Expr(v)
+        case v: UBO                  => Expr(v)
+        case v: Struct               => Expr(v)
+        case v: New                  => Expr(v)
+        case v: ShaderBlock          => Expr(v)
+        case v: Function             => Expr(v)
+        case v: CallFunction         => Expr(v)
+        case v: CallExternalFunction => Expr(v)
+        case v: FunctionRef          => Expr(v)
+        case v: Cast                 => Expr(v)
+        case v: Infix                => Expr(v)
+        case v: Assign               => Expr(v)
+        case v: If                   => Expr(v)
+        case v: While                => Expr(v)
+        case v: For                  => Expr(v)
+        case v: Switch               => Expr(v)
+        case v: DataTypes            => Expr(v)
+        case v: Val                  => Expr(v)
+        case v: Annotated            => Expr(v)
+        case v: RawLiteral           => Expr(v)
+        case v: Field                => Expr(v)
   }
 
   final case class Empty() extends ShaderAST
@@ -116,6 +117,17 @@ object ShaderAST:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
         '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.returnType) }) }
+    }
+
+  final case class CallExternalFunction(
+      id: String,
+      args: List[ShaderAST],
+      returnType: ShaderAST
+  ) extends ShaderAST
+  object CallExternalFunction:
+    given ToExpr[CallExternalFunction] with {
+      def apply(x: CallExternalFunction)(using Quotes): Expr[CallExternalFunction] =
+        '{ CallExternalFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.returnType) }) }
     }
 
   // Allows things high up the tree to gain a reference to created functions.
@@ -231,7 +243,9 @@ object ShaderAST:
 
   enum DataTypes extends ShaderAST:
     case ident(id: String)
+    case external(id: String)
     case index(id: String, at: ShaderAST)
+    case externalIndex(id: String, at: ShaderAST)
     case bool(b: Boolean)
     case float(v: Float)
     case int(v: Int)
@@ -265,33 +279,43 @@ object ShaderAST:
     given ToExpr[DataTypes] with {
       def apply(x: DataTypes)(using Quotes): Expr[DataTypes] =
         x match
-          case v: DataTypes.ident   => Expr(v)
-          case v: DataTypes.index   => Expr(v)
-          case v: DataTypes.bool    => Expr(v)
-          case v: DataTypes.float   => Expr(v)
-          case v: DataTypes.int     => Expr(v)
-          case v: DataTypes.vec2    => Expr(v)
-          case v: DataTypes.vec3    => Expr(v)
-          case v: DataTypes.vec4    => Expr(v)
-          case v: DataTypes.bvec2   => Expr(v)
-          case v: DataTypes.bvec3   => Expr(v)
-          case v: DataTypes.bvec4   => Expr(v)
-          case v: DataTypes.ivec2   => Expr(v)
-          case v: DataTypes.ivec3   => Expr(v)
-          case v: DataTypes.ivec4   => Expr(v)
-          case v: DataTypes.mat2    => Expr(v)
-          case v: DataTypes.mat3    => Expr(v)
-          case v: DataTypes.mat4    => Expr(v)
-          case v: DataTypes.array   => Expr(v)
-          case v: DataTypes.swizzle => Expr(v)
+          case v: DataTypes.ident         => Expr(v)
+          case v: DataTypes.external      => Expr(v)
+          case v: DataTypes.index         => Expr(v)
+          case v: DataTypes.externalIndex => Expr(v)
+          case v: DataTypes.bool          => Expr(v)
+          case v: DataTypes.float         => Expr(v)
+          case v: DataTypes.int           => Expr(v)
+          case v: DataTypes.vec2          => Expr(v)
+          case v: DataTypes.vec3          => Expr(v)
+          case v: DataTypes.vec4          => Expr(v)
+          case v: DataTypes.bvec2         => Expr(v)
+          case v: DataTypes.bvec3         => Expr(v)
+          case v: DataTypes.bvec4         => Expr(v)
+          case v: DataTypes.ivec2         => Expr(v)
+          case v: DataTypes.ivec3         => Expr(v)
+          case v: DataTypes.ivec4         => Expr(v)
+          case v: DataTypes.mat2          => Expr(v)
+          case v: DataTypes.mat3          => Expr(v)
+          case v: DataTypes.mat4          => Expr(v)
+          case v: DataTypes.array         => Expr(v)
+          case v: DataTypes.swizzle       => Expr(v)
     }
     given ToExpr[ident] with {
       def apply(x: ident)(using Quotes): Expr[ident] =
         '{ ident(${ Expr(x.id) }) }
     }
+    given ToExpr[external] with {
+      def apply(x: external)(using Quotes): Expr[external] =
+        '{ external(${ Expr(x.id) }) }
+    }
     given ToExpr[index] with {
       def apply(x: index)(using Quotes): Expr[index] =
         '{ index(${ Expr(x.id) }, ${ Expr(x.at) }) }
+    }
+    given ToExpr[externalIndex] with {
+      def apply(x: externalIndex)(using Quotes): Expr[externalIndex] =
+        '{ externalIndex(${ Expr(x.id) }, ${ Expr(x.at) }) }
     }
     given ToExpr[bool] with {
       def apply(x: bool)(using Quotes): Expr[bool] =
@@ -383,47 +407,50 @@ object ShaderAST:
           case Nil => acc.reverse
           case x :: xs =>
             x match
-              case v if p(v)               => rec(xs, v :: acc)
-              case Empty()                 => rec(xs, acc)
-              case Block(s)                => rec(s ++ xs, acc)
-              case Neg(s)                  => rec(s :: xs, acc)
-              case UBO(_)                  => rec(xs, acc)
-              case Struct(_, _)            => rec(xs, acc)
-              case New(_, _)               => rec(xs, acc)
-              case ShaderBlock(_, _, _, s) => rec(s ++ xs, acc)
-              case Function(_, _, body, _) => rec(body :: xs, acc)
-              case CallFunction(_, _, _)   => rec(xs, acc)
-              case FunctionRef(_, _, _)    => rec(xs, acc)
-              case Cast(v, _)              => rec(v :: xs, acc)
-              case Infix(_, l, r, _)       => rec(l :: r :: xs, acc)
-              case Assign(l, r)            => rec(l :: r :: xs, acc)
-              case If(_, t, e)             => rec(t :: (e.toList ++ xs), acc)
-              case While(_, b)             => rec(b :: xs, acc)
-              case For(_, _, _, b)         => rec(b :: xs, acc)
-              case Switch(_, cs)           => rec(cs.map(_._2) ++ xs, acc)
-              case Val(_, body, _)         => rec(body :: xs, acc)
-              case Annotated(_, _, body)   => rec(body :: xs, acc)
-              case RawLiteral(_)           => rec(xs, acc)
-              case Field(t, _)             => rec(t :: xs, acc)
-              case v: DataTypes.ident      => rec(xs, acc)
-              case v: DataTypes.index      => rec(xs, acc)
-              case v: DataTypes.bool       => rec(xs, acc)
-              case v: DataTypes.float      => rec(xs, acc)
-              case v: DataTypes.int        => rec(xs, acc)
-              case v: DataTypes.vec2       => rec(v.args ++ xs, acc)
-              case v: DataTypes.vec3       => rec(v.args ++ xs, acc)
-              case v: DataTypes.vec4       => rec(v.args ++ xs, acc)
-              case v: DataTypes.bvec2      => rec(v.args ++ xs, acc)
-              case v: DataTypes.bvec3      => rec(v.args ++ xs, acc)
-              case v: DataTypes.bvec4      => rec(v.args ++ xs, acc)
-              case v: DataTypes.ivec2      => rec(v.args ++ xs, acc)
-              case v: DataTypes.ivec3      => rec(v.args ++ xs, acc)
-              case v: DataTypes.ivec4      => rec(v.args ++ xs, acc)
-              case v: DataTypes.mat2       => rec(v.args ++ xs, acc)
-              case v: DataTypes.mat3       => rec(v.args ++ xs, acc)
-              case v: DataTypes.mat4       => rec(v.args ++ xs, acc)
-              case v: DataTypes.array      => rec(xs, acc)
-              case v: DataTypes.swizzle    => rec(v.genType :: xs, acc)
+              case v if p(v)                     => rec(xs, v :: acc)
+              case Empty()                       => rec(xs, acc)
+              case Block(s)                      => rec(s ++ xs, acc)
+              case Neg(s)                        => rec(s :: xs, acc)
+              case UBO(_)                        => rec(xs, acc)
+              case Struct(_, _)                  => rec(xs, acc)
+              case New(_, _)                     => rec(xs, acc)
+              case ShaderBlock(_, _, _, s)       => rec(s ++ xs, acc)
+              case Function(_, _, body, _)       => rec(body :: xs, acc)
+              case CallFunction(_, _, _)         => rec(xs, acc)
+              case CallExternalFunction(_, _, _) => rec(xs, acc)
+              case FunctionRef(_, _, _)          => rec(xs, acc)
+              case Cast(v, _)                    => rec(v :: xs, acc)
+              case Infix(_, l, r, _)             => rec(l :: r :: xs, acc)
+              case Assign(l, r)                  => rec(l :: r :: xs, acc)
+              case If(_, t, e)                   => rec(t :: (e.toList ++ xs), acc)
+              case While(_, b)                   => rec(b :: xs, acc)
+              case For(_, _, _, b)               => rec(b :: xs, acc)
+              case Switch(_, cs)                 => rec(cs.map(_._2) ++ xs, acc)
+              case Val(_, body, _)               => rec(body :: xs, acc)
+              case Annotated(_, _, body)         => rec(body :: xs, acc)
+              case RawLiteral(_)                 => rec(xs, acc)
+              case Field(t, _)                   => rec(t :: xs, acc)
+              case v: DataTypes.ident            => rec(xs, acc)
+              case v: DataTypes.external         => rec(xs, acc)
+              case v: DataTypes.index            => rec(xs, acc)
+              case v: DataTypes.externalIndex    => rec(xs, acc)
+              case v: DataTypes.bool             => rec(xs, acc)
+              case v: DataTypes.float            => rec(xs, acc)
+              case v: DataTypes.int              => rec(xs, acc)
+              case v: DataTypes.vec2             => rec(v.args ++ xs, acc)
+              case v: DataTypes.vec3             => rec(v.args ++ xs, acc)
+              case v: DataTypes.vec4             => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec2            => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec3            => rec(v.args ++ xs, acc)
+              case v: DataTypes.bvec4            => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec2            => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec3            => rec(v.args ++ xs, acc)
+              case v: DataTypes.ivec4            => rec(v.args ++ xs, acc)
+              case v: DataTypes.mat2             => rec(v.args ++ xs, acc)
+              case v: DataTypes.mat3             => rec(v.args ++ xs, acc)
+              case v: DataTypes.mat4             => rec(v.args ++ xs, acc)
+              case v: DataTypes.array            => rec(xs, acc)
+              case v: DataTypes.swizzle          => rec(v.genType :: xs, acc)
 
       rec(List(ast), Nil)
 
@@ -447,6 +474,7 @@ object ShaderAST:
         case ShaderBlock(in, out, n, s)              => f(ShaderBlock(in, out, n, s.map(_.traverse(f))))
         case Function(id, args, body, returnType)    => f(Function(id, args, body.traverse(f), returnType))
         case CallFunction(id, args, rt)              => f(CallFunction(id, args, rt))
+        case CallExternalFunction(id, args, rt)      => f(CallFunction(id, args, rt))
         case FunctionRef(id, arg, rt)                => f(FunctionRef(id, arg, rt))
         case Cast(value, as)                         => f(Cast(value.traverse(f), as))
         case Infix(op, l, r, returnType)             => f(Infix(op, l.traverse(f), r.traverse(f), returnType))
@@ -463,7 +491,9 @@ object ShaderAST:
         case v @ DataTypes.float(_)                  => f(v)
         case v @ DataTypes.int(_)                    => f(v)
         case v @ DataTypes.ident(_)                  => f(v)
+        case v @ DataTypes.external(_)               => f(v)
         case DataTypes.index(id, at)                 => f(DataTypes.index(id, at.traverse(f)))
+        case DataTypes.externalIndex(id, at)         => f(DataTypes.externalIndex(id, at.traverse(f)))
         case DataTypes.vec2(vs)                      => f(DataTypes.vec2(vs.map(_.traverse(f))))
         case DataTypes.vec3(vs)                      => f(DataTypes.vec3(vs.map(_.traverse(f))))
         case DataTypes.vec4(vs)                      => f(DataTypes.vec4(vs.map(_.traverse(f))))
@@ -481,46 +511,49 @@ object ShaderAST:
 
     def typeIdent: ShaderAST.DataTypes.ident =
       ast match
-        case Empty()                       => unknownType
-        case Block(_)                      => unknownType
-        case Neg(v)                        => v.typeIdent
-        case UBO(_)                        => unknownType
-        case Struct(name, _)               => ShaderAST.DataTypes.ident(name)
-        case New(name, _)                  => ShaderAST.DataTypes.ident(name)
-        case ShaderBlock(_, _, _, _)       => unknownType
-        case Function(_, _, _, rt)         => rt.typeIdent
-        case CallFunction(_, _, rt)        => rt.typeIdent
-        case FunctionRef(_, _, rt)         => rt.typeIdent
-        case Cast(_, as)                   => ShaderAST.DataTypes.ident(as)
-        case Infix(_, _, _, rt)            => rt.typeIdent
-        case Assign(_, _)                  => unknownType
-        case If(_, _, _)                   => unknownType
-        case While(_, _)                   => unknownType
-        case For(_, _, _, _)               => unknownType
-        case Switch(_, _)                  => unknownType
-        case Val(id, value, typeOf)        => typeOf.typeIdent
-        case Annotated(_, _, value)        => value.typeIdent
-        case RawLiteral(_)                 => unknownType
-        case Field(t, n)                   => unknownType
-        case n @ DataTypes.ident(_)        => n
-        case DataTypes.index(_, _)         => unknownType
-        case DataTypes.bool(_)             => ShaderAST.DataTypes.ident("bool")
-        case DataTypes.float(_)            => ShaderAST.DataTypes.ident("float")
-        case DataTypes.int(_)              => ShaderAST.DataTypes.ident("int")
-        case DataTypes.vec2(_)             => ShaderAST.DataTypes.ident("vec2")
-        case DataTypes.vec3(_)             => ShaderAST.DataTypes.ident("vec3")
-        case DataTypes.vec4(_)             => ShaderAST.DataTypes.ident("vec4")
-        case DataTypes.bvec2(_)            => ShaderAST.DataTypes.ident("bvec2")
-        case DataTypes.bvec3(_)            => ShaderAST.DataTypes.ident("bvec3")
-        case DataTypes.bvec4(_)            => ShaderAST.DataTypes.ident("bvec4")
-        case DataTypes.ivec2(_)            => ShaderAST.DataTypes.ident("ivec2")
-        case DataTypes.ivec3(_)            => ShaderAST.DataTypes.ident("ivec3")
-        case DataTypes.ivec4(_)            => ShaderAST.DataTypes.ident("ivec4")
-        case DataTypes.mat2(_)             => ShaderAST.DataTypes.ident("mat2")
-        case DataTypes.mat3(_)             => ShaderAST.DataTypes.ident("mat3")
-        case DataTypes.mat4(_)             => ShaderAST.DataTypes.ident("mat4")
-        case DataTypes.array(_, _, typeOf) => ShaderAST.DataTypes.ident(typeOf.typeIdent.id + "[]")
-        case DataTypes.swizzle(_, _, rt)   => rt.typeIdent
+        case Empty()                        => unknownType
+        case Block(_)                       => unknownType
+        case Neg(v)                         => v.typeIdent
+        case UBO(_)                         => unknownType
+        case Struct(name, _)                => ShaderAST.DataTypes.ident(name)
+        case New(name, _)                   => ShaderAST.DataTypes.ident(name)
+        case ShaderBlock(_, _, _, _)        => unknownType
+        case Function(_, _, _, rt)          => rt.typeIdent
+        case CallFunction(_, _, rt)         => rt.typeIdent
+        case CallExternalFunction(_, _, rt) => rt.typeIdent
+        case FunctionRef(_, _, rt)          => rt.typeIdent
+        case Cast(_, as)                    => ShaderAST.DataTypes.ident(as)
+        case Infix(_, _, _, rt)             => rt.typeIdent
+        case Assign(_, _)                   => unknownType
+        case If(_, _, _)                    => unknownType
+        case While(_, _)                    => unknownType
+        case For(_, _, _, _)                => unknownType
+        case Switch(_, _)                   => unknownType
+        case Val(id, value, typeOf)         => typeOf.typeIdent
+        case Annotated(_, _, value)         => value.typeIdent
+        case RawLiteral(_)                  => unknownType
+        case Field(t, n)                    => unknownType
+        case n @ DataTypes.ident(_)         => n
+        case n @ DataTypes.external(_)      => ShaderAST.DataTypes.ident(n.id)
+        case DataTypes.index(_, _)          => unknownType
+        case DataTypes.externalIndex(_, _)  => unknownType
+        case DataTypes.bool(_)              => ShaderAST.DataTypes.ident("bool")
+        case DataTypes.float(_)             => ShaderAST.DataTypes.ident("float")
+        case DataTypes.int(_)               => ShaderAST.DataTypes.ident("int")
+        case DataTypes.vec2(_)              => ShaderAST.DataTypes.ident("vec2")
+        case DataTypes.vec3(_)              => ShaderAST.DataTypes.ident("vec3")
+        case DataTypes.vec4(_)              => ShaderAST.DataTypes.ident("vec4")
+        case DataTypes.bvec2(_)             => ShaderAST.DataTypes.ident("bvec2")
+        case DataTypes.bvec3(_)             => ShaderAST.DataTypes.ident("bvec3")
+        case DataTypes.bvec4(_)             => ShaderAST.DataTypes.ident("bvec4")
+        case DataTypes.ivec2(_)             => ShaderAST.DataTypes.ident("ivec2")
+        case DataTypes.ivec3(_)             => ShaderAST.DataTypes.ident("ivec3")
+        case DataTypes.ivec4(_)             => ShaderAST.DataTypes.ident("ivec4")
+        case DataTypes.mat2(_)              => ShaderAST.DataTypes.ident("mat2")
+        case DataTypes.mat3(_)              => ShaderAST.DataTypes.ident("mat3")
+        case DataTypes.mat4(_)              => ShaderAST.DataTypes.ident("mat4")
+        case DataTypes.array(_, _, typeOf)  => ShaderAST.DataTypes.ident(typeOf.typeIdent.id + "[]")
+        case DataTypes.swizzle(_, _, rt)    => rt.typeIdent
 
     def inType: Option[String] =
       ast match

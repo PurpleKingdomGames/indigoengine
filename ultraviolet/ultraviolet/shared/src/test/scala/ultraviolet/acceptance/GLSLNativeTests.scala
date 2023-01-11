@@ -21,7 +21,7 @@ class GLSLNativeTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -37,8 +37,7 @@ class GLSLNativeTests extends munit.FunSuite {
 
   test("can call an external lambda function") {
 
-    inline def circleSdf = (p: vec2, r: Float) =>
-      length(p) - r
+    inline def circleSdf = (p: vec2, r: Float) => length(p) - r
 
     inline def fragment =
       Shader[FragEnv, Float] { env =>
@@ -48,7 +47,7 @@ class GLSLNativeTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -76,7 +75,7 @@ class GLSLNativeTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -104,7 +103,7 @@ class GLSLNativeTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

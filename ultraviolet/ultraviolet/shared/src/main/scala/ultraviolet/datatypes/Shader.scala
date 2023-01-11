@@ -22,14 +22,28 @@ object Shader:
 
   extension [In, Out](inline ctx: Shader[In, Out])
 
-    inline def toGLSLDefaultHeaders[T](using p: ShaderPrinter[T]): ShaderOutput =
-      ShaderMacros.toAST(ctx).render(p.defaultConfig)
-    inline def toGLSLWithHeaders[T](headers: PrinterHeader*)(using p: ShaderPrinter[T]): ShaderOutput =
-      ShaderMacros.toAST(ctx).render(ShaderPrinterConfig(headers.toList))
-    inline def toGLSLNoHeaders[T](using ShaderPrinter[T]): ShaderOutput =
-      ShaderMacros.toAST(ctx).render(ShaderPrinterConfig.default)
-    inline def toGLSL[T](using ShaderPrinter[T]): ShaderOutput =
+    inline def toGLSLDefaultHeaders[T](using p: ShaderPrinter[T]): ShaderResult =
+      try ShaderMacros.toAST(ctx).render(p.defaultConfig)
+      catch {
+        case e: ShaderError =>
+          ShaderResult.Error(e.message)
+      }
+    inline def toGLSLWithHeaders[T](headers: List[PrinterHeader])(using p: ShaderPrinter[T]): ShaderResult =
+      try ShaderMacros.toAST(ctx).render(ShaderPrinterConfig(headers))
+      catch {
+        case e: ShaderError =>
+          ShaderResult.Error(e.message)
+      }
+    inline def toGLSLNoHeaders[T](using ShaderPrinter[T]): ShaderResult =
+      try ShaderMacros.toAST(ctx).render(ShaderPrinterConfig.default)
+      catch {
+        case e: ShaderError =>
+          ShaderResult.Error(e.message)
+      }
+    inline def toGLSL[T](using ShaderPrinter[T]): ShaderResult =
       toGLSLNoHeaders
+    inline def toGLSL[T](headers: PrinterHeader*)(using ShaderPrinter[T]): ShaderResult =
+      toGLSLWithHeaders(headers.toList)
 
     inline def run(in: In): Out = ctx(in)
 

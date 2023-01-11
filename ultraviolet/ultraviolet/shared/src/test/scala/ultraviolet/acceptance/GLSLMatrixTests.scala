@@ -32,18 +32,19 @@ class GLSLMatrixTests extends munit.FunSuite {
         def rotate2d(angle: Float): mat4 =
           mat4(cos(angle), -sin(angle), 0f, 0f, sin(angle), cos(angle), 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
 
-        val transform =
-          translate2d(env.POSITION) *
-            rotate2d(-1.0f * env.ROTATION) *
-            scale2d(env.SIZE * env.SCALE) *
-            translate2d(-(env.REF / env.SIZE) + 0.5f) *
-            scale2d(vec2(1.0f, -1.0f) * env.FLIP);
+        def main: Unit =
+          val transform =
+            translate2d(env.POSITION) *
+              rotate2d(-1.0f * env.ROTATION) *
+              scale2d(env.SIZE * env.SCALE) *
+              translate2d(-(env.REF / env.SIZE) + 0.5f) *
+              scale2d(vec2(1.0f, -1.0f) * env.FLIP);
 
-        env.gl_Position = env.u_projection * env.u_baseTransform * transform * env.VERTEX;
+          env.gl_Position = env.u_projection * env.u_baseTransform * transform * env.VERTEX;
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -60,8 +61,10 @@ class GLSLMatrixTests extends munit.FunSuite {
       |mat4 rotate2d(in float angle){
       |  return mat4(cos(angle),-sin(angle),0.0,0.0,sin(angle),cos(angle),0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0);
       |}
-      |mat4 transform=(translate2d(POSITION)*(rotate2d((-1.0)*ROTATION)))*(scale2d(SIZE*SCALE))*(translate2d((-(REF/SIZE))+0.5))*(scale2d((vec2(1.0,-1.0))*FLIP));
-      |gl_Position=((u_projection*u_baseTransform)*transform)*VERTEX;
+      |void main(){
+      |  mat4 transform=(translate2d(POSITION)*(rotate2d((-1.0)*ROTATION)))*(scale2d(SIZE*SCALE))*(translate2d((-(REF/SIZE))+0.5))*(scale2d((vec2(1.0,-1.0))*FLIP));
+      |  gl_Position=((u_projection*u_baseTransform)*transform)*VERTEX;
+      |}
       |""".stripMargin.trim
     )
   }

@@ -18,7 +18,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -37,7 +37,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     assert(clue(actual) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
   }
@@ -56,7 +56,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -88,7 +88,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     assertEquals(
       actual,
@@ -123,7 +123,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // println(actual)
 
@@ -159,7 +159,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // println(actual)
 
@@ -203,7 +203,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -241,14 +241,14 @@ class GLSLExternalTests extends munit.FunSuite {
       Shader {
         import TileAndStretch.*
 
-        val fillType: Int              = 0
-        val fallback: vec4             = vec4(1.0)
+        val fillType: Int                       = 0
+        val fallback: vec4                      = vec4(1.0)
         @uniform val srcChannel: sampler2D.type = sampler2D
-        val channelPos: vec2           = vec2(2.0)
-        val channelSize: vec2          = vec2(3.0)
-        val uv: vec2                   = vec2(4.0)
-        val entitySize: vec2           = vec2(5.0)
-        val textureSize: vec2          = vec2(6.0)
+        val channelPos: vec2                    = vec2(2.0)
+        val channelSize: vec2                   = vec2(3.0)
+        val uv: vec2                            = vec2(4.0)
+        val entitySize: vec2                    = vec2(5.0)
+        val textureSize: vec2                   = vec2(6.0)
 
         tileAndStretchChannelFn(
           fillType,    // env.FILLTYPE.toInt,
@@ -263,7 +263,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

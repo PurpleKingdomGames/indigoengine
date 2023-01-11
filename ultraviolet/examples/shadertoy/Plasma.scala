@@ -40,5 +40,5 @@ object ShaderToy extends App:
     }
 
   os.makeDir.all(os.pwd / "glsl")
-  os.write.over(os.pwd / "glsl" / "plasma-buffer-a.frag", bufferA.toGLSL[ShaderToy].code)
-  os.write.over(os.pwd / "glsl" / "plasma-image.frag", image.toGLSL[ShaderToy].code)
+  os.write.over(os.pwd / "glsl" / "plasma-buffer-a.frag", bufferA.toGLSL[ShaderToy].toOutput.code)
+  os.write.over(os.pwd / "glsl" / "plasma-image.frag", image.toGLSL[ShaderToy].toOutput.code)

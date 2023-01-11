@@ -2,6 +2,7 @@ package ultraviolet.macros
 
 import ultraviolet.datatypes.ProceduralShader
 import ultraviolet.datatypes.ShaderAST
+import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.datatypes.ShaderError
 import ultraviolet.datatypes.UBODef
 import ultraviolet.datatypes.UBOField
@@ -18,6 +19,7 @@ object ShaderMacros:
 
   private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using q: Quotes): Expr[ProceduralShader] = {
     import q.reflect.*
+    import ShaderProgramValidation.*
 
     val createAST = new CreateShaderAST[q.type](using q)
 
@@ -35,12 +37,36 @@ object ShaderMacros:
         case term =>
           createAST.walkTerm(term, None)
 
+    val defs =
+      createAST.shaderDefs.toList.filterNot(_.userDefined).map(_.fn)
+
+    val annotations =
+      createAST.annotationRegister.toList
+
+    val defRefs = defs.map(_.id)
+    val annotationRefs =
+      annotations.flatMap {
+        case ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _)) =>
+          List(id)
+
+        case ShaderAST.Annotated(_, _, ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _))) =>
+          List(id)
+
+        case _ =>
+          Nil
+      }
+
+    val additionalKeyword =
+      List(
+        "sampler2D"
+      )
+
     Expr(
       ProceduralShader(
-        createAST.shaderDefs.toList.filterNot(_.userDefined).map(_.fn),
+        validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
         createAST.uboRegister.toList,
-        createAST.annotationRegister.toList,
-        main
+        annotations,
+        validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
       )
     )
   }

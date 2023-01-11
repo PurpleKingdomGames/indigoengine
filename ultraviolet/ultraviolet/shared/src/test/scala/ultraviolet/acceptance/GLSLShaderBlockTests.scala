@@ -26,7 +26,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -66,7 +66,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment(new CustomShader).toGLSL[WebGL2].code
+      fragment(new CustomShader).toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment(new CustomShader))
     // println(actual)
@@ -90,7 +90,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment(12.0f).toGLSL[WebGL2].code
+      fragment(12.0f).toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment(12.0f))
     // println(actual)

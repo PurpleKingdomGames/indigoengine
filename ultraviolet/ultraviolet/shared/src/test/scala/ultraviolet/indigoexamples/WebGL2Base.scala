@@ -132,55 +132,54 @@ object WebGL2Base:
         //#vertex_end
 
         def main: Unit =
+          INSTANCE_ID = env.gl_InstanceID
 
-            INSTANCE_ID = env.gl_InstanceID
+          VERTEX = vec4(a_verticesAndCoords.xy, 1.0f, 1.0f)
+          UV = a_verticesAndCoords.zw
+          ROTATION = a_rotation
+          POSITION = a_translateScale.xy
+          SCALE = a_translateScale.zw
 
-            VERTEX = vec4(a_verticesAndCoords.xy, 1.0f, 1.0f)
-            UV = a_verticesAndCoords.zw
-            ROTATION = a_rotation
-            POSITION = a_translateScale.xy
-            SCALE = a_translateScale.zw
+          // 0 = normal, 1 = clone batch, 2 = clone tiles
+          u_mode match
+            case 0 =>
+              ATLAS_SIZE = a_textureSizeAtlasSize.zw
+              TEXTURE_SIZE = a_textureSizeAtlasSize.xy
+              SIZE = a_sizeAndFrameScale.xy
+              FRAME_SIZE = a_sizeAndFrameScale.zw
+              REF = a_refFlip.xy
+              FLIP = a_refFlip.zw
+              CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
+              CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
+              CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
+              CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
 
-            // 0 = normal, 1 = clone batch, 2 = clone tiles
-            u_mode match
-              case 0 =>
-                ATLAS_SIZE = a_textureSizeAtlasSize.zw
-                TEXTURE_SIZE = a_textureSizeAtlasSize.xy
-                SIZE = a_sizeAndFrameScale.xy
-                FRAME_SIZE = a_sizeAndFrameScale.zw
-                REF = a_refFlip.xy
-                FLIP = a_refFlip.zw
-                CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
-                CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
-                CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
-                CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
+            case 1 =>
+              ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
+              TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
+              SIZE = env.u_ref_sizeAndFrameScale.xy
+              FRAME_SIZE = env.u_ref_sizeAndFrameScale.zw
+              REF = env.u_ref_refFlip.xy
+              FLIP = env.u_ref_refFlip.zw
+              CHANNEL_0_ATLAS_OFFSET = env.u_ref_channelOffsets01.xy
+              CHANNEL_1_ATLAS_OFFSET = env.u_ref_channelOffsets01.zw
+              CHANNEL_2_ATLAS_OFFSET = env.u_ref_channelOffsets23.xy
+              CHANNEL_3_ATLAS_OFFSET = env.u_ref_channelOffsets23.zw
 
-              case 1 =>
-                ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
-                TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
-                SIZE = env.u_ref_sizeAndFrameScale.xy
-                FRAME_SIZE = env.u_ref_sizeAndFrameScale.zw
-                REF = env.u_ref_refFlip.xy
-                FLIP = env.u_ref_refFlip.zw
-                CHANNEL_0_ATLAS_OFFSET = env.u_ref_channelOffsets01.xy
-                CHANNEL_1_ATLAS_OFFSET = env.u_ref_channelOffsets01.zw
-                CHANNEL_2_ATLAS_OFFSET = env.u_ref_channelOffsets23.xy
-                CHANNEL_3_ATLAS_OFFSET = env.u_ref_channelOffsets23.zw
+            case 2 =>
+              ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
+              TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
+              SIZE = a_sizeAndFrameScale.xy
+              FRAME_SIZE = a_sizeAndFrameScale.zw
+              REF = env.u_ref_refFlip.xy
+              FLIP = env.u_ref_refFlip.zw
+              CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
+              CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
+              CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
+              CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
 
-              case 2 =>
-                ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
-                TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
-                SIZE = a_sizeAndFrameScale.xy
-                FRAME_SIZE = a_sizeAndFrameScale.zw
-                REF = env.u_ref_refFlip.xy
-                FLIP = env.u_ref_refFlip.zw
-                CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
-                CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
-                CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
-                CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
-
-              case _ =>
-                ()
+            case _ =>
+              ()
             
 
           vertex()
@@ -350,29 +349,29 @@ object WebGL2Base:
       |    default:
       |      break;
       |  }
+      |  vertex();
+      |  CHANNEL_0_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_0_ATLAS_OFFSET);
+      |  CHANNEL_1_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_1_ATLAS_OFFSET);
+      |  CHANNEL_2_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_2_ATLAS_OFFSET);
+      |  CHANNEL_3_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_3_ATLAS_OFFSET);
+      |  CHANNEL_0_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_0_ATLAS_OFFSET);
+      |  CHANNEL_1_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_1_ATLAS_OFFSET);
+      |  CHANNEL_2_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_2_ATLAS_OFFSET);
+      |  CHANNEL_3_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_3_ATLAS_OFFSET);
+      |  CHANNEL_0_SIZE=TEXTURE_SIZE/ATLAS_SIZE;
+      |  mat4 transform=(translate2d(POSITION)*(rotate2d((-1.0)*ROTATION)))*(scale2d(SIZE*SCALE))*(translate2d((-(REF/SIZE))+0.5))*(scale2d((vec2(1.0,-1.0))*FLIP));
+      |  gl_Position=((u_projection*u_baseTransform)*transform)*VERTEX;
+      |  vec2 screenCoords=(gl_Position.xy*0.5)+0.5;
+      |  v_screenCoordsRotation=vec3((vec2(screenCoords.x,1.0-screenCoords.y))*VIEWPORT_SIZE,ROTATION);
+      |  v_uv_size=vec4(UV,SIZE);
+      |  v_channel_coords_01=vec4(CHANNEL_0_TEXTURE_COORDS,CHANNEL_1_TEXTURE_COORDS);
+      |  v_channel_coords_23=vec4(CHANNEL_2_TEXTURE_COORDS,CHANNEL_3_TEXTURE_COORDS);
+      |  v_textureSize=TEXTURE_SIZE;
+      |  v_atlasSizeAsUV=vec4(ATLAS_SIZE,CHANNEL_0_SIZE);
+      |  v_channel_pos_01=vec4(CHANNEL_0_POSITION,CHANNEL_1_POSITION);
+      |  v_channel_pos_23=vec4(CHANNEL_2_POSITION,CHANNEL_3_POSITION);
+      |  v_instanceId=INSTANCE_ID;
       |}
-      |vertex();
-      |CHANNEL_0_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_0_ATLAS_OFFSET);
-      |CHANNEL_1_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_1_ATLAS_OFFSET);
-      |CHANNEL_2_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_2_ATLAS_OFFSET);
-      |CHANNEL_3_TEXTURE_COORDS=scaleCoordsWithOffset(UV,CHANNEL_3_ATLAS_OFFSET);
-      |CHANNEL_0_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_0_ATLAS_OFFSET);
-      |CHANNEL_1_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_1_ATLAS_OFFSET);
-      |CHANNEL_2_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_2_ATLAS_OFFSET);
-      |CHANNEL_3_POSITION=scaleCoordsWithOffset(vec2(0.0),CHANNEL_3_ATLAS_OFFSET);
-      |CHANNEL_0_SIZE=TEXTURE_SIZE/ATLAS_SIZE;
-      |mat4 transform=(translate2d(POSITION)*(rotate2d((-1.0)*ROTATION)))*(scale2d(SIZE*SCALE))*(translate2d((-(REF/SIZE))+0.5))*(scale2d((vec2(1.0,-1.0))*FLIP));
-      |gl_Position=((u_projection*u_baseTransform)*transform)*VERTEX;
-      |vec2 screenCoords=(gl_Position.xy*0.5)+0.5;
-      |v_screenCoordsRotation=vec3((vec2(screenCoords.x,1.0-screenCoords.y))*VIEWPORT_SIZE,ROTATION);
-      |v_uv_size=vec4(UV,SIZE);
-      |v_channel_coords_01=vec4(CHANNEL_0_TEXTURE_COORDS,CHANNEL_1_TEXTURE_COORDS);
-      |v_channel_coords_23=vec4(CHANNEL_2_TEXTURE_COORDS,CHANNEL_3_TEXTURE_COORDS);
-      |v_textureSize=TEXTURE_SIZE;
-      |v_atlasSizeAsUV=vec4(ATLAS_SIZE,CHANNEL_0_SIZE);
-      |v_channel_pos_01=vec4(CHANNEL_0_POSITION,CHANNEL_1_POSITION);
-      |v_channel_pos_23=vec4(CHANNEL_2_POSITION,CHANNEL_3_POSITION);
-      |v_instanceId=INSTANCE_ID;
       |""".stripMargin.trim
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))

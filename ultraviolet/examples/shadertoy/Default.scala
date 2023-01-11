@@ -23,4 +23,4 @@ object ShaderToy extends App:
     }
 
   os.makeDir.all(os.pwd / "glsl")
-  os.write.over(os.pwd / "glsl" / "default.frag", image.toGLSL[ShaderToy].code)
+  os.write.over(os.pwd / "glsl" / "default.frag", image.toGLSL[ShaderToy].toOutput.code)

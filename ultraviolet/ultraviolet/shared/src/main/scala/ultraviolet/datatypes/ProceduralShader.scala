@@ -19,7 +19,7 @@ object ProceduralShader:
 
   extension (p: ProceduralShader)
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    inline def render[T](config: ShaderPrinterConfig)(using printer: ShaderPrinter[T]): ShaderOutput =
+    inline def render[T](config: ShaderPrinterConfig)(using printer: ShaderPrinter[T]): ShaderResult.Output =
       import ShaderAST.*
 
       val inType    = p.main.inType
@@ -92,7 +92,7 @@ object ProceduralShader:
                   Nil
               }
 
-          ShaderOutput(
+          ShaderResult.Output(
             code,
             ShaderMetadata(
               extractedUniforms,

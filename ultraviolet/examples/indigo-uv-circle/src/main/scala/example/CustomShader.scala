@@ -30,4 +30,4 @@ object CustomShader:
   val program: EntityShader.Source =
     EntityShader
       .Source(shaderId)
-      .withFragmentProgram(fragment.toGLSL[WebGL2].code)
+      .withFragmentProgram(fragment.toGLSL[WebGL2].toOutput.code)

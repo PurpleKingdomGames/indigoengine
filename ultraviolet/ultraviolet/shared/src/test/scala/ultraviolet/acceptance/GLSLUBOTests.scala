@@ -21,7 +21,7 @@ class GLSLUBOTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSLWithHeaders[WebGL2](Version300ES, PrecisionHighPFloat).code
+      fragment.toGLSL[WebGL2](Version300ES, PrecisionHighPFloat).toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

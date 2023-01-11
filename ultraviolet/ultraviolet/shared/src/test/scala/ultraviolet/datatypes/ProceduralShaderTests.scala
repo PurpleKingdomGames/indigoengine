@@ -1,5 +1,6 @@
 package ultraviolet.datatypes
 
+import ultraviolet.DebugAST
 import ultraviolet.macros.ShaderMacros
 
 class ProceduralShaderTests extends munit.FunSuite {
@@ -49,6 +50,8 @@ class ProceduralShaderTests extends munit.FunSuite {
 
         circleSdf(env.UV, 3.0)
       }
+
+    // DebugAST.toAST(fragment)
 
     val actual =
       ShaderMacros.toAST(fragment).find {
@@ -131,7 +134,7 @@ class ProceduralShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2]
+      fragment.toGLSL[WebGL2].toOutput
 
     val expectedCode =
       s"""

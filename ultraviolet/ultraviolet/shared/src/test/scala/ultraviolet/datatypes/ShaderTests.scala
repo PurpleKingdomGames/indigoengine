@@ -67,7 +67,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -104,7 +104,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -138,7 +138,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -181,7 +181,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -225,7 +225,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -274,7 +274,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -329,7 +329,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -369,7 +369,7 @@ class ShaderTests extends munit.FunSuite {
     inline def toVec2(v4: vec4): Shader[UBO1, vec2] =
       Shader[UBO1, vec2] { env =>
         @uniform val ALPHA: Float = 0.0f;
-        val res = v4.xy
+        val res                   = v4.xy
         ubo[UBO2]
         res
       }
@@ -389,7 +389,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].code
+      shader.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
