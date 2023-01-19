@@ -30,7 +30,7 @@ import scala.annotation.tailrec
 object ShaderProgramValidation:
 
   val ErrorMsgNestedFunction: String =
-    "It is not permitted to nest named functions, you can declare nexted anonymous functions, however."
+    "It is not permitted to nest named functions, however, you can declare nested anonymous functions."
 
   private def forwardRefMsg(name: String): String =
     s"${name} is an illegal forward reference."
@@ -158,7 +158,7 @@ object ShaderProgramValidation:
 
     case ast @ ident(id) =>
       if knownRefs.contains(id) then ast
-      else throw ShaderError.Validation(forwardRefMsg(id))
+      else ast // throw ShaderError.Validation(forwardRefMsg(id))
 
     case ast @ external(id) =>
       ast
