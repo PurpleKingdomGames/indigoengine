@@ -158,7 +158,7 @@ object ShaderProgramValidation:
 
     case ast @ ident(id) =>
       if knownRefs.contains(id) then ast
-      else ast // throw ShaderError.Validation(forwardRefMsg(id))
+      else throw ShaderError.Validation(forwardRefMsg(id))
 
     case ast @ external(id) =>
       ast
