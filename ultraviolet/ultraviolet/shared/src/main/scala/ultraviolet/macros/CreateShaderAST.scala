@@ -362,9 +362,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           else fnDef
 
         body match
-          case ShaderAST.Block(List(ShaderAST.FunctionRef(id, arg, rt))) =>
+          case ShaderAST.Block(List(ref @ ShaderAST.FunctionRef(id, arg, rt))) =>
             proxies.add(fn, id, arg, rt)
-            ShaderAST.Empty()
+            ref
 
           case ShaderAST.Block(statements :+ (ifs @ ShaderAST.If(_, _, Some(_)))) =>
             val name                              = proxies.makeVarName
