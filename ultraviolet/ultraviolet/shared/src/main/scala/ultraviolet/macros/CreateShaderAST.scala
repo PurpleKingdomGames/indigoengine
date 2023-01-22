@@ -566,7 +566,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           ) =>
         walkTree(term, None)
 
-      // Entry point (with type params)
+      // Entry point (with type params) (block)
       case Apply(
             TypeApply(Select(Ident("Shader"), "apply"), types),
             List(
@@ -583,6 +583,36 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   ),
                   Closure(Ident("$anonfun"), None)
                 )
+              )
+            )
+          ) =>
+        val e          = Option(env)
+        val statements = List(walkTerm(term, e))
+
+        types.map(extractInferredTypeParam) match
+          case List(in, out) =>
+            ShaderAST.ShaderBlock(in, out, e, statements)
+
+          case List(in) =>
+            ShaderAST.ShaderBlock(in, None, e, statements)
+
+          case _ =>
+            ShaderAST.ShaderBlock(None, None, e, statements)
+
+      // Entry point (with type params) (single line)
+      case Apply(
+            TypeApply(Select(Ident("Shader"), "apply"), types),
+            List(
+              Block(
+                List(
+                  DefDef(
+                    "$anonfun",
+                    List(TermParamClause(List(ValDef(env, Inferred(), None)))),
+                    Inferred(),
+                    Some(term)
+                  )
+                ),
+                Closure(Ident("$anonfun"), None)
               )
             )
           ) =>

@@ -486,15 +486,12 @@ class ShaderTests extends munit.FunSuite {
   test("Shaders can be create from within a companion (inlined + converted)") {
 
     inline def modifyVertex: vec4 => Shader[Foo.Env, vec4] =
-      (input: vec4) =>
-        Shader[Foo.Env, vec4] { _ =>
-          input + vec4(1.0f)
-        }
+        (input: vec4) => Shader[Foo.Env, vec4](_ => input + vec4(1.0f))
 
     val actualCode =
       Foo.shaderResult(modifyVertex).toOutput.code
 
-    // DebugAST.toAST(shader(modifyVertex))
+    // DebugAST.toAST(Foo.shader(modifyVertex))
     // println(actualCode)
 
     assertEquals(
@@ -566,5 +563,5 @@ object Foo {
     }
 
   inline def shaderResult(inline f: vec4 => Shader[Env, vec4]): ShaderResult =
-    shader(f).toGLSL[WebGL2]
+    shader(f).toGLSL[WebGL2](false)
 }
