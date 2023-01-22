@@ -49,6 +49,7 @@ object syntax extends ShaderDSLOps:
   final class out                   extends StaticAnnotation
   final class smooth                extends StaticAnnotation
   final class uniform               extends StaticAnnotation
+  final class global                extends StaticAnnotation
 
   inline def ubo[A](using Mirror.ProductOf[A]) = UBOReader.readUBO[A]
 

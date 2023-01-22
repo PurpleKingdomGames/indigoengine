@@ -80,4 +80,40 @@ class GLSLAnnotationTests extends munit.FunSuite {
 
   }
 
+  test("Variables annotated as global render as normal, but before defs") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+    inline def fragment =
+      Shader {
+        val addOne = (i: Int) => i + 1
+
+        @global var b: vec2 = null
+
+        val subtract1One = (i: Int) => i - 1
+
+        addOne(subtract1One(2))
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |vec2 b;
+      |int def0(in int i){
+      |  return i+1;
+      |}
+      |int def1(in int i){
+      |  return i-1;
+      |}
+      |def0(def1(2));
+      |""".stripMargin.trim
+    )
+
+  }
+
 }

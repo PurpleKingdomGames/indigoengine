@@ -330,6 +330,9 @@ object ShaderPrinter:
           case _ if lbl == "layout" =>
             List(s"""layout (location = ${render(param).mkString}) ${render(value).mkString}""")
 
+          case v if lbl == "global" =>
+            List(s"""${render(v).mkString}""")
+
           case v @ Val(id, value, typeOf) =>
             List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
 
@@ -477,7 +480,7 @@ object ShaderPrinter:
                     case ss :+ s =>
                       // When the last line is actually more than one line...
                       ss :+ ((if returnType != "void" then "return " else "") + s)
-                      
+
                     case _ =>
                       ((if returnType != "void" then "return " else "") + x) :: xs
 
