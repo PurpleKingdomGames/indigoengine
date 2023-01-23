@@ -23,7 +23,7 @@ trait ShaderDSLTypes:
     def *(v: mat2): vec2 = vec2(0.0) // TODO: Replace stub
 
   object vec2:
-    inline def apply(xy: Float): vec2 =
+    def apply(xy: Float): vec2 =
       vec2(xy, xy)
 
   final case class vec3(x: Float, y: Float, z: Float):
@@ -46,13 +46,13 @@ trait ShaderDSLTypes:
     def *(v: mat3): vec3 = vec3(0.0) // TODO: Replace stub
 
   object vec3:
-    inline def apply(xyz: Float): vec3 =
+    def apply(xyz: Float): vec3 =
       vec3(xyz, xyz, xyz)
 
-    inline def apply(xy: vec2, z: Float): vec3 =
+    def apply(xy: vec2, z: Float): vec3 =
       vec3(xy.x, xy.y, z)
 
-    inline def apply(x: Float, yz: vec2): vec3 =
+    def apply(x: Float, yz: vec2): vec3 =
       vec3(x, yz.x, yz.y)
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float):
@@ -76,32 +76,32 @@ trait ShaderDSLTypes:
     def *(v: mat4): vec4 = vec4(0.0) // TODO: Replace stub
 
   object vec4:
-    inline def apply(xy: vec2, z: Float, w: Float): vec4 =
+    def apply(xy: vec2, z: Float, w: Float): vec4 =
       vec4(xy.x, xy.y, z, w)
 
-    inline def apply(x: Float, yz: vec2, w: Float): vec4 =
+    def apply(x: Float, yz: vec2, w: Float): vec4 =
       vec4(x, yz.x, yz.y, w)
 
-    inline def apply(x: Float, y: Float, zw: vec2): vec4 =
+    def apply(x: Float, y: Float, zw: vec2): vec4 =
       vec4(x, y, zw.x, zw.y)
 
-    inline def apply(xy: vec2, zw: vec2): vec4 =
+    def apply(xy: vec2, zw: vec2): vec4 =
       vec4(xy.x, xy.y, zw.x, zw.y)
 
-    inline def apply(xyz: vec3, w: Float): vec4 =
+    def apply(xyz: vec3, w: Float): vec4 =
       vec4(xyz.x, xyz.y, xyz.z, w)
 
-    inline def apply(x: Float, yzw: vec3): vec4 =
+    def apply(x: Float, yzw: vec3): vec4 =
       vec4(x, yzw.x, yzw.y, yzw.z)
 
-    inline def apply(xyz: Float): vec4 =
+    def apply(xyz: Float): vec4 =
       vec4(xyz, xyz, xyz, xyz)
 
   final case class bvec2(x: Boolean, y: Boolean):
     lazy val r: Boolean = x
     lazy val g: Boolean = y
   object bvec2:
-    inline def apply(xy: Boolean): bvec2 =
+    def apply(xy: Boolean): bvec2 =
       bvec2(xy, xy)
 
   final case class bvec3(x: Boolean, y: Boolean, z: Boolean):
@@ -109,13 +109,13 @@ trait ShaderDSLTypes:
     lazy val g: Boolean = y
     lazy val b: Boolean = z
   object bvec3:
-    inline def apply(xyz: Boolean): bvec3 =
+    def apply(xyz: Boolean): bvec3 =
       bvec3(xyz, xyz, xyz)
 
-    inline def apply(xy: bvec3, z: Boolean): bvec3 =
+    def apply(xy: bvec3, z: Boolean): bvec3 =
       bvec3(xy.x, xy.y, z)
 
-    inline def apply(x: Boolean, yz: bvec3): bvec3 =
+    def apply(x: Boolean, yz: bvec3): bvec3 =
       bvec3(x, yz.x, yz.y)
 
   final case class bvec4(x: Boolean, y: Boolean, z: Boolean, w: Boolean):
@@ -124,25 +124,25 @@ trait ShaderDSLTypes:
     lazy val b: Boolean = z
     lazy val a: Boolean = w
   object bvec4:
-    inline def apply(xy: bvec2, z: Boolean, w: Boolean): bvec4 =
+    def apply(xy: bvec2, z: Boolean, w: Boolean): bvec4 =
       bvec4(xy.x, xy.y, z, w)
 
-    inline def apply(x: Boolean, yz: bvec2, w: Boolean): bvec4 =
+    def apply(x: Boolean, yz: bvec2, w: Boolean): bvec4 =
       bvec4(x, yz.x, yz.y, w)
 
-    inline def apply(x: Boolean, y: Boolean, zw: bvec2): bvec4 =
+    def apply(x: Boolean, y: Boolean, zw: bvec2): bvec4 =
       bvec4(x, y, zw.x, zw.y)
 
-    inline def apply(xy: bvec2, zw: bvec2): bvec4 =
+    def apply(xy: bvec2, zw: bvec2): bvec4 =
       bvec4(xy.x, xy.y, zw.x, zw.y)
 
-    inline def apply(xyz: bvec3, w: Boolean): bvec4 =
+    def apply(xyz: bvec3, w: Boolean): bvec4 =
       bvec4(xyz.x, xyz.y, xyz.z, w)
 
-    inline def apply(x: Boolean, yzw: bvec3): bvec4 =
+    def apply(x: Boolean, yzw: bvec3): bvec4 =
       bvec4(x, yzw.x, yzw.y, yzw.z)
 
-    inline def apply(xyz: Boolean): bvec4 =
+    def apply(xyz: Boolean): bvec4 =
       bvec4(xyz, xyz, xyz, xyz)
 
   final case class ivec2(x: Int, y: Int):
@@ -164,7 +164,7 @@ trait ShaderDSLTypes:
     def *(v: mat2): ivec2 = ivec2(0) // TODO: Replace stub
 
   object ivec2:
-    inline def apply(xy: Int): ivec2 =
+    def apply(xy: Int): ivec2 =
       ivec2(xy, xy)
 
   final case class ivec3(x: Int, y: Int, z: Int):
@@ -187,13 +187,13 @@ trait ShaderDSLTypes:
     def *(v: mat3): ivec3 = ivec3(0) // TODO: Replace stub
 
   object ivec3:
-    inline def apply(xyz: Int): ivec3 =
+    def apply(xyz: Int): ivec3 =
       ivec3(xyz, xyz, xyz)
 
-    inline def apply(xy: ivec2, z: Int): ivec3 =
+    def apply(xy: ivec2, z: Int): ivec3 =
       ivec3(xy.x, xy.y, z)
 
-    inline def apply(x: Int, yz: ivec2): ivec3 =
+    def apply(x: Int, yz: ivec2): ivec3 =
       ivec3(x, yz.x, yz.y)
 
   final case class ivec4(x: Int, y: Int, z: Int, w: Int):
@@ -217,25 +217,25 @@ trait ShaderDSLTypes:
     def *(v: mat4): ivec4 = ivec4(0) // TODO: Replace stub
 
   object ivec4:
-    inline def apply(xy: ivec2, z: Int, w: Int): ivec4 =
+    def apply(xy: ivec2, z: Int, w: Int): ivec4 =
       ivec4(xy.x, xy.y, z, w)
 
-    inline def apply(x: Int, yz: ivec2, w: Int): ivec4 =
+    def apply(x: Int, yz: ivec2, w: Int): ivec4 =
       ivec4(x, yz.x, yz.y, w)
 
-    inline def apply(x: Int, y: Int, zw: ivec2): ivec4 =
+    def apply(x: Int, y: Int, zw: ivec2): ivec4 =
       ivec4(x, y, zw.x, zw.y)
 
-    inline def apply(xy: ivec2, zw: ivec2): ivec4 =
+    def apply(xy: ivec2, zw: ivec2): ivec4 =
       ivec4(xy.x, xy.y, zw.x, zw.y)
 
-    inline def apply(xyz: ivec3, w: Int): ivec4 =
+    def apply(xyz: ivec3, w: Int): ivec4 =
       ivec4(xyz.x, xyz.y, xyz.z, w)
 
-    inline def apply(x: Int, yzw: ivec3): ivec4 =
+    def apply(x: Int, yzw: ivec3): ivec4 =
       ivec4(x, yzw.x, yzw.y, yzw.z)
 
-    inline def apply(xyz: Int): ivec4 =
+    def apply(xyz: Int): ivec4 =
       ivec4(xyz, xyz, xyz, xyz)
 
   case object sampler2D
