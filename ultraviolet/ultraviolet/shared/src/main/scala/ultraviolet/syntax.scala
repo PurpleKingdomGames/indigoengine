@@ -36,6 +36,12 @@ object syntax extends ShaderDSLOps:
   type UBODef = ultraviolet.datatypes.UBODef
   val UBODef: ultraviolet.datatypes.UBODef.type = ultraviolet.datatypes.UBODef
 
+  type ShaderResult = ultraviolet.datatypes.ShaderResult
+  val ShaderResult: ultraviolet.datatypes.ShaderResult.type = ultraviolet.datatypes.ShaderResult
+
+  type ShaderMetadata = ultraviolet.datatypes.ShaderMetadata
+  val ShaderMetadata: ultraviolet.datatypes.ShaderMetadata.type = ultraviolet.datatypes.ShaderMetadata
+
   type ShaderField = ultraviolet.datatypes.ShaderField
   val ShaderField: ultraviolet.datatypes.ShaderField.type = ultraviolet.datatypes.ShaderField
 
