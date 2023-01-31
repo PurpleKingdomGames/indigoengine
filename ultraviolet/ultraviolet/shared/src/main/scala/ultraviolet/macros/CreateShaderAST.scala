@@ -1124,7 +1124,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, envVarName)), rt)
 
           case _ =>
-            throw ShaderError.UnexpectedConstruction("Body was not a function reference.")
+            throw ShaderError.UnexpectedConstruction("Tried to set up a call to a native function, but did not find a function reference or callback.")
 
       case Apply(Select(Ident(maybeEnv), funcName), args) if envVarName.isDefined && maybeEnv == envVarName.get =>
         ShaderAST.CallExternalFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
