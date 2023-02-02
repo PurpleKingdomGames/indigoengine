@@ -21,7 +21,7 @@ If you've stumbled across this repo and have no idea what all this shader stuff 
 
 This program can be run as a Scala-Cli script from [the examples](https://github.com/PurpleKingdomGames/ultraviolet/tree/main/examples/shadertoy) and the output pasted into [ShaderToy's editor](https://www.shadertoy.com/new). The code produced is almost the same as the default ShaderToy template, and when run, looks like this:
 
-![ShaderToy](./shadertoy_default.webm)
+![ShaderToy's default shader example](shadertoy_default.png)
 
 Here's the code:
 
