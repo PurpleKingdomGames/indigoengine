@@ -1,5 +1,5 @@
 //> using scala "3.2.1"
-//> using lib "io.indigoengine::ultraviolet:0.1.0-SNAPSHOT"
+//> using lib "io.indigoengine::ultraviolet:0.1.0"
 //> using lib "com.lihaoyi::os-lib:0.8.1"
 
 import ultraviolet.shadertoy.*
