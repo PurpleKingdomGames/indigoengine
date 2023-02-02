@@ -5,19 +5,70 @@
 
 # Ultraviolet
 
-Ultraviolet is a Scala 3 to GLSL transpiler library built on top of Scala 3 inline macros.
+Ultraviolet is a Scala 3 to GLSL (versions 100 and 300) transpiler library built on top of Scala 3 inline macros.
 
-## Uses & Examples
-
-Examples can be found in the examples directory of this repo. You can use Ultraviolet to generate GLSL shader code for Indigo, and also for ShaderToy.
+Examples can be found in the [examples directory of this repo](https://github.com/PurpleKingdomGames/ultraviolet/tree/main/examples/). You can use Ultraviolet to generate GLSL shader code for [Indigo](https://github.com/PurpleKingdomGames/indigo), and also for [ShaderToy](https://www.shadertoy.com/).
 
 ## TL;DR: What is a Shader / Ultraviolet / basic programmer intuition
 
 If you've stumbled across this repo and have no idea what all this shader stuff is about:
 
 1. A shader program is used to render graphics on a GPU.
-2. ***Think of a tiny C program that runs for every pixel on the screen***. It is not as simple as that, but that's a good start think about what's going on here..
+2. ***Think of a tiny C-like program that runs for every pixel on the screen***.
 3. Ultraviolet allows you to write those programs in Scala 3.
+
+## Example: ShaderToy's default program
+
+This program can be run as a Scala-Cli script from [the examples](https://github.com/PurpleKingdomGames/ultraviolet/tree/main/examples/shadertoy) and the output pasted into [ShaderToy's editor](https://www.shadertoy.com/new). The code produced is almost the same as the default ShaderToy template, and when run, looks like this:
+
+![ShaderToy](./shadertoy_default.webm)
+
+Here's the code:
+
+```scala
+import ultraviolet.shadertoy.*
+import ultraviolet.syntax.*
+
+inline def image =
+  Shader[ShaderToyEnv, Unit] { env =>
+    def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = {
+      // Normalized pixel coordinates (from 0 to 1)
+      val uv: vec2 = fragCoord / env.iResolution.xy
+
+      // Time varying pixel color
+      val col: vec3 = 0.5f + 0.5f * cos(env.iTime + uv.xyx + vec3(0.0f, 2.0f, 4.0f))
+
+      // Output to screen
+      vec4(col, 1.0f)
+    }
+  }
+```
+
+The body has comments describing it take directly from the shader toy version, but let's walk through the Ultraviolet parts:
+
+1. First we import ultraviolet's syntax and shadertoy support.
+2. Then we define an `inline def` (important!) to hold our shader.
+3. The shader takes a `ShaderToyEnv` environment (that provides globally available data like `iTime`) and in this case returns `Unit`.
+4. The body is a function of environment (`env`) to our shader definition.
+5. ShaderToy requires a `mainImage` function that is usually `void` in it's return type and you have to assign the output color to a known variable. With Ultraviolet's shader toy support, we return a `vec4` and the library will re-write it to do the right thing.
+
+For comparison, here is the GLSL version ShaderToy provides:
+
+```glsl
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = fragCoord/iResolution.xy;
+
+    // Time varying pixel color
+    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+
+    // Output to screen
+    fragColor = vec4(col,1.0);
+}
+```
+
+Pretty similar! And in fact, converting GLSL examples to Scala + Ultraviolet tends to be quite a straightforward and mechanical process. Much work has been done to make the syntax feel the same or better.
 
 ## Status: "It works on my machine"
 
@@ -34,6 +85,8 @@ This project is motivated from two needs:
 
 Right now, the goal is an almost like-for-like experience of writing GLSL (for WebGL) in Scala 3, in all it's very specific procedural glory. It includes a few quality of life improvements such as anonymous functions and function composition, but nothing fancy for now. You can even write unit tests!
 
+The library may ultimately diverge from GLSL, and who knows what sort of problems have been caused by using GLSL as a starting point, but replacing GLSL with Scala GLSL-flavoured-shader-experience is the current goal.
+
 It is _not_ a goal to be able to write arbirary Scala and have it turned into GLSL. In other words this isn't a 'full' transpiler (like Scala.js), it's a useful cross-over subset of Scala and GLSL. As many GLSL language features as can sensibly be represented, and as much Scala as GLSL can be coerced into expressing.
 
 Ultimately I'd like to be able to write Shaders in FP friendly Scala that can target more than just GLSL 300, but that is not necessary for Ultraviolet to be useful and fun.
@@ -44,9 +97,23 @@ Ultimately I'd like to be able to write Shaders in FP friendly Scala that can ta
 
 GLSL is not a general purpose language like Scala is, and while it's possible to represent most of GLSL in Scala, the opposite is not true.
 
-GLSL is for doing maths on simple numeric data types, and as someone else described it, is "a very limited programming model."
+GLSL is for doing maths on simple numeric data types and is, as someone else described it, "a very limited programming model."
 
-Go forth and do maths and make pretty pictures!
+For all that, it is _very good fun_. Go forth and do maths and make pretty pictures!
+
+## Float's. Everywhere.
+
+In GLSL 300 there are no double types. It was very tempting to make Ultraviolet accept `Double`s and write `Float`s for a nicer experience, but in later GLSL versions and other shader languages `Double` and `Float` are separate so Ultraviolet does 'the right thing' and the cost of some user experience.
+
+Long story short: If you see an mysterious errors about constructors, you probably just wrote `1.0` instead of `1.0f`.
+
+## Built in functions
+
+GLSL comes LOADED with useful functions for doing all kinds of maths.
+
+Since all of the implementations are well specified, Ultraviolet has fully implemented about 95% of them in Scala in order to help you write unit tests for your code.
+
+The other 5% that cannot be implmented are stubbed, and simply return fixed values. `texture2D` for example will always return `vec4(0.0f)`.
 
 ## Gotcha's, foot guns, and weird stuff
 
@@ -56,13 +123,13 @@ GLSL is a C-like language for doing maths. There are no `Char` or `String` types
 
 ### No functions as return types
 
-Functions are not first class citizens in GLSL, and so it is not possible (currently) to have a function as a return type of a function. Simple function composition does work, and the `Shader` type forms a monad you can `map` and `flatMap` over,
+Functions are not first class citizens in GLSL, and so it is not possible (currently) to have a function as a return type of a function. Simple function composition does work, and the `Shader` type forms a monad you can `map` and `flatMap` over.
 
 ### Limited support for product types
 
 You cannot make or use arbitrary Product types. For example, it is tempting to just make a little tuple in order to return two values from a function... but you can't.
 
-The closest thing you can do is make use of 'structs', which in Ultraviolet are represented by classes declared in the shader body - but this is quite limited / limiting.
+The closest thing you can do is make use of 'structs', which in Ultraviolet are represented by classes declared in the shader body - but it's usefulness is limited.
 
 ```scala
 inline def fragment =
@@ -89,7 +156,7 @@ There is no way to represent anything like an enum, the closest you can get is u
 
 ### No forward referencing
 
-In Scala, you can call functions at the bottom of a program from code living at the top. This type of thing is called a forward reference, and is not allowed in GLSL.
+In Scala, you can call functions at the bottom of a program from code living at the top. This type of arrangement is called a forward reference, and is not allowed in GLSL.
 
 There are compile time validation checks for this.
 
@@ -108,7 +175,7 @@ In general, this is manageable problem, but there are two rules to follow:
 1. **'Named' functions e.g. `def foo(x: Float): vec2 = ???` _cannot_ be nested inside one another.** This is because Ultraviolet will preserve the order of your code including named functions, in order to avoid problems with forward references.
 2. **Anonymous functions _can_ be nested, but _must be pure_.**. Ultraviolet will re-organise anonymous functions, this is what allows us to simulate things like function composition. The price is that anonymous functions must be pure, i.e. they can only produce a value based on their arguments, and cannot make reference to other outside entities that Scala would normally consider to be 'in scope'.
 
-These rules should be enforced by compile time program validation.
+These rules should be enforced by compile time program validation for you.
 
 ### Just write a glsl as a String?
 
@@ -156,12 +223,12 @@ When writing shaders in Scala, Scala reserved words will be checked and errors s
 You shouldn't have too much trouble with GLSL reserved words because many of them have the same status in Scala, and Ultraviolets validation should catch all the others at compile time.
 
 Naming conventions to avoid:
-- Do not call a function something like `def xy(v: vec4): ???` because this will likely interfere with the Swizzle mechanisms. Not at the point of definition but at the point of use.
-- Do not name anything `val0...N` or `def0...N`, as this is the naming scheme UltraViolet uses internally when it needs to create identifiers, and you'll end up in a mess.
+- Do not call a function something like `def xy(v: vec4): ???` because this will likely interfere with the Swizzle mechanisms (e.g. `vec3(1.0f).yx`). Not at the point of definition but at the point of use.
+- Do not name anything `val0...N` or `def0...N`, as this is the naming scheme UltraViolet uses internally when it needs to create identifiers, and you'll end up in a mess. The `val` and `def` prefixes where picked in the hope the Scala people would naturally avoid them.
 
 ## Comparison table
 
-Only including the differences or note worthy features. If they're the same they are omitted.
+Only included are the differences or note worthy features. If they're the same in both languages they are omitted.
 
 | Feature                           | Scala | GLSL | Ultraviolet | Notes                                                                                            |
 | --------------------------------- | ----- | ---- | ----------- | ------------------------------------------------------------------------------------------------ |
@@ -171,7 +238,7 @@ Only including the differences or note worthy features. If they're the same they
 | `uint` / `uvec`                   | ❌     | ✅    | ❌           |
 | `Double` / `dvec`                 | ✅     | ❌    | ❌           |
 | `struct`                          | ❌     | ✅    | 💡           | You can define structs by declaring classes.                                                     |
-| for loops                         | ❌     | ✅    | 💡           | In Scala, use the `cfor` method provided.                                                        |
+| for loops                         | ❌     | ✅    | 💡           | In Scala, use the `cfor` or `_for` methods provided to simulate for-loops.                                                        |
 | Imports                           | ✅     | ❌    | ✅           | Imported methods and values must be inlined.                                                     |
 | Switch statements                 | ❌     | ✅    | 💡           | Scala does not have switch statements, but they can be expressed using pattern matching instead. |
 | If statements can return values   | ✅     | ❌    | ✅           |
@@ -188,8 +255,9 @@ Only including the differences or note worthy features. If they're the same they
 
 Other comments:
 
-- Although Ultraviolet is based on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 for clarity, and these are rewritten to `texture` for WebGL 2.0. 
+- Although Ultraviolet is based primarily on GLSL 300, I've kept `texture2D` and `textureCube` from WebGL 1.0 for clarity, and these are automatically rewritten to `texture` for WebGL 2.0. 
 - Preprocessor directives largely don't exist, but `#define` is supported for special cases where you need to define a global value based on a non-constant value.
+- GLSL headers can be provided via `PrinterHeader`s.
 
 
 ## Things to know about inlining
