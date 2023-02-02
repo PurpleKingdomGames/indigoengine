@@ -11,6 +11,14 @@ Ultraviolet is a Scala 3 to GLSL transpiler library built on top of Scala 3 inli
 
 Examples can be found in the examples directory of this repo. You can use Ultraviolet to generate GLSL shader code for Indigo, and also for ShaderToy.
 
+## TL;DR: What is a Shader / Ultraviolet / basic programmer intuition
+
+If you've stumbled across this repo and have no idea what all this shader stuff is about:
+
+1. A shader program is used to render graphics on a GPU.
+2. ***Think of a tiny C program that runs for every pixel on the screen***. It is not as simple as that, but that's a good start think about what's going on here..
+3. Ultraviolet allows you to write those programs in Scala 3.
+
 ## Status: "It works on my machine"
 
 Ultraviolet is in early stage development. It appears to be working well but there will be many, many corner cases that haven't been found yet. Please report bugs and issues!
@@ -24,12 +32,11 @@ This project is motivated from two needs:
 
 ## Current Goals
 
-Right now, the goal is an almost a like for like experience of writing GLSL for WebGL in Scala 3, in all it's very specific procedural glory. It will include a few quality of life improvements such as lambdas and function composition, but nothing fancy for now. You will also be able to write unit tests after a fashion.
+Right now, the goal is an almost like-for-like experience of writing GLSL (for WebGL) in Scala 3, in all it's very specific procedural glory. It includes a few quality of life improvements such as anonymous functions and function composition, but nothing fancy for now. You can even write unit tests!
 
 It is _not_ a goal to be able to write arbirary Scala and have it turned into GLSL. In other words this isn't a 'full' transpiler (like Scala.js), it's a useful cross-over subset of Scala and GLSL. As many GLSL language features as can sensibly be represented, and as much Scala as GLSL can be coerced into expressing.
 
-Ultimately I'd like to be able to write Shaders in FP friendly Scala that can target more than just GLSL 300 - but that is a lot of work and not necessary for a first useful shippable version of Ultraviolet.
-
+Ultimately I'd like to be able to write Shaders in FP friendly Scala that can target more than just GLSL 300, but that is not necessary for Ultraviolet to be useful and fun.
 
 # Language feature comparison
 
