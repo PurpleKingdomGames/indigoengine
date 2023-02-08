@@ -71,7 +71,7 @@ object shadertoy:
             )
           )
 
-      val hasMainImageMethod: ShaderValid =
+      val hasMainImageFunction: ShaderValid =
         val main =
           body.find {
             case ShaderAST.Function(
@@ -95,12 +95,12 @@ object shadertoy:
           case None =>
             ShaderValid.Invalid(
               List(
-                "ShaderToy Shader instances must declare a 'mainImage' method: `def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = ???`"
+                "ShaderToy Shader instances must declare a 'mainImage' function: `def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = ???`"
               )
             )
 
       webGL2Printer.isValid(inType, outType, functions, body) |+|
-        (inTypeValid |+| outTypeValid |+| hasMainImageMethod)
+        (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
 
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       val pf: PartialFunction[ShaderAST, ShaderAST] = {
