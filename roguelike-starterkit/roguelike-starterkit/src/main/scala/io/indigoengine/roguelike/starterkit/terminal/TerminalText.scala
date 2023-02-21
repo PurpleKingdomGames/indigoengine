@@ -12,6 +12,7 @@ import indigo.shared.shader.ShaderPrimitive.vec3
 import indigo.shared.shader.ShaderPrimitive.vec4
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 import io.indigoengine.roguelike.starterkit.TerminalShaders
 
 final case class TerminalText(
@@ -43,7 +44,7 @@ final case class TerminalText(
       shaderId.getOrElse(TerminalText.shaderId),
       Batch(
         UniformBlock(
-          "RogueLikeTextData",
+          UniformBlockName("RogueLikeTextData"),
           Batch(
             Uniform("FOREGROUND") -> vec3(foreground.r, foreground.g, foreground.b),
             Uniform("BACKGROUND") -> vec4(background.r, background.g, background.b, background.a),

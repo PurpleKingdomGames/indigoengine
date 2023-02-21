@@ -25,7 +25,7 @@ layout (std140) uniform RogueLikeMapBackground {
   vec4[MAX_TILE_COUNT] BACKGROUND;
 };
 
-void fragment() {
+vec4 fragment(vec4 color) {
   vec2 GRID_DIMENSIONS = GRID_DIMENSIONS_CHAR_SIZE.xy;
   vec2 CHAR_SIZE = GRID_DIMENSIONS_CHAR_SIZE.zw;
 
@@ -49,18 +49,19 @@ void fragment() {
   vec2 tileSize = ONE_TEXEL * CHAR_SIZE;
   vec2 relUV = CHANNEL_0_POSITION + (cell * CHANNEL_0_SIZE) + (tileSize * fract(gridSquare));
   
-  vec4 color = texture(SRC_CHANNEL, relUV);
+  vec4 c = texture(SRC_CHANNEL, relUV);
 
-  bool maskDiff = abs(color.x - MASK.x) < 0.001 &&
-                  abs(color.y - MASK.y) < 0.001 &&
-                  abs(color.z - MASK.z) < 0.001 &&
-                  abs(color.w - MASK.w) < 0.001;
+  bool maskDiff = abs(c.x - MASK.x) < 0.001 &&
+                  abs(c.y - MASK.y) < 0.001 &&
+                  abs(c.z - MASK.z) < 0.001 &&
+                  abs(c.w - MASK.w) < 0.001;
 
   if(maskDiff) {
-    COLOR = BACKGROUND[index];
+    c = BACKGROUND[index];
   } else {
-    COLOR = vec4(color.rgb * (CHAR_FOREGROUND[index].gba * color.a), color.a);
+    c = vec4(c.rgb * (CHAR_FOREGROUND[index].gba * c.a), c.a);
   }
 
+  return c;
 }
 //</indigo-fragment>

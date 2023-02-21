@@ -1,5 +1,5 @@
-addSbtPlugin("org.scala-js"              % "sbt-scalajs"  % "1.11.0")
-addSbtPlugin("io.indigoengine"          %% "sbt-indigo"   % "0.14.0")
+addSbtPlugin("org.scala-js"              % "sbt-scalajs"  % "1.13.0")
+addSbtPlugin("io.indigoengine"          %% "sbt-indigo"   % "0.14.1-SNAPSHOT")
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.3.1")
 addSbtPlugin("ch.epfl.scala"             % "sbt-scalafix" % "0.9.31")
 addSbtPlugin("org.xerial.sbt"           %% "sbt-sonatype" % "3.9.7")

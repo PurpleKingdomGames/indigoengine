@@ -2,6 +2,7 @@ package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.ShaderPrimitive._
 import indigo._
+import indigo.shared.shader.UniformBlockName
 import io.indigoengine.roguelike.starterkit.TerminalShaders
 import io.indigoengine.roguelike.starterkit.Tile
 
@@ -72,7 +73,7 @@ final case class TerminalEntity(
     ShaderData(
       TerminalEntity.shaderId,
       UniformBlock(
-        "RogueLikeData",
+        UniformBlockName("RogueLikeData"),
         Batch(
           Uniform("GRID_DIMENSIONS_CHAR_SIZE") -> vec4(
             gridSize.width.toFloat,
@@ -84,13 +85,13 @@ final case class TerminalEntity(
         )
       ),
       UniformBlock(
-        "RogueLikeMapForeground",
+        UniformBlockName("RogueLikeMapForeground"),
         Batch(
           Uniform("CHAR_FOREGROUND") -> rawJSArray(fgArray)
         )
       ),
       UniformBlock(
-        "RogueLikeMapBackground",
+        UniformBlockName("RogueLikeMapBackground"),
         Batch(
           Uniform("BACKGROUND") -> rawJSArray(bgArray)
         )

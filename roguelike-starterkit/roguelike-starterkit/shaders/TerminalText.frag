@@ -16,18 +16,20 @@ layout (std140) uniform RogueLikeTextData {
   vec4 MASK;
 };
 
-void fragment(){
+vec4 fragment(vec4 color){
 
   bool maskDiff = abs(CHANNEL_0.x - MASK.x) < 0.001 &&
                   abs(CHANNEL_0.y - MASK.y) < 0.001 &&
                   abs(CHANNEL_0.z - MASK.z) < 0.001 &&
                   abs(CHANNEL_0.w - MASK.w) < 0.001;
+  vec4 c;
 
   if(maskDiff) {
-    COLOR = BACKGROUND;
+    c = BACKGROUND;
   } else {
-    COLOR = vec4(CHANNEL_0.rgb * (FOREGROUND.rgb * CHANNEL_0.a), CHANNEL_0.a);
+    c = vec4(CHANNEL_0.rgb * (FOREGROUND.rgb * CHANNEL_0.a), CHANNEL_0.a);
   }
 
+  return c;
 }
 //</indigo-fragment>

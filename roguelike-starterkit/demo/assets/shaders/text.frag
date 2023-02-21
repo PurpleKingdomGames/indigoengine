@@ -17,7 +17,7 @@ layout (std140) uniform RogueLikeTextData {
   vec4 MASK;
 };
 
-void fragment(){
+vec4 fragment(vec4 color){
 
   bool maskDiff = abs(CHANNEL_0.x - MASK.x) < 0.001 &&
                   abs(CHANNEL_0.y - MASK.y) < 0.001 &&
@@ -30,7 +30,7 @@ void fragment(){
     COLOR = vec4(CHANNEL_0.rgb * (FOREGROUND.rgb * CHANNEL_0.a), CHANNEL_0.a);
   }
 
-  COLOR = COLOR * (1.0 - (vec4(SCREEN_COORDS.x) / 250.0)); // Example custom mod
+  return COLOR * (1.0 - (vec4(SCREEN_COORDS.x) / 250.0)); // Example custom mod
 
 }
 //</indigo-fragment>
