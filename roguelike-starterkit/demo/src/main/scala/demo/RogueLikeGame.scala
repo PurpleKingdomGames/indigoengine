@@ -34,7 +34,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .withShaders(
           TerminalEntity.shader(maxTileCount),
           TerminalText.standardShader,
-          TerminalText.customShader(ShaderId("my shader"), Assets.textFragShader)
+          TerminalTextScene.customShader(ShaderId("my shader"))
         )
         .withSubSystems(FPSCounter(Point(10, 350)))
     )
