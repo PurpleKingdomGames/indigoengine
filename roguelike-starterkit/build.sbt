@@ -90,14 +90,15 @@ lazy val demo =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
-      name                := "roguelike-demo",
-      showCursor          := true,
-      title               := "Indigo Roguelike!",
-      gameAssetsDirectory := "assets",
-      windowStartWidth    := 550,
-      windowStartHeight   := 400,
+      name                  := "roguelike-demo",
+      showCursor            := true,
+      title                 := "Indigo Roguelike!",
+      gameAssetsDirectory   := "assets",
+      windowStartWidth      := 550,
+      windowStartHeight     := 400,
       disableFrameRateLimit := false,
-      electronInstall := indigoplugin.ElectronInstall.Latest,
+      electronInstall       := indigoplugin.ElectronInstall.Latest,
+      backgroundColor       := "black",
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % indigoVersion,
         "io.indigoengine" %%% "indigo"            % indigoVersion,
