@@ -45,6 +45,9 @@ object syntax extends ShaderDSLOps:
   type ShaderField = ultraviolet.datatypes.ShaderField
   val ShaderField: ultraviolet.datatypes.ShaderField.type = ultraviolet.datatypes.ShaderField
 
+  type ShaderTypeOf[A] = ultraviolet.macros.ShaderTypeOf[A]
+  val ShaderTypeOf: ultraviolet.macros.ShaderTypeOf.type = ultraviolet.macros.ShaderTypeOf
+
   final class attribute             extends StaticAnnotation
   final class const                 extends StaticAnnotation
   final class define                extends StaticAnnotation

@@ -99,9 +99,14 @@ lazy val ultraviolet =
     .settings(
       name := "ultraviolet",
       commonSettings ++ publishSettings,
-      Compile / sourceGenerators += shaderDSLGen.taskValue
+      Compile / sourceGenerators += shaderDSLGen.taskValue,
+      Compile / sourceGenerators += shaderTypeOfArrayGen.taskValue
     )
 
 def shaderDSLGen = Def.task {
   ShaderDSLGen.makeShaderDSL((Compile / sourceManaged).value)
+}
+
+def shaderTypeOfArrayGen = Def.task {
+  ShaderTypeOfArrayGen.makeArrayInstances((Compile / sourceManaged).value)
 }
