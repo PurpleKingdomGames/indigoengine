@@ -117,6 +117,61 @@ The other 5% that cannot be implmented are stubbed, and simply return fixed valu
 
 ## Gotcha's, foot guns, and weird stuff
 
+### UX/DX/API rough edges
+
+#### Indigo import collisions
+
+If you're using Ultraviolet with Indigo, then you stand a chance of import collisions. The main culprits are that both Ultraviolet and Indigo contains instances of things like classes called `Shader` and `vec4`.
+
+The simplest workaround here is to declare your UV shader code in an object in a separate file, or in a sub object as follows:
+
+```scala
+import indigo.* // <-- bring in problem imports
+
+object MyCode:
+  
+  //...
+
+  object MyShader:
+    import ultraviolet.syntax.* // <-- problem import are effectively replaced
+
+    inline def myShader = ???
+
+```
+
+#### Environment definitions
+
+If your shaders environment is simple, like the shadertoy one, and can be defined using a single case class that may or may not also be declared as a UBO, then all is well.
+
+More typically, you have some environment and several UBO definitions, and you'd like your code to be able to access all of them, e.g.:
+
+```scala
+final case class UBO1(count: Int)
+final case class UBO2(pos: vec2)
+
+// Delcare all this fields that make up `env`
+Shader[FragmentEnv & UBO1 & UBO2] { env =>
+  ubo[UBO1] // Tells ultraviolet to define the UBO1 data structure
+  ubo[UBO2] // Tells ultraviolet to define the UBO1 data structure
+
+  env.count // can be a field on FragmentEnv, UBO1, or UBO2
+}
+```
+
+So far, the above works. The problem is that at the point of converting to GLSL code, you have to provide a dummy, but real instance of that funky type `FragmentEnv & UBO1 & UBO2`
+
+You can't avoid declaring `UBO1` and `UBO2` because UV needs them to create the correct definitions, but making `FragmentEnv & UBO1 & UBO2` isn't a fun excercise.
+
+Unfortunately, the best solution I've found so far is to replace `FragmentEnv & UBO1 & UBO2` with something like this:
+
+```scala
+final case class Env(count: Int, pos: vec2) extends FragmentEnvReference
+object Env:
+  def reference: Env = Env(0, vec2(0.0f))
+```
+
+Note that `FragmentEnv` is a real thing in Indigo, it provides Indigo's standard Fragment environment (there is also `VertexEnv` and `BlendFragmentEnv`). `FragmentEnvReference` is a trait with the same fields as `FragmentEnv`, with all the values hardcoded so that you can make an instance easily.
+
 ### Compile time and Runtime errors
 
 > TL;DR: Some errors only happen at runtime, if you want to catch them early, write a simple test that exercises/run your shader.
