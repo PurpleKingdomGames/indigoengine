@@ -58,24 +58,6 @@ lazy val roguelike =
     )
     .settings(
       Compile / sourceGenerators += Def.task {
-        val cachedFun = FileFunction.cached(
-          streams.value.cacheDirectory / "shaders"
-        ) { (files: Set[File]) =>
-          ShaderLibraryGen
-            .makeShaderLibrary(
-              "TerminalShaders",
-              "io.indigoengine.roguelike.starterkit.tiles",
-              files,
-              (Compile / sourceManaged).value
-            )
-            .toSet
-        }
-
-        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
-      }.taskValue
-    )
-    .settings(
-      Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
             "RoguelikeTiles",                             // Class/module name.

@@ -33,7 +33,5 @@ val GridSquare: utils.GridSquare.type = utils.GridSquare
 
 val RoguelikeTiles: tiles.RoguelikeTiles.type = tiles.RoguelikeTiles
 
-val TerminalShaders: tiles.TerminalShaders.type = tiles.TerminalShaders
-
 type Tile = tiles.Tile
 val Tile: tiles.Tile.type = tiles.Tile

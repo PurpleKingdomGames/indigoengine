@@ -1,7 +1,6 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.*
-import io.indigoengine.roguelike.starterkit.TerminalShaders
 
 final case class TerminalText(
     tileMap: AssetName,

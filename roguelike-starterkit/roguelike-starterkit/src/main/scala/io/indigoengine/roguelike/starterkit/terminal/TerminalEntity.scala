@@ -2,7 +2,6 @@ package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.ShaderPrimitive.*
 import indigo.*
-import io.indigoengine.roguelike.starterkit.TerminalShaders
 import io.indigoengine.roguelike.starterkit.Tile
 
 final case class TerminalEntity(
