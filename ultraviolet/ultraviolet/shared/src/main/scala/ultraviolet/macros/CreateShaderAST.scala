@@ -1124,7 +1124,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, envVarName)), rt)
 
           case _ =>
-            throw ShaderError.UnexpectedConstruction("Tried to set up a call to a native function, but did not find a function reference or callback.")
+            throw ShaderError.UnexpectedConstruction(
+              "Tried to set up a call to a native function, but did not find a function reference or callback."
+            )
 
       case Apply(Select(Ident(maybeEnv), funcName), args) if envVarName.isDefined && maybeEnv == envVarName.get =>
         ShaderAST.CallExternalFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
@@ -1185,11 +1187,16 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             val lhs = walkTerm(term, envVarName)
             val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
             val rt  = findReturnType(lhs)
-            ShaderAST.CallFunction(
-              "mod",
-              List(lhs, rhs),
-              rt
-            )
+
+            val isInt = List(lhs.typeIdent, rhs.typeIdent, rt.typeIdent).map(_.id).contains("int")
+
+            if isInt then ShaderAST.Infix("%", lhs, rhs, rt)
+            else
+              ShaderAST.CallFunction(
+                "mod",
+                List(lhs, rhs),
+                rt
+              )
 
           case _ =>
             throw ShaderError.Unsupported("Shaders do not support infix operator: " + op)
@@ -1206,11 +1213,16 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             val lhs = walkTerm(l, envVarName)
             val rhs = walkTerm(r, envVarName)
             val rt  = findReturnType(lhs)
-            ShaderAST.CallFunction(
-              "mod",
-              List(lhs, rhs),
-              rt
-            )
+
+            val isInt = List(lhs.typeIdent, rhs.typeIdent, rt.typeIdent).map(_.id).contains("int")
+
+            if isInt then ShaderAST.Infix("%", lhs, rhs, rt)
+            else
+              ShaderAST.CallFunction(
+                "mod",
+                List(lhs, rhs),
+                rt
+              )
 
           case _ =>
             throw ShaderError.Unsupported("Shaders do not support infix operator: " + op)

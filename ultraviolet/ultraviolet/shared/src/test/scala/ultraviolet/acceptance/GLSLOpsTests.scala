@@ -5,7 +5,7 @@ import ultraviolet.syntax.*
 
 class GLSLOpsTests extends munit.FunSuite {
 
-  test("modulus") {
+  test("Will convert % to mod() for Float types") {
 
     inline def fragment =
       Shader {
@@ -30,6 +30,32 @@ class GLSLOpsTests extends munit.FunSuite {
       |  float y=2.0;
       |  float z=mod(10.0,y);
       |  float w=1.0;
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
+  test("Will retain % for Int types") {
+
+    inline def fragment =
+      Shader {
+        def main: Unit =
+          val i: Int = 10
+          val x: Int = i % 3
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |void main(){
+      |  int i=10;
+      |  int x=i%3;
       |}
       |""".stripMargin.trim
     )
