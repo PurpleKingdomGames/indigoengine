@@ -18,3 +18,5 @@ metals.sbt
 .bsp
 node_modules/
 credentials.sh
+.direnv
+.envrc
