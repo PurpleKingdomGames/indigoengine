@@ -42,15 +42,15 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
   val terminal: TerminalEmulator =
     TerminalEmulator(Size(3, 3))
       .put(
-        Point(0, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 0) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 1) -> MapTile(Tile.`@`, RGB.Magenta),
-        Point(2, 1) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(0, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(1, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue),
-        Point(2, 2) -> MapTile(Tile.`░`, RGB.Cyan, RGBA.Blue)
+        Point(0, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(1, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(2, 0) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(0, 1) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(1, 1) -> MapTile(Tile.`@`, RGBA.Magenta),
+        Point(2, 1) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(0, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(1, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue),
+        Point(2, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue)
       )
 
   val entity =

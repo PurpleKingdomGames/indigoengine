@@ -26,7 +26,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
       BootResult
         .noData(
           GameConfig.default
-            .withMagnification(1)
+            .withMagnification(2)
             .withFrameRateLimit(FPS.`60`)
         )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)

@@ -42,15 +42,15 @@ object CloneTilesScene extends Scene[Unit, Unit, Unit]:
   val terminal: TerminalEmulator =
     TerminalEmulator(Size(3, 3))
       .put(
-        Point(0, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(1, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(2, 0) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(0, 1) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(1, 1) -> MapTile(Tile.`@`, RGB.Cyan),
-        Point(2, 1) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(0, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(1, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange),
-        Point(2, 2) -> MapTile(Tile.`░`, RGB.Yellow, RGBA.Orange)
+        Point(0, 0) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(1, 0) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(2, 0) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(0, 1) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(1, 1) -> MapTile(Tile.`@`, RGBA.Cyan),
+        Point(2, 1) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(0, 2) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(1, 2) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
+        Point(2, 2) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange)
       )
 
   def present(

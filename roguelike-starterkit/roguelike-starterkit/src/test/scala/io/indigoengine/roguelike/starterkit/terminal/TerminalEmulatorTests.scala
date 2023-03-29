@@ -15,7 +15,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(Point(1, 1), Tile.`@`)
 
     val expected =
-      Option(MapTile(Tile.`@`, RGB.White, RGBA.Zero))
+      Option(MapTile(Tile.`@`, RGBA.White, RGBA.Zero))
 
     val actual =
       console.get(Point(1))
@@ -59,7 +59,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
   test("should be able insert a line of text") {
     val console =
       TerminalEmulator(Size(10))
-        .putLine(Point(1, 3), "Hello", RGB.Red, RGBA.Blue)
+        .putLine(Point(1, 3), "Hello", RGBA.Red, RGBA.Blue)
 
     val actual =
       Batch(
@@ -72,11 +72,11 @@ class TerminalEmulatorTests extends munit.FunSuite {
 
     val expected =
       Batch(
-        MapTile(Tile.`H`, RGB.Red, RGBA.Blue),
-        MapTile(Tile.`e`, RGB.Red, RGBA.Blue),
-        MapTile(Tile.`l`, RGB.Red, RGBA.Blue),
-        MapTile(Tile.`l`, RGB.Red, RGBA.Blue),
-        MapTile(Tile.`o`, RGB.Red, RGBA.Blue)
+        MapTile(Tile.`H`, RGBA.Red, RGBA.Blue),
+        MapTile(Tile.`e`, RGBA.Red, RGBA.Blue),
+        MapTile(Tile.`l`, RGBA.Red, RGBA.Blue),
+        MapTile(Tile.`l`, RGBA.Red, RGBA.Blue),
+        MapTile(Tile.`o`, RGBA.Red, RGBA.Blue)
       )
 
     assertEquals(actual, expected)
@@ -242,7 +242,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(Point(40, 25), Tile.`@`)
 
     val expected =
-      Option(MapTile(Tile.`@`, RGB.White, RGBA.Zero))
+      Option(MapTile(Tile.`@`, RGBA.White, RGBA.Zero))
 
     val actual =
       console.get(Point(40, 25))

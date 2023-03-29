@@ -19,11 +19,11 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
       }
     })
 
-  def put(coords: Point, tile: Tile, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+  def put(coords: Point, tile: Tile, fgColor: RGBA, bgColor: RGBA): TerminalEmulator =
     this.copy(charMap =
       charMap.insertElement(MapTile(tile, fgColor, bgColor), Vertex.fromPoint(coords))
     )
-  def put(coords: Point, tile: Tile, fgColor: RGB): TerminalEmulator =
+  def put(coords: Point, tile: Tile, fgColor: RGBA): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile, fgColor), Vertex.fromPoint(coords)))
   def put(coords: Point, tile: Tile): TerminalEmulator =
     this.copy(charMap = charMap.insertElement(MapTile(tile), Vertex.fromPoint(coords)))
@@ -36,7 +36,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     put(Batch(coords -> mapTile))
 
   // TODO: Wrap text if too long for line
-  def putLine(startCoords: Point, text: String, fgColor: RGB, bgColor: RGBA): TerminalEmulator =
+  def putLine(startCoords: Point, text: String, fgColor: RGBA, bgColor: RGBA): TerminalEmulator =
     val tiles: Batch[(Point, MapTile)] =
       Batch.fromArray(text.toCharArray).zipWithIndex.map { case (c, i) =>
         Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
@@ -52,7 +52,7 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def putLines(
       startCoords: Point,
       textLines: Batch[String],
-      fgColor: RGB,
+      fgColor: RGBA,
       bgColor: RGBA
   ): TerminalEmulator =
     @tailrec
@@ -115,11 +115,11 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def toCloneTiles(
       position: Point,
       charCrops: Batch[(Int, Int, Int, Int)]
-  )(makeBlank: (RGB, RGBA) => Cloneable): TerminalClones =
-    val makeId: (RGB, RGBA) => CloneId = (rgb, rgba) =>
-      CloneId(s"""term_cb_${rgb.hashCode}_${rgba.hashCode}""")
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
+      CloneId(s"""term_cb_${fg.hashCode}_${bg.hashCode}""")
 
-    val combinations: Batch[((CloneId, RGB, RGBA), Batch[(Point, MapTile)])] =
+    val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
       Batch.fromMap(
         toPositionedBatch
           .groupBy(p =>

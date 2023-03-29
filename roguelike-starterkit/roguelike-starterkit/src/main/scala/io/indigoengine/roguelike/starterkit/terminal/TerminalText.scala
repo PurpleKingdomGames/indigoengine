@@ -1,27 +1,36 @@
 package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.*
+import indigo.syntax.shaders.*
 
 final case class TerminalText(
     tileMap: AssetName,
-    foreground: RGB,
+    foreground: RGBA,
     background: RGBA,
+    shadow: RGBA,
     mask: RGBA,
     shaderId: Option[ShaderId]
 ) extends Material:
 
-  def withForeground(newColor: RGB): TerminalText =
+  def withForeground(newColor: RGBA): TerminalText =
     this.copy(foreground = newColor)
+  def withForeground(newColor: RGB): TerminalText =
+    withForeground(newColor.toRGBA)
 
   def withBackground(newColor: RGBA): TerminalText =
     this.copy(background = newColor)
   def withBackground(newColor: RGB): TerminalText =
-    this.copy(background = newColor.toRGBA)
+    withBackground(newColor.toRGBA)
+
+  def withDropShadow(newColor: RGBA): TerminalText =
+    this.copy(shadow = newColor)
+  def withDropShadow(newColor: RGB): TerminalText =
+    withDropShadow(newColor.toRGBA)
 
   def withMask(newColor: RGBA): TerminalText =
     this.copy(mask = newColor)
   def withMask(newColor: RGB): TerminalText =
-    this.copy(mask = newColor.toRGBA)
+    withMask(newColor.toRGBA)
 
   def withShaderId(newShaderId: ShaderId): TerminalText =
     this.copy(shaderId = Option(newShaderId))
@@ -33,9 +42,10 @@ final case class TerminalText(
         UniformBlock(
           UniformBlockName("RogueLikeTextData"),
           Batch(
-            Uniform("FOREGROUND") -> vec3(foreground.r, foreground.g, foreground.b),
-            Uniform("BACKGROUND") -> vec4(background.r, background.g, background.b, background.a),
-            Uniform("MASK")       -> vec4(mask.r, mask.g, mask.b, mask.a)
+            Uniform("FOREGROUND") -> foreground.asVec4,
+            Uniform("BACKGROUND") -> background.asVec4,
+            Uniform("SHADOW")     -> shadow.asVec4,
+            Uniform("MASK")       -> mask.asVec4
           )
         )
       ),
@@ -54,8 +64,12 @@ object TerminalText:
     ShaderId("roguelike standard terminal text")
 
   def standardShader: UltravioletShader =
-    UltravioletShader.entityFragment(
+    UltravioletShader(
       shaderId,
+      EntityShader.vertex(
+        ShaderImpl.vert,
+        VertexEnv.reference
+      ),
       EntityShader.fragment[ShaderImpl.Env](
         ShaderImpl.frag,
         ShaderImpl.Env.ref
@@ -63,50 +77,92 @@ object TerminalText:
     )
 
   def apply(tileMap: AssetName): TerminalText =
-    TerminalText(tileMap, RGB.White, RGBA.Zero, defaultMask, None)
+    TerminalText(tileMap, RGBA.White, RGBA.Zero, RGBA.Zero, defaultMask, None)
 
-  def apply(tileMap: AssetName, color: RGB): TerminalText =
-    TerminalText(tileMap, color, RGBA.Zero, defaultMask, None)
+  def apply(tileMap: AssetName, color: RGBA): TerminalText =
+    TerminalText(tileMap, color, RGBA.Zero, RGBA.Zero, defaultMask, None)
 
-  def apply(tileMap: AssetName, foreground: RGB, background: RGBA): TerminalText =
-    TerminalText(tileMap, foreground, background, defaultMask, None)
+  def apply(tileMap: AssetName, foreground: RGBA, background: RGBA): TerminalText =
+    TerminalText(tileMap, foreground, background, background, defaultMask, None)
 
-  def apply(tileMap: AssetName, foreground: RGB, background: RGBA, mask: RGBA): TerminalText =
-    TerminalText(tileMap, foreground, background, mask, None)
+  def apply(tileMap: AssetName, foreground: RGBA, background: RGBA, shadow: RGBA): TerminalText =
+    TerminalText(tileMap, foreground, background, shadow, defaultMask, None)
+
+  def apply(
+      tileMap: AssetName,
+      foreground: RGBA,
+      background: RGBA,
+      shadow: RGBA,
+      mask: RGBA
+  ): TerminalText =
+    TerminalText(tileMap, foreground, background, shadow, mask, None)
 
   object ShaderImpl:
 
     import ultraviolet.syntax.*
 
     final case class Env(
-        FOREGROUND: vec3,
+        FOREGROUND: vec4,
         BACKGROUND: vec4,
+        SHADOW: vec4,
         MASK: vec4
     ) extends FragmentEnvReference
 
     object Env:
       val ref =
-        Env(vec3(0.0f), vec4(0.0f), vec4(0.0f))
+        Env(vec4(0.0f), vec4(0.0f), vec4(0.0f), vec4(0.0f))
 
     final case class RogueLikeTextData(
-        FOREGROUND: vec3,
+        FOREGROUND: vec4,
         BACKGROUND: vec4,
+        SHADOW: vec4,
         MASK: vec4
     )
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+    inline def vert: Shader[VertexEnv, Unit] =
+      Shader { env =>
+        @out var v_shadowLookupCoord: vec2 = null
+
+        def vertex(v: vec4): vec4 =
+          // Create a look-up pointing at the pixel diagonally up and left from the current one,
+          // and pass it to the fragment shader.
+          val onePixel: vec2 = vec2(1.0f) / env.SIZE
+          val adjustedUV     = env.UV + (onePixel * vec2(-1.0f, -1.0f))
+          v_shadowLookupCoord =
+            clamp((adjustedUV * env.FRAME_SIZE) + env.CHANNEL_0_ATLAS_OFFSET, vec2(0.0), vec2(1.0f))
+
+          v
+      }
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     inline def frag: Shader[Env, Unit] =
       Shader[Env] { env =>
         ubo[RogueLikeTextData]
 
-        def fragment(color: vec4): vec4 =
-          val maskDiff: Boolean = abs(env.CHANNEL_0.x - env.MASK.x) < 0.001f &&
-            abs(env.CHANNEL_0.y - env.MASK.y) < 0.001f &&
-            abs(env.CHANNEL_0.z - env.MASK.z) < 0.001f &&
-            abs(env.CHANNEL_0.w - env.MASK.w) < 0.001f
+        @in val v_shadowLookupCoord: vec2 = null
 
-          if (maskDiff) {
-            env.BACKGROUND
-          } else {
-            vec4(env.CHANNEL_0.rgb * (env.FOREGROUND.rgb * env.CHANNEL_0.a), env.CHANNEL_0.a)
-          }
+        def isBackgroundColor(color: vec4): Boolean =
+          abs(color.x - env.MASK.x) < 0.001f &&
+            abs(color.y - env.MASK.y) < 0.001f &&
+            abs(color.z - env.MASK.z) < 0.001f &&
+            abs(color.w - env.MASK.w) < 0.001f
+
+        def isForgroundColor(color: vec4): Boolean =
+          abs(color.x - env.MASK.x) > 0.001f ||
+            abs(color.y - env.MASK.y) > 0.001f ||
+            abs(color.z - env.MASK.z) > 0.001f ||
+            abs(color.w - env.MASK.w) > 0.001f
+
+        def fragment(color: vec4): vec4 =
+          val isBackground: Boolean = isBackgroundColor(env.CHANNEL_0)
+
+          val isShadow: Boolean =
+            isBackground && isForgroundColor(texture2D(env.SRC_CHANNEL, v_shadowLookupCoord))
+
+          if isShadow then vec4(env.SHADOW.rgb * env.SHADOW.a, env.SHADOW.a)
+          else if isBackground then vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
+          else
+            val alpha = env.CHANNEL_0.a * env.FOREGROUND.a
+            vec4(env.CHANNEL_0.rgb * (env.FOREGROUND.rgb * alpha), alpha)
       }
