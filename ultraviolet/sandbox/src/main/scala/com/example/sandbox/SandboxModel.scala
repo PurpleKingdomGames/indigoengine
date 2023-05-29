@@ -105,7 +105,7 @@ object SandboxModel {
       )
 
     case Loaded(_, loadedData) =>
-      Outcome(state.copy(data = Some(loadedData)))
+      Outcome(state.copy(data = loadedData))
 
     case _ =>
       Outcome(state)
