@@ -52,7 +52,8 @@ class GLSLExternalTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { env =>
-        vec4(fn1(1.0f), fn2(1.0f))
+        val proxy: Float => vec2 = fn2
+        vec4(fn1(1.0f), proxy(1.0f))
       }
 
     val actual =
@@ -84,7 +85,8 @@ class GLSLExternalTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { env =>
-        vec4(fn1(1.0f, 0.25f), fn2(0.5f, 1.0f))
+        val proxy: (Float, Float) => vec2 = fn2
+        vec4(fn1(1.0f, 0.25f), proxy(0.5f, 1.0f))
       }
 
     val actual =
@@ -250,7 +252,10 @@ class GLSLExternalTests extends munit.FunSuite {
         val entitySize: vec2                    = vec2(5.0)
         val textureSize: vec2                   = vec2(6.0)
 
-        tileAndStretchChannelFn(
+        val proxy: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+          tileAndStretchChannelFn
+
+        proxy(
           fillType,    // env.FILLTYPE.toInt,
           fallback,    // env.CHANNEL_0,
           srcChannel,  // env.SRC_CHANNEL,

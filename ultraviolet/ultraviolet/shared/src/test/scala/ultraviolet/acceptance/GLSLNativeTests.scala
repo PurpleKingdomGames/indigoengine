@@ -43,7 +43,9 @@ class GLSLNativeTests extends munit.FunSuite {
       Shader[FragEnv, Float] { env =>
         val x = 1.0f
 
-        circleSdf(vec2(x, 2.0), 3.0)
+        val proxy: (vec2, Float) => Float = circleSdf
+
+        proxy(vec2(x, 2.0), 3.0)
       }
 
     val actual =

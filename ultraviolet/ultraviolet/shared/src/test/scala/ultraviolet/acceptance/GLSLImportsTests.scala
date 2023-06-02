@@ -13,13 +13,15 @@ class GLSLImportsTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, Int] =
       Shader { _ =>
+        val proxy: Int => Int = addOneAnon
+
         val value = 10
-        addOneAnon(value)
+        proxy(value)
         addOneInline(value)
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput.code
+      fragment.toGLSL[WebGL2](false).toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

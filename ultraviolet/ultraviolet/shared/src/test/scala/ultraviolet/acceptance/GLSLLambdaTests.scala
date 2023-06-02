@@ -23,10 +23,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec4 def0(in float r,in float g){
-      |  return vec4(r,g,0.0,1.0);
-      |}
-      |def0(10.0,20.0);
+      |vec4(10.0,20.0,0.0,1.0);
       |""".stripMargin.trim
     )
   }
@@ -51,25 +48,19 @@ class GLSLLambdaTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec4 def0(in float r,in float g){
-      |  return vec4(r,g,0.0,1.0);
-      |}
-      |vec2 def1(in float v){
+      |vec2 def0(in float v){
       |  return vec2(v);
       |}
-      |vec4 def2(in vec2 vv){
+      |vec4 def1(in vec2 vv){
       |  return vec4(vv,vv);
       |}
-      |vec4 def3(in float val0){
-      |  return def2(def1(val0));
-      |}
-      |vec4 def4(in float b){
-      |  return vec4(vec2(1.0),b,0.5);
+      |vec4 def2(in float val0){
+      |  return def1(def0(val0));
       |}
       |void main(){
-      |  vec4 p=def0(10.0,20.0);
-      |  vec4 q=def3(1.0);
-      |  (def4(30.0)+p)+q;
+      |  vec4 p=vec4(10.0,20.0,0.0,1.0);
+      |  vec4 q=def2(1.0);
+      |  (vec4(vec2(1.0),30.0,0.5)+p)+q;
       |}
       |""".stripMargin.trim
     )

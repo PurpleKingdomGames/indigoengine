@@ -309,8 +309,9 @@ class ShaderTests extends munit.FunSuite {
       }
 
     inline def calc: Shader[UBO1, vec2] =
+      val _base: Float => Shader[UBO1, vec4] = base
       for
-        a <- base(20.0f)
+        a <- _base(20.0f)
         b <- toVec2(a)
       yield b + 1.0f
 
@@ -375,8 +376,9 @@ class ShaderTests extends munit.FunSuite {
       }
 
     inline def shader: Shader[UBO1, vec2] =
+      val _base: Float => Shader[UBO1, vec4] = base
       for
-        a <- base(20.0f)
+        a <- _base(20.0f)
         b <- toVec2(a)
       yield b + 1.0f
 
@@ -422,17 +424,18 @@ class ShaderTests extends munit.FunSuite {
   test("Shader's can run functions that embed other shaders") {
 
     inline def modifyVertex: vec4 => Shader[Unit, vec4] =
-      (input: vec4) =>
+      (vtx: vec4) =>
         Shader[Unit, vec4] { _ =>
-          input + vec4(1.0f)
+          vtx + vec4(1.0f)
         }
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
     inline def shader(inline f: vec4 => Shader[Unit, vec4]): Shader[Unit, Unit] =
       Shader {
+        val _f: vec4 => Shader[Unit, vec4] = f
         var VERTEX: vec4 = null
         def vertex: Unit =
-          VERTEX = f(VERTEX).run(())
+          VERTEX = _f(VERTEX).run(())
       }
 
     val actualCode =
@@ -444,8 +447,8 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
-      |vec4 def0(in vec4 input){
-      |  return input+vec4(1.0);
+      |vec4 def0(in vec4 vtx){
+      |  return vtx+vec4(1.0);
       |}
       |vec4 VERTEX;
       |void vertex(){
@@ -490,9 +493,9 @@ class ShaderTests extends munit.FunSuite {
   test("Shaders can be create from within a companion (inlined)") {
 
     inline def modifyVertex: vec4 => Shader[Foo.Env, vec4] =
-      (input: vec4) =>
+      (vtx: vec4) =>
         Shader[Foo.Env, vec4] { _ =>
-          input + vec4(1.0f)
+          vtx + vec4(1.0f)
         }
 
     inline def actualCode =
@@ -504,8 +507,8 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
-      |vec4 def0(in vec4 input){
-      |  return input+vec4(1.0);
+      |vec4 def0(in vec4 vtx){
+      |  return vtx+vec4(1.0);
       |}
       |vec4 VERTEX;
       |void vertex(){
@@ -518,7 +521,10 @@ class ShaderTests extends munit.FunSuite {
   test("Shaders can be create from within a companion (inlined + converted)") {
 
     inline def modifyVertex: vec4 => Shader[Foo.Env, vec4] =
-      (input: vec4) => Shader[Foo.Env, vec4](_ => input + vec4(1.0f))
+      (vtx: vec4) =>
+        Shader[Foo.Env, vec4] { _ =>
+          vtx + vec4(1.0f)
+        }
 
     val actualCode =
       Foo.shaderResult(modifyVertex).toOutput.code
@@ -529,8 +535,8 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(
       actualCode,
       s"""
-      |vec4 def0(in vec4 input){
-      |  return input+vec4(1.0);
+      |vec4 def0(in vec4 vtx){
+      |  return vtx+vec4(1.0);
       |}
       |vec4 VERTEX;
       |void vertex(){
@@ -552,8 +558,12 @@ class ShaderTests extends munit.FunSuite {
     inline def modifyColor: vec4 => ultraviolet.syntax.Shader[Foo.Env, vec4] =
       _ =>
         Shader[Foo.Env, vec4] { env =>
-          val sdf = circleSdf(env.UV - 0.5f, 0.5f)
-          calculateColour(env.UV, sdf)
+          // Proxies to external fns
+          val _circleSdf: (vec2, Float) => Float      = circleSdf
+          val _calculateColour: (vec2, Float) => vec4 = calculateColour
+
+          val sdf = _circleSdf(env.UV - 0.5f, 0.5f)
+          _calculateColour(env.UV, sdf)
         }
 
     val actualCode =
@@ -634,9 +644,10 @@ object Foo {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def shader(inline f: vec4 => Shader[Env, vec4]): Shader[Env2, Unit] =
     Shader[Env2] { env =>
-      var VERTEX: vec4 = null
+      val _f: vec4 => Shader[Env, vec4] = f
+      var VERTEX: vec4                  = null
       def vertex: Unit =
-        VERTEX = f(VERTEX).run(Env(0, vec2(0.0f)))
+        VERTEX = _f(VERTEX).run(Env(0, vec2(0.0f)))
     }
 
   inline def shaderResult(inline f: vec4 => Shader[Env, vec4]): ShaderResult =
