@@ -1,3 +1,5 @@
+# Specifically ignore the massive main.js file in the Indigo + electron example
+examples/indigo-shader-scala-cli/app/scripts/main.js
 
 *.class
 *.log
