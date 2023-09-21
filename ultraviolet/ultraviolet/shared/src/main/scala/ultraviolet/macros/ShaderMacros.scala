@@ -4,12 +4,9 @@ import ultraviolet.datatypes.ProceduralShader
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.datatypes.ShaderError
-import ultraviolet.datatypes.UBODef
-import ultraviolet.datatypes.UBOField
 import ultraviolet.syntax.*
 
 import java.io.File
-import scala.annotation.tailrec
 import scala.io.Source
 import scala.quoted.*
 

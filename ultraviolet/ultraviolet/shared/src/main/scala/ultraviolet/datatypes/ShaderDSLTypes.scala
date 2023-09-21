@@ -1,5 +1,6 @@
 package ultraviolet.datatypes
 
+import scala.annotation.nowarn
 import scala.reflect.ClassTag
 
 trait ShaderDSLTypes:
@@ -241,6 +242,7 @@ trait ShaderDSLTypes:
   case object sampler2D
   case object samplerCube
 
+  @nowarn("msg=unused")
   final case class array[L <: Singleton, T](private val arr: Array[T])(using convert: L => Int):
     def length: Int       = arr.length
     def update(i: Int, value: T): Unit =

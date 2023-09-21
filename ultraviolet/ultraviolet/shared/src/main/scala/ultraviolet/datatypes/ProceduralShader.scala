@@ -1,9 +1,5 @@
 package ultraviolet.datatypes
 
-import ultraviolet.datatypes.ShaderHeader
-
-import scala.annotation.tailrec
-import scala.deriving.Mirror
 import scala.quoted.*
 
 final case class ProceduralShader(

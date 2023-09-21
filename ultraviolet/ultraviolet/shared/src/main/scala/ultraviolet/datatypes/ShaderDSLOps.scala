@@ -1,7 +1,5 @@
 package ultraviolet.datatypes
 
-import scala.annotation.targetName
-
 /** Incomplete list of implementations for common built in GLSL operations.
   *
   * The full list is here: https://registry.khronos.org/OpenGL-Refpages/gl4/html/

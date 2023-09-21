@@ -1,9 +1,8 @@
 package ultraviolet.datatypes
 
-import ultraviolet.datatypes.ShaderHeader
 import ultraviolet.macros.ShaderMacros
 
-import scala.deriving.Mirror
+import scala.annotation.nowarn
 
 /** A `Shader` is a program that can be run on a graphics card as part of the rendering pipeline.
   */
@@ -12,6 +11,8 @@ opaque type Shader[In, Out] = In => Out
 object Shader:
   inline def apply[In, Out](f: In => Out): Shader[In, Out] = f
   inline def apply[In](f: In => Unit): Shader[In, Unit]    = f
+
+  @nowarn("msg=discarded")
   inline def apply(body: => Any): Shader[Unit, Unit]       = (_: Unit) => body
 
   /** `fromFile` allows you to load raw GLSL code from a file at compile time to produce a shader.

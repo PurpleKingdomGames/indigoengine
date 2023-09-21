@@ -5,6 +5,7 @@ import ultraviolet.datatypes.ShaderHeader
 import ultraviolet.macros.UBOReader
 
 import scala.annotation.StaticAnnotation
+import scala.annotation.nowarn
 import scala.deriving.Mirror
 
 object syntax extends ShaderDSLOps:
@@ -53,6 +54,8 @@ object syntax extends ShaderDSLOps:
   final class define                extends StaticAnnotation
   final class flat                  extends StaticAnnotation
   final class in                    extends StaticAnnotation
+
+  @nowarn("msg=unused")
   final class layout(location: Int) extends StaticAnnotation
   final class noPerspective         extends StaticAnnotation
   final class out                   extends StaticAnnotation

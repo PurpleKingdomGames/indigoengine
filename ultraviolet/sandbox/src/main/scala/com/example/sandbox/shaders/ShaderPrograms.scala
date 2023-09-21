@@ -2,6 +2,8 @@ package com.example.sandbox.shaders
 
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object ShaderPrograms:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -16,6 +18,7 @@ object ShaderPrograms:
 
   val frag1: String = fragment1.toGLSL[WebGL2].toOutput.code
 
+  @nowarn
   inline def fragment2 =
     Shader[FragEnv] { env =>
       def circleSdf(p: vec2, r: Float): Float =

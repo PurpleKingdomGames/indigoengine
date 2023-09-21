@@ -5,8 +5,6 @@ import indigoextras.ui.InputFieldChange
 
 object SandboxModel {
 
-  private given CanEqual[Option[String], Option[String]] = CanEqual.derived
-
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),

@@ -5,8 +5,6 @@ import indigo.*
 import indigo.json.Json
 import indigo.scenes.*
 import indigo.syntax.*
-import indigoextras.geometry.Polygon
-import indigoextras.geometry.Vertex
 import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 
@@ -120,13 +118,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
         Graphic(0, 0, 16, 16, 2, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
           .withCrop(188, 78, 14, 23)
-      )
-
-    val buttonAssets: ButtonAssets =
-      ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(0, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 0, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 16, 16, 16)
       )
 
     Outcome(

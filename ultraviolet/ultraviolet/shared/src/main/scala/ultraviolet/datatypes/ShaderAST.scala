@@ -1,7 +1,6 @@
 package ultraviolet.datatypes
 
 import scala.annotation.tailrec
-import scala.deriving.Mirror
 import scala.quoted.*
 
 sealed trait ShaderAST derives CanEqual

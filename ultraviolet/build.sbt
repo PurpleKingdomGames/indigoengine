@@ -1,13 +1,14 @@
 import scala.language.postfixOps
 import Misc._
 import Dependencies._
+import org.typelevel.scalacoptions.ScalacOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val scala3Version = "3.3.0"
+val scala3Version = "3.3.1"
 
 ThisBuild / versionScheme                                  := Some("early-semver")
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val ultravioletVersion = "0.1.3-SNAPSHOT"
@@ -22,7 +23,12 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
   autoAPIMappings   := true,
-  logo              := name.value
+  logo              := name.value,
+  Test / tpolecatExcludeOptions ++= Set(
+    ScalacOptions.warnValueDiscard,
+    ScalacOptions.warnUnusedImports,
+    ScalacOptions.warnUnusedLocals
+  )
 )
 
 lazy val neverPublish = Seq(
