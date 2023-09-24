@@ -305,6 +305,61 @@ class GLSLExternalTests extends munit.FunSuite {
 
   }
 
+  test("Inlined external def function with ignored argument") {
+    inline def modifyColorNamed: vec4 => Shader[Unit, vec4] =
+      inputColor =>
+        Shader[Unit, vec4] { env =>
+          vec4(2.0)
+        }
+
+    inline def fragmentNamed =
+      Shader {
+        modifyColorNamed(vec4(1.0)).run(())
+      }
+
+    val actualNamed =
+      fragmentNamed.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actualNamed,
+      s"""
+      |vec4 inputColor=vec4(1.0);
+      |vec4(2.0);
+      |""".stripMargin.trim
+    )
+
+    inline def modifyColorAnon: vec4 => Shader[Unit, vec4] =
+      _ =>
+        Shader[Unit, vec4] { env =>
+          vec4(2.0)
+        }
+
+    inline def fragmentAnon =
+      Shader {
+        modifyColorAnon(vec4(1.0)).run(())
+      }
+
+    val actualAnon =
+      fragmentAnon.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actualAnon,
+      s"""
+      |vec4 def0(){
+      |  return vec4(2.0);
+      |}
+      |def0();
+      |""".stripMargin.trim
+    )
+
+  }
+
 }
 
 object TileAndStretch:

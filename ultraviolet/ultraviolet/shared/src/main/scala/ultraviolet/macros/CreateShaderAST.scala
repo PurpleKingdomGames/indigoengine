@@ -124,6 +124,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         case ValDef(name, _, Some(Ident(_))) if name.contains("$proxy") =>
           true
 
+        case ValDef(name, _, Some(_)) =>
+          name.contains("$proxy") || name.matches("""_\$[0-9]+""")
+
         case _ =>
           false
       }
