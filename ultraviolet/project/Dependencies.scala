@@ -5,7 +5,7 @@ object Dependencies {
 
   object Versions {
     val munit  = "0.7.29"
-    val indigo = "0.15.0-RC3"
+    val indigo = "0.15.0"
   }
 
   object Shared {

@@ -2,6 +2,7 @@ import scala.language.postfixOps
 import Misc._
 import Dependencies._
 import org.typelevel.scalacoptions.ScalacOptions
+import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -77,15 +78,14 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name                  := "sandbox",
-      showCursor            := true,
-      title                 := "Sandbox",
-      gameAssetsDirectory   := "assets",
-      disableFrameRateLimit := false,
-      electronInstall       := indigoplugin.ElectronInstall.Latest,
+      name := "sandbox",
       libraryDependencies ++= Shared.indigo.value,
       libraryDependencies ++= Shared.indigoExtras.value,
-      libraryDependencies ++= Shared.indigoJson.value
+      libraryDependencies ++= Shared.indigoJson.value,
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Sandbox")
+          .withAssetDirectory(os.RelPath.rel / "sandbox" / "assets")
     )
 
 // Shader

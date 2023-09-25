@@ -1,9 +1,9 @@
-//> using scala "3.3.0"
+//> using scala "3.3.1"
 //> using platform "js"
-//> using jsVersion "1.13.1"
+//> using jsVersion "1.13.2"
 
-//> using lib "io.indigoengine::ultraviolet::0.1.2"
-//> using lib "io.indigoengine::indigo::0.15.0-RC1"
+//> using lib "io.indigoengine::ultraviolet::0.1.3"
+//> using lib "io.indigoengine::indigo::0.15.0"
 
 import indigo.*
 
@@ -16,6 +16,7 @@ object SimpleVoronoi extends IndigoShader:
     GameConfig.default
       .withFrameRateLimit(FPS.`60`)
       .withViewport(400, 400)
+      .noResize
 
   val assets: Set[AssetType]      = Set()
   val channel0: Option[AssetPath] = None

@@ -2,6 +2,7 @@ import scala.sys.process._
 import scala.language.postfixOps
 
 import sbtwelcome._
+import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -15,7 +16,7 @@ lazy val mygame =
     .settings( // Normal SBT settings
       name         := "ultravioletexample",
       version      := "0.0.1",
-      scalaVersion := "3.3.0",
+      scalaVersion := "3.3.1",
       organization := "example",
       libraryDependencies ++= Seq(
         "org.scalameta" %%% "munit" % "0.7.29" % Test
@@ -25,20 +26,18 @@ lazy val mygame =
       semanticdbEnabled := true,
       semanticdbVersion := scalafixSemanticdb.revision
     )
-    .settings( // Indigo specific settings
-      showCursor            := true,
-      title                 := "Ultraviolet Example",
-      gameAssetsDirectory   := "assets",
-      windowStartWidth      := 400,
-      windowStartHeight     := 400,
-      disableFrameRateLimit := false,
-      electronInstall       := indigoplugin.ElectronInstall.Latest,
-      backgroundColor       := "black",
+    .settings( // Indigo specific settings,
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Ultraviolet Example")
+          .withAssetDirectory(os.RelPath.rel / "assets")
+          .withWindowSize(400, 400)
+          .withBackgroundColor("black"),
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % "0.15.0-RC1",
-        "io.indigoengine" %%% "indigo"            % "0.15.0-RC1",
-        "io.indigoengine" %%% "indigo-extras"     % "0.15.0-RC1",
-        "io.indigoengine" %%% "ultraviolet"       % "0.1.2"
+        "io.indigoengine" %%% "indigo-json-circe" % "0.15.0",
+        "io.indigoengine" %%% "indigo"            % "0.15.0",
+        "io.indigoengine" %%% "indigo-extras"     % "0.15.0",
+        "io.indigoengine" %%% "ultraviolet"       % "0.1.3"
       )
     )
     .settings(
@@ -57,7 +56,10 @@ lazy val mygame =
         UsefulTask("runGame", "Run the game").noAlias,
         UsefulTask("buildGame", "Build web version").noAlias,
         UsefulTask("runGameFull", "Run the fully optimised game").noAlias,
-        UsefulTask("buildGameFull", "Build the fully optimised web version").noAlias,
+        UsefulTask(
+          "buildGameFull",
+          "Build the fully optimised web version"
+        ).noAlias,
         UsefulTask("code", "Launch VSCode").noAlias
       ),
       logoColor        := scala.Console.MAGENTA,
