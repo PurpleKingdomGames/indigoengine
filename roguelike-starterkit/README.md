@@ -12,7 +12,7 @@ An early version of this code was used to build the [follow along examples](http
 
 Add the following dependency to your Indigo based game project (alongside the usual indigo ones):
 
-`"io.indigoengine" %%% "roguelike-starterkit" % "0.1.0"`
+`"io.indigoengine" %%% "roguelike-starterkit" % "0.3.0"`
 
 Everything can be accessed via this import:
 
