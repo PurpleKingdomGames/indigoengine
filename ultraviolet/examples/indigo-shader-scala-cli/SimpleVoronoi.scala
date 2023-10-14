@@ -1,6 +1,6 @@
 //> using scala "3.3.1"
 //> using platform "js"
-//> using jsVersion "1.13.2"
+//> using jsVersion "1.14.0"
 
 //> using lib "io.indigoengine::ultraviolet::0.1.3"
 //> using lib "io.indigoengine::indigo::0.15.0"
