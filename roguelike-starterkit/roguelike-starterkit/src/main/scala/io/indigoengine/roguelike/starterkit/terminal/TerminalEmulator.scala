@@ -11,7 +11,7 @@ import scala.annotation.tailrec
 
 final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
-  private val coordsBatch: Batch[Point] =
+  private lazy val coordsBatch: Batch[Point] =
     Batch.fromIndexedSeq((0 until screenSize.height).flatMap { y =>
       (0 until screenSize.width).map { x =>
         Point(x, y)
@@ -33,6 +33,11 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     put(Batch.fromSeq(tiles))
   def put(coords: Point, mapTile: MapTile): TerminalEmulator =
     put(Batch(coords -> mapTile))
+
+  def fill(mapTile: MapTile): TerminalEmulator =
+    this.copy(
+      charMap = charMap.insertElements(coordsBatch.map(pt => mapTile -> pt.toVertex))
+    )
 
   // TODO: Wrap text if too long for line
   def putLine(startCoords: Point, text: String, fgColor: RGBA, bgColor: RGBA): TerminalEmulator =
