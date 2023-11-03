@@ -112,11 +112,12 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     }
 
   def toCloneTiles(
+      idPrefix: CloneId,
       position: Point,
       charCrops: Batch[(Int, Int, Int, Int)]
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
     val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
-      CloneId(s"""term_cb_${fg.hashCode}_${bg.hashCode}""")
+      CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
 
     val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
       Batch.fromMap(
