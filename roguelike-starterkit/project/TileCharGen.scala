@@ -14,7 +14,7 @@ object TileCharGen {
     s"""  object Fonts {
     |
     |    val fontKey: FontKey = FontKey("DF-Roguelike Font ${charWidth.toString()}x${charHeight
-      .toString()}")
+        .toString()}")
     |
     |    val fontInfo: FontInfo =
     |      FontInfo(fontKey, $sheetWidth, $sheetHeight, FontChar(" ", 0, 0, ${charWidth.toString}, ${charHeight.toString})).isCaseSensitive
@@ -59,7 +59,6 @@ object TileCharGen {
   def templateTile(fullyQualifiedPath: String, chars: List[CharDetail]): String = {
     val charString =
       chars
-        .filterNot(cd => cd.index == 0 || cd.index == 255)
         .map { cd =>
           val c = cd.char match {
             case '\\' => None
@@ -70,8 +69,8 @@ object TileCharGen {
           }
 
           s"""  ${c
-            .map(cc => s"val `$cc`: Tile = ${cd.index.toString}")
-            .getOrElse("// Reserved char")}
+              .map(cc => s"val `$cc`: Tile = ${cd.index.toString}")
+              .getOrElse("// Reserved char")}
           |  val ${cd.name}: Tile = ${cd.index.toString}
           |""".stripMargin
         }
@@ -81,10 +80,8 @@ object TileCharGen {
 
     val lookUp = {
       val cs = chars
-        .filterNot(cd => cd.index == 0 || cd.index == 255)
         .map(cd => (s"""${charToString(cd.char)}""", cd.index))
         .map(p => s""""${p._1}" -> ${p._2.toString()},""")
-        .dropRight(1) // remove last comma
         .mkString("\n      ")
 
       s"""  val charCodes: Map[String, Int] = Map(
@@ -290,7 +287,7 @@ final case class CharDetail(index: Int, unicode: Int, char: Char, name: String) 
 object CharMap {
 
   val chars = List(
-    CharDetail(0, 0x00, ' ', "NULL"),
+    CharDetail(0, 0x00, '\u0000', "NULL"),
     CharDetail(1, 0x263a, '☺', "WHITE_SMILING_FACE"),
     CharDetail(2, 0x263b, '☻', "BLACK_SMILING_FACE"),
     CharDetail(3, 0x2665, '♥', "BLACK_HEART_SUIT"),
@@ -545,7 +542,7 @@ object CharMap {
     CharDetail(252, 0x207f, 'ⁿ', "SUPERSCRIPT_LATIN_SMALL_LETTER_N"),
     CharDetail(253, 0xb2, '²', "SUPERSCRIPT_TWO"),
     CharDetail(254, 0x25a0, '■', "BLACK_SQUARE"),
-    CharDetail(255, 0xa0, ' ', "NO_BREAK_SPACE")
+    CharDetail(255, 0xa0, '\u00A0', "NO_BREAK_SPACE")
   )
 
 }
