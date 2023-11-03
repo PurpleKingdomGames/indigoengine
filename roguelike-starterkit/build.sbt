@@ -4,14 +4,16 @@ import scala.language.postfixOps
 import sbtwelcome._
 import indigoplugin.IndigoOptions
 
+val scala3Version              = "3.3.1"
+val indigoVersion              = "0.15.1"
+val roguelikeStarterKitVersion = "0.3.2-SNAPSHOT"
+
 Global / onChangedBuildSource                              := ReloadOnSourceChanges
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-
-val scala3Version = "3.3.1"
-val indigoVersion = "0.15.0"
+ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
-  version      := "0.3.2-SNAPSHOT",
+  version      := roguelikeStarterKitVersion,
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
@@ -94,6 +96,29 @@ lazy val demo =
     )
     .dependsOn(roguelike)
 
+lazy val benchmarks =
+  project
+    .in(file("benchmarks"))
+    .enablePlugins(ScalaJSPlugin, JSDependenciesPlugin)
+    .dependsOn(roguelike)
+    .settings(
+      name         := "benchmarks",
+      version      := roguelikeStarterKitVersion,
+      organization := "io.indigoengine",
+      Test / test  := {},
+      libraryDependencies ++= Seq(
+        "com.github.japgolly.scalajs-benchmark" %%% "benchmark" % "0.10.0"
+      ),
+      jsDependencies ++= Seq(
+        "org.webjars" % "chartjs" % "1.0.2" / "Chart.js" minified "Chart.min.js"
+      ),
+      packageJSDependencies / skip := false
+    )
+    .settings(
+      publish / skip      := true,
+      publishLocal / skip := true
+    )
+
 lazy val roguelikeStarterKit =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin)
@@ -105,7 +130,7 @@ lazy val roguelikeStarterKit =
       publish / skip      := true,
       publishLocal / skip := true
     )
-    .aggregate(roguelike, demo)
+    .aggregate(roguelike, demo, benchmarks)
     .settings(
       logo := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(
