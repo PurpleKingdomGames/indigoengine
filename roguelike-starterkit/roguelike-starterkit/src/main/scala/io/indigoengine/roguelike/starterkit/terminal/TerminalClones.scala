@@ -2,6 +2,7 @@ package io.indigoengine.roguelike.starterkit.terminal
 
 import indigo.*
 import io.indigoengine.roguelike.starterkit.Tile
+
 import scala.annotation.tailrec
 
 final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles]):
