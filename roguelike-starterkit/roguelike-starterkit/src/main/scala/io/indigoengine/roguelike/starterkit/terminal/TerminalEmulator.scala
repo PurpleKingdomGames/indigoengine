@@ -224,13 +224,3 @@ object TerminalEmulator:
       screenSize,
       QuadTree.empty[MapTile](screenSize.width.toDouble, screenSize.height.toDouble)
     )
-
-final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles]):
-  def |+|(other: TerminalClones): TerminalClones =
-    combine(other)
-  def combine(other: TerminalClones): TerminalClones =
-    TerminalClones(blanks ++ other.blanks, clones ++ other.clones)
-
-object TerminalClones:
-  def empty: TerminalClones =
-    TerminalClones(Batch.empty, Batch.empty)
