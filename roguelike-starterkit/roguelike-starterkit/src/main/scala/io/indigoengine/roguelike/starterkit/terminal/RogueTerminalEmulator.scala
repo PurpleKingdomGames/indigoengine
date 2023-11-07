@@ -208,7 +208,7 @@ final class RogueTerminalEmulator(
           )
       )
 
-    val stuff =
+    val results =
       combinations.map { c =>
         (
           CloneBlank(c._1._1, makeBlank(c._1._2, c._1._3)),
@@ -216,7 +216,7 @@ final class RogueTerminalEmulator(
         )
       }
 
-    TerminalClones(stuff.map(_._1), stuff.map(_._2))
+    TerminalClones(results.map(_._1), results.map(_._2))
 
   def toBatch: Batch[MapTile] =
     toTileBatch
