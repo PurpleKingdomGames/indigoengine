@@ -7,11 +7,11 @@ import japgolly.scalajs.benchmark.gui.*
 import io.indigoengine.roguelike.starterkit.*
 import io.indigoengine.roguelike.starterkit.terminal.MapTile
 
-object MutableTerminalEmulatorBenchmarks:
+object RogueTerminalEmulatorBenchmarks:
 
-  val terminal16     = MutableTerminalEmulator(Size(16))
-  val terminal32     = MutableTerminalEmulator(Size(32))
-  val terminal64     = MutableTerminalEmulator(Size(64))
+  val terminal16     = RogueTerminalEmulator(Size(16))
+  val terminal32     = RogueTerminalEmulator(Size(32))
+  val terminal64     = RogueTerminalEmulator(Size(64))
   val mapTile        = MapTile(Tile.BLACK_HEART_SUIT)
   val fullTerminal16 = terminal16.fill(mapTile)
   val fullTerminal32 = terminal32.fill(mapTile)
@@ -19,7 +19,7 @@ object MutableTerminalEmulatorBenchmarks:
   val graphic        = Graphic(0, 0, TerminalText(AssetName("text"), RGBA.White))
 
   val suite = GuiSuite(
-    Suite("MutableTerminalEmulator Benchmarks")(
+    Suite("RogueTerminalEmulator Benchmarks")(
       Benchmark("get 16 - single") {
         terminal16.get(Point.zero)
       },

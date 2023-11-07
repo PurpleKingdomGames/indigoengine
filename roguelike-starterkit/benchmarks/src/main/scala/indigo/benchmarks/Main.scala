@@ -12,5 +12,5 @@ object Main:
     val body = document.getElementById("body")
     BenchmarkGUI.renderMenu(body)(
       TerminalEmulatorBenchmarks.suite,
-      MutableTerminalEmulatorBenchmarks.suite
+      RogueTerminalEmulatorBenchmarks.suite
     )
