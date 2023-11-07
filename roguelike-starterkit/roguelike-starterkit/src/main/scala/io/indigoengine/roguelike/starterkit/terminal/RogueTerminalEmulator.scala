@@ -7,12 +7,17 @@ import scala.annotation.tailrec
 
 import scalajs.js
 
-final class MutableTerminalEmulator(
+/** `RogueTerminalEmulator` is like the `TerminalEmulator` but a little more daring and dangerous.
+  * Represents an mutable, packed populated terminal. It is more performant, relative to
+  * `TerminalEmulator`, but also requires more care since it's a mutable structure. There are no empty
+  * spaces in this terminal, empty tiles are filled with the Tile.Null value and RGBA.Zero colors.
+  */
+final class RogueTerminalEmulator(
     val size: Size,
     tiles: js.Array[Tile],
     foreground: js.Array[RGBA],
     background: js.Array[RGBA]
-):
+) extends Terminal:
   lazy val length: Int = size.width * size.height
 
   private def updateAt(
@@ -30,9 +35,9 @@ final class MutableTerminalEmulator(
       tile: Tile,
       foregroundColor: RGBA,
       backgroundColor: RGBA
-  ): MutableTerminalEmulator =
+  ): RogueTerminalEmulator =
     updateAt(
-      MutableTerminalEmulator.pointToIndex(coords, size.width),
+      RogueTerminalEmulator.pointToIndex(coords, size.width),
       tile,
       foregroundColor,
       backgroundColor
@@ -40,15 +45,15 @@ final class MutableTerminalEmulator(
 
     this
 
-  def put(coords: Point, tile: Tile, foregroundColor: RGBA): MutableTerminalEmulator =
+  def put(coords: Point, tile: Tile, foregroundColor: RGBA): RogueTerminalEmulator =
     put(coords, tile, foregroundColor, RGBA.Zero)
 
-  def put(coords: Point, tile: Tile): MutableTerminalEmulator =
+  def put(coords: Point, tile: Tile): RogueTerminalEmulator =
     put(coords, tile, RGBA.White, RGBA.Zero)
 
-  def put(tiles: Batch[(Point, MapTile)]): MutableTerminalEmulator =
+  def put(tiles: Batch[(Point, MapTile)]): RogueTerminalEmulator =
     tiles.foreach { t =>
-      val idx = MutableTerminalEmulator.pointToIndex(t._1, size.width)
+      val idx = RogueTerminalEmulator.pointToIndex(t._1, size.width)
       val tt  = t._2
 
       updateAt(idx, tt.char, tt.foreground, tt.background)
@@ -56,9 +61,9 @@ final class MutableTerminalEmulator(
 
     this
 
-  def put(tiles: Batch[(Point, MapTile)], offset: Point): MutableTerminalEmulator =
+  def put(tiles: Batch[(Point, MapTile)], offset: Point): RogueTerminalEmulator =
     tiles.foreach { t =>
-      val idx = MutableTerminalEmulator.pointToIndex(t._1 + offset, size.width)
+      val idx = RogueTerminalEmulator.pointToIndex(t._1 + offset, size.width)
       val tt  = t._2
 
       updateAt(idx, tt.char, tt.foreground, tt.background)
@@ -66,14 +71,14 @@ final class MutableTerminalEmulator(
 
     this
 
-  def put(tiles: (Point, MapTile)*): MutableTerminalEmulator =
+  def put(tiles: (Point, MapTile)*): RogueTerminalEmulator =
     put(Batch.fromSeq(tiles))
 
-  def put(coords: Point, mapTile: MapTile): MutableTerminalEmulator =
+  def put(coords: Point, mapTile: MapTile): RogueTerminalEmulator =
     put(coords, mapTile.char, mapTile.foreground, mapTile.background)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def fill(tile: Tile, foregroundColor: RGBA, backgroundColor: RGBA): MutableTerminalEmulator =
+  def fill(tile: Tile, foregroundColor: RGBA, backgroundColor: RGBA): RogueTerminalEmulator =
     val count = length
     var i     = 0
 
@@ -83,7 +88,7 @@ final class MutableTerminalEmulator(
 
     this
 
-  def fill(mapTile: MapTile): MutableTerminalEmulator =
+  def fill(mapTile: MapTile): RogueTerminalEmulator =
     fill(mapTile.char, mapTile.foreground, mapTile.background)
 
   def putLine(
@@ -91,7 +96,7 @@ final class MutableTerminalEmulator(
       text: String,
       foregroundColor: RGBA,
       backgroundColor: RGBA
-  ): MutableTerminalEmulator =
+  ): RogueTerminalEmulator =
     Batch.fromArray(text.toCharArray).zipWithIndex.foreach { case (c, i) =>
       val cc = Tile.charCodes.get(if c == '\\' then "\\" else c.toString)
 
@@ -102,7 +107,7 @@ final class MutableTerminalEmulator(
         case Some(char) =>
           startCoords + Point(i, 0) -> MapTile(Tile(char), foregroundColor, backgroundColor)
           updateAt(
-            MutableTerminalEmulator.pointToIndex(startCoords + Point(i, 0), size.width),
+            RogueTerminalEmulator.pointToIndex(startCoords + Point(i, 0), size.width),
             Tile(char),
             foregroundColor,
             backgroundColor
@@ -116,9 +121,13 @@ final class MutableTerminalEmulator(
       textLines: Batch[String],
       foregroundColor: RGBA,
       backgroundColor: RGBA
-  ): MutableTerminalEmulator =
+  ): RogueTerminalEmulator =
     @tailrec
-    def rec(remaining: List[String], yOffset: Int, term: MutableTerminalEmulator): MutableTerminalEmulator =
+    def rec(
+        remaining: List[String],
+        yOffset: Int,
+        term: RogueTerminalEmulator
+    ): RogueTerminalEmulator =
       remaining match
         case Nil =>
           term
@@ -132,19 +141,20 @@ final class MutableTerminalEmulator(
 
     rec(textLines.toList, 0, this)
 
-  def get(coords: Point): MapTile =
-    val idx = MutableTerminalEmulator.pointToIndex(coords, size.width)
+  def get(coords: Point): Option[MapTile] =
+    val idx = RogueTerminalEmulator.pointToIndex(coords, size.width)
     val t   = tiles(idx)
     val f   = foreground(idx)
     val b   = background(idx)
 
-    MapTile(t, f, b)
+    val mt = MapTile(t, f, b)
+    if mt == Terminal.EmptyTile then None else Some(mt)
 
-  def delete(coords: Point): MutableTerminalEmulator =
-    put(coords, MutableTerminalEmulator.emptyTile)
+  def delete(coords: Point): RogueTerminalEmulator =
+    put(coords, Terminal.EmptyTile)
 
-  def clear: MutableTerminalEmulator =
-    fill(MutableTerminalEmulator.emptyTile)
+  def clear: RogueTerminalEmulator =
+    fill(Terminal.EmptyTile)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toTileBatch: Batch[MapTile] =
@@ -218,7 +228,7 @@ final class MutableTerminalEmulator(
     val acc   = new js.Array[(Point, MapTile)](count)
 
     while i < count do
-      acc(i) = MutableTerminalEmulator.indexToPoint(i, size.width) -> MapTile(
+      acc(i) = RogueTerminalEmulator.indexToPoint(i, size.width) -> MapTile(
         tiles(i),
         foreground(i),
         background(i)
@@ -227,17 +237,15 @@ final class MutableTerminalEmulator(
 
     Batch(acc)
 
-  def |+|(otherConsole: MutableTerminalEmulator): MutableTerminalEmulator =
+  def |+|(otherConsole: Terminal): RogueTerminalEmulator =
     combine(otherConsole)
-  def combine(otherConsole: MutableTerminalEmulator): MutableTerminalEmulator =
-    put(otherConsole.toPositionedBatch.filterNot(_._2 == MutableTerminalEmulator.emptyTile))
+  def combine(otherConsole: Terminal): RogueTerminalEmulator =
+    put(otherConsole.toPositionedBatch.filterNot(_._2 == Terminal.EmptyTile))
 
-  def inset(otherConsole: MutableTerminalEmulator, offset: Point): MutableTerminalEmulator =
-    put(otherConsole.toPositionedBatch.filterNot(_._2 == MutableTerminalEmulator.emptyTile), offset)
+  def inset(otherConsole: Terminal, offset: Point): RogueTerminalEmulator =
+    put(otherConsole.toPositionedBatch.filterNot(_._2 == Terminal.EmptyTile), offset)
 
-object MutableTerminalEmulator:
-
-  private[terminal] lazy val emptyTile: MapTile = MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero)
+object RogueTerminalEmulator:
 
   inline def pointToIndex(point: Point, gridWidth: Int): Int =
     point.x + (point.y * gridWidth)
@@ -248,10 +256,10 @@ object MutableTerminalEmulator:
       y = index / gridWidth
     )
 
-  def apply(size: Size): MutableTerminalEmulator =
-    new MutableTerminalEmulator(
+  def apply(size: Size): RogueTerminalEmulator =
+    new RogueTerminalEmulator(
       size,
       new js.Array(size.width * size.height),
       new js.Array(size.width * size.height),
       new js.Array(size.width * size.height)
-    ).fill(MutableTerminalEmulator.emptyTile)
+    ).fill(Terminal.EmptyTile)

@@ -5,9 +5,9 @@ package io.indigoengine.roguelike.starterkit
 type TerminalEmulator = terminal.TerminalEmulator
 val TerminalEmulator: terminal.TerminalEmulator.type = terminal.TerminalEmulator
 
-type MutableTerminalEmulator = terminal.MutableTerminalEmulator
-val MutableTerminalEmulator: terminal.MutableTerminalEmulator.type =
-  terminal.MutableTerminalEmulator
+type MutableTerminalEmulator = terminal.RogueTerminalEmulator
+val MutableTerminalEmulator: terminal.RogueTerminalEmulator.type =
+  terminal.RogueTerminalEmulator
 
 type TerminalEntity = terminal.TerminalEntity
 val TerminalEntity: terminal.TerminalEntity.type = terminal.TerminalEntity

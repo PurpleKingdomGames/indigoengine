@@ -83,10 +83,10 @@ class TerminalEmulatorTests extends munit.FunSuite {
       TerminalEmulator(Size(3))
 
     val actual =
-      console.toTileBatch(MapTile(Tile.`.`))
+      console.toTileBatch
 
     val expected =
-      List.fill(9)(MapTile(Tile.`.`))
+      List.fill(9)(Terminal.EmptyTile)
 
     assertEquals(actual.length, expected.length)
     assertEquals(actual.toList, expected)
@@ -108,7 +108,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(items)
 
     val actual =
-      console.toTileBatch(MapTile(Tile.`.`))
+      console.toTileBatch
 
     val expected =
       List(
@@ -159,16 +159,16 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(itemsWithCoords)
 
     val actual =
-      console.toTileBatch(MapTile(Tile.`.`))
+      console.toTileBatch
 
     val expected =
       List(
         MapTile(Tile.`a`),
-        MapTile(Tile.`.`),
-        MapTile(Tile.`.`),
+        Terminal.EmptyTile,
+        Terminal.EmptyTile,
         MapTile(Tile.`b`),
         MapTile(Tile.`c`),
-        MapTile(Tile.`.`),
+        Terminal.EmptyTile,
         MapTile(Tile.`d`),
         MapTile(Tile.`e`),
         MapTile(Tile.`f`)
@@ -251,7 +251,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assert(list.contains((Point(40, 25), MapTile(Tile.`@`))))
 
     val drawn =
-      console.toTileBatch(MapTile(Tile.LIGHT_SHADE))
+      console.toTileBatch
 
     val foundAt =
       drawn.zipWithIndex.find(p => p._1 == MapTile(Tile.`@`)).map(_._2)

@@ -57,7 +57,6 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
     terminal.draw(
       Assets.tileMap,
       Size(10, 10),
-      MapTile(Tile.SPACE),
       RogueLikeGame.maxTileCount
     )
 

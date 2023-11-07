@@ -9,7 +9,9 @@ import io.indigoengine.roguelike.starterkit.Tile
 
 import scala.annotation.tailrec
 
-final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
+/** TerminalEmulator represents an immutable, sparsely populated terminal.
+  */
+final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]) extends Terminal:
 
   private lazy val coordsBatch: Batch[Point] =
     Batch.fromIndexedSeq((0 until screenSize.height).flatMap { y =>
@@ -29,6 +31,12 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
   def put(tiles: Batch[(Point, MapTile)]): TerminalEmulator =
     this.copy(charMap = charMap.insertElements(tiles.map(p => (p._2, Vertex.fromPoint(p._1)))))
+  def put(tiles: Batch[(Point, MapTile)], offset: Point): TerminalEmulator =
+    this.copy(
+      charMap = charMap.insertElements(
+        tiles.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
+      )
+    )
   def put(tiles: (Point, MapTile)*): TerminalEmulator =
     put(Batch.fromSeq(tiles))
   def put(coords: Point, mapTile: MapTile): TerminalEmulator =
@@ -38,8 +46,9 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
     this.copy(
       charMap = charMap.insertElements(coordsBatch.map(pt => mapTile -> pt.toVertex))
     )
+  def fill(tile: Tile, foregroundColor: RGBA, backgroundColor: RGBA): TerminalEmulator =
+    fill(MapTile(tile, foregroundColor, backgroundColor))
 
-  // TODO: Wrap text if too long for line
   def putLine(startCoords: Point, text: String, fgColor: RGBA, bgColor: RGBA): TerminalEmulator =
     val tiles: Batch[(Point, MapTile)] =
       Batch.fromArray(text.toCharArray).zipWithIndex.map { case (c, i) =>
@@ -88,16 +97,15 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
 
-  def toTileBatch(default: MapTile): Batch[MapTile] =
-    coordsBatch.map(pt => get(pt).getOrElse(default))
+  def toTileBatch: Batch[MapTile] =
+    coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
 
   def draw(
       tileSheet: AssetName,
       charSize: Size,
-      default: MapTile,
       maxTileCount: Int
   ): TerminalEntity =
-    TerminalEntity(tileSheet, screenSize, charSize, toTileBatch(default), maxTileCount)
+    TerminalEntity(tileSheet, screenSize, charSize, toTileBatch, maxTileCount)
 
   private def toCloneTileData(
       position: Point,
@@ -202,21 +210,17 @@ final case class TerminalEmulator(screenSize: Size, charMap: QuadTree[MapTile]):
 
     rec(List(charMap), Batch.empty)
 
-  def |+|(otherConsole: TerminalEmulator): TerminalEmulator =
+  def |+|(otherConsole: Terminal): TerminalEmulator =
     combine(otherConsole)
-  def combine(otherConsole: TerminalEmulator): TerminalEmulator =
+  def combine(otherConsole: Terminal): TerminalEmulator =
     this.copy(
       charMap = charMap.insertElements(
         otherConsole.toPositionedBatch.map(p => (p._2, Vertex.fromPoint(p._1)))
       )
     )
 
-  def inset(otherConsole: TerminalEmulator, offset: Point): TerminalEmulator =
-    this.copy(
-      charMap = charMap.insertElements(
-        otherConsole.toPositionedBatch.map(p => (p._2, Vertex.fromPoint(p._1 + offset)))
-      )
-    )
+  def inset(otherConsole: Terminal, offset: Point): TerminalEmulator =
+    put(otherConsole.toPositionedBatch, offset)
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =

@@ -3,29 +3,29 @@ package io.indigoengine.roguelike.starterkit.terminal
 import indigo.*
 import io.indigoengine.roguelike.starterkit.Tile
 
-class MutableTerminalEmulatorTests extends munit.FunSuite {
+class RogueTerminalEmulatorTests extends munit.FunSuite {
 
   test("should be able to put and get an element at a given position") {
     val console =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val expected =
       MapTile(Tile.`@`, RGBA.White, RGBA.Zero)
 
     val actual =
-      console.get(Point(1))
+      console.get(Point(1)).get
 
     assertEquals(expected, actual)
   }
 
   test("trying to get at an empty location returns None") {
     val console =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
-    val expected: MapTile =
-      MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero)
+    val expected: Option[MapTile] =
+      None
 
     val actual =
       console.get(Point(0))
@@ -42,7 +42,7 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
       )
 
     val console =
-      MutableTerminalEmulator(Size(10))
+      RogueTerminalEmulator(Size(10))
         .put(list)
 
     assert(
@@ -50,7 +50,7 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
         clue(v)
 
         val actual =
-          console.get(v)
+          console.get(v).get
 
         val expected =
           list.find(p => p._1 == v).map(_._2).get
@@ -62,16 +62,16 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
 
   test("should be able insert a line of text") {
     val console =
-      MutableTerminalEmulator(Size(10))
+      RogueTerminalEmulator(Size(10))
         .putLine(Point(1, 3), "Hello", RGBA.Red, RGBA.Blue)
 
     val actual =
       Batch(
-        console.get(Point(1, 3)),
-        console.get(Point(2, 3)),
-        console.get(Point(3, 3)),
-        console.get(Point(4, 3)),
-        console.get(Point(5, 3))
+        console.get(Point(1, 3)).get,
+        console.get(Point(2, 3)).get,
+        console.get(Point(3, 3)).get,
+        console.get(Point(4, 3)).get,
+        console.get(Point(5, 3)).get
       )
 
     val expected =
@@ -88,7 +88,7 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
 
   test("continuous list (empty)") {
     val console =
-      MutableTerminalEmulator(Size(3)).fill(MapTile(Tile.`.`))
+      RogueTerminalEmulator(Size(3)).fill(MapTile(Tile.`.`))
 
     val actual =
       console.toTileBatch
@@ -112,7 +112,7 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
       Batch.fromList(coords.zip(List.fill(8)(MapTile(Tile.`!`)) :+ MapTile(Tile.`@`)))
 
     val console =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(items)
 
     val actual =
@@ -163,7 +163,7 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
       Batch.fromList(coords.zip(items))
 
     val console =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(itemsWithCoords)
 
     val actual =
@@ -172,11 +172,11 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
     val expected =
       List(
         MapTile(Tile.`a`),
-        MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero),
-        MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero),
+        Terminal.EmptyTile,
+        Terminal.EmptyTile,
         MapTile(Tile.`b`),
         MapTile(Tile.`c`),
-        MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero),
+        Terminal.EmptyTile,
         MapTile(Tile.`d`),
         MapTile(Tile.`e`),
         MapTile(Tile.`f`)
@@ -188,27 +188,27 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
 
   test("combine") {
     val consoleA =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(1), Tile.`@`)
 
     val consoleB =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(2), Tile.`!`)
 
     val combined =
       consoleA combine consoleB
 
-    assert(clue(combined.get(Point(1))) == clue(MapTile(Tile.`@`)))
-    assert(clue(combined.get(Point(2))) == clue(MapTile(Tile.`!`)))
+    assert(clue(combined.get(Point(1))).get == clue(MapTile(Tile.`@`)))
+    assert(clue(combined.get(Point(2))).get == clue(MapTile(Tile.`!`)))
   }
 
   test("toList") {
     val consoleA =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val consoleB =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(2, 2), Tile.`!`)
 
     val expected =
@@ -223,11 +223,11 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
 
   test("toPositionedList") {
     val consoleA =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(1, 1), Tile.`@`)
 
     val consoleB =
-      MutableTerminalEmulator(Size(3))
+      RogueTerminalEmulator(Size(3))
         .put(Point(2, 2), Tile.`!`)
 
     val expected =
@@ -242,14 +242,14 @@ class MutableTerminalEmulatorTests extends munit.FunSuite {
 
   test("placing something in the center works.") {
     val console =
-      MutableTerminalEmulator(Size(80, 50))
+      RogueTerminalEmulator(Size(80, 50))
         .put(Point(40, 25), Tile.`@`)
 
     val expected =
       MapTile(Tile.`@`, RGBA.White, RGBA.Zero)
 
     val actual =
-      console.get(Point(40, 25))
+      console.get(Point(40, 25)).get
 
     assertEquals(expected, actual)
 
