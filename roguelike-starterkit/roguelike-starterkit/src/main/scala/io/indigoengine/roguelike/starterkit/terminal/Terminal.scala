@@ -76,11 +76,6 @@ trait Terminal:
     */
   def clear: Terminal
 
-  /** Export terminal as a complete grid of tiles, missing tiles will be given the Tile.Null values
-    * and RGBA.Zero colors.
-    */
-  def toTileBatch: Batch[MapTile]
-
   /** Export the terminal so that it can be rendered as CloneTiles
     */
   def toCloneTiles(
@@ -89,13 +84,32 @@ trait Terminal:
       charCrops: Batch[(Int, Int, Int, Int)]
   )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones
 
-  /** Export the terminal as a sparse batch of MapTiles.
+  /** Export the terminal as a batch of MapTiles.
     */
   def toBatch: Batch[MapTile]
+
+  /** Export the terminal as a batch of MapTiles for a given region.
+    */
+  def toBatch(region: Rectangle): Batch[MapTile]
+
+  /** Export terminal as a complete grid of tiles, missing tiles will be given the Tile.Null values
+    * and RGBA.Zero colors.
+    */
+  def toTileBatch: Batch[MapTile]
+
+  /** Export terminal as a complete grid of tiles for a given region, missing tiles will be given
+    * the Tile.Null values and RGBA.Zero colors.
+    */
+  def toTileBatch(region: Rectangle): Batch[MapTile]
 
   /** Export the terminal as a batch of maptiles tupled with with their positions.
     */
   def toPositionedBatch: Batch[(Point, MapTile)]
+
+  /** Export the terminal as a batch of maptiles tupled with with their positions, in a given
+    * region.
+    */
+  def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)]
 
   /** Merge two terminals together
     */
