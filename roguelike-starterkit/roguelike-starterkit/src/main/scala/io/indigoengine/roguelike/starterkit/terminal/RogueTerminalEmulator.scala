@@ -163,24 +163,20 @@ final class RogueTerminalEmulator(
   def clear: RogueTerminalEmulator =
     fill(Terminal.EmptyTile)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
-  def toTileBatch: Batch[MapTile] =
-    val count = length
-    var i     = 0
-    val acc   = new js.Array[MapTile](count)
-
-    while i < count do
-      acc(i) = MapTile(_tiles(i), _foreground(i), _background(i))
-      i += 1
-
-    Batch(acc)
-
   def draw(
       tileSheet: AssetName,
       charSize: Size,
       maxTileCount: Int
   ): TerminalEntity =
     TerminalEntity(tileSheet, size, charSize, toTileBatch, maxTileCount)
+
+  def draw(
+      tileSheet: AssetName,
+      charSize: Size,
+      maxTileCount: Int,
+      region: Rectangle
+  ): TerminalEntity =
+    TerminalEntity(tileSheet, size, charSize, toTileBatch(region), maxTileCount)
 
   private def toCloneTileData(
       position: Point,
@@ -199,17 +195,19 @@ final class RogueTerminalEmulator(
       )
     }
 
-  def toCloneTiles(
+  private def toCloneTilesFromBatch(
       idPrefix: CloneId,
       position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)]
-  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+      charCrops: Batch[(Int, Int, Int, Int)],
+      positionedBatch: Batch[(Point, MapTile)],
+      makeBlank: (RGBA, RGBA) => Cloneable
+  ): TerminalClones =
     val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
       CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
 
     val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
       Batch.fromMap(
-        toPositionedBatch
+        positionedBatch
           .groupBy(p =>
             (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
           )
@@ -225,8 +223,50 @@ final class RogueTerminalEmulator(
 
     TerminalClones(results.map(_._1), results.map(_._2))
 
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)]
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch, makeBlank)
+
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      region: Rectangle
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch(region), makeBlank)
+
   def toBatch: Batch[MapTile] =
     toTileBatch
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def toTileBatch: Batch[MapTile] =
+    val count = length
+    var i     = 0
+    val acc   = new js.Array[MapTile](count)
+
+    while i < count do
+      acc(i) = MapTile(_tiles(i), _foreground(i), _background(i))
+      i += 1
+
+    Batch(acc)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def toTileBatch(region: Rectangle): Batch[MapTile] =
+    val count = length
+    var i     = 0
+    var j     = 0
+    val acc   = new js.Array[MapTile](count)
+
+    while i < count do
+      if region.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+        acc(j) = MapTile(_tiles(i), _foreground(i), _background(i))
+        j += 1
+      i += 1
+
+    Batch(acc)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toPositionedBatch: Batch[(Point, MapTile)] =
@@ -240,6 +280,26 @@ final class RogueTerminalEmulator(
         _foreground(i),
         _background(i)
       )
+      i += 1
+
+    Batch(acc)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
+    val count = length
+    var i     = 0
+    var j     = 0
+    val acc   = new js.Array[(Point, MapTile)](count)
+
+    while i < count do
+      val pt = RogueTerminalEmulator.indexToPoint(i, size.width)
+      if region.contains(pt) then
+        acc(j) = pt -> MapTile(
+          _tiles(i),
+          _foreground(i),
+          _background(i)
+        )
+        j += 1
       i += 1
 
     Batch(acc)

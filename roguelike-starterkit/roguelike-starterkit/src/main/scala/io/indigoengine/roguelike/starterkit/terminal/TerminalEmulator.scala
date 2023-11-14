@@ -95,15 +95,20 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
 
-  def toTileBatch: Batch[MapTile] =
-    coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
-
   def draw(
       tileSheet: AssetName,
       charSize: Size,
       maxTileCount: Int
   ): TerminalEntity =
     TerminalEntity(tileSheet, size, charSize, toTileBatch, maxTileCount)
+
+  def draw(
+      tileSheet: AssetName,
+      charSize: Size,
+      maxTileCount: Int,
+      region: Rectangle
+  ): TerminalEntity =
+    TerminalEntity(tileSheet, size, charSize, toTileBatch(region), maxTileCount)
 
   private def toCloneTileData(
       position: Point,
@@ -122,11 +127,13 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
       )
     }
 
-  def toCloneTiles(
+  private def toCloneTilesFromBatch(
       idPrefix: CloneId,
       position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)]
-  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+      charCrops: Batch[(Int, Int, Int, Int)],
+      positionedBatch: Batch[(Point, MapTile)],
+      makeBlank: (RGBA, RGBA) => Cloneable
+  ): TerminalClones =
     val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
       CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
 
@@ -148,65 +155,41 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
     TerminalClones(results.map(_._1), results.map(_._2))
 
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)]
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch, makeBlank)
+
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      region: Rectangle
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch(region), makeBlank)
+
+  def toTileBatch: Batch[MapTile] =
+    coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
+
+  def toTileBatch(region: Rectangle): Batch[MapTile] =
+    coordsBatch.map { pt =>
+      if region.contains(pt) then get(pt).getOrElse(Terminal.EmptyTile)
+      else Terminal.EmptyTile
+    }
+
   def toBatch: Batch[MapTile] =
-    @tailrec
-    def rec(open: List[QuadTree[MapTile]], acc: Batch[MapTile]): Batch[MapTile] =
-      open match
-        case Nil =>
-          acc
+    charMap.toBatch
 
-        case x :: xs =>
-          x match {
-            case _: QuadEmpty[MapTile] =>
-              rec(xs, acc)
-
-            case l: QuadLeaf[MapTile] =>
-              rec(xs, l.value :: acc)
-
-            case b: QuadBranch[MapTile] if b.isEmpty =>
-              rec(xs, acc)
-
-            case QuadBranch(_, a, b, c, d) =>
-              val next =
-                (if a.isEmpty then Nil else List(a)) ++
-                  (if b.isEmpty then Nil else List(b)) ++
-                  (if c.isEmpty then Nil else List(c)) ++
-                  (if d.isEmpty then Nil else List(d))
-
-              rec(xs ++ next, acc)
-          }
-
-    rec(List(charMap), Batch.empty)
+  def toBatch(region: Rectangle): Batch[MapTile] =
+    charMap.searchByBoundingBox(region.toBoundingBox)
 
   def toPositionedBatch: Batch[(Point, MapTile)] =
-    @tailrec
-    def rec(open: List[QuadTree[MapTile]], acc: Batch[(Point, MapTile)]): Batch[(Point, MapTile)] =
-      open match
-        case Nil =>
-          acc
+    charMap.toBatchWithPosition.map(p => p._1.toPoint -> p._2)
 
-        case x :: xs =>
-          x match {
-            case _: QuadEmpty[MapTile] =>
-              rec(xs, acc)
-
-            case l: QuadLeaf[MapTile] =>
-              rec(xs, (l.exactPosition.toPoint, l.value) :: acc)
-
-            case b: QuadBranch[MapTile] if b.isEmpty =>
-              rec(xs, acc)
-
-            case QuadBranch(_, a, b, c, d) =>
-              val next =
-                (if a.isEmpty then Nil else List(a)) ++
-                  (if b.isEmpty then Nil else List(b)) ++
-                  (if c.isEmpty then Nil else List(c)) ++
-                  (if d.isEmpty then Nil else List(d))
-
-              rec(xs ++ next, acc)
-          }
-
-    rec(List(charMap), Batch.empty)
+  def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
+    charMap.searchByBoundingBoxWithPosition(region.toBoundingBox).map(p => p._1.toPoint -> p._2)
 
   def |+|(otherConsole: Terminal): TerminalEmulator =
     combine(otherConsole)
