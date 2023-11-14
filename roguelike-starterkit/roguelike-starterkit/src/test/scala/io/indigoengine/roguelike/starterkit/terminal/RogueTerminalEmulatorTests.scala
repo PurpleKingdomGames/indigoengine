@@ -303,4 +303,18 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
     assertEquals(actual.clones.map(_.id), expected.clones.map(_.id))
   }
 
+  test("RogueTerminalEmulator can be cloned") {
+
+    val a = RogueTerminalEmulator(Size(3, 3)).put(Point(1), Tile.`@`)
+    val b = a.clone()
+
+    assert(clue(a.get(Point(1))) == clue(b.get(Point(1))))
+
+    b.put(Point(1), Tile.`!`)
+
+    assert(clue(a.get(Point(1)).map(_.char)) == clue(Some(Tile.`@`)))
+    assert(clue(b.get(Point(1)).map(_.char)) == clue(Some(Tile.`!`)))
+
+  }
+
 }

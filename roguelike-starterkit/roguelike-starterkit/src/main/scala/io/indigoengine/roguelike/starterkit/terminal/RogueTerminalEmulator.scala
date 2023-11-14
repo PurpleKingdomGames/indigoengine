@@ -24,6 +24,9 @@ final class RogueTerminalEmulator(
   lazy val foregroundColors: Batch[RGBA] = Batch(_foreground.concat())
   lazy val backgroundColors: Batch[RGBA] = Batch(_foreground.concat())
 
+  override def clone(): RogueTerminalEmulator =
+    new RogueTerminalEmulator(size, _tiles.concat(), _foreground.concat(), _background.concat())
+
   private def updateAt(
       index: Int,
       tile: Tile,
