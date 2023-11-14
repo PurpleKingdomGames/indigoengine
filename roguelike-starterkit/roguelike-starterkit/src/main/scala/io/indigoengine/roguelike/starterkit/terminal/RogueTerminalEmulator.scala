@@ -15,11 +15,14 @@ import scalajs.js
   */
 final class RogueTerminalEmulator(
     val size: Size,
-    tiles: js.Array[Tile],
-    foreground: js.Array[RGBA],
-    background: js.Array[RGBA]
+    _tiles: js.Array[Tile],
+    _foreground: js.Array[RGBA],
+    _background: js.Array[RGBA]
 ) extends Terminal:
-  lazy val length: Int = size.width * size.height
+  lazy val length: Int                   = size.width * size.height
+  lazy val tiles: Batch[Tile]            = Batch(_tiles.concat())
+  lazy val foregroundColors: Batch[RGBA] = Batch(_foreground.concat())
+  lazy val backgroundColors: Batch[RGBA] = Batch(_foreground.concat())
 
   private def updateAt(
       index: Int,
@@ -27,9 +30,9 @@ final class RogueTerminalEmulator(
       foregroundColor: RGBA,
       backgroundColor: RGBA
   ): Unit =
-    tiles(index) = tile
-    foreground(index) = foregroundColor
-    background(index) = backgroundColor
+    _tiles(index) = tile
+    _foreground(index) = foregroundColor
+    _background(index) = backgroundColor
 
   def put(
       coords: Point,
@@ -144,9 +147,9 @@ final class RogueTerminalEmulator(
 
   def get(coords: Point): Option[MapTile] =
     val idx = RogueTerminalEmulator.pointToIndex(coords, size.width)
-    val t   = tiles(idx)
-    val f   = foreground(idx)
-    val b   = background(idx)
+    val t   = _tiles(idx)
+    val f   = _foreground(idx)
+    val b   = _background(idx)
 
     val mt = MapTile(t, f, b)
     if mt == Terminal.EmptyTile then None else Some(mt)
@@ -164,7 +167,7 @@ final class RogueTerminalEmulator(
     val acc   = new js.Array[MapTile](count)
 
     while i < count do
-      acc(i) = MapTile(tiles(i), foreground(i), background(i))
+      acc(i) = MapTile(_tiles(i), _foreground(i), _background(i))
       i += 1
 
     Batch(acc)
@@ -230,9 +233,9 @@ final class RogueTerminalEmulator(
 
     while i < count do
       acc(i) = RogueTerminalEmulator.indexToPoint(i, size.width) -> MapTile(
-        tiles(i),
-        foreground(i),
-        background(i)
+        _tiles(i),
+        _foreground(i),
+        _background(i)
       )
       i += 1
 
