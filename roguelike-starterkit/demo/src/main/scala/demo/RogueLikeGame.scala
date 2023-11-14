@@ -16,7 +16,7 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
     Option(TerminalTextScene.name)
 
   def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Unit, Unit]] =
-    NonEmptyList(TerminalTextScene, TerminalEmulatorScene, CloneTilesScene)
+    NonEmptyList(TerminalTextScene, TerminalEmulatorScene, RogueTerminalEmulatorScene)
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
@@ -32,7 +32,6 @@ object RogueLikeGame extends IndigoGame[Unit, Unit, Unit, Unit]:
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets)
         .withShaders(
-          TerminalEntity.shader(maxTileCount),
           TerminalText.standardShader,
           TerminalMaterial.standardShader,
           TerminalTextScene.customShader(ShaderId("my shader"))

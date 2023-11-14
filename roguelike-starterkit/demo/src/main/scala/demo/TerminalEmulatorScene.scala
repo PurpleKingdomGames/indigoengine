@@ -10,7 +10,7 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("TerminalEmulator scene")
+    SceneName("TerminalEmulatorScene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -26,7 +26,7 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
 
   def updateModel(context: SceneContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(CloneTilesScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(RogueTerminalEmulatorScene.name))
 
     case _ =>
       Outcome(model)
@@ -53,20 +53,21 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
         Point(2, 2) -> MapTile(Tile.`░`, RGBA.Cyan, RGBA.Blue)
       )
 
-  val entity =
-    terminal.draw(
-      Assets.tileMap,
-      Size(10, 10),
-      RogueLikeGame.maxTileCount
-    )
-
   def present(
       context: SceneContext[Unit],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
+    val tiles =
+      terminal.toCloneTiles(
+        CloneId("demo"),
+        Point.zero,
+        RoguelikeTiles.Size10x10.charCrops
+      ) { (fg, bg) =>
+        Graphic(10, 10, TerminalMaterial(Assets.tileMap, fg, bg))
+      }
+
     Outcome(
-      SceneUpdateFragment(
-        entity
-      )
+      SceneUpdateFragment(tiles.clones)
+        .addCloneBlanks(tiles.blanks)
     )

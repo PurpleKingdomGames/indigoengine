@@ -163,21 +163,6 @@ final class RogueTerminalEmulator(
   def clear: RogueTerminalEmulator =
     fill(Terminal.EmptyTile)
 
-  def draw(
-      tileSheet: AssetName,
-      charSize: Size,
-      maxTileCount: Int
-  ): TerminalEntity =
-    TerminalEntity(tileSheet, size, charSize, toTileBatch, maxTileCount)
-
-  def draw(
-      tileSheet: AssetName,
-      charSize: Size,
-      maxTileCount: Int,
-      region: Rectangle
-  ): TerminalEntity =
-    TerminalEntity(tileSheet, region.size, charSize, toTileBatch(region), maxTileCount)
-
   private def toCloneTileData(
       position: Point,
       charCrops: Batch[(Int, Int, Int, Int)],

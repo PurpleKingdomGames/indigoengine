@@ -4,13 +4,13 @@ import indigo.*
 import indigo.scenes.*
 import io.indigoengine.roguelike.starterkit.*
 
-object CloneTilesScene extends Scene[Unit, Unit, Unit]:
+object RogueTerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
 
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
-    SceneName("CloneTiles scene")
+    SceneName("RogueTerminalEmulatorScene")
 
   val modelLens: Lens[Unit, Unit] =
     Lens.keepLatest
@@ -39,8 +39,8 @@ object CloneTilesScene extends Scene[Unit, Unit, Unit]:
     _ => Outcome(viewModel)
 
   // This shouldn't live here really, just keeping it simple for demo purposes.
-  val terminal: TerminalEmulator =
-    TerminalEmulator(Size(3, 3))
+  val terminal: RogueTerminalEmulator =
+    RogueTerminalEmulator(Size(3, 3))
       .put(
         Point(0, 0) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),
         Point(1, 0) -> MapTile(Tile.`░`, RGBA.Yellow, RGBA.Orange),

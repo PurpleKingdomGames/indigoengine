@@ -66,15 +66,13 @@ The project then uses custom shaders that allow you to set the foreground and ba
 
 > It appears the the only graphical requirements are that you can set the foreground and background colors. If this isn't true please raise any issue!
 
-## Rendering ASCII Art
+## ASCII Art Materials
 
 Rendering ASCII art means setting three things:
 
 1. The character
 1. The foreground color (implemented as a tint to retain shading)
 1. The background color (which overrides a "mask" color with another color value - the mask color is magenta by default)
-
-This library provides three mechanisms to do that:
 
 ### `TerminalText`
 
@@ -86,42 +84,24 @@ Great for pop-up menus, and monochrome sections of ASCII art, or maps that aren'
 
 [Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/TerminalTextScene.scala)
 
-### The `TerminalEmulator` and the `RogueTerminalEmulator`
+### `TerminalMaterial`
+
+This material is a near drop-in replacement for `TerminalText`. It does not support the drop shadow feature, but has a leaner implementation for performance sensitive contexts. Supposed to be used with the `TerminalEmulator`/`RogueTerminalEmulator`'s `toCloneTiles` method.
+
+## The `TerminalEmulator` and the `RogueTerminalEmulator`
 
 The terminal emulators are the basis of the library, and provide a simple 'terminal-like' object you and interact with to represent grids of ASCII tiles. They come in two flavours, both of which have the same interface but behave differently:
 
 1. The `TerminalEmulator` is the recommended default. It is safe and immutable and easy to use, perfect for getting started. The drawback of the `TerminalEmulator` is that is not very performant, and at some point you may find it necessary to start caching results.
 2. The `RogueTerminalEmulator` is a more dangerous version of the `TerminalEmulator`! It is a mutable structure, and as such, much more performant. As with all mutable data types, it must be handled with more care. Generally speaking though, you should be able to use it as a drop in replacement for the `TerminalEmulator`.
 
-### `TerminalEmulator` with `TerminalEntity`
+### Rendering with `CloneTiles`
 
-The `TerminalEmulator` in conjunction with the `TerminalEntity` works in a completely different way to the other methods. Here a special shader (does not support foreground alpha or drop shadows!) is going to draw all the ASCII characters out in a continuous image, and you can interleave colors any time you like with no performance cost. This moves processing costs away from the rendering pipeline but incurs a penalty on the CPU side.
+To render the contents of a `TerminalEmulator` or a `RogueTerminalEmulator` we need to output `CloneTiles`.
 
-The terminal emulator... emulates a simple terminal interface allowing you to put and get characters. Terminals can be merged and drawn.
-
-The trade off here is that it's more powerful but less friendly. You just give it a list of tiles to draw and it will lay them out in the grid specified.
-
-A word on the performance of this solution, by default, this version is configured to render up to a maximum of 4096 tiles and _just_ manages to run at 60fps (for me), but with no business logic. 4000 tiles is an 80x50 which is one of the standard roguelike game grid sizes. However, performance will varying from platform to platform and browser to browser. The performance problem here is a that your allocating a couple of massive arrays every frame, and the GC has to keep up.
-
-Three ways to improve performance / reduce GC pressure:
-
-1. Lower your FPS! Do you need 60 fps for an ASCII game? Probably not! 30 fps would likely be fine. As you lower FPS what you get (aside from less frequent graphics updates) is input lag. So another way to go is to artificially lower fps: Leave your game running at 60fps, but put in a throttle that only redraws the view every 15-30 fps based on time since last draw.
-2. Only call `draw`, when the map changes, which is on key stroke not on every frame. This will reduce the number of times the massive arrays are produced and discarded. Cache the drawn `TerminalEntity` in the view model.
-3. Lower the max array size.
+Performance will vary by scene complexity, specifically how many unique colour combinations you have in place. In other words, if all your tiles are identical, the scene will be boring but rendering quickly. If every tile is unique then rendering will be slow(er).
 
 [Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/TerminalEmulatorScene.scala)
-
-### `TerminalEmulator` with `CloneTiles`
-
-Another way to use the `TerminalEmulator` is to have is output a `CloneTiles`.
-
-This is as capable as the previous method, but does not have the 4096 tile limit. Performance will vary by scene complexity, specifically how many unique colour combinations you have in place. Please note that this method allows much more flexible rendering, but will not work well with primitives of difference sizes as it is designed to render a grid.
-
-[Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/CloneTilesScene.scala)
-
-### `TerminalMaterial`
-
-This material is a near drop-in replacement for `TerminalText`. It does not support the drop shadow feature, but has a leaner implementation for performance sensitive contexts. Supposed to be used with the `TerminalEmulator`'s `toCloneTiles` method.
 
 ## Extras
 

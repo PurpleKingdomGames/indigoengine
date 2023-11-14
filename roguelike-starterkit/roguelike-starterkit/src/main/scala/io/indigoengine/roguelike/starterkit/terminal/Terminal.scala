@@ -81,14 +81,6 @@ trait Terminal:
     */
   def toTileBatch: Batch[MapTile]
 
-  /** Export the terminal as a `TerminalEntity`
-    */
-  def draw(
-      tileSheet: AssetName,
-      charSize: Size,
-      maxTileCount: Int
-  ): TerminalEntity
-
   /** Export the terminal so that it can be rendered as CloneTiles
     */
   def toCloneTiles(
