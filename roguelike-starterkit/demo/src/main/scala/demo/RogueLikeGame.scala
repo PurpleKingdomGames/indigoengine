@@ -3,7 +3,7 @@ package demo
 import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
-import io.indigoengine.roguelike.starterkit.*
+import roguelikestarterkit.*
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

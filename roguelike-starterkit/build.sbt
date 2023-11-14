@@ -63,8 +63,8 @@ lazy val roguelike =
       Compile / sourceGenerators += Def.task {
         TileCharGen
           .gen(
-            "RoguelikeTiles",                             // Class/module name.
-            "io.indigoengine.roguelike.starterkit.tiles", // fully qualified package name
+            "RoguelikeTiles",            // Class/module name.
+            "roguelikestarterkit.tiles", // fully qualified package name
             (Compile / sourceManaged).value // Managed sources (output) directory for the generated classes
           )
       }.taskValue

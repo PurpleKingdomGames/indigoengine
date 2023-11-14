@@ -2,7 +2,7 @@ package demo
 
 import indigo.*
 import indigo.scenes.*
-import io.indigoengine.roguelike.starterkit.*
+import roguelikestarterkit.*
 
 object RogueTerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
 

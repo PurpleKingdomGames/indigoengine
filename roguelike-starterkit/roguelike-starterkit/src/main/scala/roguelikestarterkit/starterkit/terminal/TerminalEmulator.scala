@@ -1,11 +1,11 @@
-package io.indigoengine.roguelike.starterkit.terminal
+package roguelikestarterkit.terminal
 
 import indigo.*
 import indigoextras.trees.QuadTree
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf
-import io.indigoengine.roguelike.starterkit.Tile
+import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
 

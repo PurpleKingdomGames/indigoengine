@@ -1,9 +1,9 @@
-package io.indigoengine.roguelike.starterkit.terminal
+package roguelikestarterkit.terminal
 
 import indigo.ShaderPrimitive.*
 import indigo.*
 import indigo.shared.datatypes.RGBA
-import io.indigoengine.roguelike.starterkit.Tile
+import roguelikestarterkit.Tile
 
 /** Represents the three basic properties of a tile: Character, foreground colour, and background
   * colour.

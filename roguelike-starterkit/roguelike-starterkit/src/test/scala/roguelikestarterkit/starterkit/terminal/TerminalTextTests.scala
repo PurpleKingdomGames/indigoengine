@@ -1,7 +1,7 @@
-package io.indigoengine.roguelike.starterkit.terminal
+package roguelikestarterkit.terminal
 
 class TerminalTextTests extends munit.FunSuite {
-  
+
   test("Validate the terminal text shader") {
     import ultraviolet.syntax.*
 

@@ -1,4 +1,4 @@
-package io.indigoengine.roguelike.starterkit.terminal
+package roguelikestarterkit.terminal
 
 import indigo.*
 import indigo.syntax.shaders.*

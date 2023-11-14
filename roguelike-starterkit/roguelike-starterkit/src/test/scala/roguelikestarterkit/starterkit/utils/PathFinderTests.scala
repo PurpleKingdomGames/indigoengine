@@ -1,11 +1,11 @@
-package io.indigoengine.roguelike.starterkit.utils
+package roguelikestarterkit.utils
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
-import io.indigoengine.roguelike.starterkit.utils.GridSquare.Blocked
-import io.indigoengine.roguelike.starterkit.utils.GridSquare.Walkable
+import roguelikestarterkit.utils.GridSquare.Blocked
+import roguelikestarterkit.utils.GridSquare.Walkable
 
 class PathFinderTests extends munit.FunSuite {
 

@@ -1,7 +1,7 @@
-package io.indigoengine.roguelike.starterkit.terminal
+package roguelikestarterkit.terminal
 
 import indigo.*
-import io.indigoengine.roguelike.starterkit.Tile
+import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
 

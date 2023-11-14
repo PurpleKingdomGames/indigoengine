@@ -4,8 +4,8 @@ import indigo.*
 
 import japgolly.scalajs.benchmark.*
 import japgolly.scalajs.benchmark.gui.*
-import io.indigoengine.roguelike.starterkit.*
-import io.indigoengine.roguelike.starterkit.terminal.MapTile
+import roguelikestarterkit.*
+import roguelikestarterkit.terminal.MapTile
 
 object RogueTerminalEmulatorBenchmarks:
 

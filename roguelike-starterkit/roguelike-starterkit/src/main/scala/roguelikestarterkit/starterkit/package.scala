@@ -1,4 +1,4 @@
-package io.indigoengine.roguelike.starterkit
+package roguelikestarterkit
 
 // Terminal
 
