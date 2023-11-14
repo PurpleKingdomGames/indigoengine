@@ -59,7 +59,11 @@ object CloneTilesScene extends Scene[Unit, Unit, Unit]:
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
     val tiles =
-      terminal.toCloneTiles(CloneId("demo"), Point.zero, RoguelikeTiles.Size10x10.charCrops) { (fg, bg) =>
+      terminal.toCloneTiles(
+        CloneId("demo"),
+        Point.zero,
+        RoguelikeTiles.Size10x10.charCrops
+      ) { (fg, bg) =>
         Graphic(10, 10, TerminalMaterial(Assets.tileMap, fg, bg))
       }
 

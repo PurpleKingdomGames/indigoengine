@@ -108,7 +108,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
       maxTileCount: Int,
       region: Rectangle
   ): TerminalEntity =
-    TerminalEntity(tileSheet, size, charSize, toTileBatch(region), maxTileCount)
+    TerminalEntity(tileSheet, region.size, charSize, toTileBatch(region), maxTileCount)
 
   private def toCloneTileData(
       position: Point,
@@ -139,7 +139,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
     val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
       Batch.fromMap(
-        toPositionedBatch
+        positionedBatch
           .groupBy(p =>
             (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
           )
@@ -202,7 +202,9 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
     * (but the position is given), does not fill in gaps.
     */
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
-    charMap.toBatchWithPosition.filter(p => region.contains(p._1.toPoint)).map(p => p._1.toPoint -> p._2)
+    charMap.toBatchWithPosition
+      .filter(p => region.contains(p._1.toPoint))
+      .map(p => p._1.toPoint -> p._2)
 
   def |+|(otherConsole: Terminal): TerminalEmulator =
     combine(otherConsole)

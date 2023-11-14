@@ -176,7 +176,7 @@ final class RogueTerminalEmulator(
       maxTileCount: Int,
       region: Rectangle
   ): TerminalEntity =
-    TerminalEntity(tileSheet, size, charSize, toTileBatch(region), maxTileCount)
+    TerminalEntity(tileSheet, region.size, charSize, toTileBatch(region), maxTileCount)
 
   private def toCloneTileData(
       position: Point,
