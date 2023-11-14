@@ -14,6 +14,7 @@
           packages = [
             jdkToUse
             sbtWithJRE
+            pkgs.nodejs
           ];
         };
       }
