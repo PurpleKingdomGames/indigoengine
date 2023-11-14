@@ -5,6 +5,9 @@ import io.indigoengine.roguelike.starterkit.Tile
 
 import scala.annotation.tailrec
 
+/** Represents the output of converting a Terminal into clones ready for rendering. You must add the
+  * clones to you scene and register the clone blanks.
+  */
 final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTiles]):
   def |+|(other: TerminalClones): TerminalClones =
     combine(other)

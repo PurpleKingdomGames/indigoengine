@@ -7,6 +7,7 @@ import indigo.shared.dice.Dice
 
 import scala.annotation.tailrec
 
+/** A simple path finding implementation for a grid. */
 final case class PathFinder(size: Size, grid: Batch[GridSquare]):
 
   def contains(coords: Point): Boolean =
@@ -25,6 +26,7 @@ final case class PathFinder(size: Size, grid: Batch[GridSquare]):
       this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, scoreAmount))
     )
 
+/** A simple path finding implementation for a grid. */
 object PathFinder:
 
   def sampleAt(searchGrid: PathFinder, coords: Point, gridWidth: Int): Batch[GridSquare] =
@@ -143,6 +145,7 @@ object PathFinder:
     )
   }
 
+/** A GridSquare represents a position on the gird in the PathFinder implementation. */
 enum GridSquare(val score: Int):
   val index: Int
   val coords: Point
@@ -155,6 +158,7 @@ enum GridSquare(val score: Int):
       case gs: Walkable => gs.copy(weight = newScore)
       case gs: Blocked  => gs
 
+/** A GridSquare represents a position on the gird in the PathFinder implementation. */
 object GridSquare:
   val Max: Int = Int.MaxValue
 

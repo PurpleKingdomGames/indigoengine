@@ -4,8 +4,12 @@ import indigo.*
 
 import scala.annotation.tailrec
 
+/** Helper methods for working out a players field of view. */
 object FOV:
 
+  /** An implementation of the Bresenham Line algorithm, which plots clean lines across grids. Used
+    * by drawing tools and in this case, for lines of sight.
+    */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def bresenhamLine(from: Point, to: Point): Batch[Point] =
     val x0: Int = from.x

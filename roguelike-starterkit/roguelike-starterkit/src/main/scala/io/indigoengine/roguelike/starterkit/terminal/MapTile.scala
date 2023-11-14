@@ -5,6 +5,9 @@ import indigo.*
 import indigo.shared.datatypes.RGBA
 import io.indigoengine.roguelike.starterkit.Tile
 
+/** Represents the three basic properties of a tile: Character, foreground colour, and background
+  * colour.
+  */
 final case class MapTile(char: Tile, foreground: RGBA, background: RGBA):
   def withChar(newChar: Tile): MapTile =
     this.copy(char = newChar)
