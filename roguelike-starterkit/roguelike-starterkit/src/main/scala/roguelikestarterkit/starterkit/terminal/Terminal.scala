@@ -76,13 +76,74 @@ trait Terminal:
     */
   def clear: Terminal
 
-  /** Export the terminal so that it can be rendered as CloneTiles
-    */
+  /** Creates a `TerminalClones` instance of the given map. */
   def toCloneTiles(
       idPrefix: CloneId,
       position: Point,
       charCrops: Batch[(Int, Int, Int, Int)]
-  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    Terminal.toCloneTilesFromBatch(
+      idPrefix,
+      position,
+      charCrops,
+      toPositionedBatch,
+      makeBlank,
+      Terminal.toCloneTileData
+    )
+
+  /** Creates a `TerminalClones` instance of a defined region of the given map. */
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      region: Rectangle
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    Terminal.toCloneTilesFromBatch(
+      idPrefix,
+      position,
+      charCrops,
+      toPositionedBatch(region),
+      makeBlank,
+      Terminal.toCloneTileData
+    )
+
+  /** Export the terminal so that it can be rendered as CloneTiles, and supply a modifier funtion to
+    * alter the relative position, rotation, and scale of the tile.
+    */
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      modifier: (Point, MapTile) => (Point, Radians, Vector2)
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    Terminal.toCloneTilesFromBatch(
+      idPrefix,
+      position,
+      charCrops,
+      toPositionedBatch,
+      makeBlank,
+      Terminal.toCloneTileDataWithModifier(modifier)
+    )
+
+  /** Export the terminal so that it can be rendered as CloneTiles for a defined region of the given
+    * map, and supply a modifier funtion to alter the relative position, rotation, and scale of the
+    * tile.
+    */
+  def toCloneTiles(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      region: Rectangle,
+      modifier: (Point, MapTile) => (Point, Radians, Vector2)
+  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
+    Terminal.toCloneTilesFromBatch(
+      idPrefix,
+      position,
+      charCrops,
+      toPositionedBatch(region),
+      makeBlank,
+      Terminal.toCloneTileDataWithModifier(modifier)
+    )
 
   /** Export the terminal as a batch of MapTiles.
     */
@@ -127,3 +188,76 @@ object Terminal:
 
   private[terminal] lazy val EmptyTile: MapTile =
     MapTile(Tile.NULL, RGBA.Zero, RGBA.Zero)
+
+  private[terminal] def toCloneTilesFromBatch(
+      idPrefix: CloneId,
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      positionedBatch: Batch[(Point, MapTile)],
+      makeBlank: (RGBA, RGBA) => Cloneable,
+      toCloneTileData: (
+          Point,
+          Batch[(Int, Int, Int, Int)],
+          Batch[(Point, MapTile)]
+      ) => Batch[CloneTileData]
+  ): TerminalClones =
+    val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
+      CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
+
+    val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
+      Batch.fromMap(
+        positionedBatch
+          .groupBy(p =>
+            (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
+          )
+      )
+
+    val results =
+      combinations.map { c =>
+        (
+          CloneBlank(c._1._1, makeBlank(c._1._2, c._1._3)),
+          CloneTiles(c._1._1, toCloneTileData(position, charCrops, c._2))
+        )
+      }
+
+    TerminalClones(results.map(_._1), results.map(_._2))
+
+  private[terminal] def toCloneTileData(
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      data: Batch[(Point, MapTile)]
+  ): Batch[CloneTileData] =
+    data.map { case (pt, t) =>
+      val crop = charCrops(t.char.toInt)
+      CloneTileData(
+        (pt.x * crop._3) + position.x,
+        (pt.y * crop._4) + position.y,
+        crop._1,
+        crop._2,
+        crop._3,
+        crop._4
+      )
+    }
+
+  private[terminal] def toCloneTileDataWithModifier(
+      modifier: (Point, MapTile) => (Point, Radians, Vector2)
+  )(
+      position: Point,
+      charCrops: Batch[(Int, Int, Int, Int)],
+      data: Batch[(Point, MapTile)]
+  ): Batch[CloneTileData] =
+    data.map { case (pt, t) =>
+      val crop      = charCrops(t.char.toInt)
+      val (p, r, s) = modifier(pt, t)
+      CloneTileData(
+        (pt.x * crop._3) + position.x + p.x,
+        (pt.y * crop._4) + position.y + p.y,
+        r,
+        s.x,
+        s.y,
+        crop._1,
+        crop._2,
+        crop._3,
+        crop._4
+      )
+    }

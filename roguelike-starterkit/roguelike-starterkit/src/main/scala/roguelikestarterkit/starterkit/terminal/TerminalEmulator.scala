@@ -95,68 +95,6 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   def optimise: TerminalEmulator =
     this.copy(charMap = charMap.prune)
 
-  private def toCloneTileData(
-      position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)],
-      data: Batch[(Point, MapTile)]
-  ): Batch[CloneTileData] =
-    data.map { case (pt, t) =>
-      val crop = charCrops(t.char.toInt)
-      CloneTileData(
-        (pt.x * crop._3) + position.x,
-        (pt.y * crop._4) + position.y,
-        crop._1,
-        crop._2,
-        crop._3,
-        crop._4
-      )
-    }
-
-  private def toCloneTilesFromBatch(
-      idPrefix: CloneId,
-      position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)],
-      positionedBatch: Batch[(Point, MapTile)],
-      makeBlank: (RGBA, RGBA) => Cloneable
-  ): TerminalClones =
-    val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
-      CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
-
-    val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
-      Batch.fromMap(
-        positionedBatch
-          .groupBy(p =>
-            (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
-          )
-      )
-
-    val results =
-      combinations.map { c =>
-        (
-          CloneBlank(c._1._1, makeBlank(c._1._2, c._1._3)),
-          CloneTiles(c._1._1, toCloneTileData(position, charCrops, c._2))
-        )
-      }
-
-    TerminalClones(results.map(_._1), results.map(_._2))
-
-  /** Creates a `TerminalClones` instance of the given map. */
-  def toCloneTiles(
-      idPrefix: CloneId,
-      position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)]
-  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
-    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch, makeBlank)
-
-  /** Creates a `TerminalClones` instance of a defined region of the given map. */
-  def toCloneTiles(
-      idPrefix: CloneId,
-      position: Point,
-      charCrops: Batch[(Int, Int, Int, Int)],
-      region: Rectangle
-  )(makeBlank: (RGBA, RGBA) => Cloneable): TerminalClones =
-    toCloneTilesFromBatch(idPrefix, position, charCrops, toPositionedBatch(region), makeBlank)
-
   /** Returns all MapTiles, guarantees order, inserts a default where there is a gap. */
   def toTileBatch: Batch[MapTile] =
     coordsBatch.map(pt => get(pt).getOrElse(Terminal.EmptyTile))
