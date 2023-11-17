@@ -184,6 +184,50 @@ trait Terminal:
     */
   def inset(otherConsole: Terminal, offset: Point): Terminal
 
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): Terminal
+
+  def map(modifier: MapTile => MapTile): Terminal
+
+  def mapRectangle(region: Rectangle)(modifier: MapTile => MapTile): Terminal
+  def fillRectangle(region: Rectangle, mapTile: MapTile): Terminal =
+    mapRectangle(region)(_ => mapTile)
+  def fillRectangle(region: Rectangle, tile: Tile): Terminal =
+    mapRectangle(region)(mt => mt.withChar(tile))
+  def fillRectangle(region: Rectangle, tile: Tile, foreground: RGBA): Terminal =
+    mapRectangle(region)(mt => MapTile(tile, foreground, mt.background))
+  def fillRectangle(region: Rectangle, tile: Tile, foreground: RGBA, background: RGBA): Terminal =
+    mapRectangle(region)(mt => MapTile(tile, foreground, background))
+
+  def mapCircle(circle: Circle)(modifier: MapTile => MapTile): Terminal
+  def fillCircle(circle: Circle, mapTile: MapTile): Terminal =
+    mapCircle(circle)(_ => mapTile)
+  def fillCircle(circle: Circle, tile: Tile): Terminal =
+    mapCircle(circle)(mt => mt.withChar(tile))
+  def fillCircle(circle: Circle, tile: Tile, foreground: RGBA): Terminal =
+    mapCircle(circle)(mt => MapTile(tile, foreground, mt.background))
+  def fillCircle(circle: Circle, tile: Tile, foreground: RGBA, background: RGBA): Terminal =
+    mapCircle(circle)(mt => MapTile(tile, foreground, background))
+
+  def mapLine(from: Point, to: Point)(modifier: MapTile => MapTile): Terminal
+  def mapLine(line: LineSegment)(modifier: MapTile => MapTile): Terminal =
+    mapLine(line.start.toPoint, line.end.toPoint)(modifier)
+  def fillLine(line: LineSegment, mapTile: MapTile): Terminal =
+    mapLine(line.start.toPoint, line.end.toPoint)(_ => mapTile)
+  def fillLine(line: LineSegment, tile: Tile): Terminal =
+    mapLine(line.start.toPoint, line.end.toPoint)(mt => mt.withChar(tile))
+  def fillLine(line: LineSegment, tile: Tile, foreground: RGBA): Terminal =
+    mapLine(line.start.toPoint, line.end.toPoint)(mt => MapTile(tile, foreground, mt.background))
+  def fillLine(line: LineSegment, tile: Tile, foreground: RGBA, background: RGBA): Terminal =
+    mapLine(line.start.toPoint, line.end.toPoint)(mt => MapTile(tile, foreground, background))
+  def fillLine(from: Point, to: Point, mapTile: MapTile): Terminal =
+    mapLine(from, to)(_ => mapTile)
+  def fillLine(from: Point, to: Point, tile: Tile): Terminal =
+    mapLine(from, to)(mt => mt.withChar(tile))
+  def fillLine(from: Point, to: Point, tile: Tile, foreground: RGBA): Terminal =
+    mapLine(from, to)(mt => MapTile(tile, foreground, mt.background))
+  def fillLine(from: Point, to: Point, tile: Tile, foreground: RGBA, background: RGBA): Terminal =
+    mapLine(from, to)(mt => MapTile(tile, foreground, background))
+
 object Terminal:
 
   private[terminal] lazy val EmptyTile: MapTile =

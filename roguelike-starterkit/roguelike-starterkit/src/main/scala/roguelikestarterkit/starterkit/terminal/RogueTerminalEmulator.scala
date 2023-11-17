@@ -1,6 +1,7 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
+import roguelikestarterkit.FOV
 import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
@@ -250,6 +251,88 @@ final class RogueTerminalEmulator(
 
   def toTerminalEmulator: TerminalEmulator =
     TerminalEmulator(size).inset(this, Point.zero)
+
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): Terminal =
+    val idx = RogueTerminalEmulator.pointToIndex(position, size.width)
+    val t   = _tiles(idx)
+    val f   = _foreground(idx)
+    val b   = _background(idx)
+    val mt  = modifier(MapTile(t, f, b))
+
+    updateAt(idx, mt.char, mt.foreground, mt.background)
+    this
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def map(modifier: MapTile => MapTile): Terminal =
+    val count = length
+    var i     = 0
+
+    while i < count do
+      val t  = _tiles(i)
+      val f  = _foreground(i)
+      val b  = _background(i)
+      val mt = modifier(MapTile(t, f, b))
+
+      updateAt(i, mt.char, mt.foreground, mt.background)
+
+      i += 1
+
+    this
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def mapRectangle(region: Rectangle)(modifier: MapTile => MapTile): Terminal =
+    val count = length
+    var i     = 0
+
+    while i < count do
+      if region.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+        val t  = _tiles(i)
+        val f  = _foreground(i)
+        val b  = _background(i)
+        val mt = modifier(MapTile(t, f, b))
+
+        updateAt(i, mt.char, mt.foreground, mt.background)
+
+      i += 1
+
+    this
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def mapCircle(circle: Circle)(modifier: MapTile => MapTile): Terminal =
+    val count = length
+    var i     = 0
+
+    while i < count do
+      if circle.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+        val t  = _tiles(i)
+        val f  = _foreground(i)
+        val b  = _background(i)
+        val mt = modifier(MapTile(t, f, b))
+
+        updateAt(i, mt.char, mt.foreground, mt.background)
+
+      i += 1
+
+    this
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
+  def mapLine(from: Point, to: Point)(modifier: MapTile => MapTile): Terminal =
+    val pts   = FOV.bresenhamLine(from, to)
+    val count = length
+    var i     = 0
+
+    while i < count do
+      if pts.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
+        val t  = _tiles(i)
+        val f  = _foreground(i)
+        val b  = _background(i)
+        val mt = modifier(MapTile(t, f, b))
+
+        updateAt(i, mt.char, mt.foreground, mt.background)
+
+      i += 1
+
+    this
 
 object RogueTerminalEmulator:
 

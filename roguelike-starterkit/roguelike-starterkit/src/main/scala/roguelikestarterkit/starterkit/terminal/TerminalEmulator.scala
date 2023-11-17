@@ -5,6 +5,7 @@ import indigoextras.trees.QuadTree
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf
+import roguelikestarterkit.FOV
 import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
@@ -143,6 +144,49 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
 
   def toRogueTerminalEmulator: RogueTerminalEmulator =
     RogueTerminalEmulator(size).inset(this, Point.zero)
+
+  def modifyAt(position: Point)(modifier: MapTile => MapTile): Terminal =
+    get(position) match
+      case None =>
+        this
+
+      case Some(value) =>
+        put(position, modifier(value))
+
+  def map(modifier: MapTile => MapTile): Terminal =
+    this.copy(
+      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
+        acc.insertElement(modifier(char), pos)
+      }
+    )
+
+  def mapRectangle(region: Rectangle)(modifier: MapTile => MapTile): Terminal =
+    this.copy(
+      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
+        if region.contains(pos.toPoint) then acc.insertElement(char, pos)
+        else acc
+      }
+    )
+
+  def mapCircle(circle: Circle)(modifier: MapTile => MapTile): Terminal =
+    this.copy(
+      charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
+        if circle.contains(pos.toPoint) then acc.insertElement(modifier(char), pos)
+        else acc
+      }
+    )
+
+  def mapLine(from: Point, to: Point)(modifier: MapTile => MapTile): Terminal =
+    this.copy(
+      charMap = FOV.bresenhamLine(from, to).foldLeft(charMap) { case (acc, pos) =>
+        get(pos) match
+          case None =>
+            acc
+
+          case Some(value) =>
+            acc.insertElement(modifier(value), pos.toVertex)
+      }
+    )
 
 object TerminalEmulator:
   def apply(screenSize: Size): TerminalEmulator =
