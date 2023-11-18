@@ -360,4 +360,232 @@ class TerminalEmulatorTests extends munit.FunSuite {
     assertEquals(actual.clones.map(_.id), expected.clones.map(_.id))
   }
 
+  test("modifyAt") {
+    val actual =
+      TerminalEmulator(Size(3))
+        .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        .modifyAt(Point(1))(mt => mt.withBackgroundColor(RGBA.Red))
+        .toTileBatch
+
+    val expected =
+      Batch(
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Red),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        )
+      ).flatten
+
+    assert(actual.length == expected.length)
+    assert(actual.zip(expected).forall(_ == _))
+  }
+
+  test("map") {
+    val actual =
+      TerminalEmulator(Size(3))
+        .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        .map {
+          case (pt, _) if pt == Point(0) || pt == Point(1) || pt == Point(2) =>
+            MapTile(Tile.DARK_SHADE, RGBA.White, RGBA.Black)
+
+          case (_, mt) =>
+            mt
+        }
+        .toTileBatch
+
+    val expected =
+      Batch(
+        Batch(
+          MapTile(Tile.DARK_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.White, RGBA.Black)
+        )
+      ).flatten
+
+    assert(actual.length == expected.length)
+    assert(actual.zip(expected).forall(_ == _))
+  }
+
+  test("mapRectangle") {
+    val actual =
+      TerminalEmulator(Size(5))
+        .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        .mapRectangle(Rectangle(1, 1, 3, 3)) { (_, _) =>
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
+        }
+        .toTileBatch
+
+    val expected =
+      Batch(
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        )
+      ).flatten
+
+    // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
+
+    assert(actual.length == expected.length)
+    assert(actual.zip(expected).forall(_ == _))
+  }
+
+  test("mapCircle") {
+    val actual =
+      TerminalEmulator(Size(5))
+        .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        .mapCircle(Circle(2, 2, 2)) { (_, _) =>
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
+        }
+        .toTileBatch
+
+    val expected =
+      Batch(
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        )
+      ).flatten
+
+    // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
+
+    assert(actual.length == expected.length)
+    assert(actual.zip(expected).forall(_ == _))
+  }
+
+  test("mapLine") {
+    val actual =
+      TerminalEmulator(Size(5))
+        .fill(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        .mapLine(Point(0), Point(4)) { (_, _) =>
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
+        }
+        .toTileBatch
+
+    val expected =
+      Batch(
+        Batch(
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black)
+        ),
+        Batch(
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.LIGHT_SHADE, RGBA.White, RGBA.Black),
+          MapTile(Tile.DARK_SHADE, RGBA.Red, RGBA.Blue)
+        )
+      ).flatten
+
+    // actual.zip(expected).foreach(p => println(s"$p - ${p._1 == p._2}"))
+
+    assert(actual.length == expected.length)
+    assert(actual.zip(expected).forall(_ == _))
+  }
+
 }

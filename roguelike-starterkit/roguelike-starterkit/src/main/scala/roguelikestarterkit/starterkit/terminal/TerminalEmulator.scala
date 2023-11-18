@@ -163,7 +163,7 @@ final case class TerminalEmulator(size: Size, charMap: QuadTree[MapTile]) extend
   def mapRectangle(region: Rectangle)(modifier: (Point, MapTile) => MapTile): TerminalEmulator =
     this.copy(
       charMap = charMap.toBatchWithPosition.foldLeft(charMap) { case (acc, (pos, char)) =>
-        if region.contains(pos.toPoint) then acc.insertElement(char, pos)
+        if region.contains(pos.toPoint) then acc.insertElement(modifier(pos.toPoint, char), pos)
         else acc
       }
     )
