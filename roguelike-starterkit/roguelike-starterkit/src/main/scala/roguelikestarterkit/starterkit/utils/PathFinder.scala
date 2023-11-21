@@ -12,6 +12,9 @@ import scala.annotation.tailrec
 /** A simple path finding implementation for a grid. */
 final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
 
+  def map(f: GridSquare => GridSquare): PathFinder =
+    this.copy(grid = grid.map(f))
+
   def contains(coords: Point): Boolean =
     area.contains(coords)
 
