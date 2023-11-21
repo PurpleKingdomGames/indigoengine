@@ -22,7 +22,20 @@ class PathFinderTests extends munit.FunSuite {
     val searchGrid = PathFinder.fromRectangles(Rectangle(Size(3, 3))).withImpassable(impassable)
 
     val actual   = searchGrid.locatePath(start, end, scoreAs).toList
-    val expected = List(start, Point(1, 1), Point(0, 1), end)
+    val expected = List(Point(1, 1), Point(0, 1), end)
+
+    assertEquals(actual, expected)
+  }
+
+  test("Finding an the next move") {
+    val start: Point      = Point(2, 1)
+    val end: Point        = Point(0, 2)
+    val impassable: Point = Point(1, 0)
+
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(3, 3))).withImpassable(impassable)
+
+    val actual   = searchGrid.nextMove(start, end, scoreAs)
+    val expected = Point(1, 1)
 
     assertEquals(actual, expected)
   }
@@ -47,7 +60,7 @@ class PathFinderTests extends munit.FunSuite {
 
     val path: Batch[Point] = searchGrid.locatePath(start, end, scoreAs)
 
-    assertEquals(path.toList, List(start, Point(1, 1), Point(0, 1), end))
+    assertEquals(path.toList, List(Point(1, 1), Point(0, 1), end))
   }
 
   test("Scoring the grid.should be able to score a grid") {
@@ -196,7 +209,7 @@ class PathFinderTests extends munit.FunSuite {
       searchGrid.locatePath(start, end, scoreAs)
 
     val expected: List[Point] =
-      List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5))
+      List(Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5))
 
     assertEquals(actual.toList, expected)
   }

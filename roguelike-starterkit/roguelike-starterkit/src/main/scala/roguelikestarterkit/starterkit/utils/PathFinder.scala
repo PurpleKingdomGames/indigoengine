@@ -23,25 +23,42 @@ final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
       end: Point,
       scoreAmount: GridSquare => Int
   ): Batch[Point] =
-    PathFinder.locatePath(
-      start,
-      end,
-      this.copy(
-        grid = PathFinder.scoreGridSquares(start, end, this, scoreAmount)
+    PathFinder
+      .locatePath(
+        start,
+        end,
+        this.copy(
+          grid = PathFinder.scoreGridSquares(start, end, this, scoreAmount)
+        )
       )
-    )
+      .filterNot(_ == start)
 
   def locatePath(
       start: Point,
       end: Point
   ): Batch[Point] =
-    PathFinder.locatePath(
-      start,
-      end,
-      this.copy(
-        grid = PathFinder.scoreGridSquares(start, end, this, _ => 1)
+    PathFinder
+      .locatePath(
+        start,
+        end,
+        this.copy(
+          grid = PathFinder.scoreGridSquares(start, end, this, _ => 1)
+        )
       )
-    )
+      .filterNot(_ == start)
+
+  def nextMove(
+      start: Point,
+      end: Point,
+      scoreAmount: GridSquare => Int
+  ): Point =
+    locatePath(start, end, scoreAmount).headOption.getOrElse(start)
+
+  def nextMove(
+      start: Point,
+      end: Point
+  ): Point =
+    locatePath(start, end).headOption.getOrElse(start)
 
   def withImpassable(blocked: Batch[Point]): PathFinder =
     this.copy(
