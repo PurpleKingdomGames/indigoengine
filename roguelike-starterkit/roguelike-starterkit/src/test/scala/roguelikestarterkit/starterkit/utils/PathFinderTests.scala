@@ -20,15 +20,9 @@ class PathFinderTests extends munit.FunSuite {
 
     val searchGrid = PathFinder.fromImpassable(Size(3, 3), Batch(impassable))
 
-    val path: Batch[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
+    val path: Batch[Point] = searchGrid.locatePath(start, end, scoreAs)
 
-    val possiblePaths: List[List[Point]] = List(
-      List(start, Point(2, 2), Point(1, 2), end),
-      List(start, Point(1, 1), Point(0, 1), end),
-      List(start, Point(1, 1), Point(1, 2), end)
-    )
-
-    assertEquals(possiblePaths.contains(path.toList), true)
+    assertEquals(path.toList, List(start, Point(1, 1), Point(0, 1), end))
   }
 
   test("Finding an unobscured path.should be able to find a route (from walkable)") {
@@ -49,15 +43,9 @@ class PathFinderTests extends munit.FunSuite {
 
     val searchGrid = PathFinder.fromWalkable(Size(3, 3), walkable)
 
-    val path: Batch[Point] = searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
+    val path: Batch[Point] = searchGrid.locatePath(start, end, scoreAs)
 
-    val possiblePaths: List[List[Point]] = List(
-      List(start, Point(2, 2), Point(1, 2), end),
-      List(start, Point(1, 1), Point(0, 1), end),
-      List(start, Point(1, 1), Point(1, 2), end)
-    )
-
-    assertEquals(possiblePaths.contains(path.toList), true)
+    assertEquals(path.toList, List(start, Point(1, 1), Point(0, 1), end))
   }
 
   test("Scoring the grid.should be able to score a grid") {
@@ -205,14 +193,12 @@ class PathFinderTests extends munit.FunSuite {
     val searchGrid = PathFinder.fromWalkable(Size(5, 7), walkable)
 
     val actual: Batch[Point] =
-      searchGrid.locatePath(Dice.fromSeed(0), start, end, scoreAs)
+      searchGrid.locatePath(start, end, scoreAs)
 
-    val possiblePaths: List[List[Point]] = List(
-      List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5)),
-      List(Point(3, 2), Point(2, 2), Point(2, 3), Point(2, 4), Point(2, 5))
-    )
+    val expected: List[Point] =
+      List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5))
 
-    assert(clue(possiblePaths.contains(actual.toList)))
+    assertEquals(actual.toList, expected)
   }
 
 }

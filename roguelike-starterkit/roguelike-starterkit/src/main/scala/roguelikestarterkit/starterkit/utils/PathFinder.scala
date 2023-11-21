@@ -14,13 +14,11 @@ final case class PathFinder(size: Size, grid: Batch[GridSquare]):
     coords.x >= 0 && coords.y >= 0 && coords.x < size.width && coords.y < size.height
 
   def locatePath(
-      dice: Dice,
       start: Point,
       end: Point,
       scoreAmount: GridSquare => Int
   ): Batch[Point] =
     PathFinder.locatePath(
-      dice,
       start,
       end,
       this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, scoreAmount))
@@ -28,15 +26,6 @@ final case class PathFinder(size: Size, grid: Batch[GridSquare]):
 
 /** A simple path finding implementation for a grid. */
 object PathFinder:
-
-  def sampleAt(searchGrid: PathFinder, coords: Point, gridWidth: Int): Batch[GridSquare] =
-    Batch(
-      coords + GridSquare.relativeUp,
-      coords + GridSquare.relativeLeft,
-      coords + GridSquare.relativeRight,
-      coords + GridSquare.relativeDown
-    ).filter(c => searchGrid.contains(c))
-      .map(c => searchGrid.grid(GridSquare.toIndex(c, gridWidth)))
 
   def fromImpassable(size: Size, impassable: Batch[Point]): PathFinder =
     val grid: Batch[GridSquare] =
@@ -64,7 +53,49 @@ object PathFinder:
 
     PathFinder(size, grid)
 
-  def scoreGridSquares(
+  def locatePath(start: Point, end: Point, searchGrid: PathFinder): Batch[Point] = {
+    val width: Int = searchGrid.size.width
+
+    @tailrec
+    def rec(
+        currentPosition: Point,
+        currentScore: Int,
+        acc: Batch[Point]
+    ): Batch[Point] =
+      if (currentPosition == end) acc
+      else
+        val squares = sampleAt(searchGrid, currentPosition, width).filter(c =>
+          c.score != -1 && c.score < currentScore
+        )
+
+        squares.sortBy(_.coords.distanceTo(end)).headOption match
+          case None =>
+            acc
+
+          case Some(next) =>
+            rec(next.coords, next.score, acc ++ Batch(next.coords))
+
+    rec(
+      start,
+      GridSquare.Max,
+      Batch(start)
+    )
+  }
+
+  private[utils] def sampleAt(
+      searchGrid: PathFinder,
+      coords: Point,
+      gridWidth: Int
+  ): Batch[GridSquare] =
+    Batch(
+      coords + GridSquare.relativeUp,
+      coords + GridSquare.relativeLeft,
+      coords + GridSquare.relativeRight,
+      coords + GridSquare.relativeDown
+    ).filter(c => searchGrid.contains(c))
+      .map(c => searchGrid.grid(GridSquare.toIndex(c, gridWidth)))
+
+  private[utils] def scoreGridSquares(
       start: Point,
       end: Point,
       searchGrid: PathFinder,
@@ -113,36 +144,6 @@ object PathFinder:
     val (done, todo) = searchGrid.grid.partition(_.coords == end)
 
     rec(start, todo, 0, Batch(end), done.map(_.withScore(0))).sortBy(_.index)
-  }
-
-  def locatePath(dice: Dice, start: Point, end: Point, searchGrid: PathFinder): Batch[Point] = {
-    val width: Int = searchGrid.size.width
-
-    @tailrec
-    def rec(
-        currentPosition: Point,
-        currentScore: Int,
-        acc: Batch[Point]
-    ): Batch[Point] =
-      if (currentPosition == end) acc
-      else
-        val squares = sampleAt(searchGrid, currentPosition, width).filter(c =>
-          c.score != -1 && c.score < currentScore
-        )
-
-        if squares.isEmpty then acc
-        else if squares.size == 1 then
-          val next = squares.head
-          rec(next.coords, next.score, acc ++ Batch(next.coords))
-        else
-          val next = squares(dice.rollFromZero(squares.length - 1))
-          rec(next.coords, next.score, acc ++ Batch(next.coords))
-
-    rec(
-      start,
-      GridSquare.Max,
-      Batch(start)
-    )
   }
 
 /** A GridSquare represents a position on the gird in the PathFinder implementation. */
