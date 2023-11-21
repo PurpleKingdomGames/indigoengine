@@ -2,6 +2,7 @@ package roguelikestarterkit.utils
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
 import roguelikestarterkit.utils.GridSquare.Blocked
@@ -18,11 +19,12 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Size(3, 3), Batch(impassable))
+    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(3, 3)), Batch(impassable))
 
-    val path: Batch[Point] = searchGrid.locatePath(start, end, scoreAs)
+    val actual   = searchGrid.locatePath(start, end, scoreAs).toList
+    val expected = List(start, Point(1, 1), Point(0, 1), end)
 
-    assertEquals(path.toList, List(start, Point(1, 1), Point(0, 1), end))
+    assertEquals(actual, expected)
   }
 
   test("Finding an unobscured path.should be able to find a route (from walkable)") {
@@ -41,7 +43,7 @@ class PathFinderTests extends munit.FunSuite {
         Point(2, 2)
       )
 
-    val searchGrid = PathFinder.fromWalkable(Size(3, 3), walkable)
+    val searchGrid = PathFinder.fromWalkable(walkable)
 
     val path: Batch[Point] = searchGrid.locatePath(start, end, scoreAs)
 
@@ -53,7 +55,7 @@ class PathFinderTests extends munit.FunSuite {
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
 
-    val searchGrid = PathFinder.fromImpassable(Size(3, 3), Batch(impassable))
+    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(3, 3)), Batch(impassable))
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -82,7 +84,7 @@ class PathFinderTests extends munit.FunSuite {
   test("Sampling the grid.should be able to take a sample in the middle of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
+    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -93,13 +95,13 @@ class PathFinderTests extends munit.FunSuite {
         Blocked(10, Point(2, 2))
       )
 
-    assertEquals(PathFinder.sampleAt(searchGrid, Point(2, 1), searchGrid.size.width), expected)
+    assertEquals(PathFinder.sampleAt(searchGrid, Point(2, 1), searchGrid.area.size.width), expected)
   }
 
   test("Sampling the grid.should be able to take a sample at the edge of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
+    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -109,13 +111,13 @@ class PathFinderTests extends munit.FunSuite {
         Walkable(11, Point(3, 2), -1)
       )
 
-    assertEquals(PathFinder.sampleAt(searchGrid, Point(3, 1), searchGrid.size.width), expected)
+    assertEquals(PathFinder.sampleAt(searchGrid, Point(3, 1), searchGrid.area.size.width), expected)
   }
 
   test("Sampling the grid.should be able to take a sample at the top left of the map") {
     val impassable: Point = Point(2, 2)
 
-    val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
+    val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
 
     val expected: Batch[GridSquare] =
       Batch(
@@ -124,7 +126,7 @@ class PathFinderTests extends munit.FunSuite {
         Walkable(4, Point(0, 1), -1)
       )
 
-    assertEquals(PathFinder.sampleAt(searchGrid, Point(0, 0), searchGrid.size.width), expected)
+    assertEquals(PathFinder.sampleAt(searchGrid, Point(0, 0), searchGrid.area.size.width), expected)
   }
 
   test(
@@ -151,7 +153,7 @@ class PathFinderTests extends munit.FunSuite {
   val end: Point        = Point(3, 2)
   val impassable: Point = Point(2, 2)
 
-  val searchGrid = PathFinder.fromImpassable(Size(4, 3), Batch(impassable))
+  val searchGrid = PathFinder.fromImpassable(Rectangle(Size(4, 3)), Batch(impassable))
 
   test("Generating a grid.should be able to generate a simple search grid.impassable") {
     assertEquals(searchGrid.grid(GridSquare.toIndex(impassable, 4)), Blocked(10, impassable))
@@ -190,7 +192,7 @@ class PathFinderTests extends munit.FunSuite {
         Point(2, 0)
       )
 
-    val searchGrid = PathFinder.fromWalkable(Size(5, 7), walkable)
+    val searchGrid = PathFinder.fromWalkable(walkable)
 
     val actual: Batch[Point] =
       searchGrid.locatePath(start, end, scoreAs)
@@ -199,6 +201,11 @@ class PathFinderTests extends munit.FunSuite {
       List(Point(3, 2), Point(3, 3), Point(3, 4), Point(2, 4), Point(2, 5))
 
     assertEquals(actual.toList, expected)
+  }
+
+  test("fromRectangles") {
+    // TODO
+    assert(1 == 2)
   }
 
 }

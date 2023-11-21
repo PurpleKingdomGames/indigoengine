@@ -2,16 +2,18 @@ package roguelikestarterkit.utils
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
+import roguelikestarterkit.syntax.toPoints
 
 import scala.annotation.tailrec
 
 /** A simple path finding implementation for a grid. */
-final case class PathFinder(size: Size, grid: Batch[GridSquare]):
+final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
 
   def contains(coords: Point): Boolean =
-    coords.x >= 0 && coords.y >= 0 && coords.x < size.width && coords.y < size.height
+    area.contains(coords)
 
   def locatePath(
       start: Point,
@@ -24,13 +26,36 @@ final case class PathFinder(size: Size, grid: Batch[GridSquare]):
       this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, scoreAmount))
     )
 
+  def locatePath(
+      start: Point,
+      end: Point
+  ): Batch[Point] =
+    PathFinder.locatePath(
+      start,
+      end,
+      this.copy(grid = PathFinder.scoreGridSquares(start: Point, end: Point, this, _ => 1))
+    )
+
+  def withImpassable(blocked: Batch[Point]): PathFinder =
+    this.copy(grid = grid.filter(gs => blocked.contains(gs.coords)))
+
+  def withWalkable(blocked: Batch[Point]): PathFinder =
+    this.copy(grid = grid.filter(gs => blocked.contains(gs.coords)))
+
 /** A simple path finding implementation for a grid. */
 object PathFinder:
 
-  def fromImpassable(size: Size, impassable: Batch[Point]): PathFinder =
+  def fromRectangles(rectangles: Batch[Rectangle]): PathFinder =
+    if rectangles.isEmpty then PathFinder(Rectangle.zero, Batch.empty)
+    else PathFinder.fromWalkable(Batch.fromSet(rectangles.flatMap(_.toPoints).toSet))
+
+  def fromRectangles(rectangles: Rectangle*): PathFinder =
+    fromRectangles(Batch.fromSeq(rectangles))
+
+  def fromImpassable(area: Rectangle, impassable: Batch[Point]): PathFinder =
     val grid: Batch[GridSquare] =
-      Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
-        GridSquare.fromIndex(index, size.width) match
+      Batch.fromIndexedSeq(0 until (area.size.width * area.size.height)).map { index =>
+        GridSquare.fromIndex(index, area.size.width) match
           case c: Point if impassable.contains(c) =>
             GridSquare.Blocked(index, c)
 
@@ -38,12 +63,13 @@ object PathFinder:
             GridSquare.Walkable(index, c, -1)
       }
 
-    PathFinder(size, grid)
+    PathFinder(area, grid)
 
-  def fromWalkable(size: Size, walkable: Batch[Point]): PathFinder =
+  def fromWalkable(walkable: Batch[Point]): PathFinder =
+    val area = Rectangle.fromPointCloud(walkable)
     val grid: Batch[GridSquare] =
-      Batch.fromIndexedSeq(0 until (size.width * size.height)).map { index =>
-        GridSquare.fromIndex(index, size.width) match
+      Batch.fromIndexedSeq(0 until (area.size.width * area.size.height)).map { index =>
+        GridSquare.fromIndex(index, area.size.width) match
           case c: Point if walkable.contains(c) =>
             GridSquare.Walkable(index, c, -1)
 
@@ -51,10 +77,10 @@ object PathFinder:
             GridSquare.Blocked(index, c)
       }
 
-    PathFinder(size, grid)
+    PathFinder(area, grid)
 
   def locatePath(start: Point, end: Point, searchGrid: PathFinder): Batch[Point] = {
-    val width: Int = searchGrid.size.width
+    val width: Int = searchGrid.area.size.width
 
     @tailrec
     def rec(
@@ -119,7 +145,7 @@ object PathFinder:
         case (remainingSquares, lastScoredLocations) =>
           // Find the squares from the remaining pile that the previous scores squares touched.
           val roughEdges: Batch[Batch[GridSquare]] =
-            lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.size.width))
+            lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.area.size.width))
 
           // Filter out any squares that aren't in the remainingSquares list
           val edges: Batch[GridSquare] =
