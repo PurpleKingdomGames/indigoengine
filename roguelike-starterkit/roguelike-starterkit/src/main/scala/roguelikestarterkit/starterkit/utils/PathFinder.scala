@@ -94,8 +94,7 @@ object PathFinder:
     fromRectangles(Batch(rectangle))
 
   def fromWalkable(walkable: Batch[Point]): PathFinder =
-    val a    = Rectangle.fromPointCloud(walkable)
-    val area = a.resize(a.size + 1)
+    val area = Rectangle(Rectangle.fromPointCloud(walkable).size + 1)
 
     val grid: Batch[GridSquare] =
       Batch.fromIndexedSeq(0 until (area.size.width * area.size.height)).map { index =>
