@@ -24,8 +24,7 @@ type TerminalEmulator = terminal.TerminalEmulator
 val TerminalEmulator: terminal.TerminalEmulator.type = terminal.TerminalEmulator
 
 type RogueTerminalEmulator = terminal.RogueTerminalEmulator
-val RogueTerminalEmulator: terminal.RogueTerminalEmulator.type =
-  terminal.RogueTerminalEmulator
+val RogueTerminalEmulator: terminal.RogueTerminalEmulator.type = terminal.RogueTerminalEmulator
 
 type MapTile = terminal.MapTile
 val MapTile: terminal.MapTile.type = terminal.MapTile
