@@ -54,3 +54,76 @@ val RoguelikeTiles: tiles.RoguelikeTiles.type = tiles.RoguelikeTiles
 
 type Tile = tiles.Tile
 val Tile: tiles.Tile.type = tiles.Tile
+
+// UI Shaders
+
+val uiShaders: Set[indigo.Shader] =
+  Set(
+    ui.shaders.LayerMask.shader
+  )
+
+// UI General Datatypes
+
+type UiContext[StartUpData, A] = ui.datatypes.UiContext[StartUpData, A]
+val UiContext: ui.datatypes.UiContext.type = ui.datatypes.UiContext
+
+type CharSheet = ui.datatypes.CharSheet
+val CharSheet: ui.datatypes.CharSheet.type = ui.datatypes.CharSheet
+
+type Coords = ui.datatypes.Coords
+val Coords: ui.datatypes.Coords.type = ui.datatypes.Coords
+
+type Dimensions = ui.datatypes.Dimensions
+val Dimensions: ui.datatypes.Dimensions.type = ui.datatypes.Dimensions
+
+type Bounds = ui.datatypes.Bounds
+val Bounds: ui.datatypes.Bounds.type = ui.datatypes.Bounds
+
+// UI Windows
+
+val WindowManager: ui.window.WindowManager.type = ui.window.WindowManager
+
+type WindowManagerModel[StartupData, A] = ui.window.WindowManagerModel[StartupData, A]
+val WindowManagerModel: ui.window.WindowManagerModel.type = ui.window.WindowManagerModel
+
+type WindowManagerViewModel[StartupData, A] = ui.window.WindowManagerViewModel[StartupData, A]
+val WindowManagerViewModel: ui.window.WindowManagerViewModel.type = ui.window.WindowManagerViewModel
+
+type WindowId = ui.window.WindowId
+val WindowId: ui.window.WindowId.type = ui.window.WindowId
+
+type WindowModel[StartupData, CA, A] = ui.window.WindowModel[StartupData, CA, A]
+val WindowModel: ui.window.WindowModel.type = ui.window.WindowModel
+
+type WindowViewModel = ui.window.WindowViewModel
+val WindowViewModel: ui.window.WindowViewModel.type = ui.window.WindowViewModel
+
+type WindowEvent = ui.window.WindowEvent
+val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
+
+// UI Components
+
+type Component[A] = ui.component.Component[A]
+
+type ComponentGroup = ui.component.ComponentGroup
+val ComponentGroup: ui.component.ComponentGroup.type = ui.component.ComponentGroup
+
+type ComponentFragment = ui.component.ComponentFragment
+val ComponentFragment: ui.component.ComponentFragment.type = ui.component.ComponentFragment
+
+type ComponentLayout = ui.component.ComponentLayout
+val ComponentLayout: ui.component.ComponentLayout.type = ui.component.ComponentLayout
+
+type Overflow = ui.component.Overflow
+val Overflow: ui.component.Overflow.type = ui.component.Overflow
+
+type Padding = ui.component.Padding
+val Padding: ui.component.Padding.type = ui.component.Padding
+
+// UI Built in components
+
+type Button = ui.components.Button
+val Button: ui.components.Button.type = ui.components.Button
+
+type Label = ui.components.Label
+val Label: ui.components.Label.type = ui.components.Label

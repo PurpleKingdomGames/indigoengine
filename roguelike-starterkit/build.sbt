@@ -2,7 +2,7 @@ import scala.sys.process._
 import scala.language.postfixOps
 
 import sbtwelcome._
-import indigoplugin.IndigoOptions
+import indigoplugin._
 
 val scala3Version              = "3.3.1"
 val indigoVersion              = "0.15.2-SNAPSHOT"
@@ -75,6 +75,7 @@ lazy val demoOptions: IndigoOptions =
     .withTitle("Indigo Roguelike!")
     .withBackgroundColor("black")
     .withAssetDirectory("demo/assets")
+    .withWindowSize(800, 600)
 
 lazy val demo =
   (project in file("demo"))
@@ -93,6 +94,14 @@ lazy val demo =
     .settings(
       publish / skip      := true,
       publishLocal / skip := true
+    )
+    .settings(
+      Compile / sourceGenerators += Def.task {
+        IndigoGenerators("demo")
+          .listAssets("Assets", demoOptions.assets)
+          .generateConfig("Config", demoOptions)
+          .toSourceFiles((Compile / sourceManaged).value)
+      }
     )
     .dependsOn(roguelike)
 

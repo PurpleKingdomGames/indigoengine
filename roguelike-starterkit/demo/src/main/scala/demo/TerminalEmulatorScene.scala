@@ -4,18 +4,18 @@ import indigo.*
 import indigo.scenes.*
 import roguelikestarterkit.*
 
-object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
+object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel     = Model
+  type SceneViewModel = ViewModel
 
   val name: SceneName =
     SceneName("TerminalEmulatorScene")
 
-  val modelLens: Lens[Unit, Unit] =
+  val modelLens: Lens[Model, Model] =
     Lens.keepLatest
 
-  val viewModelLens: Lens[Unit, Unit] =
+  val viewModelLens: Lens[ViewModel, ViewModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -24,18 +24,18 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
   val subSystems: Set[SubSystem] =
     Set()
 
-  def updateModel(context: SceneContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: SceneContext[Size], model: Model): GlobalEvent => Outcome[Model] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(RogueTerminalEmulatorScene.name))
+      Outcome(model).addGlobalEvents(SceneEvent.JumpTo(UIScene.name))
 
     case _ =>
       Outcome(model)
 
   def updateViewModel(
-      context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
+      context: SceneContext[Size],
+      model: Model,
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel] =
     _ => Outcome(viewModel)
 
   // This shouldn't live here really, just keeping it simple for demo purposes.
@@ -54,9 +54,9 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
       )
 
   def present(
-      context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
+      context: SceneContext[Size],
+      model: Model,
+      viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     val tiles =
       terminal.toCloneTiles(
@@ -64,7 +64,7 @@ object TerminalEmulatorScene extends Scene[Unit, Unit, Unit]:
         Point.zero,
         RoguelikeTiles.Size10x10.charCrops
       ) { (fg, bg) =>
-        Graphic(10, 10, TerminalMaterial(Assets.tileMap, fg, bg))
+        Graphic(10, 10, TerminalMaterial(Assets.assets.AnikkiSquare10x10, fg, bg))
       }
 
     Outcome(
