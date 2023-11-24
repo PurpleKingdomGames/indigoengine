@@ -1,4 +1,4 @@
-package roguelikestarterkit.starterkit
+package roguelikestarterkit
 
 import indigo.*
 import roguelikestarterkit.syntax.toPoints
