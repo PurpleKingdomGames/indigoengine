@@ -42,6 +42,7 @@ object WindowManager:
 
   def present[StartupData, A](
       context: UiContext[StartupData, A],
+      globalMagnification: Int,
       model: WindowManagerModel[StartupData, A],
       viewModel: WindowManagerViewModel[StartupData, A]
   ): Outcome[SceneUpdateFragment] =
@@ -53,7 +54,7 @@ object WindowManager:
             Batch.empty
 
           case Some(vm) =>
-            Batch(Window.present(context, m, vm))
+            Batch(Window.present(context, globalMagnification, m, vm))
       }
       .sequence
       .map(

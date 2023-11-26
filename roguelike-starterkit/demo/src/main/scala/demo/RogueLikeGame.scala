@@ -10,6 +10,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 @JSExportTopLevel("IndigoGame")
 object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
 
+  val magnification: Int = 1
+
   def initialScene(bootData: Size): Option[SceneName] =
     None
 
@@ -22,7 +24,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   def boot(flags: Map[String, String]): Outcome[BootResult[Size]] =
     Outcome(
       BootResult(
-        Config.config,
+        Config.config.withMagnification(magnification),
         Config.config.viewport.size / 2
       )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)

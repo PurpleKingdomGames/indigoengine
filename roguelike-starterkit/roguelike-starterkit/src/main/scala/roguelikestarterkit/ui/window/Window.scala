@@ -229,6 +229,7 @@ object Window:
 
   def present[StartupData, CA, A](
       context: UiContext[StartupData, CA],
+      globalMagnification: Int,
       model: WindowModel[StartupData, CA, A],
       viewModel: WindowViewModel
   ): Outcome[SceneUpdateFragment] =
@@ -242,7 +243,7 @@ object Window:
           cm.copy(layers =
             cm.layers.map(
               _.withBlendMaterial(
-                LayerMask(viewModel.contentRectangle.toScreenSpace(context.charSheet.size))
+                LayerMask(viewModel.contentRectangle.toScreenSpace(context.charSheet.size * globalMagnification))
               )
             )
           )
