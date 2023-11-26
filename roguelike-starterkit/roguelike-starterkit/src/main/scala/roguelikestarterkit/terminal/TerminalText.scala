@@ -15,6 +15,11 @@ final case class TerminalText(
     shaderId: Option[ShaderId]
 ) extends Material:
 
+  def withColors(newForeground: RGBA, newBackground: RGBA): TerminalText =
+    this.copy(foreground = newForeground, background = newBackground)
+  def withForeground(newForeground: RGB, newBackground: RGB): TerminalText =
+    withColors(newForeground.toRGBA, newBackground.toRGBA)
+
   def withForeground(newColor: RGBA): TerminalText =
     this.copy(foreground = newColor)
   def withForeground(newColor: RGB): TerminalText =

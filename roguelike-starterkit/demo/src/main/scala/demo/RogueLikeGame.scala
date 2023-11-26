@@ -13,10 +13,16 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   val magnification: Int = 2
 
   def initialScene(bootData: Size): Option[SceneName] =
-    None
+    Option(LightingScene.name)
 
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
-    NonEmptyList(UIScene, RogueTerminalEmulatorScene, TerminalTextScene, TerminalEmulatorScene)
+    NonEmptyList(
+      LightingScene,
+      UIScene,
+      RogueTerminalEmulatorScene,
+      TerminalTextScene,
+      TerminalEmulatorScene
+    )
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
@@ -30,9 +36,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets.assetSet)
         .withShaders(
-          uiShaders ++ Set(
-            TerminalText.standardShader,
-            TerminalMaterial.standardShader,
+          shaders.all ++ Set(
             TerminalTextScene.customShader(ShaderId("my shader"))
           )
         )

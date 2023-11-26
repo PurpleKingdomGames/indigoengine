@@ -18,6 +18,29 @@ object syntax:
 
 end syntax
 
+object shaders:
+
+  val ui: Set[indigo.Shader] =
+    Set(
+      roguelikestarterkit.ui.shaders.LayerMask.shader
+    )
+
+  val material: Set[indigo.Shader] =
+    Set(
+      roguelikestarterkit.terminal.TerminalMaterial.standardShader,
+      roguelikestarterkit.terminal.TerminalMaterial.standardShaderLit
+    )
+
+  val text: Set[indigo.Shader] =
+    Set(
+      roguelikestarterkit.terminal.TerminalText.standardShader
+    )
+
+  val all: Set[indigo.Shader] =
+    ui ++ material ++ text
+
+end shaders
+
 // Terminal
 
 type TerminalEmulator = terminal.TerminalEmulator
@@ -54,13 +77,6 @@ val RoguelikeTiles: tiles.RoguelikeTiles.type = tiles.RoguelikeTiles
 
 type Tile = tiles.Tile
 val Tile: tiles.Tile.type = tiles.Tile
-
-// UI Shaders
-
-val uiShaders: Set[indigo.Shader] =
-  Set(
-    ui.shaders.LayerMask.shader
-  )
 
 // UI General Datatypes
 

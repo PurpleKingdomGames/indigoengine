@@ -1,6 +1,7 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
+import indigo.shared.shader.library.Lighting
 import indigo.syntax.shaders.*
 
 /** `TerminalMaterial` is a revised and leaner version of `TerminalText`, aimed at use with
@@ -12,8 +13,14 @@ final case class TerminalMaterial(
     foreground: RGBA,
     background: RGBA,
     mask: RGBA,
+    lighting: LightingModel,
     shaderId: Option[ShaderId]
 ) extends Material:
+
+  def withColors(newForeground: RGBA, newBackground: RGBA): TerminalMaterial =
+    this.copy(foreground = newForeground, background = newBackground)
+  def withForeground(newForeground: RGB, newBackground: RGB): TerminalMaterial =
+    withColors(newForeground.toRGBA, newBackground.toRGBA)
 
   def withForeground(newColor: RGBA): TerminalMaterial =
     this.copy(foreground = newColor)
@@ -30,27 +37,47 @@ final case class TerminalMaterial(
   def withMask(newColor: RGB): TerminalMaterial =
     withMask(newColor.toRGBA)
 
+  def withLighting(newLighting: LightingModel): TerminalMaterial =
+    this.copy(lighting = newLighting)
+  def modifyLighting(modifier: LightingModel => LightingModel): TerminalMaterial =
+    this.copy(lighting = modifier(lighting))
+
+  def enableLighting: TerminalMaterial =
+    withLighting(lighting.enableLighting)
+  def disableLighting: TerminalMaterial =
+    withLighting(lighting.disableLighting)
+
   def withShaderId(newShaderId: ShaderId): TerminalMaterial =
     this.copy(shaderId = Option(newShaderId))
 
   def toShaderData: ShaderData =
-    ShaderData(
-      shaderId.getOrElse(TerminalMaterial.shaderId),
-      Batch(
-        UniformBlock(
-          UniformBlockName("RogueLikeTextData"),
-          Batch(
-            Uniform("FOREGROUND") -> foreground.asVec4,
-            Uniform("BACKGROUND") -> background.asVec4,
-            Uniform("MASK")       -> mask.asVec4
-          )
+    val uniformBlock =
+      UniformBlock(
+        UniformBlockName("RogueLikeTextData"),
+        Batch(
+          Uniform("FOREGROUND") -> foreground.asVec4,
+          Uniform("BACKGROUND") -> background.asVec4,
+          Uniform("MASK")       -> mask.asVec4
         )
-      ),
-      Some(tileMap),
-      None,
-      None,
-      None
-    )
+      )
+
+    lighting match
+      case LightingModel.Unlit =>
+        ShaderData(
+          shaderId.getOrElse(TerminalMaterial.shaderId),
+          Batch(uniformBlock),
+          Some(tileMap),
+          None,
+          None,
+          None
+        )
+
+      case l: LightingModel.Lit =>
+        l.toShaderData(
+          shaderId.getOrElse(TerminalMaterial.litShaderId),
+          Some(tileMap),
+          Batch(uniformBlock)
+        )
 
 object TerminalMaterial:
 
@@ -60,7 +87,7 @@ object TerminalMaterial:
   val shaderId: ShaderId =
     ShaderId("roguelike standard terminal material")
 
-  def standardShader: UltravioletShader =
+  val standardShader: UltravioletShader =
     UltravioletShader.entityFragment(
       shaderId,
       EntityShader.fragment[ShaderImpl.Env](
@@ -69,14 +96,32 @@ object TerminalMaterial:
       )
     )
 
+  val litShaderId: ShaderId =
+    ShaderId("roguelike standard terminal material lit")
+
+  val standardShaderLit: UltravioletShader =
+    UltravioletShader.entityFragment(
+      litShaderId,
+      EntityShader.fragment[ShaderImpl.Env](
+        ShaderImpl.frag,
+        Lighting.prepare,
+        Lighting.light,
+        Lighting.composite,
+        ShaderImpl.Env.ref
+      )
+    )
+
+  val shaders: Set[Shader] =
+    Set(standardShader, standardShaderLit)
+
   def apply(tileMap: AssetName): TerminalMaterial =
-    TerminalMaterial(tileMap, RGBA.White, RGBA.Zero, defaultMask, None)
+    TerminalMaterial(tileMap, RGBA.White, RGBA.Zero, defaultMask, LightingModel.Unlit, None)
 
   def apply(tileMap: AssetName, color: RGBA): TerminalMaterial =
-    TerminalMaterial(tileMap, color, RGBA.Zero, defaultMask, None)
+    TerminalMaterial(tileMap, color, RGBA.Zero, defaultMask, LightingModel.Unlit, None)
 
   def apply(tileMap: AssetName, foreground: RGBA, background: RGBA): TerminalMaterial =
-    TerminalMaterial(tileMap, foreground, background, defaultMask, None)
+    TerminalMaterial(tileMap, foreground, background, defaultMask, LightingModel.Unlit, None)
 
   def apply(
       tileMap: AssetName,
@@ -84,7 +129,16 @@ object TerminalMaterial:
       background: RGBA,
       mask: RGBA
   ): TerminalMaterial =
-    TerminalMaterial(tileMap, foreground, background, mask, None)
+    TerminalMaterial(tileMap, foreground, background, mask, LightingModel.Unlit, None)
+
+  def apply(
+      tileMap: AssetName,
+      foreground: RGBA,
+      background: RGBA,
+      mask: RGBA,
+      lightingModel: LightingModel
+  ): TerminalMaterial =
+    TerminalMaterial(tileMap, foreground, background, mask, lightingModel, None)
 
   object ShaderImpl:
 
@@ -95,6 +149,7 @@ object TerminalMaterial:
         BACKGROUND: vec4,
         MASK: vec4
     ) extends FragmentEnvReference
+        with Lighting.LightEnv
 
     object Env:
       val ref =
