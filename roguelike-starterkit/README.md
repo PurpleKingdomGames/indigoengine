@@ -111,3 +111,7 @@ The starter kit also provides:
 
 1. An implementation of Bresenham's Line algorithm, used in the tutorial for line of sight across a grid.
 2. A very, very simplistic path finding algorithm (just enough for the roguelike-tutorials).
+
+## Roguelike UI
+
+Documentation to follow. The Roguelike Starterkit from 0.3.3 onwards includes a prototype UI system specifically for roguelikes. There is an example in the `UIScene` in the demo project in this repo.
