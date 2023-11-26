@@ -29,8 +29,7 @@ object UiContext:
   def apply[StartUpData, A](
       frameContext: FrameContext[StartUpData],
       charSheet: CharSheet,
-      mousePosition: Point,
       data: A
   ): UiContext[StartUpData, A] =
-    val mouseCoords = Coords(mousePosition / charSheet.size.toPoint)
+    val mouseCoords = Coords(frameContext.mouse.position / charSheet.size.toPoint)
     UiContext(Bounds.zero, charSheet, mouseCoords, data, frameContext)

@@ -37,7 +37,6 @@ object UIScene extends Scene[Size, Model, ViewModel]:
           UiContext(
             context.frameContext,
             Model.defaultCharSheet,
-            context.mouse.position,
             CustomContext()
           ),
           e
@@ -55,7 +54,6 @@ object UIScene extends Scene[Size, Model, ViewModel]:
         UiContext(
           context.frameContext,
           Model.defaultCharSheet,
-          context.mouse.position,
           CustomContext()
         ),
         model.windowManager,
@@ -74,9 +72,9 @@ object UIScene extends Scene[Size, Model, ViewModel]:
         UiContext(
           context.frameContext,
           Model.defaultCharSheet,
-          context.mouse.position,
           CustomContext()
         ),
+        RogueLikeGame.magnification,
         model.windowManager,
         viewModel.windowManager
       )
