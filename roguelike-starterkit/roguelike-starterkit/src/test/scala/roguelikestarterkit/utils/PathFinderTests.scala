@@ -64,6 +64,18 @@ class PathFinderTests extends munit.FunSuite {
   }
 
   test("Scoring the grid.should be able to score a grid") {
+    /*
+      0 1 2
+    0|2|x|3|
+    1|1|2|s|
+    2|e|1|2|
+
+      0 1 2
+    0|2|x|4|
+    1|1|2|3|
+    2|0|1|2|
+     */
+
     val start: Point      = Point(2, 1)
     val end: Point        = Point(0, 2)
     val impassable: Point = Point(1, 0)
@@ -77,8 +89,8 @@ class PathFinderTests extends munit.FunSuite {
         Walkable(
           2,
           Point(2, 0),
-          -1
-        ), // Unscored squares are returned to keep sampleAt working correctly
+          4
+        ),
         Walkable(3, Point(0, 1), 1),
         Walkable(4, Point(1, 1), 2),
         Walkable(5, Point(2, 1), 3), // start
@@ -140,6 +152,29 @@ class PathFinderTests extends munit.FunSuite {
       )
 
     assertEquals(PathFinder.sampleAt(searchGrid, Point(0, 0), searchGrid.area.size.width), expected)
+  }
+
+  test("finding a way around a direct obstruction") {
+    /*
+      0 1 2 3 4
+    0|.|.|e|.|.|
+    1|.|.|.|.|.|
+    2|.|.|.|.|.|
+    3|.|.|X|.|.|
+    4|.|.|s|.|.|
+     */
+
+    val start: Point      = Point(2, 4)
+    val end: Point        = Point(2, 0)
+    val impassable: Point = Point(2, 3)
+
+    val searchGrid = PathFinder.fromRectangles(Rectangle(Size(5))).withImpassable(impassable)
+
+    val actual   = searchGrid.locatePath(start, end, scoreAs).toList
+    val expected = List(Point(1, 4), Point(1, 3), Point(1, 2), Point(1, 1), Point(1, 0), end)
+
+    assertEquals(actual, expected)
+    assertEquals(searchGrid.nextMove(start, end), Point(1, 4))
   }
 
   test(

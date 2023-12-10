@@ -9,7 +9,9 @@ import roguelikestarterkit.syntax.toPoints
 
 import scala.annotation.tailrec
 
-/** A simple path finding implementation for a grid. */
+/** A simple path finding implementation for a grid. Assumes that the grid starts at the origin 0,0,
+  * so you should ensure that is the case!
+  */
 final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
 
   def map(f: GridSquare => GridSquare): PathFinder =
@@ -37,15 +39,7 @@ final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
       start: Point,
       end: Point
   ): Batch[Point] =
-    PathFinder
-      .locatePath(
-        start,
-        end,
-        this.copy(
-          grid = PathFinder.scoreGridSquares(start, end, this, _ => 1)
-        )
-      )
-      .filterNot(_ == start)
+    locatePath(start, end, _ => 1)
 
   def nextMove(
       start: Point,
@@ -80,7 +74,9 @@ final case class PathFinder(area: Rectangle, grid: Batch[GridSquare]):
   def withWalkable(scoreAmount: GridSquare => Int, accessible: Point*): PathFinder =
     withWalkable(Batch.fromSeq(accessible), scoreAmount)
 
-/** A simple path finding implementation for a grid. */
+/** A simple path finding implementation for a grid. Assumes that the grid starts at the origin 0,0,
+  * so you should ensure that is the case!
+  */
 object PathFinder:
 
   def fromRectangles(rectangles: Batch[Rectangle]): PathFinder =
@@ -119,9 +115,9 @@ object PathFinder:
     ): Batch[Point] =
       if (currentPosition == end) acc
       else
-        val squares = sampleAt(searchGrid, currentPosition, width).filter(c =>
+        val squares = sampleAt(searchGrid, currentPosition, width).filter { c =>
           c.score != -1 && c.score < currentScore
-        )
+        }
 
         squares.sortBy(_.coords.distanceTo(end)).headOption match
           case None =>
@@ -164,27 +160,24 @@ object PathFinder:
         lastCoords: Batch[Point],
         scored: Batch[GridSquare]
     ): Batch[GridSquare] =
-      (unscored, lastCoords) match
-        case (a, b) if a.isEmpty || b.isEmpty =>
-          scored ++ unscored
+      unscored match
+        case remainingSquares if remainingSquares.isEmpty =>
+          scored
 
-        case (_, last) if last.exists(_ == target) =>
-          scored ++ unscored
-
-        case (remainingSquares, lastScoredLocations) =>
+        case remainingSquares =>
           // Find the squares from the remaining pile that the previous scores squares touched.
           val roughEdges: Batch[Batch[GridSquare]] =
-            lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.area.size.width))
+            lastCoords.map(c => sampleAt(searchGrid, c, searchGrid.area.size.width))
 
           // Filter out any squares that aren't in the remainingSquares list
           val edges: Batch[GridSquare] =
-            roughEdges.flatMap(_.filter(c => remainingSquares.contains(c)))
+            roughEdges.flatMap(_.filter(c => remainingSquares.exists(_ == c)))
 
           // Deduplicate and score
           val next: Batch[GridSquare] =
             edges
               .foldLeft(Batch.empty[GridSquare]) { (l, x) =>
-                if (l.exists(p => p.coords == x.coords)) l else l ++ Batch(x)
+                if l.exists(p => p.coords == x.coords) then l else l ++ Batch(x)
               }
               .map(gs => gs.withScore(scoreValue + scoreAmount(gs)))
 
