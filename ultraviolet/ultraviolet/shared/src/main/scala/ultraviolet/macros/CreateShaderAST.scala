@@ -1184,7 +1184,23 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Apply(Select(term, op), xs) =>
         op match
-          case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" | "&&" | "||" =>
+          case "<" | "<=" | ">" | ">=" | "==" | "!=" =>
+            // Vector Relational Functions, according to the spec TL;DR: the left and right side types must be the same.
+            // However, we don't have a nice way to do that check yet.
+            val lhs = walkTerm(term, envVarName)
+            val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
+            val rt  = findReturnType(lhs)
+            ShaderAST.Infix(op, lhs, rhs, rt)
+
+          case "+" | "-" | "*" | "/" =>
+            // Math operators.
+            val lhs = walkTerm(term, envVarName)
+            val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
+            val rt  = findReturnType(lhs)
+            ShaderAST.Infix(op, lhs, rhs, rt)
+
+          case "&&" | "||" =>
+            // Logical operators.
             val lhs = walkTerm(term, envVarName)
             val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
             val rt  = findReturnType(lhs)
@@ -1210,7 +1226,23 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
       case Apply(Apply(Ident(op), List(l)), List(r)) =>
         op match
-          case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" | "&&" | "||" =>
+          case "<" | "<=" | ">" | ">=" | "==" | "!=" =>
+            // Vector Relational Functions, according to the spec. TL;DR: the left and right side types must be the same.
+            // However, we don't have a nice way to do that check yet.
+            val lhs = walkTerm(l, envVarName)
+            val rhs = walkTerm(r, envVarName)
+            val rt  = findReturnType(lhs)
+            ShaderAST.Infix(op, lhs, rhs, rt)
+
+          case "+" | "-" | "*" | "/" =>
+            // Math operators.
+            val lhs = walkTerm(l, envVarName)
+            val rhs = walkTerm(r, envVarName)
+            val rt  = findReturnType(lhs)
+            ShaderAST.Infix(op, lhs, rhs, rt)
+
+          case "&&" | "||" =>
+            // Logical operators.
             val lhs = walkTerm(l, envVarName)
             val rhs = walkTerm(r, envVarName)
             val rt  = findReturnType(lhs)

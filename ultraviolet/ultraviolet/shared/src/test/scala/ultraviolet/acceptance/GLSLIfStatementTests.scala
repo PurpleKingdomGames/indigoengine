@@ -371,4 +371,30 @@ class GLSLIfStatementTests extends munit.FunSuite {
     )
   }
 
+  test("if statement with not operator comparison") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        val x = 1.0f
+        if x != 2.0f then vec4(10.0f) else vec4(20.0f)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |float x=1.0;
+      |if(x!=2.0){
+      |  vec4(10.0);
+      |}else{
+      |  vec4(20.0);
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
 }
