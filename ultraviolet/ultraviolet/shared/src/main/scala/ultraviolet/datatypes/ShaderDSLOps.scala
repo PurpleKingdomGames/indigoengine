@@ -79,11 +79,11 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def clamp(x: Int, minVal: Int, maxVal: Int): Int         = min(max(x, minVal), maxVal)
   def clamp(x: Float, minVal: Float, maxVal: Float): Float = min(max(x, minVal), maxVal)
   def clamp(x: vec2, minVal: vec2, maxVal: vec2): vec2     = min(max(x, minVal), maxVal)
-  def clamp(x: vec2, minVal: vec2, maxVal: Float): vec2    = min(max(x, minVal), maxVal)
+  def clamp(x: vec2, minVal: Float, maxVal: Float): vec2   = min(max(x, minVal), maxVal)
   def clamp(x: vec3, minVal: vec3, maxVal: vec3): vec3     = min(max(x, minVal), maxVal)
-  def clamp(x: vec3, minVal: vec3, maxVal: Float): vec3    = min(max(x, minVal), maxVal)
+  def clamp(x: vec3, minVal: Float, maxVal: Float): vec3   = min(max(x, minVal), maxVal)
   def clamp(x: vec4, minVal: vec4, maxVal: vec4): vec4     = min(max(x, minVal), maxVal)
-  def clamp(x: vec4, minVal: vec4, maxVal: Float): vec4    = min(max(x, minVal), maxVal)
+  def clamp(x: vec4, minVal: Float, maxVal: Float): vec4   = min(max(x, minVal), maxVal)
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/cos.xhtml
   def cos(x: Float): Float = Math.cos(x.toDouble).toFloat

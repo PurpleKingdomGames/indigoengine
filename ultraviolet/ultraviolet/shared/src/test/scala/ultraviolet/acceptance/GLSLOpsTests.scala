@@ -61,4 +61,30 @@ class GLSLOpsTests extends munit.FunSuite {
     )
   }
 
+  test("clamp vec3 will accept float gentypes") {
+
+    inline def fragment =
+      Shader {
+        def main: Unit =
+          val x = clamp(vec4(1.0f), vec4(0.0f), vec4(1.0f))
+          val y = clamp(vec4(1.0f), 0.0f, 1.0f)
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |void main(){
+      |  vec4 x=clamp(vec4(1.0),vec4(0.0),vec4(1.0));
+      |  vec4 y=clamp(vec4(1.0),0.0,1.0);
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
 }
