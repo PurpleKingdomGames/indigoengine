@@ -43,6 +43,9 @@ end shaders
 
 // Terminal
 
+type Terminal = terminal.Terminal
+val Terminal: terminal.Terminal.type = terminal.Terminal
+
 type TerminalEmulator = terminal.TerminalEmulator
 val TerminalEmulator: terminal.TerminalEmulator.type = terminal.TerminalEmulator
 
