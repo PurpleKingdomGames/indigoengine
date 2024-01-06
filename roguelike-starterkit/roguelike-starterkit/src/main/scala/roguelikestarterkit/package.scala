@@ -64,14 +64,6 @@ val TerminalMaterial: terminal.TerminalMaterial.type = terminal.TerminalMaterial
 type TerminalClones = terminal.TerminalClones
 val TerminalClones: terminal.TerminalClones.type = terminal.TerminalClones
 
-// Utils
-
-type PathFinder = utils.PathFinder
-val PathFinder: utils.PathFinder.type = utils.PathFinder
-
-type GridSquare = utils.GridSquare
-val GridSquare: utils.GridSquare.type = utils.GridSquare
-
 // Generated
 
 val RoguelikeTiles: tiles.RoguelikeTiles.type = tiles.RoguelikeTiles
