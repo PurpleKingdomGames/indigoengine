@@ -11,7 +11,6 @@
 
         startupHook = ''
           JAVA_HOME="${jdkToUse}"
-          yarn add --dev electron
           yarn install
         '';
       in
