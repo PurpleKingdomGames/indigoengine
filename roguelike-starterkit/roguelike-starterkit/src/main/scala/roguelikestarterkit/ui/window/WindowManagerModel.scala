@@ -7,8 +7,10 @@ import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
 final case class WindowManagerModel[StartupData, A](windows: Batch[WindowModel[StartupData, A, _]]):
-  def add(model: WindowModel[StartupData, A, _]): WindowManagerModel[StartupData, A] =
-    this.copy(windows = windows :+ model)
+  def add(windowModels: WindowModel[StartupData, A, _]*): WindowManagerModel[StartupData, A] =
+    add(Batch.fromSeq(windowModels))
+  def add(windowModels: Batch[WindowModel[StartupData, A, _]]): WindowManagerModel[StartupData, A] =
+    this.copy(windows = windows ++ windowModels)
 
   def remove(id: WindowId): WindowManagerModel[StartupData, A] =
     this.copy(windows = windows.filterNot(_.id == id))
