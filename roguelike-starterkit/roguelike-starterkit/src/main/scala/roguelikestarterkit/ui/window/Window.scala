@@ -34,11 +34,7 @@ object Window:
 
     case WindowEvent.ResizeBy(id, dragData) if model.id == id =>
       Outcome(
-        model.copy(
-          bounds = model.bounds.resize(
-            model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions
-          )
-        )
+        model.withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
       )
 
     case e =>
@@ -66,20 +62,19 @@ object Window:
       viewModel: WindowViewModel
   ): WindowViewModel =
     val tempModel =
-      model.copy(
-        bounds = model.bounds
-          .resize(
-            model.bounds.dimensions + viewModel.resizeData
-              .map(d => d.by - d.offset)
-              .getOrElse(Coords.zero)
-              .toDimensions
-          )
-          .moveBy(
-            viewModel.dragData
-              .map(d => d.by - d.offset)
-              .getOrElse(Coords.zero)
-          )
-      )
+      model
+        .withDimensions(
+          model.bounds.dimensions + viewModel.resizeData
+            .map(d => d.by - d.offset)
+            .getOrElse(Coords.zero)
+            .toDimensions
+        )
+        .moveBy(
+          viewModel.dragData
+            .map(d => d.by - d.offset)
+            .getOrElse(Coords.zero)
+        )
+
     val vm = viewModel.resize(tempModel)
     val clones =
       vm.terminal.toCloneTiles(
@@ -90,18 +85,7 @@ object Window:
         graphic10x10.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
       }
 
-    val b = model.bounds
-      .resize(
-        model.bounds.dimensions + viewModel.resizeData
-          .map(d => d.by - d.offset)
-          .getOrElse(Coords.zero)
-          .toDimensions
-      )
-      .moveBy(
-        viewModel.dragData
-          .map(d => d.by - d.offset)
-          .getOrElse(Coords.zero)
-      )
+    val b = tempModel.bounds
 
     val contentRectangle =
       if model.title.isDefined then
@@ -243,7 +227,10 @@ object Window:
           cm.copy(layers =
             cm.layers.map(
               _.withBlendMaterial(
-                LayerMask(viewModel.contentRectangle.toScreenSpace(context.charSheet.size * globalMagnification))
+                LayerMask(
+                  viewModel.contentRectangle
+                    .toScreenSpace(context.charSheet.size * globalMagnification)
+                )
               )
             )
           )
