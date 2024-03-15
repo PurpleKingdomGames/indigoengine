@@ -30,7 +30,7 @@ import io.indigoengine.roguelike.starterkit.*
 
 ## Running the demo
 
-Download the repo, `cd` into the demo directory and (assuming you have electron installed), run `sbt runGame`.
+Download the repo, `cd` into the repo directory, run `yarn install` or `npm install`, the run `sbt runGame`.
 
 You can hit the space bar to switch between the rendering modes.
 

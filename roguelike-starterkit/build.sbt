@@ -76,6 +76,7 @@ lazy val demoOptions: IndigoOptions =
     .withBackgroundColor("black")
     .withAssetDirectory("demo/assets")
     .withWindowSize(800, 600)
+    .useElectronExecutable("npx electron")
 
 lazy val demo =
   (project in file("demo"))
