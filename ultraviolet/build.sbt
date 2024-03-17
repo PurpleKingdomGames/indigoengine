@@ -5,6 +5,7 @@ import org.typelevel.scalacoptions.ScalacOptions
 import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / semanticdbEnabled    := true
 
 val scala3Version = "3.4.1"
 

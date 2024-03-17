@@ -44,7 +44,7 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
                 ),
                 _
               )
-            ) if isArray.matches(arrayInstanceName)  =>
+            ) if isArray.matches(arrayInstanceName) =>
           // e.g. "given_ShaderTypeOf_Float"
           val label = typeclassName.split("_").last match
             case "Int"   => "int"
@@ -87,6 +87,25 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
                           _
                         )
                       )
+                    )
+                  ),
+                  _
+                ),
+                _
+              )
+            ) =>
+          List(label)
+          
+        case Inlined(
+              _,
+              _,
+              Typed(
+                Block(
+                  List(
+                    ValDef(
+                      _,
+                      _,
+                      Some(TypeApply(Select(Literal(StringConstant(label)), _), _))
                     )
                   ),
                   _
