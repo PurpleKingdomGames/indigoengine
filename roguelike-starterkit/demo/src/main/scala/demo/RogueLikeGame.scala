@@ -13,11 +13,12 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   val magnification: Int = 2
 
   def initialScene(bootData: Size): Option[SceneName] =
-    Option(LightingScene.name)
+    Option(UISubSystemScene.name)
 
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
     NonEmptyList(
       LightingScene,
+      UISubSystemScene,
       // UIScene,
       RogueTerminalEmulatorScene,
       TerminalTextScene,
@@ -47,7 +48,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     Outcome(Model.initial)
 
   def initialViewModel(startupData: Size, model: Model): Outcome[ViewModel] =
-    Outcome(ViewModel.initial(startupData))
+    Outcome(ViewModel.initial /*(startupData)*/ )
 
   def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
     Outcome(Startup.Success(bootData))
@@ -69,9 +70,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class CustomContext() // Placeholder, not used.
-
-final case class Model(windowManager: WindowManagerModel[Size, CustomContext])
+final case class Model( /*windowManager: WindowManagerModel[Unit, Unit]*/ )
 
 object Model:
 
@@ -85,17 +84,17 @@ object Model:
 
   val initial: Model =
     Model(
-      WindowManagerModel
-        .initial[Size, CustomContext]
-        .register(
-          ColourWindow.window(
-            defaultCharSheet
-          )
-        )
-        .open(ColourWindow.windowId)
+      // WindowManagerModel
+      //   .initial[Unit, Unit]
+      //   .register(
+      //     ColourWindow.window(
+      //       defaultCharSheet
+      //     )
+      //   )
+      //   .open(ColourWindow.windowId)
     )
 
-final case class ViewModel(windowManager: WindowManagerViewModel[Size, CustomContext])
+final case class ViewModel( /*windowManager: WindowManagerViewModel[Unit, Unit]*/ )
 object ViewModel:
-  def initial(viewportSize: Size): ViewModel =
-    ViewModel(WindowManagerViewModel.initial)
+  def initial /*(viewportSize: Size)*/: ViewModel =
+    ViewModel( /*WindowManagerViewModel.initial*/ )
