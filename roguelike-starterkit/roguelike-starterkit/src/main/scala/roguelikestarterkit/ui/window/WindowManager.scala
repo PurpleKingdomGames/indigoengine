@@ -1,9 +1,90 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
+import indigo.shared.FrameContext
+import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UiContext
 
+final case class WindowManager(
+    id: SubSystemId,
+    magnification: Int,
+    charSheet: CharSheet,
+    windows: Batch[WindowModel[Unit, Unit, _]]
+) extends SubSystem:
+  type EventType      = GlobalEvent
+  type SubSystemModel = ModelHolder
+
+  def eventFilter: GlobalEvent => Option[GlobalEvent] =
+    e => Some(e)
+
+  def initialModel: Outcome[ModelHolder] =
+    Outcome(
+      ModelHolder.initial(windows)
+    )
+
+  def update(
+      context: SubSystemFrameContext,
+      model: ModelHolder
+  ): GlobalEvent => Outcome[ModelHolder] =
+    e =>
+      for {
+        updatedModel <- WindowManager.updateModel[Unit, Unit](
+          UiContext(toFrameContext(context), charSheet),
+          model.model
+        )(e)
+
+        updatedViewModel <-
+          WindowManager.updateViewModel[Unit, Unit](
+            UiContext(toFrameContext(context), charSheet),
+            updatedModel,
+            model.viewModel
+          )(e)
+      } yield ModelHolder(updatedModel, updatedViewModel)
+
+  def present(
+      context: SubSystemFrameContext,
+      model: ModelHolder
+  ): Outcome[SceneUpdateFragment] =
+    WindowManager.present(
+      UiContext(toFrameContext(context), charSheet),
+      magnification,
+      model.model,
+      model.viewModel
+    )
+
+  def register(windowModels: WindowModel[Unit, Unit, _]*): WindowManager =
+    register(Batch.fromSeq(windowModels))
+  def register(
+      windowModels: Batch[WindowModel[Unit, Unit, _]]
+  ): WindowManager =
+    this.copy(windows = windows ++ windowModels)
+
+  private def toFrameContext(context: SubSystemFrameContext): FrameContext[Unit] =
+    FrameContext(
+      context.gameTime,
+      context.dice,
+      context.inputState,
+      context.boundaryLocator,
+      ()
+    )
+
+final case class ModelHolder(
+    model: WindowManagerModel[Unit, Unit],
+    viewModel: WindowManagerViewModel[Unit, Unit]
+)
+object ModelHolder:
+  def initial(
+      windows: Batch[WindowModel[Unit, Unit, _]]
+  ): ModelHolder =
+    ModelHolder(
+      WindowManagerModel.initial[Unit, Unit].register(windows),
+      WindowManagerViewModel.initial[Unit, Unit]
+    )
+
 object WindowManager:
+
+  def apply(id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager =
+    WindowManager(id, magnification, charSheet, Batch.empty)
 
   def updateModel[StartupData, A](
       context: UiContext[StartupData, A],
