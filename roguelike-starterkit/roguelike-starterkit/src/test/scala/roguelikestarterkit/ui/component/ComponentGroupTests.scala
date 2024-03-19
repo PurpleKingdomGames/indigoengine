@@ -19,6 +19,9 @@ class ComponentGroupTests extends munit.FunSuite {
         model: String
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
+
+    def reflow(model: String): String =
+      model
   }
 
   test("reflow should reapply the layout to all existing components") {
