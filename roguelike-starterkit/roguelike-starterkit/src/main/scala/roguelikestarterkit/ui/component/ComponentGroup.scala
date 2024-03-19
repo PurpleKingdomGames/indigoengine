@@ -18,7 +18,7 @@ final case class ComponentGroup(
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  private def nextOffset(components: Batch[ComponentEntry[_]]): Coords =
+  def nextOffset(components: Batch[ComponentEntry[_]]): Coords =
     layout match
       case ComponentLayout.None =>
         Coords.zero
@@ -45,7 +45,7 @@ final case class ComponentGroup(
             val maybeOffset = c.offset + Coords(padded.right, 0)
 
             if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
-            else Coords(0, maxY)
+            else Coords(padding.left, maxY)
           }
           .getOrElse(Coords(padding.left, padding.top))
 
