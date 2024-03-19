@@ -58,7 +58,12 @@ final case class ComponentGroup(
 
   def reflow: ComponentGroup =
     val newComponents = components.foldLeft(Batch.empty[ComponentEntry[_]]) { (acc, entry) =>
-      acc :+ entry.copy(offset = nextOffset(acc))
+      val reflowed = entry.copy(
+        offset = nextOffset(acc),
+        model = entry.component.reflow(entry.model)
+      )
+
+      acc :+ reflowed
     }
 
     this.copy(components = newComponents)
