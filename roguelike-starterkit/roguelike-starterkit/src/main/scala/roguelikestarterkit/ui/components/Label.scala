@@ -22,14 +22,14 @@ object Label:
     def bounds(model: Label): Bounds =
       Bounds(0, 0, model.text.length, 1)
 
-    def updateModel[StartupData, ContextData](
+    def updateModel(
         context: UiContext,
         model: Label
     ): GlobalEvent => Outcome[Label] =
       case _ =>
         Outcome(model)
 
-    def present[StartupData, ContextData](
+    def present(
         context: UiContext,
         model: Label
     ): Outcome[ComponentFragment] =

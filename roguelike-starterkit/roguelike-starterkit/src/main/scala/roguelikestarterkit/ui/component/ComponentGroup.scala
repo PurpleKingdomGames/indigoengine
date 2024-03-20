@@ -145,13 +145,13 @@ object ComponentGroup:
     def bounds(model: ComponentGroup): Bounds =
       model.bounds
 
-    def updateModel[StartupData, ContextData](
+    def updateModel(
         context: UiContext,
         model: ComponentGroup
     ): GlobalEvent => Outcome[ComponentGroup] =
       case e => model.update(context)(e)
 
-    def present[StartupData, ContextData](
+    def present(
         context: UiContext,
         model: ComponentGroup
     ): Outcome[ComponentFragment] =

@@ -46,7 +46,7 @@ object Button:
     def bounds(model: Button): Bounds =
       model.bounds
 
-    def updateModel[StartupData, ContextData](
+    def updateModel(
         context: UiContext,
         model: Button
     ): GlobalEvent => Outcome[Button] =
@@ -67,7 +67,7 @@ object Button:
       case _ =>
         Outcome(model)
 
-    def present[StartupData, ContextData](
+    def present(
         context: UiContext,
         model: Button
     ): Outcome[ComponentFragment] =
