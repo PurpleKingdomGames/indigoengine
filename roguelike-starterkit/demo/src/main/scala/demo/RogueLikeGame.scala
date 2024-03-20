@@ -17,9 +17,9 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
 
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
     NonEmptyList(
-      LightingScene,
       UISubSystemScene,
-      // UIScene,
+      UIScene,
+      LightingScene,
       RogueTerminalEmulatorScene,
       TerminalTextScene,
       TerminalEmulatorScene
@@ -48,7 +48,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     Outcome(Model.initial)
 
   def initialViewModel(startupData: Size, model: Model): Outcome[ViewModel] =
-    Outcome(ViewModel.initial /*(startupData)*/ )
+    Outcome(ViewModel.initial)
 
   def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
     Outcome(Startup.Success(bootData))
@@ -70,7 +70,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model( /*windowManager: WindowManagerModel[Unit, Unit]*/ )
+final case class Model(windowManager: WindowManagerModel[Unit])
 
 object Model:
 
@@ -84,17 +84,17 @@ object Model:
 
   val initial: Model =
     Model(
-      // WindowManagerModel
-      //   .initial[Unit, Unit]
-      //   .register(
-      //     ColourWindow.window(
-      //       defaultCharSheet
-      //     )
-      //   )
-      //   .open(ColourWindow.windowId)
+      WindowManagerModel
+        .initial[Unit]
+        .register(
+          ColourWindow.window(
+            defaultCharSheet
+          )
+        )
+        .open(ColourWindow.windowId)
     )
 
-final case class ViewModel( /*windowManager: WindowManagerViewModel[Unit, Unit]*/ )
+final case class ViewModel(windowManager: WindowManagerViewModel[Unit])
 object ViewModel:
-  def initial /*(viewportSize: Size)*/: ViewModel =
-    ViewModel( /*WindowManagerViewModel.initial*/ )
+  def initial: ViewModel =
+    ViewModel(WindowManagerViewModel.initial)
