@@ -25,7 +25,7 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
     Set(
       WindowManager(
         SubSystemId("window manager"),
-        3, // TODO: How to update? Event?
+        2, // TODO: How to update? Event?
         charSheet = Model.defaultCharSheet
       )
         .register(
