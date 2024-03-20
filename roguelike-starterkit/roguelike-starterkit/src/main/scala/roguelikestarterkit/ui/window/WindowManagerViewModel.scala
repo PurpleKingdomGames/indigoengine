@@ -8,7 +8,7 @@ final case class WindowManagerViewModel[StartupData, A](windows: Batch[WindowVie
     this.copy(windows = windows.filter(w => model.windows.exists(_.id == w.id)))
 
   def update(
-      context: UiContext[StartupData, A],
+      context: UiContext,
       model: WindowManagerModel[StartupData, A],
       event: GlobalEvent
   ): Outcome[WindowManagerViewModel[StartupData, A]] =

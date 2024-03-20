@@ -73,7 +73,7 @@ val Tile: tiles.Tile.type = tiles.Tile
 
 // UI General Datatypes
 
-type UiContext[StartUpData, A] = ui.datatypes.UiContext[StartUpData, A]
+type UiContext = ui.datatypes.UiContext
 val UiContext: ui.datatypes.UiContext.type = ui.datatypes.UiContext
 
 type CharSheet = ui.datatypes.CharSheet

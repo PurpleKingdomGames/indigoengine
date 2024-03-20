@@ -15,7 +15,7 @@ object Window:
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   def updateModel[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
+      context: UiContext,
       model: WindowModel[StartupData, CA, A]
   ): GlobalEvent => Outcome[WindowModel[StartupData, CA, A]] =
     case WindowEvent.MoveBy(id, dragData) if model.id == id =>
@@ -57,7 +57,7 @@ object Window:
     Coords(mousePosition / charSize) - windowPosition
 
   def redraw[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
+      context: UiContext,
       model: WindowModel[StartupData, CA, A],
       viewModel: WindowViewModel
   ): WindowViewModel =
@@ -104,7 +104,7 @@ object Window:
     )
 
   def updateViewModel[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
+      context: UiContext,
       model: WindowModel[StartupData, CA, A],
       viewModel: WindowViewModel
   ): GlobalEvent => Outcome[WindowViewModel] =
@@ -226,7 +226,7 @@ object Window:
       Outcome(viewModel)
 
   def present[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
+      context: UiContext,
       globalMagnification: Int,
       model: WindowModel[StartupData, CA, A],
       viewModel: WindowViewModel

@@ -5,6 +5,7 @@ import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UiContext
 
+// TODO: Bring back startUpData as a type param.
 final case class WindowManager(
     id: SubSystemId,
     magnification: Int,
@@ -87,7 +88,7 @@ object WindowManager:
     WindowManager(id, magnification, charSheet, Batch.empty)
 
   def updateModel[StartupData, A](
-      context: UiContext[StartupData, A],
+      context: UiContext,
       model: WindowManagerModel[StartupData, A]
   ): GlobalEvent => Outcome[WindowManagerModel[StartupData, A]] =
     case WindowManagerEvent.Close(id) =>
@@ -119,7 +120,7 @@ object WindowManager:
         .map(m => model.copy(windows = m))
 
   def updateViewModel[StartupData, A](
-      context: UiContext[StartupData, A],
+      context: UiContext,
       model: WindowManagerModel[StartupData, A],
       viewModel: WindowManagerViewModel[StartupData, A]
   ): GlobalEvent => Outcome[WindowManagerViewModel[StartupData, A]] =
@@ -140,7 +141,7 @@ object WindowManager:
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
   def present[StartupData, A](
-      context: UiContext[StartupData, A],
+      context: UiContext,
       globalMagnification: Int,
       model: WindowManagerModel[StartupData, A],
       viewModel: WindowManagerViewModel[StartupData, A]

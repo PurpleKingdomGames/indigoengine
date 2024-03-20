@@ -16,14 +16,14 @@ trait Component[A]:
   /** Update this componenets model.
     */
   def updateModel[StartupData, ContextData](
-      context: UiContext[StartupData, ContextData],
+      context: UiContext,
       model: A
   ): GlobalEvent => Outcome[A]
 
   /** Produce a renderable output for this component, based on the component's model.
     */
   def present[StartupData, ContextData](
-      context: UiContext[StartupData, ContextData],
+      context: UiContext,
       model: A
   ): Outcome[ComponentFragment]
 

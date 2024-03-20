@@ -20,7 +20,7 @@ final case class WindowViewModel(
 ):
 
   def update[StartupData, CA, A](
-      context: UiContext[StartupData, CA],
+      context: UiContext,
       model: WindowModel[StartupData, CA, A],
       event: GlobalEvent
   ): Outcome[WindowViewModel] =

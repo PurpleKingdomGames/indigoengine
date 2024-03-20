@@ -49,7 +49,7 @@ final case class WindowManagerModel[StartupData, A](windows: Batch[WindowModel[S
     )
 
   def update(
-      context: UiContext[StartupData, A],
+      context: UiContext,
       event: GlobalEvent
   ): Outcome[WindowManagerModel[StartupData, A]] =
     WindowManager.updateModel(context, this)(event)

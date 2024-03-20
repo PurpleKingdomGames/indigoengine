@@ -13,8 +13,8 @@ final case class WindowModel[StartupData, CA, A](
     bounds: Bounds,
     title: Option[String],
     contentModel: A,
-    updateContentModel: (UiContext[StartupData, CA], A) => GlobalEvent => Outcome[A],
-    presentContentModel: (UiContext[StartupData, CA], A) => Outcome[SceneUpdateFragment],
+    updateContentModel: (UiContext, A) => GlobalEvent => Outcome[A],
+    presentContentModel: (UiContext, A) => Outcome[SceneUpdateFragment],
     draggable: Boolean,
     resizable: Boolean,
     closeable: Boolean,
@@ -65,12 +65,12 @@ final case class WindowModel[StartupData, CA, A](
     this.copy(contentModel = value)
 
   def updateModel(
-      f: (UiContext[StartupData, CA], A) => GlobalEvent => Outcome[A]
+      f: (UiContext, A) => GlobalEvent => Outcome[A]
   ): WindowModel[StartupData, CA, A] =
     this.copy(updateContentModel = f)
 
   def present(
-      f: (UiContext[StartupData, CA], A) => Outcome[SceneUpdateFragment]
+      f: (UiContext, A) => Outcome[SceneUpdateFragment]
   ): WindowModel[StartupData, CA, A] =
     this.copy(presentContentModel = f)
 
