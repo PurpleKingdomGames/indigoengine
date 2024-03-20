@@ -25,7 +25,7 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
     Set(
       WindowManager(
         SubSystemId("window manager"),
-        2, // TODO: How to update? Event?
+        RogueLikeGame.magnification,
         charSheet = Model.defaultCharSheet
       )
         .register(
