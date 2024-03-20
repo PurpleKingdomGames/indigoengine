@@ -11,7 +11,7 @@ import roguelikestarterkit.ui.shaders.LayerMask
 
 object Window:
 
-  private val graphic10x10: Graphic[TerminalMaterial] =
+  private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   def updateModel[A](
@@ -82,7 +82,7 @@ object Window:
         tempModel.bounds.coords.toScreenSpace(model.charSheet.size),
         model.charSheet.charCrops
       ) { case (fg, bg) =>
-        graphic10x10.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
+        graphic.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
       }
 
     val b = tempModel.bounds
