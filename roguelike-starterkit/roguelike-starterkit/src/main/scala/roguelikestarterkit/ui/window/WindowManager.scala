@@ -5,11 +5,11 @@ import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UiContext
 
-// TODO: Bring back startUpData as a type param.
-final case class WindowManager(
+final case class WindowManager[StartUpData](
     id: SubSystemId,
     initialMagnification: Int,
     charSheet: CharSheet,
+    startUpData: StartUpData,
     windows: Batch[WindowModel[_]]
 ) extends SubSystem:
   type EventType      = GlobalEvent
@@ -52,11 +52,11 @@ final case class WindowManager(
       model.viewModel
     )
 
-  def register(windowModels: WindowModel[_]*): WindowManager =
+  def register(windowModels: WindowModel[_]*): WindowManager[StartUpData] =
     register(Batch.fromSeq(windowModels))
   def register(
       windowModels: Batch[WindowModel[_]]
-  ): WindowManager =
+  ): WindowManager[StartUpData] =
     this.copy(windows = windows ++ windowModels)
 
 final case class ModelHolder(
@@ -75,8 +75,16 @@ object ModelHolder:
 
 object WindowManager:
 
-  def apply(id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager =
-    WindowManager(id, magnification, charSheet, Batch.empty)
+  def apply(id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager[Unit] =
+    WindowManager(id, magnification, charSheet, (), Batch.empty)
+
+  def apply[StartUpData](
+      id: SubSystemId,
+      magnification: Int,
+      charSheet: CharSheet,
+      startUpData: StartUpData
+  ): WindowManager[StartUpData] =
+    WindowManager(id, magnification, charSheet, startUpData, Batch.empty)
 
   def updateModel[A](
       context: UiContext,
