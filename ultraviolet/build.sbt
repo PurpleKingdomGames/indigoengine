@@ -13,7 +13,7 @@ ThisBuild / versionScheme                                  := Some("early-semver
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 ThisBuild / scalaVersion                                   := scala3Version
 
-lazy val ultravioletVersion = "0.2.1-SNAPSHOT"
+lazy val ultravioletVersion = "0.3.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := ultravioletVersion,
