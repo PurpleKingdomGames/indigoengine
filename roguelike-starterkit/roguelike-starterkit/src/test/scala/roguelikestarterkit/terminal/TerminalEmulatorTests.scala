@@ -188,7 +188,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
         .put(Point(2, 2), Tile.`!`)
 
     val combined =
-      consoleA combine consoleB
+      consoleA `combine` consoleB
 
     assert(combined.get(Point(1)).get == MapTile(Tile.`@`))
     assert(combined.get(Point(2)).get == MapTile(Tile.`!`))
@@ -207,7 +207,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       List(MapTile(Tile.`@`), MapTile(Tile.`!`))
 
     val actual =
-      (consoleA combine consoleB).toBatch
+      (consoleA `combine` consoleB).toBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
@@ -269,7 +269,7 @@ class TerminalEmulatorTests extends munit.FunSuite {
       List((Point(1), MapTile(Tile.`@`)), (Point(2), MapTile(Tile.`!`)))
 
     val actual =
-      (consoleA combine consoleB).toPositionedBatch
+      (consoleA `combine` consoleB).toPositionedBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))

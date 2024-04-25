@@ -196,7 +196,7 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
         .put(Point(2), Tile.`!`)
 
     val combined =
-      consoleA combine consoleB
+      consoleA `combine` consoleB
 
     assert(clue(combined.get(Point(1))).get == clue(MapTile(Tile.`@`)))
     assert(clue(combined.get(Point(2))).get == clue(MapTile(Tile.`!`)))
@@ -215,7 +215,7 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
       List(MapTile(Tile.`@`), MapTile(Tile.`!`))
 
     val actual =
-      (consoleA combine consoleB).toBatch
+      (consoleA `combine` consoleB).toBatch
 
     assert(clue(actual.length) == clue(9))
     assert(clue(expected).forall(actual.contains))
@@ -277,7 +277,7 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
       List((Point(1), MapTile(Tile.`@`)), (Point(2), MapTile(Tile.`!`)))
 
     val actual =
-      (consoleA combine consoleB).toPositionedBatch
+      (consoleA `combine` consoleB).toPositionedBatch
 
     assert(clue(actual.length) == clue(9))
     assert(clue(expected).forall(actual.contains))
