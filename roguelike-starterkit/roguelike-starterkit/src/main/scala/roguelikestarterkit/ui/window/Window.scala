@@ -1,7 +1,7 @@
 package roguelikestarterkit.ui.window
 
 import indigo.*
-import roguelikestarterkit.*
+import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Bounds.dimensions
 import roguelikestarterkit.ui.datatypes.Coords
@@ -14,10 +14,10 @@ object Window:
   private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  def updateModel[A](
-      context: UiContext,
-      model: WindowModel[A]
-  ): GlobalEvent => Outcome[WindowModel[A]] =
+  def updateModel[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowModel[A, ReferenceData]
+  ): GlobalEvent => Outcome[WindowModel[A, ReferenceData]] =
     case WindowEvent.MoveBy(id, dragData) if model.id == id =>
       Outcome(
         model.copy(
@@ -56,11 +56,11 @@ object Window:
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
     Coords(mousePosition / charSize) - windowPosition
 
-  def redraw[A](
-      context: UiContext,
-      model: WindowModel[A],
-      viewModel: WindowViewModel
-  ): WindowViewModel =
+  def redraw[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowModel[A, ReferenceData],
+      viewModel: WindowViewModel[ReferenceData]
+  ): WindowViewModel[ReferenceData] =
     val tempModel =
       model
         .withDimensions(
@@ -103,11 +103,11 @@ object Window:
       contentRectangle = contentRectangle
     )
 
-  def updateViewModel[A](
-      context: UiContext,
-      model: WindowModel[A],
-      viewModel: WindowViewModel
-  ): GlobalEvent => Outcome[WindowViewModel] =
+  def updateViewModel[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowModel[A, ReferenceData],
+      viewModel: WindowViewModel[ReferenceData]
+  ): GlobalEvent => Outcome[WindowViewModel[ReferenceData]] =
     case FrameTick
         if model.bounds.hashCode() != viewModel.modelHashCode ||
           viewModel.dragData.isDefined ||
@@ -225,10 +225,10 @@ object Window:
     case _ =>
       Outcome(viewModel)
 
-  def present[A](
-      context: UiContext,
-      model: WindowModel[A],
-      viewModel: WindowViewModel
+  def present[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowModel[A, ReferenceData],
+      viewModel: WindowViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     model
       .presentContentModel(

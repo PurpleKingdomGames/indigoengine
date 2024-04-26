@@ -70,7 +70,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(windowManager: WindowManagerModel)
+final case class Model(windowManager: WindowManagerModel[Unit])
 
 object Model:
 
@@ -93,7 +93,7 @@ object Model:
         .open(ColourWindow.windowId)
     )
 
-final case class ViewModel(windowManager: WindowManagerViewModel)
+final case class ViewModel(windowManager: WindowManagerViewModel[Unit])
 object ViewModel:
   def initial: ViewModel =
     ViewModel(WindowManagerViewModel.initial(RogueLikeGame.magnification))

@@ -3,15 +3,18 @@ package roguelikestarterkit.ui.window
 import indigo.*
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowManagerViewModel(windows: Batch[WindowViewModel], magnification: Int):
-  def prune(model: WindowManagerModel): WindowManagerViewModel =
+final case class WindowManagerViewModel[ReferenceData](
+    windows: Batch[WindowViewModel[ReferenceData]],
+    magnification: Int
+):
+  def prune(model: WindowManagerModel[ReferenceData]): WindowManagerViewModel[ReferenceData] =
     this.copy(windows = windows.filter(w => model.windows.exists(_.id == w.id)))
 
   def update(
-      context: UiContext,
-      model: WindowManagerModel,
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
       event: GlobalEvent
-  ): Outcome[WindowManagerViewModel] =
+  ): Outcome[WindowManagerViewModel[ReferenceData]] =
     WindowManager.updateViewModel(context, model, this)(event)
 
   def mouseIsOverAnyWindow: Boolean =
@@ -20,12 +23,12 @@ final case class WindowManagerViewModel(windows: Batch[WindowViewModel], magnifi
   def mouseIsOver: Batch[WindowId] =
     windows.collect { case wvm if wvm.mouseIsOver => wvm.id }
 
-  def changeMagnification(next: Int): WindowManagerViewModel =
+  def changeMagnification(next: Int): WindowManagerViewModel[ReferenceData] =
     this.copy(
       windows = windows.map(_.copy(magnification = next)),
       magnification = next
     )
 
 object WindowManagerViewModel:
-  def initial[A](magnification: Int): WindowManagerViewModel =
+  def initial[A, ReferenceData](magnification: Int): WindowManagerViewModel[ReferenceData] =
     WindowManagerViewModel(Batch.empty, magnification)

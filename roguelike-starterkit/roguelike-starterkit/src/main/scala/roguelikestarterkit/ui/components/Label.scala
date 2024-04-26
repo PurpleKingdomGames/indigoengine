@@ -2,7 +2,6 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
-import roguelikestarterkit.*
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.Component
@@ -22,15 +21,15 @@ object Label:
     def bounds(model: Label): Bounds =
       Bounds(0, 0, model.text.length, 1)
 
-    def updateModel(
-        context: UiContext,
+    def updateModel[ReferenceData](
+        context: UiContext[ReferenceData],
         model: Label
     ): GlobalEvent => Outcome[Label] =
       case _ =>
         Outcome(model)
 
-    def present(
-        context: UiContext,
+    def present[ReferenceData](
+        context: UiContext[ReferenceData],
         model: Label
     ): Outcome[ComponentFragment] =
       model.render(context.bounds.coords, model.text)

@@ -23,10 +23,11 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
 
   val subSystems: Set[SubSystem[Model]] =
     Set(
-      WindowManager(
+      WindowManager[Model, Unit](
         SubSystemId("window manager"),
         RogueLikeGame.magnification,
-        charSheet = Model.defaultCharSheet
+        Model.defaultCharSheet,
+        _ => ()
       )
         .register(
           ColourWindow.window(

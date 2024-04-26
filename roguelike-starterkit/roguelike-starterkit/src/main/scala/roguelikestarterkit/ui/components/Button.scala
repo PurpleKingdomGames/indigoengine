@@ -2,7 +2,6 @@ package roguelikestarterkit.ui.components
 
 import indigo.*
 import indigo.syntax.*
-import roguelikestarterkit.*
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.Component
@@ -46,8 +45,8 @@ object Button:
     def bounds(model: Button): Bounds =
       model.bounds
 
-    def updateModel(
-        context: UiContext,
+    def updateModel[ReferenceData](
+        context: UiContext[ReferenceData],
         model: Button
     ): GlobalEvent => Outcome[Button] =
       case FrameTick =>
@@ -67,8 +66,8 @@ object Button:
       case _ =>
         Outcome(model)
 
-    def present(
-        context: UiContext,
+    def present[ReferenceData](
+        context: UiContext[ReferenceData],
         model: Button
     ): Outcome[ComponentFragment] =
       model.state match

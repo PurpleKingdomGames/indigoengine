@@ -6,24 +6,24 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowManagerModel(windows: Batch[WindowModel[?]]):
-  def register(windowModels: WindowModel[?]*): WindowManagerModel =
+final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?, ReferenceData]]):
+  def register(windowModels: WindowModel[?, ReferenceData]*): WindowManagerModel[ReferenceData] =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[?]]
-  ): WindowManagerModel =
+      windowModels: Batch[WindowModel[?, ReferenceData]]
+  ): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
-  def open(ids: WindowId*): WindowManagerModel =
+  def open(ids: WindowId*): WindowManagerModel[ReferenceData] =
     open(Batch.fromSeq(ids))
 
-  def open(ids: Batch[WindowId]): WindowManagerModel =
+  def open(ids: Batch[WindowId]): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
 
-  def close(id: WindowId): WindowManagerModel =
+  def close(id: WindowId): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows.map(w => if w.id == id then w.close else w))
 
-  def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel =
+  def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel[ReferenceData] =
     val reordered =
       windows.reverse.find(w => !w.static && w.bounds.contains(coords)) match
         case None =>
@@ -34,13 +34,13 @@ final case class WindowManagerModel(windows: Batch[WindowModel[?]]):
 
     this.copy(windows = reordered)
 
-  def moveTo(id: WindowId, position: Coords): WindowManagerModel =
+  def moveTo(id: WindowId, position: Coords): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows.map(w => if w.id == id then w.moveTo(position) else w))
 
-  def resizeTo(id: WindowId, dimensions: Dimensions): WindowManagerModel =
+  def resizeTo(id: WindowId, dimensions: Dimensions): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows.map(w => if w.id == id then w.resizeTo(dimensions) else w))
 
-  def transformTo(id: WindowId, bounds: Bounds): WindowManagerModel =
+  def transformTo(id: WindowId, bounds: Bounds): WindowManagerModel[ReferenceData] =
     this.copy(windows =
       windows.map(w =>
         // Note: We do _not_ use .withBounds here because that won't do the min size checks.
@@ -49,11 +49,11 @@ final case class WindowManagerModel(windows: Batch[WindowModel[?]]):
     )
 
   def update(
-      context: UiContext,
+      context: UiContext[ReferenceData],
       event: GlobalEvent
-  ): Outcome[WindowManagerModel] =
+  ): Outcome[WindowManagerModel[ReferenceData]] =
     WindowManager.updateModel(context, this)(event)
 
 object WindowManagerModel:
-  def initial: WindowManagerModel =
+  def initial[ReferenceData]: WindowManagerModel[ReferenceData] =
     WindowManagerModel(Batch.empty)

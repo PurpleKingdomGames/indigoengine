@@ -5,41 +5,42 @@ import indigo.shared.FrameContext
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowManager[StartUpData, Model](
+final case class WindowManager[StartUpData, Model, RefData](
     id: SubSystemId,
     initialMagnification: Int,
     charSheet: CharSheet,
+    extractReference: Model => RefData,
     startUpData: StartUpData,
-    windows: Batch[WindowModel[?]]
+    windows: Batch[WindowModel[?, RefData]]
 ) extends SubSystem[Model]:
   type EventType      = GlobalEvent
-  type SubSystemModel = ModelHolder
-  type ReferenceData  = Unit
+  type ReferenceData  = RefData
+  type SubSystemModel = ModelHolder[ReferenceData]
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
 
   def reference(model: Model): ReferenceData =
-    ()
+    extractReference(model)
 
-  def initialModel: Outcome[ModelHolder] =
+  def initialModel: Outcome[ModelHolder[ReferenceData]] =
     Outcome(
       ModelHolder.initial(windows, initialMagnification)
     )
 
   def update(
       context: SubSystemFrameContext[ReferenceData],
-      model: ModelHolder
-  ): GlobalEvent => Outcome[ModelHolder] =
+      model: ModelHolder[ReferenceData]
+  ): GlobalEvent => Outcome[ModelHolder[ReferenceData]] =
     e =>
       for {
-        updatedModel <- WindowManager.updateModel[Unit](
+        updatedModel <- WindowManager.updateModel[Unit, ReferenceData](
           UiContext(context, charSheet),
           model.model
         )(e)
 
         updatedViewModel <-
-          WindowManager.updateViewModel[Unit](
+          WindowManager.updateViewModel[Unit, ReferenceData]( // TODO: Why Unit?
             UiContext(context, charSheet),
             updatedModel,
             model.viewModel
@@ -48,7 +49,7 @@ final case class WindowManager[StartUpData, Model](
 
   def present(
       context: SubSystemFrameContext[ReferenceData],
-      model: ModelHolder
+      model: ModelHolder[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       UiContext(context, charSheet),
@@ -56,22 +57,22 @@ final case class WindowManager[StartUpData, Model](
       model.viewModel
     )
 
-  def register(windowModels: WindowModel[?]*): WindowManager[StartUpData, Model] =
+  def register(windowModels: WindowModel[?, ReferenceData]*): WindowManager[StartUpData, Model, ReferenceData] =
     register(Batch.fromSeq(windowModels))
   def register(
-      windowModels: Batch[WindowModel[?]]
-  ): WindowManager[StartUpData, Model] =
+      windowModels: Batch[WindowModel[?, ReferenceData]]
+  ): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
-final case class ModelHolder(
-    model: WindowManagerModel,
-    viewModel: WindowManagerViewModel
+final case class ModelHolder[ReferenceData](
+    model: WindowManagerModel[ReferenceData],
+    viewModel: WindowManagerViewModel[ReferenceData]
 )
 object ModelHolder:
-  def initial(
-      windows: Batch[WindowModel[?]],
+  def initial[ReferenceData](
+      windows: Batch[WindowModel[?, ReferenceData]],
       magnification: Int
-  ): ModelHolder =
+  ): ModelHolder[ReferenceData] =
     ModelHolder(
       WindowManagerModel.initial.register(windows),
       WindowManagerViewModel.initial(magnification)
@@ -79,21 +80,27 @@ object ModelHolder:
 
 object WindowManager:
 
-  def apply[Model](id: SubSystemId, magnification: Int, charSheet: CharSheet): WindowManager[Unit, Model] =
-    WindowManager(id, magnification, charSheet, (), Batch.empty)
-
-  def apply[StartUpData, Model](
+  def apply[Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
       charSheet: CharSheet,
-      startUpData: StartUpData
-  ): WindowManager[StartUpData, Model] =
-    WindowManager(id, magnification, charSheet, startUpData, Batch.empty)
+      extractReference: Model => ReferenceData
+  ): WindowManager[Unit, Model, ReferenceData] =
+    WindowManager(id, magnification, charSheet, extractReference, (), Batch.empty)
 
-  def updateModel[A](
-      context: UiContext,
-      model: WindowManagerModel
-  ): GlobalEvent => Outcome[WindowManagerModel] =
+  def apply[StartUpData, Model, ReferenceData](
+      id: SubSystemId,
+      magnification: Int,
+      charSheet: CharSheet,
+      extractReference: Model => ReferenceData,
+      startUpData: StartUpData
+  ): WindowManager[StartUpData, Model, ReferenceData] =
+    WindowManager(id, magnification, charSheet, extractReference, startUpData, Batch.empty)
+
+  def updateModel[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData]
+  ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case WindowManagerEvent.Close(id) =>
       Outcome(model.close(id))
 
@@ -122,11 +129,11 @@ object WindowManager:
         .sequence
         .map(m => model.copy(windows = m))
 
-  def updateViewModel[A](
-      context: UiContext,
-      model: WindowManagerModel,
-      viewModel: WindowManagerViewModel
-  ): GlobalEvent => Outcome[WindowManagerViewModel] =
+  def updateViewModel[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      viewModel: WindowManagerViewModel[ReferenceData]
+  ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
     case WindowManagerEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
 
@@ -146,10 +153,10 @@ object WindowManager:
 
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
-  def present[A](
-      context: UiContext,
-      model: WindowManagerModel,
-      viewModel: WindowManagerViewModel
+  def present[A, ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     model.windows
       .filter(_.isOpen)

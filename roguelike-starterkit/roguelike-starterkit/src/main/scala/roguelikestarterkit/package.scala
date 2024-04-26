@@ -73,7 +73,7 @@ val Tile: tiles.Tile.type = tiles.Tile
 
 // UI General Datatypes
 
-type UiContext = ui.datatypes.UiContext
+type UiContext[ReferenceData] = ui.datatypes.UiContext[ReferenceData]
 val UiContext: ui.datatypes.UiContext.type = ui.datatypes.UiContext
 
 type CharSheet = ui.datatypes.CharSheet
@@ -92,10 +92,10 @@ val Bounds: ui.datatypes.Bounds.type = ui.datatypes.Bounds
 
 val WindowManager: ui.window.WindowManager.type = ui.window.WindowManager
 
-type WindowManagerModel = ui.window.WindowManagerModel
+type WindowManagerModel[ReferenceData] = ui.window.WindowManagerModel[ReferenceData]
 val WindowManagerModel: ui.window.WindowManagerModel.type = ui.window.WindowManagerModel
 
-type WindowManagerViewModel = ui.window.WindowManagerViewModel
+type WindowManagerViewModel[ReferenceData] = ui.window.WindowManagerViewModel[ReferenceData]
 val WindowManagerViewModel: ui.window.WindowManagerViewModel.type = ui.window.WindowManagerViewModel
 
 type WindowManagerEvent = ui.window.WindowManagerEvent
@@ -104,10 +104,10 @@ val WindowManagerEvent: ui.window.WindowManagerEvent.type = ui.window.WindowMana
 type WindowId = ui.window.WindowId
 val WindowId: ui.window.WindowId.type = ui.window.WindowId
 
-type WindowModel[A] = ui.window.WindowModel[A]
+type WindowModel[A, ReferenceData] = ui.window.WindowModel[A, ReferenceData]
 val WindowModel: ui.window.WindowModel.type = ui.window.WindowModel
 
-type WindowViewModel = ui.window.WindowViewModel
+type WindowViewModel[ReferenceData] = ui.window.WindowViewModel[ReferenceData]
 val WindowViewModel: ui.window.WindowViewModel.type = ui.window.WindowViewModel
 
 type WindowEvent = ui.window.WindowEvent

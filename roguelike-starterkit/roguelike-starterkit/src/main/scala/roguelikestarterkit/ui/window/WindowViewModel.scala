@@ -2,13 +2,16 @@ package roguelikestarterkit.ui.window
 
 import indigo.*
 import indigo.syntax.*
-import roguelikestarterkit.*
+import roguelikestarterkit.terminal.MapTile
+import roguelikestarterkit.terminal.RogueTerminalEmulator
+import roguelikestarterkit.terminal.TerminalClones
+import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowViewModel(
+final case class WindowViewModel[ReferenceData](
     id: WindowId,
     modelHashCode: Int,
     terminal: RogueTerminalEmulator,
@@ -21,18 +24,18 @@ final case class WindowViewModel(
 ):
 
   def update[A](
-      context: UiContext,
-      model: WindowModel[A],
+      context: UiContext[ReferenceData],
+      model: WindowModel[A, ReferenceData],
       event: GlobalEvent
-  ): Outcome[WindowViewModel] =
+  ): Outcome[WindowViewModel[ReferenceData]] =
     Window.updateViewModel(context, model, this)(event)
 
-  def resize[A](model: WindowModel[A]): WindowViewModel =
+  def resize[A](model: WindowModel[A, ReferenceData]): WindowViewModel[ReferenceData] =
     this.copy(terminal = WindowViewModel.makeWindowTerminal(model, terminal))
 
 object WindowViewModel:
 
-  def initial(id: WindowId, magnification: Int): WindowViewModel =
+  def initial[ReferenceData](id: WindowId, magnification: Int): WindowViewModel[ReferenceData] =
     WindowViewModel(
       id,
       0,
@@ -45,8 +48,8 @@ object WindowViewModel:
       magnification
     )
 
-  def makeWindowTerminal[A](
-      model: WindowModel[A],
+  def makeWindowTerminal[A, ReferenceData](
+      model: WindowModel[A, ReferenceData],
       current: RogueTerminalEmulator
   ): RogueTerminalEmulator =
     val validSize =

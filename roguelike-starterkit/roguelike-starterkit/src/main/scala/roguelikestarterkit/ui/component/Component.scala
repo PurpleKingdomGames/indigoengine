@@ -15,15 +15,15 @@ trait Component[A]:
 
   /** Update this componenets model.
     */
-  def updateModel(
-      context: UiContext,
+  def updateModel[ReferenceData](
+      context: UiContext[ReferenceData],
       model: A
   ): GlobalEvent => Outcome[A]
 
   /** Produce a renderable output for this component, based on the component's model.
     */
-  def present(
-      context: UiContext,
+  def present[ReferenceData](
+      context: UiContext[ReferenceData],
       model: A
   ): Outcome[ComponentFragment]
 

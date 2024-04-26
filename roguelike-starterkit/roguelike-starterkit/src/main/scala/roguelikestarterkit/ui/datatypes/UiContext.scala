@@ -3,14 +3,15 @@ package roguelikestarterkit.ui.datatypes
 import indigo.*
 import indigo.scenes.SceneContext
 
-final case class UiContext(
+final case class UiContext[ReferenceData](
     bounds: Bounds,
     charSheet: CharSheet,
     mouseCoords: Coords,
     gameTime: GameTime,
     dice: Dice,
     inputState: InputState,
-    boundaryLocator: BoundaryLocator
+    boundaryLocator: BoundaryLocator,
+    reference: ReferenceData
 ):
 
   val running: Seconds = gameTime.running
@@ -34,7 +35,7 @@ object UiContext:
   def apply(
       frameContext: FrameContext[?],
       charSheet: CharSheet
-  ): UiContext =
+  ): UiContext[Unit] =
     val mouseCoords = Coords(frameContext.mouse.position / charSheet.size.toPoint)
     UiContext(
       Bounds.zero,
@@ -43,13 +44,14 @@ object UiContext:
       frameContext.gameTime,
       frameContext.dice,
       frameContext.inputState,
-      frameContext.boundaryLocator
+      frameContext.boundaryLocator,
+      ()
     )
 
-  def apply(
-      subSystemFrameContext: SubSystemFrameContext[?],
+  def apply[ReferenceData](
+      subSystemFrameContext: SubSystemFrameContext[ReferenceData],
       charSheet: CharSheet
-  ): UiContext =
+  ): UiContext[ReferenceData] =
     val mouseCoords = Coords(subSystemFrameContext.mouse.position / charSheet.size.toPoint)
     UiContext(
       Bounds.zero,
@@ -58,13 +60,14 @@ object UiContext:
       subSystemFrameContext.gameTime,
       subSystemFrameContext.dice,
       subSystemFrameContext.inputState,
-      subSystemFrameContext.boundaryLocator
+      subSystemFrameContext.boundaryLocator,
+      subSystemFrameContext.reference
     )
 
   def apply(
       sceneContext: SceneContext[?],
       charSheet: CharSheet
-  ): UiContext =
+  ): UiContext[Unit] =
     val mouseCoords = Coords(sceneContext.mouse.position / charSheet.size.toPoint)
     UiContext(
       Bounds.zero,
@@ -73,5 +76,6 @@ object UiContext:
       sceneContext.gameTime,
       sceneContext.dice,
       sceneContext.inputState,
-      sceneContext.boundaryLocator
+      sceneContext.boundaryLocator,
+      ()
     )

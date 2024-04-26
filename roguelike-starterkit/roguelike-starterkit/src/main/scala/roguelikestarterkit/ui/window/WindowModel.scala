@@ -7,14 +7,14 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
-final case class WindowModel[A](
+final case class WindowModel[A, ReferenceData](
     id: WindowId,
     charSheet: CharSheet,
     bounds: Bounds,
     title: Option[String],
     contentModel: A,
-    updateContentModel: (UiContext, A) => GlobalEvent => Outcome[A],
-    presentContentModel: (UiContext, A) => Outcome[SceneUpdateFragment],
+    updateContentModel: (UiContext[ReferenceData], A) => GlobalEvent => Outcome[A],
+    presentContentModel: (UiContext[ReferenceData], A) => Outcome[SceneUpdateFragment],
     draggable: Boolean,
     resizable: Boolean,
     closeable: Boolean,
@@ -29,105 +29,105 @@ final case class WindowModel[A](
     val m = if title.isEmpty then Dimensions(3) else Dimensions(3, 5)
     minSize.fold(m)(_.max(m))
 
-  def withId(value: WindowId): WindowModel[A] =
+  def withId(value: WindowId): WindowModel[A, ReferenceData] =
     this.copy(id = value)
 
-  def withBounds(value: Bounds): WindowModel[A] =
+  def withBounds(value: Bounds): WindowModel[A, ReferenceData] =
     this.copy(bounds = value)
 
-  def withPosition(value: Coords): WindowModel[A] =
+  def withPosition(value: Coords): WindowModel[A, ReferenceData] =
     withBounds(bounds.moveTo(value))
-  def moveTo(position: Coords): WindowModel[A] =
+  def moveTo(position: Coords): WindowModel[A, ReferenceData] =
     withPosition(position)
-  def moveTo(x: Int, y: Int): WindowModel[A] =
+  def moveTo(x: Int, y: Int): WindowModel[A, ReferenceData] =
     moveTo(Coords(x, y))
-  def moveBy(amount: Coords): WindowModel[A] =
+  def moveBy(amount: Coords): WindowModel[A, ReferenceData] =
     withPosition(bounds.coords + amount)
-  def moveBy(x: Int, y: Int): WindowModel[A] =
+  def moveBy(x: Int, y: Int): WindowModel[A, ReferenceData] =
     moveBy(Coords(x, y))
 
-  def withDimensions(value: Dimensions): WindowModel[A] =
+  def withDimensions(value: Dimensions): WindowModel[A, ReferenceData] =
     val d = value.max(minAllowedSize)
     withBounds(bounds.withDimensions(maxSize.fold(d)(_.min(d))))
-  def resizeTo(size: Dimensions): WindowModel[A] =
+  def resizeTo(size: Dimensions): WindowModel[A, ReferenceData] =
     withDimensions(size)
-  def resizeTo(x: Int, y: Int): WindowModel[A] =
+  def resizeTo(x: Int, y: Int): WindowModel[A, ReferenceData] =
     resizeTo(Dimensions(x, y))
-  def resizeBy(amount: Dimensions): WindowModel[A] =
+  def resizeBy(amount: Dimensions): WindowModel[A, ReferenceData] =
     withDimensions(bounds.dimensions + amount)
-  def resizeBy(x: Int, y: Int): WindowModel[A] =
+  def resizeBy(x: Int, y: Int): WindowModel[A, ReferenceData] =
     resizeBy(Dimensions(x, y))
 
-  def withTitle(value: String): WindowModel[A] =
+  def withTitle(value: String): WindowModel[A, ReferenceData] =
     this.copy(title = Option(value))
 
-  def withModel(value: A): WindowModel[A] =
+  def withModel(value: A): WindowModel[A, ReferenceData] =
     this.copy(contentModel = value)
 
   def updateModel(
-      f: (UiContext, A) => GlobalEvent => Outcome[A]
-  ): WindowModel[A] =
+      f: (UiContext[ReferenceData], A) => GlobalEvent => Outcome[A]
+  ): WindowModel[A, ReferenceData] =
     this.copy(updateContentModel = f)
 
   def present(
-      f: (UiContext, A) => Outcome[SceneUpdateFragment]
-  ): WindowModel[A] =
+      f: (UiContext[ReferenceData], A) => Outcome[SceneUpdateFragment]
+  ): WindowModel[A, ReferenceData] =
     this.copy(presentContentModel = f)
 
-  def withDraggable(value: Boolean): WindowModel[A] =
+  def withDraggable(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(draggable = value)
-  def isDraggable: WindowModel[A] =
+  def isDraggable: WindowModel[A, ReferenceData] =
     withDraggable(true)
-  def notDraggable: WindowModel[A] =
+  def notDraggable: WindowModel[A, ReferenceData] =
     withDraggable(false)
 
-  def withResizable(value: Boolean): WindowModel[A] =
+  def withResizable(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(resizable = value)
-  def isResizable: WindowModel[A] =
+  def isResizable: WindowModel[A, ReferenceData] =
     withResizable(true)
-  def notResizable: WindowModel[A] =
+  def notResizable: WindowModel[A, ReferenceData] =
     withResizable(false)
 
-  def withCloseable(value: Boolean): WindowModel[A] =
+  def withCloseable(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(closeable = value)
-  def isCloseable: WindowModel[A] =
+  def isCloseable: WindowModel[A, ReferenceData] =
     withCloseable(true)
-  def notCloseable: WindowModel[A] =
+  def notCloseable: WindowModel[A, ReferenceData] =
     withCloseable(false)
 
-  def withFocus(value: Boolean): WindowModel[A] =
+  def withFocus(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(hasFocus = value)
-  def focus: WindowModel[A] =
+  def focus: WindowModel[A, ReferenceData] =
     withFocus(true)
-  def blur: WindowModel[A] =
+  def blur: WindowModel[A, ReferenceData] =
     withFocus(false)
 
-  def withStatic(value: Boolean): WindowModel[A] =
+  def withStatic(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(static = value)
-  def isStatic: WindowModel[A] =
+  def isStatic: WindowModel[A, ReferenceData] =
     withStatic(true)
-  def notStatic: WindowModel[A] =
+  def notStatic: WindowModel[A, ReferenceData] =
     withStatic(false)
 
-  def withMinSize(min: Dimensions): WindowModel[A] =
+  def withMinSize(min: Dimensions): WindowModel[A, ReferenceData] =
     this.copy(minSize = Option(min))
-  def withMinSize(width: Int, height: Int): WindowModel[A] =
+  def withMinSize(width: Int, height: Int): WindowModel[A, ReferenceData] =
     this.copy(minSize = Option(Dimensions(width, height)))
-  def noMinSize: WindowModel[A] =
+  def noMinSize: WindowModel[A, ReferenceData] =
     this.copy(minSize = None)
 
-  def withMaxSize(max: Dimensions): WindowModel[A] =
+  def withMaxSize(max: Dimensions): WindowModel[A, ReferenceData] =
     this.copy(maxSize = Option(max))
-  def withMaxSize(width: Int, height: Int): WindowModel[A] =
+  def withMaxSize(width: Int, height: Int): WindowModel[A, ReferenceData] =
     this.copy(maxSize = Option(Dimensions(width, height)))
-  def noMaxSize: WindowModel[A] =
+  def noMaxSize: WindowModel[A, ReferenceData] =
     this.copy(maxSize = None)
 
-  def withState(value: WindowState): WindowModel[A] =
+  def withState(value: WindowState): WindowModel[A, ReferenceData] =
     this.copy(state = value)
-  def open: WindowModel[A] =
+  def open: WindowModel[A, ReferenceData] =
     withState(WindowState.Open)
-  def close: WindowModel[A] =
+  def close: WindowModel[A, ReferenceData] =
     withState(WindowState.Closed)
 
   def isOpen: Boolean =
@@ -137,11 +137,11 @@ final case class WindowModel[A](
 
 object WindowModel:
 
-  def apply[A](
+  def apply[A, ReferenceData](
       id: WindowId,
       charSheet: CharSheet,
       content: A
-  ): WindowModel[A] =
+  ): WindowModel[A, ReferenceData] =
     WindowModel(
       id,
       charSheet,
@@ -160,8 +160,8 @@ object WindowModel:
       WindowState.Closed
     )
 
-  def apply[StartupData, CA](
+  def apply[StartupData, CA, ReferenceData](
       id: WindowId,
       charSheet: CharSheet
-  ): WindowModel[Unit] =
+  ): WindowModel[Unit, ReferenceData] =
     WindowModel(id, charSheet, ())

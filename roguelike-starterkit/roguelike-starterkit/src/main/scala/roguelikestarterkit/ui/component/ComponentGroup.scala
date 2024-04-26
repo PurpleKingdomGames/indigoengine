@@ -79,8 +79,8 @@ final case class ComponentGroup(
   def add[A](entries: A*)(using c: Component[A]): ComponentGroup =
     add(Batch.fromSeq(entries))
 
-  def update[StartupData, ContextData](
-      context: UiContext
+  def update[StartupData, ContextData, ReferenceData](
+      context: UiContext[ReferenceData]
   ): GlobalEvent => Outcome[ComponentGroup] =
     e =>
       components
@@ -98,8 +98,8 @@ final case class ComponentGroup(
           )
         }
 
-  def present[StartupData, ContextData](
-      context: UiContext
+  def present[StartupData, ContextData, ReferenceData](
+      context: UiContext[ReferenceData]
   ): Outcome[ComponentFragment] =
     components
       .map { c =>
@@ -145,14 +145,14 @@ object ComponentGroup:
     def bounds(model: ComponentGroup): Bounds =
       model.bounds
 
-    def updateModel(
-        context: UiContext,
+    def updateModel[ReferenceData](
+        context: UiContext[ReferenceData],
         model: ComponentGroup
     ): GlobalEvent => Outcome[ComponentGroup] =
       case e => model.update(context)(e)
 
-    def present(
-        context: UiContext,
+    def present[ReferenceData](
+        context: UiContext[ReferenceData],
         model: ComponentGroup
     ): Outcome[ComponentFragment] =
       model.present(context)

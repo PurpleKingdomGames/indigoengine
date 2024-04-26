@@ -38,7 +38,7 @@ object ColourWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ColorPalette] =
+  ): WindowModel[ColorPalette, Unit] =
     WindowModel(
       windowId,
       charSheet,
@@ -77,7 +77,7 @@ object ColourWindow:
       .present(present)
 
   def updateModel(
-      context: UiContext,
+      context: UiContext[Unit],
       model: ColorPalette
   ): GlobalEvent => Outcome[ColorPalette] =
     case e =>
@@ -86,7 +86,7 @@ object ColourWindow:
       }
 
   def present(
-      context: UiContext,
+      context: UiContext[Unit],
       model: ColorPalette
   ): Outcome[SceneUpdateFragment] =
     model.components.present(context).map { c =>
