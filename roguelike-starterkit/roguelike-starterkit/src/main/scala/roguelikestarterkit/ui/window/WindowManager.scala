@@ -34,13 +34,13 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): GlobalEvent => Outcome[ModelHolder[ReferenceData]] =
     e =>
       for {
-        updatedModel <- WindowManager.updateModel[Unit, ReferenceData](
+        updatedModel <- WindowManager.updateModel[ReferenceData](
           UiContext(context, charSheet),
           model.model
         )(e)
 
         updatedViewModel <-
-          WindowManager.updateViewModel[Unit, ReferenceData]( // TODO: Why Unit?
+          WindowManager.updateViewModel[ReferenceData](
             UiContext(context, charSheet),
             updatedModel,
             model.viewModel
@@ -57,7 +57,9 @@ final case class WindowManager[StartUpData, Model, RefData](
       model.viewModel
     )
 
-  def register(windowModels: WindowModel[?, ReferenceData]*): WindowManager[StartUpData, Model, ReferenceData] =
+  def register(
+      windowModels: WindowModel[?, ReferenceData]*
+  ): WindowManager[StartUpData, Model, ReferenceData] =
     register(Batch.fromSeq(windowModels))
   def register(
       windowModels: Batch[WindowModel[?, ReferenceData]]
@@ -97,7 +99,7 @@ object WindowManager:
   ): WindowManager[StartUpData, Model, ReferenceData] =
     WindowManager(id, magnification, charSheet, extractReference, startUpData, Batch.empty)
 
-  def updateModel[A, ReferenceData](
+  def updateModel[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
@@ -129,7 +131,7 @@ object WindowManager:
         .sequence
         .map(m => model.copy(windows = m))
 
-  def updateViewModel[A, ReferenceData](
+  def updateViewModel[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
@@ -153,7 +155,7 @@ object WindowManager:
 
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
-  def present[A, ReferenceData](
+  def present[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
