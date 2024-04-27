@@ -88,9 +88,9 @@ object ColourWindow:
   def present(
       context: UiContext[Unit],
       model: ColorPalette
-  ): Outcome[SceneUpdateFragment] =
+  ): Outcome[Layer] =
     model.components.present(context).map { c =>
-      SceneUpdateFragment(c.nodes).addCloneBlanks(c.cloneBlanks)
+      Layer.Content(c.nodes).addCloneBlanks(c.cloneBlanks)
     }
 
   def presentSwatch(

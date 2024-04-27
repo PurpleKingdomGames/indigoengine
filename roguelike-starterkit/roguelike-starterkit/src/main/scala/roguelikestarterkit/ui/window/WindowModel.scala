@@ -14,7 +14,7 @@ final case class WindowModel[A, ReferenceData](
     title: Option[String],
     contentModel: A,
     updateContentModel: (UiContext[ReferenceData], A) => GlobalEvent => Outcome[A],
-    presentContentModel: (UiContext[ReferenceData], A) => Outcome[SceneUpdateFragment],
+    presentContentModel: (UiContext[ReferenceData], A) => Outcome[Layer],
     draggable: Boolean,
     resizable: Boolean,
     closeable: Boolean,
@@ -70,7 +70,7 @@ final case class WindowModel[A, ReferenceData](
     this.copy(updateContentModel = f)
 
   def present(
-      f: (UiContext[ReferenceData], A) => Outcome[SceneUpdateFragment]
+      f: (UiContext[ReferenceData], A) => Outcome[Layer]
   ): WindowModel[A, ReferenceData] =
     this.copy(presentContentModel = f)
 
@@ -149,7 +149,7 @@ object WindowModel:
       None,
       contentModel = content,
       updateContentModel = (_, _) => _ => Outcome(content),
-      presentContentModel = (_, _) => Outcome(SceneUpdateFragment.empty),
+      presentContentModel = (_, _) => Outcome(Layer.empty),
       false,
       false,
       false,

@@ -29,6 +29,7 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
         Model.defaultCharSheet,
         _ => ()
       )
+        .withLayerKey(BindingKey("UI Layer"))
         .register(
           ColourWindow.window(
             Model.defaultCharSheet
@@ -69,4 +70,4 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+    Outcome(SceneUpdateFragment(BindingKey("UI Layer") -> Layer.Stack.empty))

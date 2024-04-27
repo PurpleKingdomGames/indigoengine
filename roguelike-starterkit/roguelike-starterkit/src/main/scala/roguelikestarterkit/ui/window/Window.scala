@@ -229,32 +229,44 @@ object Window:
       context: UiContext[ReferenceData],
       model: WindowModel[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
-  ): Outcome[SceneUpdateFragment] =
+  ): Outcome[Layer] =
     model
       .presentContentModel(
         context.copy(bounds = viewModel.contentRectangle),
         model.contentModel
       )
-      .map { cm =>
-        val masked =
-          cm.copy(layers =
-            cm.layers.map(
-              _.modifyLayer {
-                case l: Layer.Content =>
-                  l.withBlendMaterial(
-                    LayerMask(
-                      viewModel.contentRectangle
-                        .toScreenSpace(context.charSheet.size * viewModel.magnification)
-                    )
-                  )
-
-                case l =>
-                  l
-              }
+      .map {
+        case l: Layer.Content =>
+          Layer.Stack(
+            Layer
+              .Content(viewModel.terminalClones.clones)
+              .addCloneBlanks(viewModel.terminalClones.blanks),
+            l.withBlendMaterial(
+              LayerMask(
+                viewModel.contentRectangle
+                  .toScreenSpace(context.charSheet.size * viewModel.magnification)
+              )
             )
           )
 
-        SceneUpdateFragment(
-          viewModel.terminalClones.clones
-        ).addCloneBlanks(viewModel.terminalClones.blanks) |+| masked
+        case l: Layer.Stack =>
+          val masked =
+            l.layers.map {
+              case l: Layer.Content =>
+                l.withBlendMaterial(
+                  LayerMask(
+                    viewModel.contentRectangle
+                      .toScreenSpace(context.charSheet.size * viewModel.magnification)
+                  )
+                )
+
+              case l =>
+                l
+            }
+
+          Layer.Stack(
+            Layer
+              .Content(viewModel.terminalClones.clones)
+              .addCloneBlanks(viewModel.terminalClones.blanks) :: masked
+          )
       }

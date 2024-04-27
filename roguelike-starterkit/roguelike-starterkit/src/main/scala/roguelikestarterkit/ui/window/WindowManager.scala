@@ -11,6 +11,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     charSheet: CharSheet,
     extractReference: Model => RefData,
     startUpData: StartUpData,
+    layerKey: Option[BindingKey],
     windows: Batch[WindowModel[?, RefData]]
 ) extends SubSystem[Model]:
   type EventType      = GlobalEvent
@@ -52,6 +53,7 @@ final case class WindowManager[StartUpData, Model, RefData](
       model: ModelHolder[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
+      layerKey,
       UiContext(context, charSheet),
       model.model,
       model.viewModel
@@ -65,6 +67,20 @@ final case class WindowManager[StartUpData, Model, RefData](
       windowModels: Batch[WindowModel[?, ReferenceData]]
   ): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(windows = windows ++ windowModels)
+
+  def withStartupData[A](newStartupData: A): WindowManager[A, Model, ReferenceData] =
+    WindowManager(
+      id,
+      initialMagnification,
+      charSheet,
+      extractReference,
+      newStartupData,
+      layerKey,
+      windows
+    )
+
+  def withLayerKey(newLayerKey: BindingKey): WindowManager[StartUpData, Model, ReferenceData] =
+    this.copy(layerKey = Option(newLayerKey))
 
 final case class ModelHolder[ReferenceData](
     model: WindowManagerModel[ReferenceData],
@@ -88,7 +104,7 @@ object WindowManager:
       charSheet: CharSheet,
       extractReference: Model => ReferenceData
   ): WindowManager[Unit, Model, ReferenceData] =
-    WindowManager(id, magnification, charSheet, extractReference, (), Batch.empty)
+    WindowManager(id, magnification, charSheet, extractReference, (), None, Batch.empty)
 
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
@@ -97,7 +113,25 @@ object WindowManager:
       extractReference: Model => ReferenceData,
       startUpData: StartUpData
   ): WindowManager[StartUpData, Model, ReferenceData] =
-    WindowManager(id, magnification, charSheet, extractReference, startUpData, Batch.empty)
+    WindowManager(id, magnification, charSheet, extractReference, startUpData, None, Batch.empty)
+
+  def apply[StartUpData, Model, ReferenceData](
+      id: SubSystemId,
+      magnification: Int,
+      charSheet: CharSheet,
+      extractReference: Model => ReferenceData,
+      startUpData: StartUpData,
+      layerKey: BindingKey
+  ): WindowManager[StartUpData, Model, ReferenceData] =
+    WindowManager(
+      id,
+      magnification,
+      charSheet,
+      extractReference,
+      startUpData,
+      Option(layerKey),
+      Batch.empty
+    )
 
   def updateModel[ReferenceData](
       context: UiContext[ReferenceData],
@@ -156,22 +190,52 @@ object WindowManager:
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
   def present[ReferenceData](
+      layerKey: Option[BindingKey],
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
-    model.windows
-      .filter(_.isOpen)
-      .flatMap { m =>
-        viewModel.windows.find(_.id == m.id) match
-          case None =>
-            // Shouldn't get here.
-            Batch.empty
+    val windowLayers: Outcome[Batch[Layer]] =
+      model.windows
+        .filter(_.isOpen)
+        .flatMap { m =>
+          viewModel.windows.find(_.id == m.id) match
+            case None =>
+              // Shouldn't get here.
+              Batch.empty
 
-          case Some(vm) =>
-            Batch(Window.present(context, m, vm))
-      }
-      .sequence
-      .map(
-        _.foldLeft(SceneUpdateFragment.empty)(_ |+| _)
-      )
+            case Some(vm) =>
+              Batch(
+                Window
+                  .present(context, m, vm)
+              )
+        }
+        .sequence
+
+    windowLayers.map { layers =>
+      layerKey match
+        case None =>
+          SceneUpdateFragment(
+            LayerEntry(Layer.Stack(layers))
+          )
+
+        case Some(key) =>
+          SceneUpdateFragment(
+            LayerEntry(key -> Layer.Stack(layers))
+          )
+    }
+
+  def present[ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      viewModel: WindowManagerViewModel[ReferenceData]
+  ): Outcome[SceneUpdateFragment] =
+    present(None, context, model, viewModel)
+
+  def present[ReferenceData](
+      layerKey: BindingKey,
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData],
+      viewModel: WindowManagerViewModel[ReferenceData]
+  ): Outcome[SceneUpdateFragment] =
+    present(Option(layerKey), context, model, viewModel)
