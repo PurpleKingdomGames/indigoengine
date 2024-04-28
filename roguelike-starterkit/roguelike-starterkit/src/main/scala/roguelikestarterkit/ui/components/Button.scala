@@ -78,6 +78,9 @@ object Button:
     def reflow(model: Button): Button =
       model
 
+    def propagatedChange(model: Button, parentBounds: Bounds): Button =
+      model
+
 enum ButtonState:
   case Up, Over, Down
 

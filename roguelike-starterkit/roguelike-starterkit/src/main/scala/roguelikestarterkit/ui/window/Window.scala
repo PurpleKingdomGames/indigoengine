@@ -49,8 +49,8 @@ object Window:
             .resize((b.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
             .moveTo(b.coords + Coords(1, 1))
 
-      model
-        .updateContentModel(context.copy(bounds = contentRectangle), model.contentModel)(e)
+      model.windowContent
+        .updateModel(context.copy(bounds = contentRectangle), model.contentModel)(e)
         .map(model.withModel)
 
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
@@ -230,8 +230,8 @@ object Window:
       model: WindowModel[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): Outcome[Layer] =
-    model
-      .presentContentModel(
+    model.windowContent
+      .present(
         context.copy(bounds = viewModel.contentRectangle),
         model.contentModel
       )

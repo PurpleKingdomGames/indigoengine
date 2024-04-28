@@ -13,6 +13,7 @@ import scala.annotation.tailrec
   */
 final case class ComponentGroup(
     bounds: Bounds,
+    boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?]]
 ):
@@ -71,6 +72,40 @@ final case class ComponentGroup(
 
     this.copy(components = newComponents)
 
+  // TODO: We'll need a way for the Window to propagate change too. Maybe another typeclass?
+  def propagatedChange(parentBounds: Bounds): ComponentGroup =
+    val newBounds =
+      boundsType match
+        case BoundsType.Fixed =>
+          bounds
+
+        case BoundsType.Inherit =>
+          parentBounds
+
+        case BoundsType.Relative(x, y, width, height) =>
+          Bounds(
+            (parentBounds.width.toDouble * x).toInt,
+            (parentBounds.height.toDouble * y).toInt,
+            (parentBounds.width.toDouble * width).toInt,
+            (parentBounds.height.toDouble * height).toInt
+          )
+
+        case BoundsType.RelativePosition(x, y) =>
+          bounds.withPosition(
+            (parentBounds.width.toDouble * x).toInt,
+            (parentBounds.height.toDouble * y).toInt
+          )
+
+        case BoundsType.RelativeSize(width, height) =>
+          bounds.withDimensions(
+            (parentBounds.width.toDouble * width).toInt,
+            (parentBounds.height.toDouble * height).toInt
+          )
+
+    withBounds(newBounds).copy(
+      components = components.map(_.propagatedChange(newBounds))
+    ).reflow
+
   def add[A](entry: A)(using c: Component[A]): ComponentGroup =
     this.copy(components = components :+ ComponentEntry(nextOffset(components), entry, c))
 
@@ -111,6 +146,9 @@ final case class ComponentGroup(
   def withBounds(value: Bounds): ComponentGroup =
     this.copy(bounds = value).reflow
 
+  def withBoundsTyoe(value: BoundsType): ComponentGroup =
+    this.copy(boundsType = value).reflow
+
   def withLayout(value: ComponentLayout): ComponentGroup =
     this.copy(layout = value).reflow
 
@@ -138,7 +176,7 @@ final case class ComponentGroup(
 
 object ComponentGroup:
   def apply(bounds: Bounds): ComponentGroup =
-    ComponentGroup(bounds, ComponentLayout.None, Batch.empty)
+    ComponentGroup(bounds, BoundsType.Inherit, ComponentLayout.None, Batch.empty)
 
   given Component[ComponentGroup] with
 
@@ -164,3 +202,6 @@ object ComponentGroup:
         )
       }
       model.reflow.copy(components = reflowed)
+
+    def propagatedChange(model: ComponentGroup, parentBounds: Bounds): ComponentGroup =
+      model.propagatedChange(parentBounds)

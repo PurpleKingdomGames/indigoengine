@@ -36,3 +36,6 @@ object Label:
 
     def reflow(model: Label): Label =
       model
+
+    def propagatedChange(model: Label, parentBounds: Bounds): Label =
+      model

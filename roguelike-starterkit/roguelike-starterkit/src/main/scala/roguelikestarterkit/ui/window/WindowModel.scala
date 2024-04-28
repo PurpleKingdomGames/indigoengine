@@ -13,8 +13,7 @@ final case class WindowModel[A, ReferenceData](
     bounds: Bounds,
     title: Option[String],
     contentModel: A,
-    updateContentModel: (UiContext[ReferenceData], A) => GlobalEvent => Outcome[A],
-    presentContentModel: (UiContext[ReferenceData], A) => Outcome[Layer],
+    windowContent: WindowContent[A],
     draggable: Boolean,
     resizable: Boolean,
     closeable: Boolean,
@@ -63,16 +62,6 @@ final case class WindowModel[A, ReferenceData](
 
   def withModel(value: A): WindowModel[A, ReferenceData] =
     this.copy(contentModel = value)
-
-  def updateModel(
-      f: (UiContext[ReferenceData], A) => GlobalEvent => Outcome[A]
-  ): WindowModel[A, ReferenceData] =
-    this.copy(updateContentModel = f)
-
-  def present(
-      f: (UiContext[ReferenceData], A) => Outcome[Layer]
-  ): WindowModel[A, ReferenceData] =
-    this.copy(presentContentModel = f)
 
   def withDraggable(value: Boolean): WindowModel[A, ReferenceData] =
     this.copy(draggable = value)
@@ -141,15 +130,14 @@ object WindowModel:
       id: WindowId,
       charSheet: CharSheet,
       content: A
-  ): WindowModel[A, ReferenceData] =
+  )(using c: WindowContent[A]): WindowModel[A, ReferenceData] =
     WindowModel(
       id,
       charSheet,
       Bounds(Coords.zero, Dimensions.zero),
       None,
-      contentModel = content,
-      updateContentModel = (_, _) => _ => Outcome(content),
-      presentContentModel = (_, _) => Outcome(Layer.empty),
+      content,
+      c,
       false,
       false,
       false,
@@ -159,9 +147,3 @@ object WindowModel:
       None,
       WindowState.Closed
     )
-
-  def apply[StartupData, CA, ReferenceData](
-      id: WindowId,
-      charSheet: CharSheet
-  ): WindowModel[Unit, ReferenceData] =
-    WindowModel(id, charSheet, ())

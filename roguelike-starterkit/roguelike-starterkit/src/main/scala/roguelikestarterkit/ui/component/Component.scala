@@ -31,3 +31,8 @@ trait Component[A]:
     * should reflow it's contents - whatever that means in the context of this component type.
     */
   def reflow(model: A): A
+
+  /** Informs the Component that something about its parent has changed in case it needs to take
+    * action.
+    */
+  def propagatedChange(model: A, parentBounds: Bounds): A
