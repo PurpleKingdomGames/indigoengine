@@ -209,7 +209,7 @@ final case class ComponentGroup(
 
 object ComponentGroup:
   def apply(bounds: Bounds): ComponentGroup =
-    ComponentGroup(bounds, BoundsType.Inherit, ComponentLayout.None, Batch.empty)
+    ComponentGroup(bounds, BoundsType.Fixed, ComponentLayout.None, Batch.empty)
 
   given Component[ComponentGroup] with
 
