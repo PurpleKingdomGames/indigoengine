@@ -3,7 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 
-object ColourWindow:
+object ColourWindow {
 
   final case class ColorPaletteReference(name: String, count: Int, colors: Batch[RGBA])
 
@@ -30,8 +30,6 @@ object ColourWindow:
     )
   )
 
-  final case class ColorPalette(components: ComponentGroup)
-
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   val windowId: WindowId = WindowId("Color palette")
@@ -45,9 +43,11 @@ object ColourWindow:
       ColorPalette(
         ComponentGroup(Bounds(0, 0, 23, 23))
           .withLayout(ComponentLayout.Vertical())
+          .inheritBounds
           .add(
             ComponentGroup(Bounds(0, 0, 23, 10))
               .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+              .offsetSize(0, -4)
               .add(
                 outrunner16.colors.map { rgba =>
                   Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
@@ -73,25 +73,6 @@ object ColourWindow:
       .isDraggable
       .isResizable
       .isCloseable
-      .updateModel(updateModel)
-      .present(present)
-
-  def updateModel(
-      context: UiContext[Unit],
-      model: ColorPalette
-  ): GlobalEvent => Outcome[ColorPalette] =
-    case e =>
-      model.components.update(context)(e).map { c =>
-        model.copy(components = c)
-      }
-
-  def present(
-      context: UiContext[Unit],
-      model: ColorPalette
-  ): Outcome[Layer] =
-    model.components.present(context).map { c =>
-      Layer.Content(c.nodes).addCloneBlanks(c.cloneBlanks)
-    }
 
   def presentSwatch(
       charSheet: CharSheet,
@@ -159,5 +140,29 @@ object ColourWindow:
           terminal.clones
         ).addCloneBlanks(terminal.blanks)
       )
+}
 
 final case class ColorPalette(components: ComponentGroup)
+object ColorPalette:
+
+  given WindowContent[ColorPalette] with
+
+    def updateModel[Unit](
+        context: UiContext[Unit],
+        model: ColorPalette
+    ): GlobalEvent => Outcome[ColorPalette] =
+      case e =>
+        model.components.update(context)(e).map { c =>
+          model.copy(components = c)
+        }
+
+    def present[Unit](
+        context: UiContext[Unit],
+        model: ColorPalette
+    ): Outcome[Layer] =
+      model.components.present(context).map(_.toLayer)
+
+    def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
+      model.copy(
+        components = model.components.cascade(newBounds)
+      )

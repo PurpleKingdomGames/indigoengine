@@ -3,11 +3,11 @@ package roguelikestarterkit.ui.component
 import indigo.shared.collections.Batch
 import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.Layer
+import indigo.shared.scenegraph.LayerEntry
 import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph.SceneUpdateFragment
 
 /** ComponentFragments represent the nodes and clone instances used for rendering a component. They
-  * are like a cut-down version of a `SceneUpdateFragment`.
+  * are like a cut-down version of a `Layer`.
   */
 final case class ComponentFragment(
     nodes: Batch[SceneNode],
@@ -35,10 +35,12 @@ final case class ComponentFragment(
   def addCloneBlanks(blanks: Batch[CloneBlank]): ComponentFragment =
     this.copy(cloneBlanks = cloneBlanks ++ blanks)
 
-  def toSceneUpdateFragment: SceneUpdateFragment =
-    SceneUpdateFragment(
-      Batch(Layer(nodes)),
+  def toLayer: Layer =
+    Layer.Content(
+      nodes,
       Batch.empty,
+      None,
+      None,
       None,
       None,
       cloneBlanks,

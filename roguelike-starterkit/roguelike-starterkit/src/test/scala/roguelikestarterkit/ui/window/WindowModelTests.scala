@@ -9,17 +9,17 @@ class WindowModelTests extends munit.FunSuite:
   test("model cascades bounds changes") {
 
     given WindowContent[Bounds] with
-      def updateModel[StartupData, ContextData](
-          context: UiContext[StartupData, ContextData],
+      def updateModel[Unit](
+          context: UiContext[Unit],
           model: Bounds
       ): GlobalEvent => Outcome[Bounds] =
         _ => Outcome(model)
 
-      def present[StartupData, ContextData](
-          context: UiContext[StartupData, ContextData],
+      def present[Unit](
+          context: UiContext[Unit],
           model: Bounds
-      ): Outcome[SceneUpdateFragment] =
-        Outcome(SceneUpdateFragment.empty)
+      ): Outcome[Layer] =
+        Outcome(Layer.empty)
 
       def cascade(model: Bounds, newBounds: Bounds): Bounds =
         newBounds
@@ -35,7 +35,7 @@ class WindowModelTests extends munit.FunSuite:
     val bounds =
       Bounds(0, 0, 10, 10)
 
-    val model: WindowModel[Unit, Unit, Bounds] =
+    val model: WindowModel[Bounds, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -62,7 +62,7 @@ class WindowModelTests extends munit.FunSuite:
   )
 
   test("model cascades bounds changes to component group - BoundsType.Fixed") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -73,7 +73,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Inherit") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -84,7 +84,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -95,7 +95,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative 100%") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -106,7 +106,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativePosition") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -117,7 +117,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativeSize") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -128,7 +128,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.Offset") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -139,7 +139,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetPosition") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -150,7 +150,7 @@ class WindowModelTests extends munit.FunSuite:
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetSize") {
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -173,7 +173,7 @@ class WindowModelTests extends munit.FunSuite:
             .add(Bounds(0, 0, 0, 0))
         )
 
-    val model: WindowModel[Unit, Unit, ComponentGroup] =
+    val model: WindowModel[ComponentGroup, Unit] =
       WindowModel(
         WindowId("test"),
         charSheet,
@@ -208,14 +208,14 @@ class WindowModelTests extends munit.FunSuite:
   given Component[String] = new Component[String] {
     def bounds(model: String): Bounds = Bounds(0, 0, model.length, 1)
 
-    def updateModel[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def updateModel[Unit](
+        context: UiContext[Unit],
         model: String
     ): GlobalEvent => Outcome[String] =
       _ => Outcome(model)
 
-    def present[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def present[Unit](
+        context: UiContext[Unit],
         model: String
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
@@ -230,14 +230,14 @@ class WindowModelTests extends munit.FunSuite:
   given Component[Bounds] = new Component[Bounds] {
     def bounds(model: Bounds): Bounds = model
 
-    def updateModel[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def updateModel[Unit](
+        context: UiContext[Unit],
         model: Bounds
     ): GlobalEvent => Outcome[Bounds] =
       _ => Outcome(model)
 
-    def present[StartupData, ContextData](
-        context: UiContext[StartupData, ContextData],
+    def present[Unit](
+        context: UiContext[Unit],
         model: Bounds
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)

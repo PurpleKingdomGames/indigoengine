@@ -113,6 +113,9 @@ val WindowViewModel: ui.window.WindowViewModel.type = ui.window.WindowViewModel
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
 
+type WindowContent[A] = ui.window.WindowContent[A]
+val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
+
 // UI Components
 
 type Component[A] = ui.component.Component[A]
@@ -131,6 +134,9 @@ val Overflow: ui.component.Overflow.type = ui.component.Overflow
 
 type Padding = ui.component.Padding
 val Padding: ui.component.Padding.type = ui.component.Padding
+
+type BoundsType = ui.component.BoundsType
+val BoundsType: ui.component.BoundsType.type = ui.component.BoundsType
 
 // UI Built in components
 

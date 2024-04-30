@@ -47,9 +47,9 @@ object Window:
   def calculateDragBy(charSize: Int, mousePosition: Point, windowPosition: Coords): Coords =
     Coords(mousePosition / charSize) - windowPosition
 
-  def calculateContentRectangle[StartupData, CA, A](
+  def calculateContentRectangle[A, ReferenceData](
       workingBounds: Bounds,
-      model: WindowModel[StartupData, CA, A]
+      model: WindowModel[A, ReferenceData]
   ): Bounds =
     if model.title.isDefined then
       workingBounds
