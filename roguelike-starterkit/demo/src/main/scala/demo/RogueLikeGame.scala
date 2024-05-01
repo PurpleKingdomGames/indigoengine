@@ -18,7 +18,6 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   def scenes(bootData: Size): NonEmptyList[Scene[Size, Model, ViewModel]] =
     NonEmptyList(
       UISubSystemScene,
-      UIScene,
       LightingScene,
       RogueTerminalEmulatorScene,
       TerminalTextScene,
@@ -70,7 +69,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(windowManager: WindowManagerModel[Unit])
+final case class Model(mouseOverWindows: Batch[WindowId])
 
 object Model:
 
@@ -83,17 +82,9 @@ object Model:
     )
 
   val initial: Model =
-    Model(
-      WindowManagerModel.initial
-        .register(
-          ColourWindow.window(
-            defaultCharSheet
-          )
-        )
-        .open(ColourWindow.windowId)
-    )
+    Model(Batch.empty)
 
-final case class ViewModel(windowManager: WindowManagerViewModel[Unit])
+final case class ViewModel()
 object ViewModel:
   def initial: ViewModel =
-    ViewModel(WindowManagerViewModel.initial(RogueLikeGame.magnification))
+    ViewModel()

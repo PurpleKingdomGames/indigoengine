@@ -18,21 +18,21 @@ object Window:
       context: UiContext[ReferenceData],
       model: WindowModel[A, ReferenceData]
   ): GlobalEvent => Outcome[WindowModel[A, ReferenceData]] =
-    case WindowEvent.MoveBy(id, dragData) if model.id == id =>
+    case WindowInternalEvent.MoveBy(id, dragData) if model.id == id =>
       Outcome(
         model.copy(
           bounds = model.bounds.moveBy(dragData.by - dragData.offset)
         )
       )
 
-    case WindowEvent.MoveTo(id, position) if model.id == id =>
+    case WindowInternalEvent.MoveTo(id, position) if model.id == id =>
       Outcome(
         model.copy(
           bounds = model.bounds.moveTo(position)
         )
       )
 
-    case WindowEvent.ResizeBy(id, dragData) if model.id == id =>
+    case WindowInternalEvent.ResizeBy(id, dragData) if model.id == id =>
       Outcome(
         model.withDimensions(model.bounds.dimensions + (dragData.by - dragData.offset).toDimensions)
       ).addGlobalEvents(WindowEvent.Resized(id))
@@ -109,10 +109,10 @@ object Window:
           viewModel.resizeData.isDefined =>
       Outcome(redraw(context, model, viewModel))
 
-    case WindowEvent.Redraw =>
+    case WindowInternalEvent.Redraw =>
       Outcome(redraw(context, model, viewModel))
 
-    case WindowEvent.ClearData =>
+    case WindowInternalEvent.ClearData =>
       Outcome(viewModel.copy(resizeData = None, dragData = None))
 
     case e: MouseEvent.Click =>
@@ -122,13 +122,13 @@ object Window:
 
       val close =
         if actionsAllowed && model.closeable && gridPos == model.bounds.topRight + Coords(-1, 0)
-        then Batch(WindowManagerEvent.Close(model.id))
+        then Batch(WindowEvent.Close(model.id))
         else Batch.empty
       val focus =
         if actionsAllowed && !model.static && model.bounds
             .resize(model.bounds.dimensions - 1)
             .contains(gridPos)
-        then Batch(WindowManagerEvent.GiveFocusAt(gridPos))
+        then Batch(WindowEvent.GiveFocusAt(gridPos))
         else Batch.empty
 
       Outcome(viewModel)
@@ -142,7 +142,7 @@ object Window:
       val d = calculateDragBy(model.charSheet.charSize, e.position, model.bounds.coords)
 
       Outcome(viewModel.copy(dragData = Option(DragData(d, d))))
-        .addGlobalEvents(WindowManagerEvent.GiveFocusAt(context.mouseCoords))
+        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
     case e: MouseEvent.MouseDown
         if model.resizable &&
@@ -151,12 +151,12 @@ object Window:
       val d = calculateDragBy(model.charSheet.charSize, e.position, model.bounds.coords)
 
       Outcome(viewModel.copy(resizeData = Option(DragData(d, d))))
-        .addGlobalEvents(WindowManagerEvent.GiveFocusAt(context.mouseCoords))
+        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
     case e: MouseEvent.MouseUp if viewModel.dragData.isDefined =>
       Outcome(viewModel)
         .addGlobalEvents(
-          WindowEvent.MoveBy(
+          WindowInternalEvent.MoveBy(
             model.id,
             viewModel.dragData
               .map(
@@ -166,13 +166,13 @@ object Window:
               )
               .getOrElse(DragData.zero)
           ),
-          WindowEvent.ClearData
+          WindowInternalEvent.ClearData
         )
 
     case e: MouseEvent.MouseUp if viewModel.resizeData.isDefined =>
       Outcome(viewModel)
         .addGlobalEvents(
-          WindowEvent.ResizeBy(
+          WindowInternalEvent.ResizeBy(
             model.id,
             viewModel.resizeData
               .map(
@@ -182,7 +182,7 @@ object Window:
               )
               .getOrElse(DragData.zero)
           ),
-          WindowEvent.ClearData
+          WindowInternalEvent.ClearData
         )
 
     case e: MouseEvent.Move if viewModel.dragData.isDefined =>

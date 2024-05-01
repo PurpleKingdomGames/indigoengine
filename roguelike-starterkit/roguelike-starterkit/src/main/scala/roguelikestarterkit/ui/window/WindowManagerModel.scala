@@ -14,14 +14,20 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
   ): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
-  def open(ids: WindowId*): WindowManagerModel[ReferenceData] =
+  def open(ids: WindowId*): Outcome[WindowManagerModel[ReferenceData]] =
     open(Batch.fromSeq(ids))
 
-  def open(ids: Batch[WindowId]): WindowManagerModel[ReferenceData] =
-    this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
+  def open(ids: Batch[WindowId]): Outcome[WindowManagerModel[ReferenceData]] =
+    Outcome(
+      this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w)),
+      ids.filter(id => windows.exists(_.id == id)).map(WindowEvent.Opened.apply)
+    )
 
-  def close(id: WindowId): WindowManagerModel[ReferenceData] =
-    this.copy(windows = windows.map(w => if w.id == id then w.close else w))
+  def close(id: WindowId): Outcome[WindowManagerModel[ReferenceData]] =
+    Outcome(
+      this.copy(windows = windows.map(w => if w.id == id then w.close else w)),
+      Batch(WindowEvent.Closed(id))
+    )
 
   def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel[ReferenceData] =
     val reordered =

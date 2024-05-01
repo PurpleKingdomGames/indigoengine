@@ -32,22 +32,6 @@ final case class UiContext[ReferenceData](
 
 object UiContext:
 
-  def apply(
-      frameContext: FrameContext[?],
-      charSheet: CharSheet
-  ): UiContext[Unit] =
-    val mouseCoords = Coords(frameContext.mouse.position / charSheet.size.toPoint)
-    UiContext(
-      Bounds.zero,
-      charSheet,
-      mouseCoords,
-      frameContext.gameTime,
-      frameContext.dice,
-      frameContext.inputState,
-      frameContext.boundaryLocator,
-      ()
-    )
-
   def apply[ReferenceData](
       subSystemFrameContext: SubSystemFrameContext[ReferenceData],
       charSheet: CharSheet
@@ -62,20 +46,4 @@ object UiContext:
       subSystemFrameContext.inputState,
       subSystemFrameContext.boundaryLocator,
       subSystemFrameContext.reference
-    )
-
-  def apply(
-      sceneContext: SceneContext[?],
-      charSheet: CharSheet
-  ): UiContext[Unit] =
-    val mouseCoords = Coords(sceneContext.mouse.position / charSheet.size.toPoint)
-    UiContext(
-      Bounds.zero,
-      charSheet,
-      mouseCoords,
-      sceneContext.gameTime,
-      sceneContext.dice,
-      sceneContext.inputState,
-      sceneContext.boundaryLocator,
-      ()
     )

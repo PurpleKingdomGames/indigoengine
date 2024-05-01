@@ -124,30 +124,30 @@ object WindowManager:
       Batch.empty
     )
 
-  def updateModel[ReferenceData](
+  private[window] def updateModel[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
-    case WindowManagerEvent.Close(id) =>
-      Outcome(model.close(id))
+    case WindowEvent.Close(id) =>
+      model.close(id)
 
-    case WindowManagerEvent.GiveFocusAt(position) =>
+    case WindowEvent.GiveFocusAt(position) =>
       Outcome(model.giveFocusAndSurfaceAt(position))
-        .addGlobalEvents(WindowEvent.Redraw)
+        .addGlobalEvents(WindowInternalEvent.Redraw)
 
-    case WindowManagerEvent.Open(id) =>
-      Outcome(model.open(id))
+    case WindowEvent.Open(id) =>
+      model.open(id)
 
-    case WindowManagerEvent.OpenAt(id, coords) =>
-      Outcome(model.open(id).moveTo(id, coords))
+    case WindowEvent.OpenAt(id, coords) =>
+      model.open(id).map(_.moveTo(id, coords))
 
-    case WindowManagerEvent.Move(id, coords) =>
+    case WindowEvent.Move(id, coords) =>
       Outcome(model.moveTo(id, coords))
 
-    case WindowManagerEvent.Resize(id, dimensions) =>
+    case WindowEvent.Resize(id, dimensions) =>
       Outcome(model.resizeTo(id, dimensions))
 
-    case WindowManagerEvent.Transform(id, bounds) =>
+    case WindowEvent.Transform(id, bounds) =>
       Outcome(model.transformTo(id, bounds))
 
     case e =>
@@ -156,12 +156,12 @@ object WindowManager:
         .sequence
         .map(m => model.copy(windows = m))
 
-  def updateViewModel[ReferenceData](
+  private[window] def updateViewModel[ReferenceData](
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
-    case WindowManagerEvent.ChangeMagnification(next) =>
+    case WindowEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
 
     case e =>
@@ -180,7 +180,7 @@ object WindowManager:
 
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
-  def present[ReferenceData](
+  private[window] def present[ReferenceData](
       layerKey: Option[BindingKey],
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
@@ -215,21 +215,6 @@ object WindowManager:
             LayerEntry(key -> Layer.Stack(layers))
           )
     }
-
-  def present[ReferenceData](
-      context: UiContext[ReferenceData],
-      model: WindowManagerModel[ReferenceData],
-      viewModel: WindowManagerViewModel[ReferenceData]
-  ): Outcome[SceneUpdateFragment] =
-    present(None, context, model, viewModel)
-
-  def present[ReferenceData](
-      layerKey: BindingKey,
-      context: UiContext[ReferenceData],
-      model: WindowManagerModel[ReferenceData],
-      viewModel: WindowManagerViewModel[ReferenceData]
-  ): Outcome[SceneUpdateFragment] =
-    present(Option(layerKey), context, model, viewModel)
 
 final case class ModelHolder[ReferenceData](
     model: WindowManagerModel[ReferenceData],

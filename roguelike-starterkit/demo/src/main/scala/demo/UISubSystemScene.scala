@@ -35,6 +35,7 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
             Model.defaultCharSheet
           )
         )
+        .open(ColourWindow.windowId)
     )
 
   def updateModel(
@@ -45,15 +46,25 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
       Outcome(model).addGlobalEvents(SceneEvent.Next)
 
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
-      Outcome(model).addGlobalEvents(WindowManagerEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
+      Outcome(model).addGlobalEvents(WindowEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
 
     case WindowEvent.MouseOver(id) =>
       println("Mouse over window: " + id)
-      Outcome(model)
+      val ids = id :: model.mouseOverWindows.filterNot(_ == id)
+
+      Outcome(model.copy(mouseOverWindows = ids))
 
     case WindowEvent.MouseOut(id) =>
       println("Mouse out window: " + id)
-      Outcome(model)
+      val ids = model.mouseOverWindows.filterNot(_ == id)
+
+      Outcome(model.copy(mouseOverWindows = ids))
+
+    case WindowEvent.Closed(id) =>
+      println("Window closed: " + id)
+      val ids = model.mouseOverWindows.filterNot(_ == id)
+
+      Outcome(model.copy(mouseOverWindows = ids))
 
     case _ =>
       Outcome(model)
@@ -70,4 +81,17 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment(BindingKey("UI Layer") -> Layer.Stack.empty))
+    Outcome(
+      SceneUpdateFragment(
+        BindingKey("info") ->
+          Layer(
+            TextBox(
+              "Mouse over: " +
+                model.mouseOverWindows.mkString("[", ",", "]")
+            )
+              .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
+              .moveTo(0, 260)
+          ),
+        BindingKey("UI Layer") -> Layer.Stack.empty
+      )
+    )

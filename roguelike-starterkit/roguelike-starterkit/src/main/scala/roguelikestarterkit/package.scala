@@ -92,23 +92,11 @@ val Bounds: ui.datatypes.Bounds.type = ui.datatypes.Bounds
 
 val WindowManager: ui.window.WindowManager.type = ui.window.WindowManager
 
-type WindowManagerModel[ReferenceData] = ui.window.WindowManagerModel[ReferenceData]
-val WindowManagerModel: ui.window.WindowManagerModel.type = ui.window.WindowManagerModel
-
-type WindowManagerViewModel[ReferenceData] = ui.window.WindowManagerViewModel[ReferenceData]
-val WindowManagerViewModel: ui.window.WindowManagerViewModel.type = ui.window.WindowManagerViewModel
-
-type WindowManagerEvent = ui.window.WindowManagerEvent
-val WindowManagerEvent: ui.window.WindowManagerEvent.type = ui.window.WindowManagerEvent
-
 type WindowId = ui.window.WindowId
 val WindowId: ui.window.WindowId.type = ui.window.WindowId
 
 type WindowModel[A, ReferenceData] = ui.window.WindowModel[A, ReferenceData]
 val WindowModel: ui.window.WindowModel.type = ui.window.WindowModel
-
-type WindowViewModel[ReferenceData] = ui.window.WindowViewModel[ReferenceData]
-val WindowViewModel: ui.window.WindowViewModel.type = ui.window.WindowViewModel
 
 type WindowEvent = ui.window.WindowEvent
 val WindowEvent: ui.window.WindowEvent.type = ui.window.WindowEvent
