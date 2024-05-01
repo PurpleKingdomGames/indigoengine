@@ -1,3 +1,8 @@
+[![MIT License](https://img.shields.io/github/license/PurpleKingdomGames/roguelike-starterkit?color=indigo)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+[![Latest Tagged Release](https://img.shields.io/badge/dynamic/json?color=purple&label=latest%20release&query=%24%5B0%5D.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FPurpleKingdomGames%2Froguelike-starterkit%2Ftags)](https://github.com/PurpleKingdomGames/roguelike-starterkit/releases)
+[![Discord Chat](https://img.shields.io/discord/716435281208672356?color=blue&label=discord)](https://discord.gg/b5CD47g)
+[![CI](https://github.com/PurpleKingdomGames/roguelike-starterkit/actions/workflows/ci.yml/badge.svg)](https://github.com/PurpleKingdomGames/roguelike-starterkit/actions/workflows/ci.yml)
+
 # Roguelike Starter-Kit for Indigo
 
 A library for use with [Indigo](https://indigoengine.io/) to provide some terminal-like rendering functionality specifically for ASCII art style games, and roguelike games in particular.
@@ -12,9 +17,11 @@ An early version of this code was used to build the [follow along examples](http
 
 Add the following dependency to your Indigo based game project (alongside the usual indigo ones):
 
+> Check the badge at the top of this readme, or releases for the latest version number
+
 ### sbt
 
-`"io.indigoengine" %%% "roguelike-starterkit" % "0.4.0"`
+`"io.indigoengine" %%% "roguelike-starterkit" % "x.y.z"`
 
 ### Mill
 
@@ -41,6 +48,8 @@ Please note that the `TerminalText` scene has two examples on it, first the stan
 If you want to build a roguelike game, then you need to be able to render something that looks like a terminal with ASCII art.
 
 In Python, people use a library called [tcod](https://python-tcod.readthedocs.io/en/latest/). The roguelike-starterkit is not a full implementation of tcod, but it provides some of the key functionality you will need in a purely functional form.
+
+The starter-kit also includes UI / Window management tools.
 
 ## What roguelikes are
 
@@ -113,16 +122,16 @@ Performance will vary by scene complexity, specifically how many unique colour c
 
 [Example](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/TerminalEmulatorScene.scala)
 
-## Extras
+## More tools!
 
-The starter kit also provides:
+Indigo itself also provides other handy tools, such as:
 
 1. An implementation of Bresenham's Line algorithm, used in the tutorial for line of sight across a grid.
-2. A very, very simplistic path finding algorithm (just enough for the roguelike-tutorials).
+2. A path finding implementation.
 
 ## Roguelike UI
 
-The Roguelike Starterkit from 0.3.3 onwards includes a prototype UI system specifically for roguelikes. There is an example in the `UIScene` in the demo project in this repo.
+The Roguelike Starterkit from 0.3.3 onwards includes a prototype UI system specifically for roguelikes. There is an example in the `UISubSystemScene` in the demo project in this repo.
 
 ![](imgs/rogue-paint-ui.png)
 
@@ -150,17 +159,13 @@ The UI is organised in two parts:
 
 Windows work as you'd expect, albeit on a fixed grid, giving you the ability to move, resize, open and close them.
 
-Windows are controlled by the `WindowManager`, which is responsible for controlling their life cycle, layout, and event propogation.
+Windows are controlled by the `WindowManager`, which is a `SubSystem` responsible for controlling their life cycle, layout, and event propogation.
 
-Window's do not have to render components (see below), as they are basically mini Indigo games, and can render anything Indigo can. When rendering content into a window though, do are responsible for adhering to it's content window bounds information, which can be found within the provided `UiContext`, which is much the same as a `FrameContext`, with some extra window specific data attached to it.
+Window's do not have to render components (see below), as they are basically mini Indigo games, and can render anything Indigo can. When rendering content into a window though, you are responsible for adhering to it's content window bounds information, which can be found within the provided `UiContext`, which is much the same as a `FrameContext`, with some extra window specific data attached to it.
 
-To set up your `WindowManager`, you need to add a `WindowManagerModel` and `WindowManagerViewModel` to your game's model and view model instances respectively, and then use `WindowManager.updateModel`, `WindowManager.updateViewModel`, and `WindowManager.present` at the appropriate times in your game logic. There's no magic here. The WindowManager is a mini elm architecture, and you need to hook it into you main game logic.
+For window's to understand your content, you will need to provide an instance of the `WindowContent[A]` typeclass. One already exists for `ComponentGroups` below.
 
-Example code:
-
-- [Model / ViewModel set up](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/RogueLikeGame.scala#L74-L99)
-- [Integration into your game loop](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/UIScene.scala#L27-L80)
-- [A working window definition with components](https://github.com/PurpleKingdomGames/roguelike-starterkit/blob/main/demo/src/main/scala/demo/UIScene.scala#L85)
+Windows and their contents can be controlled via `WindowEvent`s.
 
 ##### 2 - Components
 
