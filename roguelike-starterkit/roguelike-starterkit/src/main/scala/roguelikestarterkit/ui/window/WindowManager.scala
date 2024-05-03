@@ -128,8 +128,19 @@ object WindowManager:
       context: UiContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
-    case WindowEvent.Close(id) =>
-      model.close(id)
+    case e: WindowEvent =>
+      handleWindowEvents(context, model)(e)
+
+    case e =>
+      model.windows
+        .map(w => if w.isOpen then Window.updateModel(context, w)(e) else Outcome(w))
+        .sequence
+        .map(m => model.copy(windows = m))
+
+  private def handleWindowEvents[ReferenceData](
+      context: UiContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData]
+  ): WindowEvent => Outcome[WindowManagerModel[ReferenceData]] =
 
     case WindowEvent.GiveFocusAt(position) =>
       Outcome(model.giveFocusAndSurfaceAt(position))
@@ -141,6 +152,12 @@ object WindowManager:
     case WindowEvent.OpenAt(id, coords) =>
       model.open(id).map(_.moveTo(id, coords))
 
+    case WindowEvent.Close(id) =>
+      model.close(id)
+
+    case WindowEvent.Toggle(id) =>
+      model.toggle(id)
+
     case WindowEvent.Move(id, coords) =>
       Outcome(model.moveTo(id, coords))
 
@@ -150,11 +167,23 @@ object WindowManager:
     case WindowEvent.Transform(id, bounds) =>
       Outcome(model.transformTo(id, bounds))
 
-    case e =>
-      model.windows
-        .map(w => if w.isOpen then Window.updateModel(context, w)(e) else Outcome(w))
-        .sequence
-        .map(m => model.copy(windows = m))
+    case WindowEvent.Opened(_) =>
+      Outcome(model)
+
+    case WindowEvent.Closed(_) =>
+      Outcome(model)
+
+    case WindowEvent.Resized(_) =>
+      Outcome(model)
+
+    case WindowEvent.MouseOver(_) =>
+      Outcome(model)
+
+    case WindowEvent.MouseOut(_) =>
+      Outcome(model)
+
+    case WindowEvent.ChangeMagnification(_) =>
+      Outcome(model)
 
   private[window] def updateViewModel[ReferenceData](
       context: UiContext[ReferenceData],

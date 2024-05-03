@@ -26,7 +26,7 @@ enum WindowEvent extends GlobalEvent:
 
   // User sent events
 
-  /** Tells a window to opn */
+  /** Tells a window to open */
   case Open(id: WindowId)
 
   /** Tells a window to open at a specific location */
@@ -34,6 +34,9 @@ enum WindowEvent extends GlobalEvent:
 
   /** Tells a window to close */
   case Close(id: WindowId)
+
+  /** Tells a window to toggle between open and closed. */
+  case Toggle(id: WindowId)
 
   /** Focuses the top window at the given location */
   case GiveFocusAt(coords: Coords)

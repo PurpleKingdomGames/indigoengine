@@ -48,6 +48,9 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
       Outcome(model).addGlobalEvents(WindowEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
 
+    case KeyboardEvent.KeyUp(Key.KEY_T) =>
+      Outcome(model).addGlobalEvents(WindowEvent.Toggle(ColourWindow.windowId))
+
     case WindowEvent.MouseOver(id) =>
       println("Mouse over window: " + id)
       val ids = id :: model.mouseOverWindows.filterNot(_ == id)

@@ -29,6 +29,22 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
       Batch(WindowEvent.Closed(id))
     )
 
+  def toggle(id: WindowId): Outcome[WindowManagerModel[ReferenceData]] =
+    windows.find(_.id == id).map(_.isOpen) match
+      case None =>
+        Outcome(this)
+
+      case Some(isOpen) =>
+        Outcome(
+          this.copy(
+            windows = windows.map { w =>
+              if w.id == id then if isOpen then w.close else w.open
+              else w
+            }
+          ),
+          Batch(if isOpen then WindowEvent.Closed(id) else WindowEvent.Opened(id))
+        )
+
   def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel[ReferenceData] =
     val reordered =
       windows.reverse.find(w => !w.static && w.bounds.contains(coords)) match
