@@ -6,6 +6,7 @@ import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
+import roguelikestarterkit.tiles.Tile
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
@@ -50,6 +51,16 @@ object Button:
       label: String,
       fgColor: RGBA,
       bgColor: RGBA,
+      charSheet: CharSheet,
+      hasBorder: Boolean
+  ): (Coords, Bounds) => Outcome[ComponentFragment] =
+    if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet)
+    else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
+
+  private def presentButtonNoBorder(
+      label: String,
+      fgColor: RGBA,
+      bgColor: RGBA,
       charSheet: CharSheet
   ): (Coords, Bounds) => Outcome[ComponentFragment] =
     (offset, bounds) =>
@@ -70,6 +81,43 @@ object Button:
 
       Outcome(ComponentFragment(terminal))
 
+  def presentButtonWithBorder(
+      label: String,
+      fgColor: RGBA,
+      bgColor: RGBA,
+      charSheet: CharSheet
+  ): (Coords, Bounds) => Outcome[ComponentFragment] =
+    (offset, bounds) =>
+      val hBar = Batch.fill(label.length)("─").mkString
+      val size = bounds.dimensions.unsafeToSize
+
+      val terminal =
+        RogueTerminalEmulator(size)
+          .put(Point(0, 0), Tile.`┌`, fgColor, bgColor)
+          .put(Point(size.width - 1, 0), Tile.`┐`, fgColor, bgColor)
+          .put(Point(0, size.height - 1), Tile.`└`, fgColor, bgColor)
+          .put(Point(size.width - 1, size.height - 1), Tile.`┘`, fgColor, bgColor)
+          .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
+          .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
+          .putLine(Point(1, 0), hBar, fgColor, bgColor)
+          .putLine(Point(1, 1), label, fgColor, bgColor)
+          .putLine(Point(1, 2), hBar, fgColor, bgColor)
+          .toCloneTiles(
+            CloneId("button"),
+            bounds.coords
+              .toScreenSpace(charSheet.size)
+              .moveBy(offset.toScreenSpace(charSheet.size)),
+            charSheet.charCrops
+          ) { case (fg, bg) =>
+            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+          }
+
+      Outcome(
+        ComponentFragment(
+          terminal.clones
+        ).addCloneBlanks(terminal.blanks)
+      )
+
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
     * custom bounds
     */
@@ -81,12 +129,30 @@ object Button:
     Button(
       bounds,
       ButtonState.Up,
-      presentButton(label, theme.up.foreground, theme.up.background, theme.charSheet),
-      Option(
-        presentButton(label, theme.over.foreground, theme.over.background, theme.charSheet)
+      presentButton(
+        label,
+        theme.up.foreground,
+        theme.up.background,
+        theme.charSheet,
+        theme.hasBorder
       ),
       Option(
-        presentButton(label, theme.down.foreground, theme.down.background, theme.charSheet)
+        presentButton(
+          label,
+          theme.over.foreground,
+          theme.over.background,
+          theme.charSheet,
+          theme.hasBorder
+        )
+      ),
+      Option(
+        presentButton(
+          label,
+          theme.down.foreground,
+          theme.down.background,
+          theme.charSheet,
+          theme.hasBorder
+        )
       ),
       Batch.empty
     )
@@ -101,7 +167,7 @@ object Button:
     Button(
       label,
       theme,
-      Bounds(0, 0, label.length, 1)
+      if theme.hasBorder then Bounds(0, 0, label.length + 2, 3) else Bounds(0, 0, label.length, 1)
     )
 
   given Component[Button] with
@@ -148,7 +214,8 @@ object Button:
       charSheet: CharSheet,
       up: Color,
       over: Color,
-      down: Color
+      down: Color,
+      hasBorder: Boolean
   ):
     def withUp(foreground: RGBA, background: RGBA): Theme =
       this.copy(up = Color(foreground, background))
@@ -159,15 +226,47 @@ object Button:
     def withDown(foreground: RGBA, background: RGBA): Theme =
       this.copy(down = Color(foreground, background))
 
+    def withBorder(value: Boolean): Theme =
+      this.copy(hasBorder = value)
+    def addBorder: Theme =
+      this.copy(hasBorder = true)
+    def noBorder: Theme =
+      this.copy(hasBorder = false)
+
   object Theme:
-    def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA): Theme =
+    def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA, hasBorder: Boolean): Theme =
       Theme(
         charSheet,
         Color(foreground, background),
         Color(foreground, background),
-        Color(foreground, background)
+        Color(foreground, background),
+        hasBorder
+      )
+    def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA): Theme =
+      Theme(
+        charSheet,
+        foreground,
+        background,
+        false
       )
 
+    def apply(
+        charSheet: CharSheet,
+        foregroundUp: RGBA,
+        backgroundUp: RGBA,
+        foregroundOver: RGBA,
+        backgroundOver: RGBA,
+        foregroundDown: RGBA,
+        backgroundDown: RGBA,
+        hasBorder: Boolean
+    ): Theme =
+      Theme(
+        charSheet,
+        Color(foregroundUp, backgroundUp),
+        Color(foregroundOver, backgroundOver),
+        Color(foregroundDown, backgroundDown),
+        hasBorder
+      )
     def apply(
         charSheet: CharSheet,
         foregroundUp: RGBA,
@@ -179,11 +278,29 @@ object Button:
     ): Theme =
       Theme(
         charSheet,
-        Color(foregroundUp, backgroundUp),
-        Color(foregroundOver, backgroundOver),
-        Color(foregroundDown, backgroundDown)
+        foregroundUp,
+        backgroundUp,
+        foregroundOver,
+        backgroundOver,
+        foregroundDown,
+        backgroundDown,
+        false
       )
 
+    def apply(
+        charSheet: CharSheet,
+        up: (RGBA, RGBA),
+        over: (RGBA, RGBA),
+        down: (RGBA, RGBA),
+        hasBorder: Boolean
+    ): Theme =
+      Theme(
+        charSheet,
+        Color(up._1, up._2),
+        Color(over._1, over._2),
+        Color(down._1, down._2),
+        hasBorder
+      )
     def apply(
         charSheet: CharSheet,
         up: (RGBA, RGBA),
@@ -192,9 +309,10 @@ object Button:
     ): Theme =
       Theme(
         charSheet,
-        Color(up._1, up._2),
-        Color(over._1, over._2),
-        Color(down._1, up._2)
+        up,
+        over,
+        down,
+        false
       )
 
   final case class Color(foreground: RGBA, background: RGBA):
