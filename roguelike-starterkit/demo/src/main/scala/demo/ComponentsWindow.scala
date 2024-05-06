@@ -16,7 +16,7 @@ object ComponentsWindow:
       windowId,
       charSheet,
       ComponentGroup(Bounds(0, 0, 23, 23))
-        .withLayout(ComponentLayout.Vertical(Padding(1)))
+        .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1)))
         .inheritBounds
         .add(
           Button(
@@ -54,8 +54,27 @@ object ComponentsWindow:
             )
           }
         )
+        .add(
+          Label("Custom rendered label") { case (offset, label) =>
+            val dimensions = Dimensions(label.length, 1)
+            val size       = dimensions.unsafeToSize
+
+            val terminal =
+              RogueTerminalEmulator(size)
+                .putLine(Point.zero, label, RGBA.Red, RGBA.Zero)
+                .toCloneTiles(
+                  CloneId("label"),
+                  offset.toScreenSpace(charSheet.size),
+                  charSheet.charCrops
+                ) { case (fg, bg) =>
+                  graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+                }
+
+            Outcome(ComponentFragment(terminal))
+          }
+        )
     )
-      .withTitle("Colour Palette")
+      .withTitle("Components example")
       .moveTo(0, 0)
       .resizeTo(25, 25)
       .isDraggable
