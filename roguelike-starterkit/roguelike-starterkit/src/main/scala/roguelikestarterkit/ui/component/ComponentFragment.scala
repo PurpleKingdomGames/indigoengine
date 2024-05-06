@@ -5,6 +5,7 @@ import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerEntry
 import indigo.shared.scenegraph.SceneNode
+import roguelikestarterkit.TerminalClones
 
 /** ComponentFragments represent the nodes and clone instances used for rendering a component. They
   * are like a cut-down version of a `Layer`.
@@ -58,6 +59,9 @@ object ComponentFragment:
 
   def apply(maybeNode: Option[SceneNode]): ComponentFragment =
     ComponentFragment(Batch.fromOption(maybeNode), Batch.empty)
+
+  def apply(terminalClones: TerminalClones): ComponentFragment =
+    ComponentFragment(terminalClones.clones, terminalClones.blanks)
 
   val empty: ComponentFragment =
     ComponentFragment(Batch.empty, Batch.empty)
