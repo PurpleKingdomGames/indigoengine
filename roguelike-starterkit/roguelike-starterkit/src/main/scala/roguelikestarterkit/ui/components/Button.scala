@@ -219,6 +219,9 @@ object Button:
       down: TerminalTileColors,
       hasBorder: Boolean
   ):
+    def withCharSheet(value: CharSheet): Theme =
+      this.copy(charSheet = value)
+
     def withUp(foreground: RGBA, background: RGBA): Theme =
       this.copy(up = TerminalTileColors(foreground, background))
 
@@ -316,6 +319,9 @@ object Button:
         down,
         false
       )
+
+    def apply(charSheet: CharSheet): Theme =
+      Theme(charSheet, RGBA.White, RGBA.Black)
 
 enum ButtonState:
   case Up, Over, Down

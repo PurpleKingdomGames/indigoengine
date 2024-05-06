@@ -87,6 +87,9 @@ object Label:
       charSheet: CharSheet,
       colors: TerminalTileColors
   ):
+    def withCharSheet(value: CharSheet): Theme =
+      this.copy(charSheet = value)
+
     def withColors(foreground: RGBA, background: RGBA): Theme =
       this.copy(colors = TerminalTileColors(foreground, background))
 
@@ -96,3 +99,6 @@ object Label:
         charSheet,
         TerminalTileColors(foreground, background)
       )
+
+    def apply(charSheet: CharSheet): Theme =
+      Theme(charSheet, RGBA.White, RGBA.Black)

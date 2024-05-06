@@ -40,7 +40,8 @@ object ComponentsWindow:
               RGBA.Black  -> RGBA.Yellow,
               hasBorder = false
             )
-          )
+          ),
+          Button("Default!", Button.Theme(charSheet))
         )
         .add(
           Button(Bounds(0, 0, 5, 2)) { case (coords, bounds) =>
@@ -74,7 +75,8 @@ object ComponentsWindow:
           }
         )
         .add(
-          Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan))
+          Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
+          Label("Default theme", Label.Theme(charSheet))
         )
     )
       .withTitle("Components example")
