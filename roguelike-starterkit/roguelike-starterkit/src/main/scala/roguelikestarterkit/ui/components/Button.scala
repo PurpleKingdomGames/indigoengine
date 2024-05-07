@@ -239,6 +239,7 @@ object Button:
       this.copy(hasBorder = false)
 
   object Theme:
+
     def apply(charSheet: CharSheet, foreground: RGBA, background: RGBA, hasBorder: Boolean): Theme =
       Theme(
         charSheet,
@@ -321,7 +322,12 @@ object Button:
       )
 
     def apply(charSheet: CharSheet): Theme =
-      Theme(charSheet, RGBA.White, RGBA.Black)
+      Theme(
+        charSheet,
+        RGBA.Silver -> RGBA.Black,
+        RGBA.White  -> RGBA.Black,
+        RGBA.Black  -> RGBA.White
+      )
 
 enum ButtonState:
   case Up, Over, Down
