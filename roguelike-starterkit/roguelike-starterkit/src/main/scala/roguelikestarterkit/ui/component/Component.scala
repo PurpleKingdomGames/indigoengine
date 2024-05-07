@@ -7,7 +7,7 @@ import roguelikestarterkit.ui.datatypes.UiContext
 /** A typeclass that confirms that some type `A` can be used as a `Component` provides the necessary
   * operations for that type to act as a component.
   */
-trait Component[A]:
+trait Component[A, ReferenceData]:
 
   /** The position and size of the component
     */
@@ -15,14 +15,14 @@ trait Component[A]:
 
   /** Update this componenets model.
     */
-  def updateModel[ReferenceData](
+  def updateModel(
       context: UiContext[ReferenceData],
       model: A
   ): GlobalEvent => Outcome[A]
 
   /** Produce a renderable output for this component, based on the component's model.
     */
-  def present[ReferenceData](
+  def present(
       context: UiContext[ReferenceData],
       model: A
   ): Outcome[ComponentFragment]

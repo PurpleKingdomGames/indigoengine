@@ -30,19 +30,19 @@ trait WindowContent[A, ReferenceData]:
 
 object WindowContent:
 
-  given [ReferenceData]: WindowContent[ComponentGroup, ReferenceData] with
+  given [ReferenceData]: WindowContent[ComponentGroup[ReferenceData], ReferenceData] with
 
     def updateModel(
         context: UiContext[ReferenceData],
-        model: ComponentGroup
-    ): GlobalEvent => Outcome[ComponentGroup] =
+        model: ComponentGroup[ReferenceData]
+    ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
       e => model.update(context)(e)
 
     def present(
         context: UiContext[ReferenceData],
-        model: ComponentGroup
+        model: ComponentGroup[ReferenceData]
     ): Outcome[Layer] =
       model.present(context).map(_.toLayer)
 
-    def cascade(model: ComponentGroup, newBounds: Bounds): ComponentGroup =
+    def cascade(model: ComponentGroup[ReferenceData], newBounds: Bounds): ComponentGroup[ReferenceData] =
       model.cascade(newBounds)

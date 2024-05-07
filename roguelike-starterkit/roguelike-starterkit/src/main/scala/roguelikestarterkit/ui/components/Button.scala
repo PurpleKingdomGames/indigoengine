@@ -172,11 +172,11 @@ object Button:
       if theme.hasBorder then Bounds(0, 0, label.length + 2, 3) else Bounds(0, 0, label.length, 1)
     )
 
-  given Component[Button] with
+  given [ReferenceData]: Component[Button, ReferenceData] with
     def bounds(model: Button): Bounds =
       model.bounds
 
-    def updateModel[ReferenceData](
+    def updateModel(
         context: UiContext[ReferenceData],
         model: Button
     ): GlobalEvent => Outcome[Button] =
@@ -197,7 +197,7 @@ object Button:
       case _ =>
         Outcome(model)
 
-    def present[ReferenceData](
+    def present(
         context: UiContext[ReferenceData],
         model: Button
     ): Outcome[ComponentFragment] =

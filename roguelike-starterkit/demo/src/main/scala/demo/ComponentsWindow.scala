@@ -11,7 +11,7 @@ object ComponentsWindow:
 
   def window(
       charSheet: CharSheet
-  ): WindowModel[ComponentGroup, Unit] =
+  ): WindowModel[ComponentGroup[Int], Int] =
     WindowModel(
       windowId,
       charSheet,
@@ -76,7 +76,8 @@ object ComponentsWindow:
         )
         .add(
           Label("Terminal rendered label", Label.Theme(charSheet, RGBA.Magenta, RGBA.Cyan)),
-          Label("Default theme", Label.Theme(charSheet))
+          Label("Default theme", Label.Theme(charSheet)),
+          Label((count: Int) => "Mouse over windows: " + count, Label.Theme(charSheet))
         )
     )
       .withTitle("Components example")

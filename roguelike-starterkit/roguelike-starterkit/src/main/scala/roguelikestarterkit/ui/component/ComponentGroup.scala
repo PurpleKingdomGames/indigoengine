@@ -11,18 +11,18 @@ import scala.annotation.tailrec
 /** Encapsulates a collection of components and describes and manages their layout, as well as
   * propagating update and presention calls.
   */
-final case class ComponentGroup(
+final case class ComponentGroup[ReferenceData](
     bounds: Bounds,
     boundsType: BoundsType,
     layout: ComponentLayout,
-    components: Batch[ComponentEntry[?]]
+    components: Batch[ComponentEntry[?, ReferenceData]]
 ):
 
   extension (b: Bounds)
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  def nextOffset(components: Batch[ComponentEntry[?]]): Coords =
+  def nextOffset(components: Batch[ComponentEntry[?, ReferenceData]]): Coords =
     layout match
       case ComponentLayout.None =>
         Coords.zero
@@ -60,19 +60,20 @@ final case class ComponentGroup(
           .map(c => c.offset + Coords(0, c.component.bounds(c.model).withPadding(padding).bottom))
           .getOrElse(Coords(padding.left, padding.top))
 
-  def reflow: ComponentGroup =
-    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[?]]) { (acc, entry) =>
-      val reflowed = entry.copy(
-        offset = nextOffset(acc),
-        model = entry.component.reflow(entry.model)
-      )
+  def reflow: ComponentGroup[ReferenceData] =
+    val newComponents = components.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
+      (acc, entry) =>
+        val reflowed = entry.copy(
+          offset = nextOffset(acc),
+          model = entry.component.reflow(entry.model)
+        )
 
-      acc :+ reflowed
+        acc :+ reflowed
     }
 
     this.copy(components = newComponents)
 
-  def cascade(parentBounds: Bounds): ComponentGroup =
+  def cascade(parentBounds: Bounds): ComponentGroup[ReferenceData] =
     val newBounds =
       boundsType match
         case BoundsType.Fixed =>
@@ -116,17 +117,19 @@ final case class ComponentGroup(
       )
       .reflow
 
-  def add[A](entry: A)(using c: Component[A]): ComponentGroup =
+  def add[A](entry: A)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     this.copy(components = components :+ ComponentEntry(nextOffset(components), entry, c))
 
-  def add[A](entries: Batch[A])(using c: Component[A]): ComponentGroup =
+  def add[A](entries: Batch[A])(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
     entries.foldLeft(this) { case (acc, next) => acc.add(next) }
-  def add[A](entries: A*)(using c: Component[A]): ComponentGroup =
+  def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
 
-  def update[StartupData, ContextData, ReferenceData](
+  def update[StartupData, ContextData](
       context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[ComponentGroup] =
+  ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
     e =>
       components
         .map { c =>
@@ -143,7 +146,7 @@ final case class ComponentGroup(
           )
         }
 
-  def present[StartupData, ContextData, ReferenceData](
+  def present[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): Outcome[ComponentFragment] =
     components
@@ -153,88 +156,91 @@ final case class ComponentGroup(
       .sequence
       .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
 
-  def withBounds(value: Bounds): ComponentGroup =
+  def withBounds(value: Bounds): ComponentGroup[ReferenceData] =
     this.copy(bounds = value).reflow
 
-  def withBoundsType(value: BoundsType): ComponentGroup =
+  def withBoundsType(value: BoundsType): ComponentGroup[ReferenceData] =
     this.copy(boundsType = value).reflow
 
-  def fixedBounds: ComponentGroup =
+  def fixedBounds: ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Fixed)
-  def inheritBounds: ComponentGroup =
+  def inheritBounds: ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Inherit)
-  def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup =
+  def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Relative(x, y, width, height))
-  def relativePosition(x: Double, y: Double): ComponentGroup =
+  def relativePosition(x: Double, y: Double): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.RelativePosition(x, y))
-  def relativeSize(width: Double, height: Double): ComponentGroup =
+  def relativeSize(width: Double, height: Double): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.RelativeSize(width, height))
-  def offset(amountPosition: Coords, amountSize: Dimensions): ComponentGroup =
+  def offset(amountPosition: Coords, amountSize: Dimensions): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.Offset(amountPosition, amountSize))
-  def offset(x: Int, y: Int, width: Int, height: Int): ComponentGroup =
+  def offset(x: Int, y: Int, width: Int, height: Int): ComponentGroup[ReferenceData] =
     offset(Coords(x, y), Dimensions(width, height))
-  def offsetPosition(amount: Coords): ComponentGroup =
+  def offsetPosition(amount: Coords): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.OffsetPosition(amount))
-  def offsetPosition(x: Int, y: Int): ComponentGroup =
+  def offsetPosition(x: Int, y: Int): ComponentGroup[ReferenceData] =
     offsetPosition(Coords(x, y))
-  def offsetSize(amount: Dimensions): ComponentGroup =
+  def offsetSize(amount: Dimensions): ComponentGroup[ReferenceData] =
     withBoundsType(BoundsType.OffsetSize(amount))
-  def offsetSize(width: Int, height: Int): ComponentGroup =
+  def offsetSize(width: Int, height: Int): ComponentGroup[ReferenceData] =
     offsetSize(Dimensions(width, height))
 
-  def withLayout(value: ComponentLayout): ComponentGroup =
+  def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value).reflow
 
-  def withPosition(value: Coords): ComponentGroup =
+  def withPosition(value: Coords): ComponentGroup[ReferenceData] =
     withBounds(bounds.withPosition(value))
-  def moveTo(position: Coords): ComponentGroup =
+  def moveTo(position: Coords): ComponentGroup[ReferenceData] =
     withPosition(position)
-  def moveTo(x: Int, y: Int): ComponentGroup =
+  def moveTo(x: Int, y: Int): ComponentGroup[ReferenceData] =
     moveTo(Coords(x, y))
-  def moveBy(amount: Coords): ComponentGroup =
+  def moveBy(amount: Coords): ComponentGroup[ReferenceData] =
     withPosition(bounds.coords + amount)
-  def moveBy(x: Int, y: Int): ComponentGroup =
+  def moveBy(x: Int, y: Int): ComponentGroup[ReferenceData] =
     moveBy(Coords(x, y))
 
-  def withDimensions(value: Dimensions): ComponentGroup =
+  def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
     withBounds(bounds.withDimensions(value))
-  def resizeTo(size: Dimensions): ComponentGroup =
+  def resizeTo(size: Dimensions): ComponentGroup[ReferenceData] =
     withDimensions(size)
-  def resizeTo(x: Int, y: Int): ComponentGroup =
+  def resizeTo(x: Int, y: Int): ComponentGroup[ReferenceData] =
     resizeTo(Dimensions(x, y))
-  def resizeBy(amount: Dimensions): ComponentGroup =
+  def resizeBy(amount: Dimensions): ComponentGroup[ReferenceData] =
     withDimensions(bounds.dimensions + amount)
-  def resizeBy(x: Int, y: Int): ComponentGroup =
+  def resizeBy(x: Int, y: Int): ComponentGroup[ReferenceData] =
     resizeBy(Dimensions(x, y))
 
 object ComponentGroup:
-  def apply(bounds: Bounds): ComponentGroup =
+  def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(bounds, BoundsType.Fixed, ComponentLayout.None, Batch.empty)
 
-  given Component[ComponentGroup] with
+  given [ReferenceData]: Component[ComponentGroup[ReferenceData], ReferenceData] with
 
-    def bounds(model: ComponentGroup): Bounds =
+    def bounds(model: ComponentGroup[ReferenceData]): Bounds =
       model.bounds
 
-    def updateModel[ReferenceData](
+    def updateModel(
         context: UiContext[ReferenceData],
-        model: ComponentGroup
-    ): GlobalEvent => Outcome[ComponentGroup] =
+        model: ComponentGroup[ReferenceData]
+    ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
       case e => model.update(context)(e)
 
-    def present[ReferenceData](
+    def present(
         context: UiContext[ReferenceData],
-        model: ComponentGroup
+        model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
       model.present(context)
 
-    def reflow(model: ComponentGroup): ComponentGroup =
-      val reflowed: Batch[ComponentEntry[?]] = model.components.map { c =>
+    def reflow(model: ComponentGroup[ReferenceData]): ComponentGroup[ReferenceData] =
+      val reflowed: Batch[ComponentEntry[?, ReferenceData]] = model.components.map { c =>
         c.copy(
           model = c.component.reflow(c.model)
         )
       }
       model.reflow.copy(components = reflowed)
 
-    def cascade(model: ComponentGroup, parentBounds: Bounds): ComponentGroup =
+    def cascade(
+        model: ComponentGroup[ReferenceData],
+        parentBounds: Bounds
+    ): ComponentGroup[ReferenceData] =
       model.cascade(parentBounds)

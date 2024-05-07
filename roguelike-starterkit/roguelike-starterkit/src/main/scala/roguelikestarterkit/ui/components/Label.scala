@@ -18,17 +18,36 @@ import scala.annotation.targetName
 
 /** Labels are a simple `Component` that render text.
   */
-final case class Label(text: String, render: (Coords, String) => Outcome[ComponentFragment]):
-  def withText(value: String): Label =
-    this.copy(text = value)
+final case class Label[ReferenceData](
+    text: ReferenceData => String,
+    bounds: Bounds,
+    render: (Coords, String) => Outcome[ComponentFragment]
+):
+  def withText(value: String): Label[ReferenceData] =
+    this.copy(text = _ => value)
+  def withText(f: ReferenceData => String): Label[ReferenceData] =
+    this.copy(text = f)
+
+  def withBounds(value: Bounds): Label[ReferenceData] =
+    this.copy(bounds = value)
 
 object Label:
 
+  private def findBounds(text: String): Bounds =
+    Bounds(0, 0, text.length, 1)
+
   /** Minimal label constructor with custom rendering function
     */
+  def apply[ReferenceData](text: String)(
+      present: (Coords, String) => Outcome[ComponentFragment]
+  ): Label[ReferenceData] =
+    Label(_ => text, findBounds(text), present)
+
   @targetName("Label_apply_curried")
-  def apply(text: String)(present: (Coords, String) => Outcome[ComponentFragment]): Label =
-    Label(text, present)
+  def apply[ReferenceData](text: ReferenceData => String)(
+      present: (Coords, String) => Outcome[ComponentFragment]
+  ): Label[ReferenceData] =
+    Label(text, Bounds.zero, present)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -57,30 +76,49 @@ object Label:
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
     * bounds
     */
-  def apply(text: String, theme: Theme): Label =
-    Label(text, presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background))
+  def apply[ReferenceData](text: String, theme: Theme): Label[ReferenceData] =
+    Label(
+      _ => text,
+      findBounds(text),
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
+    )
 
-  given Component[Label] with
-    def bounds(model: Label): Bounds =
-      Bounds(0, 0, model.text.length, 1)
+  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
+    * bounds
+    */
+  def apply[ReferenceData](text: ReferenceData => String, theme: Theme): Label[ReferenceData] =
+    Label(
+      text,
+      Bounds.zero,
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
+    )
 
-    def updateModel[ReferenceData](
+  given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
+    def bounds(model: Label[ReferenceData]): Bounds =
+      model.bounds
+
+    def updateModel(
         context: UiContext[ReferenceData],
-        model: Label
-    ): GlobalEvent => Outcome[Label] =
+        model: Label[ReferenceData]
+    ): GlobalEvent => Outcome[Label[ReferenceData]] =
+      case FrameTick =>
+        Outcome(
+          model.withBounds(findBounds(model.text(context.reference)))
+        )
+
       case _ =>
         Outcome(model)
 
-    def present[ReferenceData](
+    def present(
         context: UiContext[ReferenceData],
-        model: Label
+        model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text)
+      model.render(context.bounds.coords, model.text(context.reference))
 
-    def reflow(model: Label): Label =
+    def reflow(model: Label[ReferenceData]): Label[ReferenceData] =
       model
 
-    def cascade(model: Label, parentBounds: Bounds): Label =
+    def cascade(model: Label[ReferenceData], parentBounds: Bounds): Label[ReferenceData] =
       model
 
   final case class Theme(

@@ -106,9 +106,9 @@ val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
 
 // UI Components
 
-type Component[A] = ui.component.Component[A]
+type Component[A, ReferenceData] = ui.component.Component[A, ReferenceData]
 
-type ComponentGroup = ui.component.ComponentGroup
+type ComponentGroup[ReferenceData] = ui.component.ComponentGroup[ReferenceData]
 val ComponentGroup: ui.component.ComponentGroup.type = ui.component.ComponentGroup
 
 type ComponentFragment = ui.component.ComponentFragment
@@ -131,5 +131,5 @@ val BoundsType: ui.component.BoundsType.type = ui.component.BoundsType
 type Button = ui.components.Button
 val Button: ui.components.Button.type = ui.components.Button
 
-type Label = ui.components.Label
+type Label[ReferenceData] = ui.components.Label[ReferenceData]
 val Label: ui.components.Label.type = ui.components.Label

@@ -110,7 +110,7 @@ object ColourWindow:
         )
       )
 
-final case class ColorPalette(components: ComponentGroup)
+final case class ColorPalette(components: ComponentGroup[Unit])
 object ColorPalette:
 
   given WindowContent[ColorPalette, Unit] with
