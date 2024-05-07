@@ -84,8 +84,8 @@ object ColourWindow:
       charSheet: CharSheet,
       colour: RGBA,
       stroke: Option[RGBA]
-  ): (Coords, Bounds) => Outcome[ComponentFragment] =
-    (offset, bounds) =>
+  ): (Coords, Bounds, Unit) => Outcome[ComponentFragment] =
+    (offset, bounds, _) =>
       Outcome(
         ComponentFragment(
           stroke match

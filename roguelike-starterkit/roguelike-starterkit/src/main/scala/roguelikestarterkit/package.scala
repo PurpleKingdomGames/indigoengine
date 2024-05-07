@@ -128,7 +128,7 @@ val BoundsType: ui.component.BoundsType.type = ui.component.BoundsType
 
 // UI Built in components
 
-type Button = ui.components.Button
+type Button[ReferenceData] = ui.components.Button[ReferenceData]
 val Button: ui.components.Button.type = ui.components.Button
 
 type Label[ReferenceData] = ui.components.Label[ReferenceData]

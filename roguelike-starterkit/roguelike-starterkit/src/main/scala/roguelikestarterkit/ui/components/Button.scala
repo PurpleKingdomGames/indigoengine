@@ -16,61 +16,65 @@ import roguelikestarterkit.ui.datatypes.UiContext
 
 /** Buttons `Component`s allow you to create buttons for your UI.
   */
-final case class Button(
+final case class Button[ReferenceData](
     bounds: Bounds,
     state: ButtonState,
-    up: (Coords, Bounds) => Outcome[ComponentFragment],
-    over: Option[(Coords, Bounds) => Outcome[ComponentFragment]],
-    down: Option[(Coords, Bounds) => Outcome[ComponentFragment]],
-    click: Batch[GlobalEvent]
+    up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment],
+    over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
+    down: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
+    click: ReferenceData => Batch[GlobalEvent],
+    calculateBounds: ReferenceData => Bounds
 ):
   export bounds.*
 
-  def presentUp(up: (Coords, Bounds) => Outcome[ComponentFragment]): Button =
+  def presentUp(
+      up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
     this.copy(up = up)
 
-  def presentOver(over: (Coords, Bounds) => Outcome[ComponentFragment]): Button =
+  def presentOver(
+      over: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
     this.copy(over = Option(over))
 
-  def presentDown(down: (Coords, Bounds) => Outcome[ComponentFragment]): Button =
+  def presentDown(
+      down: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
     this.copy(down = Option(down))
 
-  def onClick(events: Batch[GlobalEvent]): Button =
+  def onClick(events: ReferenceData => Batch[GlobalEvent]): Button[ReferenceData] =
     this.copy(click = events)
-  def onClick(events: GlobalEvent*): Button =
+  def onClick(events: Batch[GlobalEvent]): Button[ReferenceData] =
+    onClick(_ => events)
+  def onClick(events: GlobalEvent*): Button[ReferenceData] =
     onClick(Batch.fromSeq(events))
 
 object Button:
 
-  /** Minimal button constructor with custom rendering function
-    */
-  def apply(bounds: Bounds)(present: (Coords, Bounds) => Outcome[ComponentFragment]): Button =
-    Button(bounds, ButtonState.Up, present, None, None, Batch.empty)
-
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
-  private def presentButton(
-      label: String,
+  private def presentButton[ReferenceData](
+      label: ReferenceData => String,
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet,
       hasBorder: Boolean
-  ): (Coords, Bounds) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
     if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet)
     else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
 
-  private def presentButtonNoBorder(
-      label: String,
+  private def presentButtonNoBorder[ReferenceData](
+      label: ReferenceData => String,
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
-  ): (Coords, Bounds) => Outcome[ComponentFragment] =
-    (offset, bounds) =>
+  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
+    (offset, bounds, ref) =>
       val size = bounds.dimensions.unsafeToSize
 
       val terminal =
         RogueTerminalEmulator(size)
-          .putLine(Point.zero, label, fgColor, bgColor)
+          .putLine(Point.zero, label(ref), fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
@@ -83,14 +87,15 @@ object Button:
 
       Outcome(ComponentFragment(terminal))
 
-  def presentButtonWithBorder(
-      label: String,
+  private def presentButtonWithBorder[ReferenceData](
+      label: ReferenceData => String,
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
-  ): (Coords, Bounds) => Outcome[ComponentFragment] =
-    (offset, bounds) =>
-      val hBar = Batch.fill(label.length)("─").mkString
+  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
+    (offset, bounds, ref) =>
+      val txt  = label(ref)
+      val hBar = Batch.fill(txt.length)("─").mkString
       val size = bounds.dimensions.unsafeToSize
 
       val terminal =
@@ -102,7 +107,7 @@ object Button:
           .put(Point(0, 1), Tile.`│`, fgColor, bgColor)
           .put(Point(size.width - 1, 1), Tile.`│`, fgColor, bgColor)
           .putLine(Point(1, 0), hBar, fgColor, bgColor)
-          .putLine(Point(1, 1), label, fgColor, bgColor)
+          .putLine(Point(1, 1), txt, fgColor, bgColor)
           .putLine(Point(1, 2), hBar, fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
@@ -120,16 +125,33 @@ object Button:
         ).addCloneBlanks(terminal.blanks)
       )
 
+  private def findBounds(label: String, hasBorder: Boolean): Bounds =
+    if hasBorder then Bounds(0, 0, label.length + 2, 3) else Bounds(0, 0, label.length, 1)
+
+  /** Minimal button constructor with custom rendering function
+    */
+  def apply[ReferenceData](bounds: Bounds)(
+      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
+    Button(bounds, ButtonState.Up, present, None, None, _ => Batch.empty, _ => bounds)
+
+  /** Minimal button constructor with custom rendering function
+    */
+  def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
+      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+  ): Button[ReferenceData] =
+    Button(Bounds.zero, ButtonState.Up, present, None, None, _ => Batch.empty, calculateBounds)
+
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
     * custom bounds
     */
-  def apply(
-      label: String,
+  def apply[ReferenceData](
+      label: ReferenceData => String,
       theme: Theme,
-      bounds: Bounds
-  ): Button =
+      calculateBounds: ReferenceData => Bounds
+  ): Button[ReferenceData] =
     Button(
-      bounds,
+      Bounds.zero,
       ButtonState.Up,
       presentButton(
         label,
@@ -156,60 +178,94 @@ object Button:
           theme.hasBorder
         )
       ),
-      Batch.empty
+      _ => Batch.empty,
+      calculateBounds
+    )
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
+    * custom bounds
+    */
+  def apply[ReferenceData](
+      label: String,
+      theme: Theme,
+      bounds: Bounds
+  ): Button[ReferenceData] =
+    Button(_ => label, theme, _ => bounds)
+
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
+    * bounds are based on the label size, which is assumed to be a single line of simple text.
+    */
+  def apply[ReferenceData](
+      label: String,
+      theme: Theme
+  ): Button[ReferenceData] =
+    Button(
+      label,
+      theme,
+      findBounds(label, theme.hasBorder)
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
     * bounds are based on the label size, which is assumed to be a single line of simple text.
     */
-  def apply(
-      label: String,
+  def apply[ReferenceData](
+      label: ReferenceData => String,
       theme: Theme
-  ): Button =
+  ): Button[ReferenceData] =
     Button(
       label,
       theme,
-      if theme.hasBorder then Bounds(0, 0, label.length + 2, 3) else Bounds(0, 0, label.length, 1)
+      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder)
     )
 
-  given [ReferenceData]: Component[Button, ReferenceData] with
-    def bounds(model: Button): Bounds =
+  given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
+    def bounds(model: Button[ReferenceData]): Bounds =
       model.bounds
 
     def updateModel(
         context: UiContext[ReferenceData],
-        model: Button
-    ): GlobalEvent => Outcome[Button] =
+        model: Button[ReferenceData]
+    ): GlobalEvent => Outcome[Button[ReferenceData]] =
       case FrameTick =>
+        val newBounds =
+          model.calculateBounds(context.reference)
+
         Outcome(
-          model.copy(state =
-            if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
-              if context.mouse.isLeftDown then ButtonState.Down
-              else ButtonState.Over
-            else ButtonState.Up
+          model.copy(
+            state =
+              if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
+                if context.mouse.isLeftDown then ButtonState.Down
+                else ButtonState.Over
+              else ButtonState.Up,
+            bounds = newBounds
           )
         )
 
       case _: MouseEvent.Click
           if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model).addGlobalEvents(model.click)
+        Outcome(model).addGlobalEvents(model.click(context.reference))
 
       case _ =>
         Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
-        model: Button
+        model: Button[ReferenceData]
     ): Outcome[ComponentFragment] =
       model.state match
-        case ButtonState.Up   => model.up(context.bounds.coords, model.bounds)
-        case ButtonState.Over => model.over.getOrElse(model.up)(context.bounds.coords, model.bounds)
-        case ButtonState.Down => model.down.getOrElse(model.up)(context.bounds.coords, model.bounds)
+        case ButtonState.Up =>
+          model.up(context.bounds.coords, model.bounds, context.reference)
 
-    def reflow(model: Button): Button =
+        case ButtonState.Over =>
+          model.over.getOrElse(model.up)(context.bounds.coords, model.bounds, context.reference)
+
+        case ButtonState.Down =>
+          model.down.getOrElse(model.up)(context.bounds.coords, model.bounds, context.reference)
+
+    def reflow(model: Button[ReferenceData]): Button[ReferenceData] =
       model
 
-    def cascade(model: Button, parentBounds: Bounds): Button =
+    def cascade(model: Button[ReferenceData], parentBounds: Bounds): Button[ReferenceData] =
       model
 
   final case class Theme(

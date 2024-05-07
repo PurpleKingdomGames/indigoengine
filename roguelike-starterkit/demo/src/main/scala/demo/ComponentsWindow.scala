@@ -43,8 +43,14 @@ object ComponentsWindow:
           ),
           Button("Default!", Button.Theme(charSheet))
         )
+        .add {
+          Button[Int](
+            (i: Int) => "Count" + (if i > 0 then s": $i" else ""),
+            Button.Theme(charSheet).addBorder
+          )
+        }
         .add(
-          Button(Bounds(0, 0, 5, 2)) { case (coords, bounds) =>
+          Button[Int](Bounds(0, 0, 5, 2)) { case (coords, bounds, _) =>
             Outcome(
               ComponentFragment(
                 Shape.Box(
