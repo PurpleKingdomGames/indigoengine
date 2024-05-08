@@ -109,6 +109,9 @@ object Button:
           .putLine(Point(1, 0), hBar, fgColor, bgColor)
           .putLine(Point(1, 1), txt, fgColor, bgColor)
           .putLine(Point(1, 2), hBar, fgColor, bgColor)
+
+      val terminalClones =
+        terminal
           .toCloneTiles(
             CloneId(s"button_${charSheet.assetName.toString}"),
             bounds.coords
@@ -121,8 +124,8 @@ object Button:
 
       Outcome(
         ComponentFragment(
-          terminal.clones
-        ).addCloneBlanks(terminal.blanks)
+          terminalClones.clones
+        ).addCloneBlanks(terminalClones.blanks)
       )
 
   private def findBounds(label: String, hasBorder: Boolean): Bounds =
@@ -249,7 +252,7 @@ object Button:
         Outcome(
           model.copy(
             state =
-              if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
+              if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
                 if context.mouse.isLeftDown then ButtonState.Down
                 else ButtonState.Over
               else ButtonState.Up,
@@ -268,15 +271,17 @@ object Button:
         context: UiContext[ReferenceData],
         model: Button[ReferenceData]
     ): Outcome[ComponentFragment] =
+      val b = model.calculateBounds(context.reference)
+
       model.state match
         case ButtonState.Up =>
-          model.up(context.bounds.coords, model.bounds, context.reference)
+          model.up(context.bounds.coords, b, context.reference)
 
         case ButtonState.Over =>
-          model.over.getOrElse(model.up)(context.bounds.coords, model.bounds, context.reference)
+          model.over.getOrElse(model.up)(context.bounds.coords, b, context.reference)
 
         case ButtonState.Down =>
-          model.down.getOrElse(model.up)(context.bounds.coords, model.bounds, context.reference)
+          model.down.getOrElse(model.up)(context.bounds.coords, b, context.reference)
 
     def reflow(model: Button[ReferenceData]): Button[ReferenceData] =
       model
