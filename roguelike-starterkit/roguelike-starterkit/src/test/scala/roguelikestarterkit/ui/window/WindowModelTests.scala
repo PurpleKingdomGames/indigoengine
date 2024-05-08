@@ -61,7 +61,10 @@ class WindowModelTests extends munit.FunSuite:
     Bounds(0, 0, 100, 100),
     BoundsType.Fixed,
     ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-    Batch(component)
+    Batch(component),
+    Batch(
+      component.component.bounds(component.model)
+    )
   )
 
   test("model cascades bounds changes to component group - BoundsType.Fixed") {

@@ -21,8 +21,7 @@ import scala.annotation.targetName
 final case class Label[ReferenceData](
     text: ReferenceData => String,
     bounds: Bounds,
-    render: (Coords, String) => Outcome[ComponentFragment],
-    resize: Batch[GlobalEvent]
+    render: (Coords, String) => Outcome[ComponentFragment]
 ):
   def withText(value: String): Label[ReferenceData] =
     this.copy(text = _ => value)
@@ -31,11 +30,6 @@ final case class Label[ReferenceData](
 
   def withBounds(value: Bounds): Label[ReferenceData] =
     this.copy(bounds = value)
-
-  def onResize(events: Batch[GlobalEvent]): Label[ReferenceData] =
-    this.copy(resize = events)
-  def onResize(events: GlobalEvent*): Label[ReferenceData] =
-    onResize(Batch.fromSeq(events))
 
 object Label:
 
@@ -47,13 +41,13 @@ object Label:
   def apply[ReferenceData](text: String)(
       present: (Coords, String) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
-    Label(_ => text, findBounds(text), present, Batch.empty)
+    Label(_ => text, findBounds(text), present)
 
   @targetName("Label_apply_curried")
   def apply[ReferenceData](text: ReferenceData => String)(
       present: (Coords, String) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
-    Label(text, Bounds(0, 0, 1, 1), present, Batch.empty)
+    Label(text, Bounds(0, 0, 1, 1), present)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -86,8 +80,7 @@ object Label:
     Label(
       _ => text,
       findBounds(text),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
-      Batch.empty
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
     )
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
@@ -97,38 +90,7 @@ object Label:
     Label(
       text,
       Bounds(0, 0, 1, 1),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
-      Batch.empty
-    )
-
-  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
-    * bounds
-    */
-  def apply[ReferenceData](
-      text: ReferenceData => String,
-      theme: Theme,
-      onResize: GlobalEvent
-  ): Label[ReferenceData] =
-    Label(
-      text,
-      Bounds(0, 0, 1, 1),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
-      Batch(onResize)
-    )
-
-  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
-    * bounds
-    */
-  def apply[ReferenceData](
-      text: ReferenceData => String,
-      theme: Theme,
-      onResize: Batch[GlobalEvent]
-  ): Label[ReferenceData] =
-    Label(
-      text,
-      Bounds(0, 0, 1, 1),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
-      onResize
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
     )
 
   given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
@@ -140,12 +102,7 @@ object Label:
         model: Label[ReferenceData]
     ): GlobalEvent => Outcome[Label[ReferenceData]] =
       case FrameTick =>
-        val newBounds = findBounds(model.text(context.reference))
-
-        Outcome(
-          model.withBounds(newBounds),
-          if model.bounds != newBounds then model.resize else Batch.empty
-        )
+        Outcome(model.withBounds(findBounds(model.text(context.reference))))
 
       case _ =>
         Outcome(model)

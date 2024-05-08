@@ -15,7 +15,8 @@ final case class ComponentGroup[ReferenceData](
     bounds: Bounds,
     boundsType: BoundsType,
     layout: ComponentLayout,
-    components: Batch[ComponentEntry[?, ReferenceData]]
+    components: Batch[ComponentEntry[?, ReferenceData]],
+    referenceBounds: Batch[Bounds]
 ):
 
   extension (b: Bounds)
@@ -118,7 +119,10 @@ final case class ComponentGroup[ReferenceData](
       .reflow
 
   def add[A](entry: A)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
-    this.copy(components = components :+ ComponentEntry(nextOffset(components), entry, c))
+    this.copy(
+      components = components :+ ComponentEntry(nextOffset(components), entry, c),
+      referenceBounds = referenceBounds :+ c.bounds(entry)
+    )
 
   def add[A](entries: Batch[A])(using
       c: Component[A, ReferenceData]
@@ -127,7 +131,7 @@ final case class ComponentGroup[ReferenceData](
   def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
 
-  def update[StartupData, ContextData](
+  private def updateComponents[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
     e =>
@@ -145,6 +149,18 @@ final case class ComponentGroup[ReferenceData](
             components = updatedComponents
           )
         }
+
+  def update[StartupData, ContextData](
+      context: UiContext[ReferenceData]
+  ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
+    case FrameTick =>
+      updateComponents(context)(FrameTick).map { updated =>
+        if updated.referenceBounds != referenceBounds then updated.reflow
+        else updated
+      }
+
+    case e =>
+      updateComponents(context)(e)
 
   def present[StartupData, ContextData](
       context: UiContext[ReferenceData]
@@ -212,7 +228,7 @@ final case class ComponentGroup[ReferenceData](
 
 object ComponentGroup:
   def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
-    ComponentGroup(bounds, BoundsType.Fixed, ComponentLayout.None, Batch.empty)
+    ComponentGroup(bounds, BoundsType.Fixed, ComponentLayout.None, Batch.empty, Batch.empty)
 
   given [ReferenceData]: Component[ComponentGroup[ReferenceData], ReferenceData] with
 

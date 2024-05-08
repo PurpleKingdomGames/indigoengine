@@ -23,8 +23,7 @@ final case class Button[ReferenceData](
     over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
     down: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
     click: ReferenceData => Batch[GlobalEvent],
-    calculateBounds: ReferenceData => Bounds,
-    resize: Batch[GlobalEvent]
+    calculateBounds: ReferenceData => Bounds
 ):
   export bounds.*
 
@@ -49,11 +48,6 @@ final case class Button[ReferenceData](
     onClick(_ => events)
   def onClick(events: GlobalEvent*): Button[ReferenceData] =
     onClick(Batch.fromSeq(events))
-
-  def onResize(events: Batch[GlobalEvent]): Button[ReferenceData] =
-    this.copy(resize = events)
-  def onResize(events: GlobalEvent*): Button[ReferenceData] =
-    onResize(Batch.fromSeq(events))
 
 object Button:
 
@@ -139,11 +133,19 @@ object Button:
   def apply[ReferenceData](bounds: Bounds)(
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
-    Button(bounds, ButtonState.Up, present, None, None, _ => Batch.empty, _ => bounds, Batch.empty)
+    Button(
+      bounds,
+      ButtonState.Up,
+      present,
+      None,
+      None,
+      _ => Batch.empty,
+      _ => bounds
+    )
 
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
-  def apply[ReferenceData](calculateBounds: ReferenceData => Bounds, onResize: Batch[GlobalEvent])(
+  def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
@@ -153,8 +155,7 @@ object Button:
       None,
       None,
       _ => Batch.empty,
-      calculateBounds,
-      onResize
+      calculateBounds
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
@@ -163,8 +164,7 @@ object Button:
   def apply[ReferenceData](
       label: ReferenceData => String,
       theme: Theme,
-      calculateBounds: ReferenceData => Bounds,
-      onResize: Batch[GlobalEvent]
+      calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
     Button(
       if theme.hasBorder then Bounds(0, 0, 3, 3) else Bounds(0, 0, 1, 1),
@@ -195,8 +195,7 @@ object Button:
         )
       ),
       _ => Batch.empty,
-      calculateBounds,
-      onResize
+      calculateBounds
     )
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
@@ -207,7 +206,7 @@ object Button:
       theme: Theme,
       bounds: Bounds
   ): Button[ReferenceData] =
-    Button(_ => label, theme, _ => bounds, Batch.empty)
+    Button(_ => label, theme, _ => bounds)
 
   /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
     * bounds are based on the label size, which is assumed to be a single line of simple text.
@@ -232,38 +231,7 @@ object Button:
     Button(
       label,
       theme,
-      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder),
-      Batch.empty
-    )
-
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single line of simple text.
-    */
-  def apply[ReferenceData](
-      label: ReferenceData => String,
-      theme: Theme,
-      onResize: GlobalEvent
-  ): Button[ReferenceData] =
-    Button(
-      label,
-      theme,
-      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder),
-      Batch(onResize)
-    )
-
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single line of simple text.
-    */
-  def apply[ReferenceData](
-      label: ReferenceData => String,
-      theme: Theme,
-      onResize: Batch[GlobalEvent]
-  ): Button[ReferenceData] =
-    Button(
-      label,
-      theme,
-      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder),
-      onResize
+      (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder)
     )
 
   given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
@@ -286,8 +254,7 @@ object Button:
                 else ButtonState.Over
               else ButtonState.Up,
             bounds = newBounds
-          ),
-          if model.bounds != newBounds then model.resize else Batch.empty
+          )
         )
 
       case _: MouseEvent.Click

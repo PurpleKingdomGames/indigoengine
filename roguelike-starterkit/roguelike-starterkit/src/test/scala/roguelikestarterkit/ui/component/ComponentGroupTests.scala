@@ -37,7 +37,11 @@ class ComponentGroupTests extends munit.FunSuite {
       Bounds(0, 0, 100, 100),
       BoundsType.Fixed,
       ComponentLayout.Horizontal(Padding(5), Overflow.Wrap),
-      Batch(component1, component2)
+      Batch(component1, component2),
+      Batch(
+        component1.component.bounds(component1.model),
+        component2.component.bounds(component2.model)
+      )
     )
 
     val actual = group.reflow.components.toList.map(_.offset)
