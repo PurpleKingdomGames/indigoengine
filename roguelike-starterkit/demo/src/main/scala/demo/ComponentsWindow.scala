@@ -46,7 +46,8 @@ object ComponentsWindow:
         .add {
           Button[Int](
             (i: Int) => "Count" + (if i > 0 then s": $i" else ""),
-            Button.Theme(charSheet).addBorder
+            Button.Theme(charSheet).addBorder,
+            WindowEvent.Refresh(windowId)
           )
         }
         .add(

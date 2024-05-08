@@ -134,3 +134,8 @@ object ColorPalette:
       model.copy(
         components = model.components.cascade(newBounds)
       )
+
+    def refresh(model: ColorPalette): ColorPalette =
+      model.copy(
+        components = model.components.reflow
+      )

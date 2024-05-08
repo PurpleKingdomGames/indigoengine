@@ -28,6 +28,10 @@ trait WindowContent[A, ReferenceData]:
     */
   def cascade(model: A, newBounds: Bounds): A
 
+  /** Called when a window has been told to refresh its content, possibly by the content itself.
+    */
+  def refresh(model: A): A
+
 object WindowContent:
 
   given [ReferenceData]: WindowContent[ComponentGroup[ReferenceData], ReferenceData] with
@@ -44,5 +48,11 @@ object WindowContent:
     ): Outcome[Layer] =
       model.present(context).map(_.toLayer)
 
-    def cascade(model: ComponentGroup[ReferenceData], newBounds: Bounds): ComponentGroup[ReferenceData] =
+    def cascade(
+        model: ComponentGroup[ReferenceData],
+        newBounds: Bounds
+    ): ComponentGroup[ReferenceData] =
       model.cascade(newBounds)
+
+    def refresh(model: ComponentGroup[ReferenceData]): ComponentGroup[ReferenceData] =
+      model.reflow

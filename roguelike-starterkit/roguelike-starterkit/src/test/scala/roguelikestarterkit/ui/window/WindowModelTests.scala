@@ -24,6 +24,9 @@ class WindowModelTests extends munit.FunSuite:
       def cascade(model: Bounds, newBounds: Bounds): Bounds =
         newBounds
 
+      def refresh(model: Bounds): Bounds =
+        model
+
     val charSheet =
       CharSheet(
         AssetName("test"),

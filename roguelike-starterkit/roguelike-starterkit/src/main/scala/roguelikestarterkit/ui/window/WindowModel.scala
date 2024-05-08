@@ -131,6 +131,9 @@ final case class WindowModel[A, ReferenceData](
   def isClosed: Boolean =
     state == WindowState.Closed
 
+  def refresh: WindowModel[A, ReferenceData] =
+    this.copy(contentModel = windowContent.refresh(contentModel))
+
 object WindowModel:
 
   def apply[A, ReferenceData](

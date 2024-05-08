@@ -52,3 +52,6 @@ enum WindowEvent extends GlobalEvent:
 
   /** Changes the magnification of all windows */
   case ChangeMagnification(newMagnification: Int)
+
+  /** Tells a window request its content to refresh */
+  case Refresh(id: WindowId)
