@@ -12,6 +12,9 @@ object Coords:
   inline def apply(x: Int, y: Int): Coords = Point(x, y)
   inline def apply(point: Point): Coords   = point
 
+  def fromScreenSpace(pt: Point, charSize: Size): Coords =
+    Coords(pt / charSize.toPoint)
+
   val zero: Coords = Coords(0, 0)
 
   extension (c: Coords)
