@@ -1,12 +1,8 @@
 package roguelikestarterkit.ui.components.group
 
 import indigo.*
-import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
-import roguelikestarterkit.ui.datatypes.Bounds
-import roguelikestarterkit.ui.datatypes.Coords
-import roguelikestarterkit.ui.datatypes.Dimensions
-import roguelikestarterkit.ui.datatypes.UiContext
+import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
 
@@ -57,31 +53,31 @@ final case class ComponentGroup[ReferenceData] private (
     this.copy(boundsType = value).reflow
 
   def defaultBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.default)
+    withBoundsType(BoundsType.default)
   def fixedBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Fixed)
+    withBoundsType(BoundsType.Fixed)
   def inheritBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Inherit)
+    withBoundsType(BoundsType.Inherit)
   def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Relative(x, y, width, height))
+    withBoundsType(BoundsType.Relative(x, y, width, height))
   def relativePosition(x: Double, y: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.RelativePosition(x, y))
+    withBoundsType(BoundsType.RelativePosition(x, y))
   def relativeSize(width: Double, height: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.RelativeSize(width, height))
+    withBoundsType(BoundsType.RelativeSize(width, height))
   def offset(amountPosition: Coords, amountSize: Dimensions): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Offset(amountPosition, amountSize))
+    withBoundsType(BoundsType.Offset(amountPosition, amountSize))
   def offset(x: Int, y: Int, width: Int, height: Int): ComponentGroup[ReferenceData] =
     offset(Coords(x, y), Dimensions(width, height))
   def offsetPosition(amount: Coords): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.OffsetPosition(amount))
+    withBoundsType(BoundsType.OffsetPosition(amount))
   def offsetPosition(x: Int, y: Int): ComponentGroup[ReferenceData] =
     offsetPosition(Coords(x, y))
   def offsetSize(amount: Dimensions): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.OffsetSize(amount))
+    withBoundsType(BoundsType.OffsetSize(amount))
   def offsetSize(width: Int, height: Int): ComponentGroup[ReferenceData] =
     offsetSize(Dimensions(width, height))
   def dynamicBounds(width: FitMode, height: FitMode): ComponentGroup[ReferenceData] =
-    withBoundsType(roguelikestarterkit.ui.components.group.BoundsType.Dynamic(width, height))
+    withBoundsType(BoundsType.Dynamic(width, height))
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value).reflow
@@ -130,8 +126,8 @@ object ComponentGroup:
   def apply[ReferenceData](initalBounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(
       initalBounds,
-      roguelikestarterkit.ui.components.group.BoundsType.default,
-      roguelikestarterkit.ui.components.group.ComponentLayout.None,
+      BoundsType.default,
+      ComponentLayout.None,
       Batch.empty,
       Batch.empty
     )
@@ -221,13 +217,13 @@ object ComponentGroup:
     ): ComponentGroup[ReferenceData] =
       val newBounds: Bounds =
         model.boundsType match
-          case roguelikestarterkit.ui.components.group.BoundsType.Fixed =>
+          case BoundsType.Fixed =>
             model.bounds
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Inherit =>
+          case BoundsType.Inherit =>
             parentBounds
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Relative(x, y, width, height) =>
+          case BoundsType.Relative(x, y, width, height) =>
             Bounds(
               (parentBounds.width.toDouble * x).toInt,
               (parentBounds.height.toDouble * y).toInt,
@@ -235,58 +231,58 @@ object ComponentGroup:
               (parentBounds.height.toDouble * height).toInt
             )
 
-          case roguelikestarterkit.ui.components.group.BoundsType.RelativePosition(x, y) =>
+          case BoundsType.RelativePosition(x, y) =>
             model.bounds.withPosition(
               (parentBounds.width.toDouble * x).toInt,
               (parentBounds.height.toDouble * y).toInt
             )
 
-          case roguelikestarterkit.ui.components.group.BoundsType.RelativeSize(width, height) =>
+          case BoundsType.RelativeSize(width, height) =>
             model.bounds.withDimensions(
               (parentBounds.width.toDouble * width).toInt,
               (parentBounds.height.toDouble * height).toInt
             )
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Offset(amountPosition, amountSize) =>
+          case BoundsType.Offset(amountPosition, amountSize) =>
             Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.OffsetPosition(amount) =>
+          case BoundsType.OffsetPosition(amount) =>
             model.bounds.withPosition(parentBounds.coords + amount)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.OffsetSize(amount) =>
+          case BoundsType.OffsetSize(amount) =>
             model.bounds.withDimensions(parentBounds.dimensions + amount)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
             parentBounds
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
             parentBounds.withDimensions(
               parentBounds.dimensions.width,
               model.contentBounds.dimensions.height
             )
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
+          case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
             parentBounds.withDimensions(parentBounds.dimensions.width, units)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
             parentBounds.withDimensions(
               model.contentBounds.dimensions.height,
               parentBounds.dimensions.width
             )
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
             model.contentBounds
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
             model.contentBounds.withDimensions(model.contentBounds.dimensions.width, units)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
+          case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
             parentBounds.withDimensions(units, parentBounds.dimensions.height)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
+          case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
             model.contentBounds.withDimensions(units, model.contentBounds.dimensions.height)
 
-          case roguelikestarterkit.ui.components.group.BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
+          case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
             model.bounds.withDimensions(unitsW, unitsH)
 
       model
@@ -303,17 +299,17 @@ object ComponentGroup:
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Coords =
     layout match
-      case roguelikestarterkit.ui.components.group.ComponentLayout.None =>
+      case ComponentLayout.None =>
         Coords.zero
 
-      case roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
+      case ComponentLayout.Horizontal(padding, Overflow.Hidden) =>
         components
           .takeRight(1)
           .headOption
           .map(c => c.offset + Coords(c.component.bounds(c.model).withPadding(padding).right, 0))
           .getOrElse(Coords(padding.left, padding.top))
 
-      case roguelikestarterkit.ui.components.group.ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
+      case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
         val maxY = components
           .map(c => c.offset.y + c.component.bounds(c.model).withPadding(padding).height)
           .sortWith(_ > _)
@@ -332,7 +328,7 @@ object ComponentGroup:
           }
           .getOrElse(Coords(padding.left, padding.top))
 
-      case roguelikestarterkit.ui.components.group.ComponentLayout.Vertical(padding) =>
+      case ComponentLayout.Vertical(padding) =>
         components
           .takeRight(1)
           .headOption

@@ -1,6 +1,5 @@
 package roguelikestarterkit.ui.components.group
 
-import roguelikestarterkit.ui.components.group.FitMode
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 
