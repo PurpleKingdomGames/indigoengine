@@ -3,6 +3,7 @@ package roguelikestarterkit.ui.window
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
+import roguelikestarterkit.Component
 import roguelikestarterkit.ComponentGroup
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UiContext
@@ -34,25 +35,27 @@ trait WindowContent[A, ReferenceData]:
 
 object WindowContent:
 
-  given [ReferenceData]: WindowContent[ComponentGroup[ReferenceData], ReferenceData] with
+  given [A, ReferenceData](using
+      comp: Component[A, ReferenceData]
+  ): WindowContent[A, ReferenceData] with
 
     def updateModel(
         context: UiContext[ReferenceData],
-        model: ComponentGroup[ReferenceData]
-    ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
-      e => model.update(context)(e)
+        model: A
+    ): GlobalEvent => Outcome[A] =
+      e => comp.updateModel(context, model)(e)
 
     def present(
         context: UiContext[ReferenceData],
-        model: ComponentGroup[ReferenceData]
+        model: A
     ): Outcome[Layer] =
-      model.present(context).map(_.toLayer)
+      comp.present(context, model).map(_.toLayer)
 
     def cascade(
-        model: ComponentGroup[ReferenceData],
+        model: A,
         newBounds: Bounds
-    ): ComponentGroup[ReferenceData] =
-      model.cascade(newBounds)
+    ): A =
+      comp.cascade(model, newBounds)
 
-    def refresh(model: ComponentGroup[ReferenceData]): ComponentGroup[ReferenceData] =
-      model.reflow
+    def refresh(model: A): A =
+      comp.reflow(model)
