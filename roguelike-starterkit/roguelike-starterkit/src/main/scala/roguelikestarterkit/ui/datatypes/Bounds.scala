@@ -72,3 +72,7 @@ object Bounds:
       resize(newSize)
     def withDimensions(x: Int, y: Int): Bounds =
       resize(Size(x, y))
+
+    def expandToInclude(other: Bounds): Bounds =
+      Bounds(Rectangle.expandToInclude(r, other))
+    
