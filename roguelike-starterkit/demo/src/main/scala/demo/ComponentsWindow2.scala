@@ -2,6 +2,7 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.components.Input
 
 object ComponentsWindow2:
 
@@ -48,6 +49,9 @@ object ComponentsWindow2:
               Batch.fill(count)(Label("x", Label.Theme(charSheet)))
             )
         }
+        .add(
+          Input("Click to input...", 20, Input.Theme(charSheet))
+        )
     )
       .withTitle("More component examples")
       .moveTo(2, 2)
