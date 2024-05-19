@@ -40,7 +40,7 @@ class ComponentGroupTests extends munit.FunSuite {
         .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
         .add("abc", "def")
 
-    val actual = group.reflow.computedComponents.toList.map(_.offset)
+    val actual = group.reflow.components.toList.map(_.offset)
 
     val expected =
       List(
@@ -57,7 +57,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -74,7 +74,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -93,7 +93,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -113,7 +113,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -133,7 +133,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -153,7 +153,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -173,7 +173,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -193,7 +193,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -213,7 +213,7 @@ class ComponentGroupTests extends munit.FunSuite {
       .add("abc", "def")
 
     val actual =
-      group.computedComponents.map(_.offset).toList
+      group.components.map(_.offset).toList
 
     val expected =
       List(
@@ -234,6 +234,6 @@ class ComponentGroupTests extends munit.FunSuite {
         .cascade(Bounds(0, 0, 100, 100))
 
     assertEquals(group.contentBounds, Bounds(0, 0, 3, 3))
-    assertEquals(group.computedBounds, Bounds(0, 0, 100, 3))
+    assertEquals(group.bounds, Bounds(0, 0, 100, 3))
   }
 }

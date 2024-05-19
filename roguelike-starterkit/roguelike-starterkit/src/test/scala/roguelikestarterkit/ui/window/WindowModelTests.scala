@@ -75,7 +75,7 @@ class WindowModelTests extends munit.FunSuite:
         group
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(0, 0, 100, 100))
+    assertEquals(model.contentModel.bounds, Bounds(0, 0, 100, 100))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Inherit") {
@@ -86,7 +86,7 @@ class WindowModelTests extends munit.FunSuite:
         group.inheritBounds
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(1, 1, 38, 38))
+    assertEquals(model.contentModel.bounds, Bounds(1, 1, 38, 38))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative") {
@@ -97,7 +97,7 @@ class WindowModelTests extends munit.FunSuite:
         group.relative(0.5, 0.5, 0.25, 0.25)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(19, 19, 9, 9))
+    assertEquals(model.contentModel.bounds, Bounds(19, 19, 9, 9))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative 100%") {
@@ -108,7 +108,7 @@ class WindowModelTests extends munit.FunSuite:
         group.relative(0, 0, 1, 1)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(0, 0, 38, 38))
+    assertEquals(model.contentModel.bounds, Bounds(0, 0, 38, 38))
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativePosition") {
@@ -119,7 +119,7 @@ class WindowModelTests extends munit.FunSuite:
         group.relativePosition(0.5, 0.5)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(19, 19, 100, 100))
+    assertEquals(model.contentModel.bounds, Bounds(19, 19, 100, 100))
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativeSize") {
@@ -130,7 +130,7 @@ class WindowModelTests extends munit.FunSuite:
         group.relativeSize(0.5, 0.5)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(0, 0, 19, 19))
+    assertEquals(model.contentModel.bounds, Bounds(0, 0, 19, 19))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Offset") {
@@ -141,7 +141,7 @@ class WindowModelTests extends munit.FunSuite:
         group.offset(5, 5, -5, -5)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(6, 6, 33, 33))
+    assertEquals(model.contentModel.bounds, Bounds(6, 6, 33, 33))
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetPosition") {
@@ -152,7 +152,7 @@ class WindowModelTests extends munit.FunSuite:
         group.offsetPosition(5, 5)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(6, 6, 100, 100))
+    assertEquals(model.contentModel.bounds, Bounds(6, 6, 100, 100))
   }
 
   test("model cascades bounds changes to component group - BoundsType.OffsetSize") {
@@ -163,7 +163,7 @@ class WindowModelTests extends munit.FunSuite:
         group.offsetSize(-5, -5)
       ).withBounds(Bounds(0, 0, 40, 40))
 
-    assertEquals(model.contentModel.computedBounds, Bounds(0, 0, 33, 33))
+    assertEquals(model.contentModel.bounds, Bounds(0, 0, 33, 33))
   }
 
   test("model cascades bounds changes to nested component groups") {
@@ -187,9 +187,9 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
 
     // Window cascades to top level component group
-    assertEquals(model.contentModel.computedBounds, Bounds(1, 1, 38, 38))
+    assertEquals(model.contentModel.bounds, Bounds(1, 1, 38, 38))
 
-    model.contentModel.computedComponents.headOption match
+    model.contentModel.components.headOption match
       case None =>
         fail("No sub components found")
 
@@ -197,9 +197,9 @@ class WindowModelTests extends munit.FunSuite:
         val cg = value.model.asInstanceOf[ComponentGroup[Unit]]
 
         // top comp group cascades to next level.
-        assertEquals(cg.computedBounds, Bounds(3, 5, 36, 34))
+        assertEquals(cg.bounds, Bounds(3, 5, 36, 34))
 
-        cg.computedComponents.headOption match
+        cg.components.headOption match
           case None =>
             fail("No sub components found 2")
 
