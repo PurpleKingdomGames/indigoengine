@@ -15,18 +15,27 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
+import scala.annotation.tailrec
 import scala.annotation.targetName
 
 /** Input components allow the user to input text information.
   */
 final case class Input(
-    placeholder: String,
-    text: Option[String],
+    text: String,
     bounds: Bounds,
-    render: (Coords, Bounds, String, Boolean) => Outcome[ComponentFragment]
+    render: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment],
+    change: String => Batch[GlobalEvent],
+    //
+    characterLimit: Int,
+    cursor: Cursor,
+    hasFocus: Boolean,
+    onFocus: () => Batch[GlobalEvent],
+    onLoseFocus: () => Batch[GlobalEvent]
 ):
+  lazy val length: Int = text.length
+
   def withText(value: String): Input =
-    this.copy(text = Option(value))
+    this.copy(text = value)
 
   def withBounds(value: Bounds): Input =
     this.copy(bounds = value)
@@ -34,8 +43,109 @@ final case class Input(
   def withWidth(value: Int): Input =
     this.copy(bounds = bounds.withDimensions(value, bounds.height))
 
-  def withPlaceholder(value: String): Input =
-    this.copy(placeholder = value)
+  def onChange(events: String => Batch[GlobalEvent]): Input =
+    this.copy(change = events)
+  def onChange(events: Batch[GlobalEvent]): Input =
+    onChange(_ => events)
+  def onChange(events: GlobalEvent*): Input =
+    onChange(Batch.fromSeq(events))
+
+  def noCursorBlink: Input =
+    this.copy(cursor = cursor.noCursorBlink)
+  def withCursorBlinkRate(interval: Seconds): Input =
+    this.copy(cursor = cursor.withCursorBlinkRate(interval))
+
+  def giveFocus: Outcome[Input] =
+    Outcome(
+      this.copy(hasFocus = true, cursor = cursor.moveCursorTo(length, length)),
+      onFocus()
+    )
+
+  def loseFocus: Outcome[Input] =
+    Outcome(
+      this.copy(hasFocus = false),
+      onLoseFocus()
+    )
+
+  def withCharacterLimit(limit: Int): Input =
+    this.copy(characterLimit = limit)
+
+  def withLastCursorMove(value: Seconds): Input =
+    this.copy(cursor = cursor.withLastCursorMove(value))
+
+  def cursorLeft: Input =
+    this.copy(cursor = cursor.cursorLeft)
+
+  def cursorRight: Input =
+    this.copy(cursor = cursor.cursorRight(length))
+
+  def cursorHome: Input =
+    this.copy(cursor = cursor.cursorHome)
+
+  def moveCursorTo(newCursorPosition: Int): Input =
+    if newCursorPosition >= 0 && newCursorPosition < length then
+      this.copy(cursor = cursor.moveTo(newCursorPosition))
+    else if newCursorPosition < 0 then this.copy(cursor = cursor.moveTo(0))
+    else this.copy(cursor = cursor.moveTo(length - 1))
+
+  def cursorEnd: Input =
+    this.copy(cursor = cursor.cursorEnd(length))
+
+  def delete: Input =
+    if cursor.cursorPosition == length then this
+    else {
+      val splitString = text.splitAt(cursor.cursorPosition)
+      copy(text = splitString._1 + splitString._2.substring(1))
+    }
+
+  def backspace: Input = {
+    val splitString = text.splitAt(cursor.cursorPosition)
+
+    this.copy(
+      text = splitString._1.take(splitString._1.length - 1) + splitString._2,
+      cursor = cursor.moveTo(
+        if (cursor.cursorPosition > 0) cursor.cursorPosition - 1 else cursor.cursorPosition
+      )
+    )
+  }
+
+  def addCharacter(char: Char): Input =
+    addCharacterText(char.toString())
+
+  def addCharacterText(textToInsert: String): Input = {
+    @tailrec
+    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): Input =
+      remaining match {
+        case Nil =>
+          this.copy(
+            text = textHead + textTail,
+            cursor = cursor.moveTo(position)
+          )
+
+        case _ if (textHead + textTail).length >= characterLimit =>
+          rec(Nil, textHead, textTail, position)
+
+        case c :: cs if c != '\n' =>
+          rec(cs, textHead + c.toString(), textTail, position + 1)
+
+        case _ :: cs =>
+          rec(cs, textHead, textTail, position)
+      }
+
+    val splitString = text.splitAt(cursor.cursorPosition)
+
+    rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursor.cursorPosition)
+  }
+
+  def withFocusActions(actions: GlobalEvent*): Input =
+    withFocusActions(Batch.fromSeq(actions))
+  def withFocusActions(actions: => Batch[GlobalEvent]): Input =
+    this.copy(onFocus = () => actions)
+
+  def withLoseFocusActions(actions: GlobalEvent*): Input =
+    withLoseFocusActions(Batch.fromSeq(actions))
+  def withLoseFocusActions(actions: => Batch[GlobalEvent]): Input =
+    this.copy(onLoseFocus = () => actions)
 
   // Delegates, for convenience.
 
@@ -60,9 +170,20 @@ object Input:
   /** Minimal input constructor with custom rendering function
     */
   def apply(bounds: Bounds)(
-      present: (Coords, Bounds, String, Boolean) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment]
   ): Input =
-    Input("", None, bounds, present)
+    Input(
+      "",
+      bounds,
+      present,
+      _ => Batch.empty,
+      //
+      characterLimit = bounds.width,
+      cursor = Cursor.default,
+      hasFocus = false,
+      () => Batch.empty,
+      () => Batch.empty
+    )
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -70,12 +191,12 @@ object Input:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, Bounds, String, Boolean) => Outcome[ComponentFragment] =
-    (offset, bounds, label, isPlaceholder) =>
+  ): (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment] =
+    (offset, bounds, input, runningTime) =>
       val correctedLabel =
-        if label.length == bounds.width then label
-        else if label.length > bounds.width then label.take(bounds.width)
-        else label + (List.fill(bounds.width - label.length)(" ").mkString)
+        if input.text.length == bounds.width then input.text
+        else if input.text.length > bounds.width then input.text.take(bounds.width)
+        else input.text + (List.fill(bounds.width - input.text.length)(" ").mkString)
 
       val hBar = Batch.fill(correctedLabel.length)("─").mkString
       val size = (bounds.dimensions + 2).unsafeToSize
@@ -92,7 +213,7 @@ object Input:
           .putLine(
             Point(1, 1),
             correctedLabel,
-            if isPlaceholder then fgColor.mix(bgColor, 0.66) else fgColor,
+            fgColor,
             bgColor
           )
           .putLine(Point(1, 2), hBar, fgColor, bgColor)
@@ -109,7 +230,48 @@ object Input:
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
           }
 
-      Outcome(ComponentFragment(terminalClones))
+      val cursor: Batch[SceneNode] =
+        if input.hasFocus then
+          input.cursor.cursorBlinkRate match
+            case None =>
+              Batch(
+                Shape.Box(
+                  Rectangle(
+                    0,
+                    0,
+                    Math.max(1, charSheet.size.width / 5).toInt,
+                    charSheet.size.height
+                  ),
+                  Fill.Color(fgColor)
+                )
+              )
+
+            case Some(blinkRate) =>
+              Signal
+                .Pulse(blinkRate)
+                .map(p => if (runningTime - input.cursor.lastCursorMove < Seconds(0.5)) true else p)
+                .map {
+                  case false =>
+                    Batch.empty
+
+                  case true =>
+                    Batch(
+                      Shape.Box(
+                        Rectangle(
+                          offset.toScreenSpace(charSheet.size),
+                          Size(
+                            Math.max(1, charSheet.size.width / 5).toInt,
+                            charSheet.size.height
+                          )
+                        ),
+                        Fill.Color(fgColor)
+                      )
+                    )
+                }
+                .at(runningTime)
+        else Batch.empty
+
+      Outcome(ComponentFragment(terminalClones).addNodes(cursor))
 
   /** Creates a Input rendered using the RogueTerminalEmulator based on a `Input.Theme`, where the
     * bounds are the supplied width, height 1, plus border.
@@ -117,20 +279,15 @@ object Input:
   def apply(width: Int, theme: Theme): Input =
     Input(
       "",
-      None,
       Bounds(0, 0, width, 1),
-      presentInput(theme.charSheet, theme.colors.foreground, theme.colors.background)
-    )
-
-  /** Creates a Input rendered using the RogueTerminalEmulator based on a `Input.Theme`, with
-    * placeholder text, where the bounds are the supplied width, height 1, plus border.
-    */
-  def apply(placeholder: String, width: Int, theme: Theme): Input =
-    Input(
-      placeholder,
-      None,
-      Bounds(0, 0, width, 1),
-      presentInput(theme.charSheet, theme.colors.foreground, theme.colors.background)
+      presentInput(theme.charSheet, theme.colors.foreground, theme.colors.background),
+      _ => Batch.empty,
+      //
+      characterLimit = width,
+      cursor = Cursor.default,
+      hasFocus = false,
+      () => Batch.empty,
+      () => Batch.empty
     )
 
   given [ReferenceData]: Component[Input, ReferenceData] with
@@ -141,6 +298,40 @@ object Input:
         context: UiContext[ReferenceData],
         model: Input
     ): GlobalEvent => Outcome[Input] =
+      case _: MouseEvent.Click
+          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+        Outcome(model.copy(hasFocus = true))
+
+      case _: MouseEvent.Click =>
+        Outcome(model.copy(hasFocus = false))
+
+      case KeyboardEvent.KeyUp(Key.BACKSPACE) if model.hasFocus =>
+        val next = model.backspace.withLastCursorMove(context.running)
+        Outcome(next, model.change(next.text))
+
+      case KeyboardEvent.KeyUp(Key.DELETE) if model.hasFocus =>
+        val next = model.delete.withLastCursorMove(context.running)
+        Outcome(next, model.change(next.text))
+
+      case KeyboardEvent.KeyUp(Key.LEFT_ARROW) if model.hasFocus =>
+        Outcome(model.cursorLeft.withLastCursorMove(context.running))
+
+      case KeyboardEvent.KeyUp(Key.RIGHT_ARROW) if model.hasFocus =>
+        Outcome(model.cursorRight.withLastCursorMove(context.running))
+
+      case KeyboardEvent.KeyUp(Key.HOME) if model.hasFocus =>
+        Outcome(model.cursorHome.withLastCursorMove(context.running))
+
+      case KeyboardEvent.KeyUp(Key.END) if model.hasFocus =>
+        Outcome(model.cursorEnd.withLastCursorMove(context.running))
+
+      case KeyboardEvent.KeyUp(Key.ENTER) if model.hasFocus =>
+        Outcome(model.withLastCursorMove(context.running))
+
+      case KeyboardEvent.KeyUp(key) if model.hasFocus && key.isPrintable =>
+        val next = model.addCharacterText(key.key).withLastCursorMove(context.running)
+        Outcome(next, model.change(next.text))
+
       case _ =>
         Outcome(model)
 
@@ -151,8 +342,8 @@ object Input:
       model.render(
         context.bounds.coords,
         model.bounds,
-        model.text.getOrElse(model.placeholder),
-        model.text.isEmpty
+        model,
+        context.running
       )
 
     def reflow(model: Input): Input =
@@ -180,3 +371,44 @@ object Input:
 
     def apply(charSheet: CharSheet): Theme =
       Theme(charSheet, RGBA.White, RGBA.Black)
+
+final case class Cursor(
+    cursorPosition: Int,
+    cursorBlinkRate: Option[Seconds],
+    lastCursorMove: Seconds
+):
+
+  def moveTo(position: Int): Cursor =
+    this.copy(cursorPosition = position)
+
+  def noCursorBlink: Cursor =
+    this.copy(cursorBlinkRate = None)
+  def withCursorBlinkRate(interval: Seconds): Cursor =
+    this.copy(cursorBlinkRate = Some(interval))
+
+  def withLastCursorMove(value: Seconds): Cursor =
+    this.copy(lastCursorMove = value)
+
+  def cursorLeft: Cursor =
+    this.copy(cursorPosition = if (cursorPosition - 1 >= 0) cursorPosition - 1 else cursorPosition)
+
+  def cursorRight(maxLength: Int): Cursor =
+    this.copy(cursorPosition =
+      if (cursorPosition + 1 <= maxLength) cursorPosition + 1 else maxLength
+    )
+
+  def cursorHome: Cursor =
+    this.copy(cursorPosition = 0)
+
+  def moveCursorTo(newCursorPosition: Int, maxLength: Int): Cursor =
+    if newCursorPosition >= 0 && newCursorPosition < maxLength then
+      this.copy(cursorPosition = newCursorPosition)
+    else if newCursorPosition < 0 then this.copy(cursorPosition = 0)
+    else this.copy(cursorPosition = maxLength - 1)
+
+  def cursorEnd(maxLength: Int): Cursor =
+    this.copy(cursorPosition = maxLength)
+
+object Cursor:
+  val default: Cursor =
+    Cursor(0, None, Seconds.zero)

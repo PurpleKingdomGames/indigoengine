@@ -50,7 +50,7 @@ object ComponentsWindow2:
             )
         }
         .add(
-          Input("Click to input...", 20, Input.Theme(charSheet))
+          Input(20, Input.Theme(charSheet))
         )
     )
       .withTitle("More component examples")
