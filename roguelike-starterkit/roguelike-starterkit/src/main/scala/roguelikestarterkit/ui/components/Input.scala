@@ -287,7 +287,7 @@ object Input:
 
   given [ReferenceData]: Component[Input, ReferenceData] with
     def bounds(model: Input): Bounds =
-      model.bounds
+      model.bounds.resizeBy(2, 2)
 
     def updateModel(
         context: UiContext[ReferenceData],
