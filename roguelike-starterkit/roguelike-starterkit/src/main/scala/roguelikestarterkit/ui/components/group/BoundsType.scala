@@ -44,7 +44,7 @@ enum BoundsType:
     */
   case OffsetSize(dimensions: Dimensions)
 
-  /** The component group bases its size on some aspect of its contents or he available space
+  /** The component group bases its size on some aspect of its contents or the available space
     */
   case Dynamic(width: FitMode, height: FitMode)
 

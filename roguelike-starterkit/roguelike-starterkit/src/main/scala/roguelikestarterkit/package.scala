@@ -4,10 +4,6 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 
-import ui.components.group.ComponentGroup
-import ui.components.group.BoundsType
-import ui.components.group.{ComponentLayout, Overflow, Padding}
-
 object syntax:
 
   extension (r: Rectangle)
@@ -120,6 +116,9 @@ val ComponentFragment: ui.component.ComponentFragment.type = ui.component.Compon
 type ComponentGroup[ReferenceData] = ui.components.group.ComponentGroup[ReferenceData]
 val ComponentGroup: ui.components.group.ComponentGroup.type = ui.components.group.ComponentGroup
 
+type ComponentList[ReferenceData] = ui.components.group.ComponentList[ReferenceData]
+val ComponentList: ui.components.group.ComponentList.type = ui.components.group.ComponentList
+
 type ComponentLayout = ui.components.group.ComponentLayout
 val ComponentLayout: ui.components.group.ComponentLayout.type = ui.components.group.ComponentLayout
 
@@ -132,6 +131,9 @@ val Padding: ui.components.group.Padding.type = ui.components.group.Padding
 type BoundsType = ui.components.group.BoundsType
 val BoundsType: ui.components.group.BoundsType.type = ui.components.group.BoundsType
 
+type FitMode = ui.components.group.FitMode
+val FitMode: ui.components.group.FitMode.type = ui.components.group.FitMode
+
 // UI Built-in components
 
 type Button[ReferenceData] = ui.components.Button[ReferenceData]
@@ -139,3 +141,6 @@ val Button: ui.components.Button.type = ui.components.Button
 
 type Label[ReferenceData] = ui.components.Label[ReferenceData]
 val Label: ui.components.Label.type = ui.components.Label
+
+type Input = ui.components.Input
+val Input: ui.components.Input.type = ui.components.Input

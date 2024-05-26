@@ -8,8 +8,9 @@ import roguelikestarterkit.ui.component.*
 
 class ComponentGroupTests extends munit.FunSuite {
 
-  given Component[String, Unit] = new Component[String, Unit] {
-    def bounds(model: String): Bounds = Bounds(0, 0, model.length, 1)
+  given Component[String, Unit] with
+    def bounds(model: String): Bounds =
+      Bounds(0, 0, model.length, 1)
 
     def updateModel(
         context: UiContext[Unit],
@@ -28,7 +29,6 @@ class ComponentGroupTests extends munit.FunSuite {
 
     def cascade(model: String, parentBounds: Bounds): String =
       model
-  }
 
   test("reflow should reapply the layout to all existing components") {
     val group: ComponentGroup[Unit] =

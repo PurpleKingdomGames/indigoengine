@@ -6,8 +6,8 @@ import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
-import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
@@ -36,18 +36,18 @@ final case class Label[ReferenceData](
   def update[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): GlobalEvent => Outcome[Label[ReferenceData]] =
-    summon[Component[Label[ReferenceData], ReferenceData]].updateModel(context, this)
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].updateModel(context, this)
 
   def present[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): Outcome[ComponentFragment] =
-    summon[Component[Label[ReferenceData], ReferenceData]].present(context, this)
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].present(context, this)
 
   def reflow: Label[ReferenceData] =
-    summon[Component[Label[ReferenceData], ReferenceData]].reflow(this)
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].reflow(this)
 
   def cascade(parentBounds: Bounds): Label[ReferenceData] =
-    summon[Component[Label[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].cascade(this, parentBounds)
 
 object Label:
 
@@ -111,7 +111,7 @@ object Label:
       presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
     )
 
-  given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
+  given [ReferenceData]: StatelessComponent[Label[ReferenceData], ReferenceData] with
     def bounds(model: Label[ReferenceData]): Bounds =
       model.bounds
 
@@ -130,12 +130,6 @@ object Label:
         model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
       model.render(context.bounds.coords, model.text(context.reference))
-
-    def reflow(model: Label[ReferenceData]): Label[ReferenceData] =
-      model
-
-    def cascade(model: Label[ReferenceData], parentBounds: Bounds): Label[ReferenceData] =
-      model
 
   final case class Theme(
       charSheet: CharSheet,

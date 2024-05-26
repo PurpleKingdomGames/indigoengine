@@ -42,6 +42,13 @@ object ComponentsWindow2:
             )
         )
         .add(
+          ComponentList { (count: Int) =>
+            Batch(Label[Int]("How many windows: ", Label.Theme(charSheet))) ++
+              Batch.fill(count)(Label("x", Label.Theme(charSheet)))
+          }
+            .withLayout(ComponentLayout.Horizontal())
+        )
+        .add(
           Input(20, Input.Theme(charSheet))
         )
     )

@@ -7,8 +7,8 @@ import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.tiles.Tile
-import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.component.StatelessComponent
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
@@ -52,18 +52,18 @@ final case class Button[ReferenceData](
   def update[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): GlobalEvent => Outcome[Button[ReferenceData]] =
-    summon[Component[Button[ReferenceData], ReferenceData]].updateModel(context, this)
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].updateModel(context, this)
 
   def present[StartupData, ContextData](
       context: UiContext[ReferenceData]
   ): Outcome[ComponentFragment] =
-    summon[Component[Button[ReferenceData], ReferenceData]].present(context, this)
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].present(context, this)
 
   def reflow: Button[ReferenceData] =
-    summon[Component[Button[ReferenceData], ReferenceData]].reflow(this)
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].reflow(this)
 
   def cascade(parentBounds: Bounds): Button[ReferenceData] =
-    summon[Component[Button[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].cascade(this, parentBounds)
 
 object Button:
 
@@ -253,7 +253,7 @@ object Button:
       (ref: ReferenceData) => findBounds(label(ref), theme.hasBorder)
     )
 
-  given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
+  given [ReferenceData]: StatelessComponent[Button[ReferenceData], ReferenceData] with
     def bounds(model: Button[ReferenceData]): Bounds =
       model.bounds
 
@@ -298,12 +298,6 @@ object Button:
 
         case ButtonState.Down =>
           model.down.getOrElse(model.up)(context.bounds.coords, b, context.reference)
-
-    def reflow(model: Button[ReferenceData]): Button[ReferenceData] =
-      model
-
-    def cascade(model: Button[ReferenceData], parentBounds: Bounds): Button[ReferenceData] =
-      model
 
   final case class Theme(
       charSheet: CharSheet,
