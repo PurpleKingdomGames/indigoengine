@@ -401,7 +401,7 @@ final case class Cursor(
     if newCursorPosition >= 0 && newCursorPosition < maxLength then
       this.copy(position = newCursorPosition)
     else if newCursorPosition < 0 then this.copy(position = 0)
-    else this.copy(position = maxLength - 1)
+    else this.copy(position = Math.max(0, maxLength - 1))
 
   def cursorEnd(maxLength: Int): Cursor =
     this.copy(position = maxLength)
