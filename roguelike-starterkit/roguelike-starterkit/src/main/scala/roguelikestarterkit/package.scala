@@ -144,3 +144,9 @@ val Label: ui.components.Label.type = ui.components.Label
 
 type Input = ui.components.Input
 val Input: ui.components.Input.type = ui.components.Input
+
+type TextArea[ReferenceData] = ui.components.TextArea[ReferenceData]
+val TextArea: ui.components.TextArea.type = ui.components.TextArea
+
+type TerminalTileColors = ui.components.TerminalTileColors
+val TerminalTileColors: ui.components.TerminalTileColors.type = ui.components.TerminalTileColors
