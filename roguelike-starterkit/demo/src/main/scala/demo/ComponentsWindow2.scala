@@ -2,8 +2,6 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.components.Input
-import roguelikestarterkit.ui.components.TextArea
 
 object ComponentsWindow2:
 
