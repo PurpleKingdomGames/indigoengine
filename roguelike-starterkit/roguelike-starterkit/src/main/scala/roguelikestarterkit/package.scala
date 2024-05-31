@@ -116,8 +116,8 @@ val ComponentFragment: ui.component.ComponentFragment.type = ui.component.Compon
 type ComponentGroup[ReferenceData] = ui.components.group.ComponentGroup[ReferenceData]
 val ComponentGroup: ui.components.group.ComponentGroup.type = ui.components.group.ComponentGroup
 
-type ComponentList[ReferenceData] = ui.components.group.ComponentList[ReferenceData]
-val ComponentList: ui.components.group.ComponentList.type = ui.components.group.ComponentList
+type ComponentList[ReferenceData] = ui.components.list.ComponentList[ReferenceData]
+val ComponentList: ui.components.list.ComponentList.type = ui.components.list.ComponentList
 
 type ComponentLayout = ui.components.group.ComponentLayout
 val ComponentLayout: ui.components.group.ComponentLayout.type = ui.components.group.ComponentLayout

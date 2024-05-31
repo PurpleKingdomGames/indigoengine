@@ -11,7 +11,7 @@ trait Component[A, ReferenceData]:
 
   /** The position and size of the component
     */
-  def bounds(model: A): Bounds
+  def bounds(reference: ReferenceData, model: A): Bounds
 
   /** Update this componenets model.
     */

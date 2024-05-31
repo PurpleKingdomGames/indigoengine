@@ -29,18 +29,18 @@ object UIScene extends Scene[Size, Model, ViewModel]:
         Model.defaultCharSheet,
         _.mouseOverWindows.length
       )
-        .register(
-          ComponentsWindow.window(
-            Model.defaultCharSheet
-          )
-        )
+        // .register(
+        //   ComponentsWindow.window(
+        //     Model.defaultCharSheet
+        //   )
+        // )
         .register(
           ComponentsWindow2.window(
             Model.defaultCharSheet
           )
         )
         .open(
-          ComponentsWindow.windowId,
+          // ComponentsWindow.windowId,
           ComponentsWindow2.windowId
         )
     )

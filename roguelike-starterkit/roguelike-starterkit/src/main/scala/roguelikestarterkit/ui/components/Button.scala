@@ -17,8 +17,8 @@ import roguelikestarterkit.ui.datatypes.UiContext
 /** Buttons `Component`s allow you to create buttons for your UI.
   */
 final case class Button[ReferenceData](
-    bounds: Bounds,
-    state: ButtonState,
+    // bounds: Bounds,
+    // state: ButtonState,
     up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment],
     over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
     down: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
@@ -46,24 +46,6 @@ final case class Button[ReferenceData](
     onClick(_ => events)
   def onClick(events: GlobalEvent*): Button[ReferenceData] =
     onClick(Batch.fromSeq(events))
-
-  // Delegates, for convenience.
-
-  def update[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[Button[ReferenceData]] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].updateModel(context, this)
-
-  def present[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): Outcome[ComponentFragment] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].present(context, this)
-
-  def reflow: Button[ReferenceData] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].reflow(this)
-
-  def cascade(parentBounds: Bounds): Button[ReferenceData] =
-    summon[StatelessComponent[Button[ReferenceData], ReferenceData]].cascade(this, parentBounds)
 
 object Button:
 
@@ -153,8 +135,8 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      bounds,
-      ButtonState.Up,
+      // bounds,
+      // ButtonState.Up,
       present,
       None,
       None,
@@ -168,8 +150,8 @@ object Button:
       present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
   ): Button[ReferenceData] =
     Button(
-      Bounds(0, 0, 1, 1),
-      ButtonState.Up,
+      // Bounds(0, 0, 1, 1),
+      // ButtonState.Up,
       present,
       None,
       None,
@@ -186,8 +168,8 @@ object Button:
       calculateBounds: ReferenceData => Bounds
   ): Button[ReferenceData] =
     Button(
-      if theme.hasBorder then Bounds(0, 0, 3, 3) else Bounds(0, 0, 1, 1),
-      ButtonState.Up,
+      // if theme.hasBorder then Bounds(0, 0, 3, 3) else Bounds(0, 0, 1, 1),
+      // ButtonState.Up,
       presentButton(
         label,
         theme.up.foreground,
@@ -254,50 +236,69 @@ object Button:
     )
 
   given [ReferenceData]: StatelessComponent[Button[ReferenceData], ReferenceData] with
-    def bounds(model: Button[ReferenceData]): Bounds =
-      model.bounds
+    def bounds(reference: ReferenceData, model: Button[ReferenceData]): Bounds =
+      model.calculateBounds(reference)
 
-    def updateModel(
-        context: UiContext[ReferenceData],
-        model: Button[ReferenceData]
-    ): GlobalEvent => Outcome[Button[ReferenceData]] =
-      case FrameTick =>
-        val newBounds =
-          model.calculateBounds(context.reference)
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: Button[ReferenceData]
+    // ): GlobalEvent => Outcome[Button[ReferenceData]] =
+    //   case FrameTick =>
+    //     val newBounds =
+    //       model.calculateBounds(context.reference)
 
-        Outcome(
-          model.copy(
-            state =
-              if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
-                if context.mouse.isLeftDown then ButtonState.Down
-                else ButtonState.Over
-              else ButtonState.Up,
-            bounds = newBounds
-          )
-        )
+    //     println(s"newBounds: $newBounds")
 
-      case _: MouseEvent.Click
-          if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
-        Outcome(model).addGlobalEvents(model.click(context.reference))
+    //     Outcome(
+    //       model.copy(
+    //         state =
+    //           if newBounds.moveBy(context.bounds.coords).contains(context.mouseCoords) then
+    //             if context.mouse.isLeftDown then ButtonState.Down
+    //             else ButtonState.Over
+    //           else ButtonState.Up,
+    //         bounds = newBounds
+    //       )
+    //     )
 
-      case _ =>
-        Outcome(model)
+    //   case _: MouseEvent.Click
+    //       if model.bounds.moveBy(context.bounds.coords).contains(context.mouseCoords) =>
+    //     Outcome(model).addGlobalEvents(model.click(context.reference))
+
+    //   case _ =>
+    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
         model: Button[ReferenceData]
     ): Outcome[ComponentFragment] =
-      val b = model.calculateBounds(context.reference)
+      val b           = model.calculateBounds(context.reference)
+      val mouseWithin = b.moveBy(context.bounds.coords).contains(context.mouseCoords)
 
-      model.state match
+      val state =
+        if mouseWithin then
+          if context.mouse.isLeftDown then ButtonState.Down
+          else ButtonState.Over
+        else ButtonState.Up
+
+      val events =
+        if mouseWithin && context.mouse.mouseClicked then model.click(context.reference)
+        else Batch.empty
+
+      state match
         case ButtonState.Up =>
-          model.up(context.bounds.coords, b, context.reference)
+          model
+            .up(context.bounds.coords, b, context.reference)
+            .addGlobalEvents(events)
 
         case ButtonState.Over =>
-          model.over.getOrElse(model.up)(context.bounds.coords, b, context.reference)
+          model.over
+            .getOrElse(model.up)(context.bounds.coords, b, context.reference)
+            .addGlobalEvents(events)
 
         case ButtonState.Down =>
-          model.down.getOrElse(model.up)(context.bounds.coords, b, context.reference)
+          model.down
+            .getOrElse(model.up)(context.bounds.coords, b, context.reference)
+            .addGlobalEvents(events)
 
   final case class Theme(
       charSheet: CharSheet,

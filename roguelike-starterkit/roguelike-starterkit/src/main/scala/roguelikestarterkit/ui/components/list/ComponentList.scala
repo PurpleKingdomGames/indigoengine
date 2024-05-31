@@ -1,7 +1,8 @@
-package roguelikestarterkit.ui.components.group
+package roguelikestarterkit.ui.components.list
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.components.group.ComponentLayout
 import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
@@ -10,15 +11,14 @@ import scala.annotation.tailrec
   * and presention calls.
   */
 final case class ComponentList[ReferenceData] private (
-    content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
+    content: ReferenceData => Batch[ComponentListEntry[?, ReferenceData]],
     layout: ComponentLayout,
-    components: Batch[ComponentEntry[?, ReferenceData]],
+    components: Batch[ComponentListEntry[?, ReferenceData]],
     bounds: Bounds
 ):
 
-  // This is private and is only used for testing
-  private[group] def withComponents(
-      components: Batch[ComponentEntry[?, ReferenceData]]
+  private[list] def withComponents(
+      components: Batch[ComponentListEntry[?, ReferenceData]]
   ): ComponentList[ReferenceData] =
     this.copy(components = components)
 
@@ -57,8 +57,8 @@ object ComponentList:
   )(contents: ReferenceData => Batch[A])(using
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      r => contents(r).map(v => ComponentEntry(Coords.zero, v, c))
+    val f: ReferenceData => Batch[ComponentListEntry[A, ReferenceData]] =
+      r => contents(r).map(v => ComponentListEntry(Coords.zero, v, c))
 
     ComponentList(
       f,
@@ -67,45 +67,61 @@ object ComponentList:
       bounds
     )
 
-  given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with
+  def apply[ReferenceData, A](
+      bounds: Bounds
+  )(contents: A*)(using
+      c: StatelessComponent[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    val f: ReferenceData => Batch[ComponentListEntry[A, ReferenceData]] =
+      _ => Batch.fromSeq(contents).map(v => ComponentListEntry(Coords.zero, v, c))
 
-    def bounds(model: ComponentList[ReferenceData]): Bounds =
+    ComponentList(
+      f,
+      ComponentLayout.None,
+      Batch.empty,
+      bounds
+    )
+
+  given [ReferenceData]: StatelessComponent[ComponentList[ReferenceData], ReferenceData] with
+
+    def bounds(
+        context: ReferenceData,
+        model: ComponentList[ReferenceData]
+    ): Bounds =
       model.bounds
 
-    def updateModel(
-        context: UiContext[ReferenceData],
-        model: ComponentList[ReferenceData]
-    ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
-      case e => Outcome(model)
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: ComponentList[ReferenceData]
+    // ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
+    //   case e => Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[ComponentFragment] =
-      GroupFunctions.present(
+      ListFunctions.present(
         context,
-        reflow(model.withComponents(model.content(context.reference))).components
+        reflowStateless(context.reference, model.withComponents(model.content(context.reference))).components
       )
 
-    def reflow(model: ComponentList[ReferenceData]): ComponentList[ReferenceData] =
+    private def reflowStateless(
+        context: ReferenceData,
+        model: ComponentList[ReferenceData]
+    ): ComponentList[ReferenceData] =
       val nextOffset =
-        GroupFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
+        ListFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
 
       val newComponents =
-        model.components.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) { (acc, entry) =>
-          val reflowed = entry.copy(
-            offset = nextOffset(acc)
-          )
+        model.components.foldLeft(Batch.empty[ComponentListEntry[?, ReferenceData]]) {
+          (acc, entry) =>
+            val reflowed = entry.copy(
+              offset = nextOffset(context, acc)
+            )
 
-          acc :+ reflowed
+            acc :+ reflowed
         }
 
       model.copy(
         components = newComponents
       )
-
-    def cascade(
-        model: ComponentList[ReferenceData],
-        parentBounds: Bounds
-    ): ComponentList[ReferenceData] =
-      model

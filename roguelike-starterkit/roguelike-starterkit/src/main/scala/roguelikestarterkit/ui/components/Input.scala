@@ -286,7 +286,7 @@ object Input:
     )
 
   given [ReferenceData]: Component[Input, ReferenceData] with
-    def bounds(model: Input): Bounds =
+    def bounds(reference: ReferenceData, model: Input): Bounds =
       model.bounds.resizeBy(2, 2)
 
     def updateModel(

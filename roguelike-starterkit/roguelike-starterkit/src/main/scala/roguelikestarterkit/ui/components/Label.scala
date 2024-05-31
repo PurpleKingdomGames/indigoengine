@@ -14,40 +14,23 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
-import scala.annotation.targetName
+// import scala.annotation.targetName
 
 /** Labels are a simple `Component` that render text.
   */
 final case class Label[ReferenceData](
     text: ReferenceData => String,
-    bounds: Bounds,
-    render: (Coords, String, Dimensions) => Outcome[ComponentFragment]
+    // bounds: Bounds,
+    render: (Coords, String, Dimensions) => Outcome[ComponentFragment],
+    calculateBounds: (ReferenceData, String) => Bounds
 ):
   def withText(value: String): Label[ReferenceData] =
     this.copy(text = _ => value)
   def withText(f: ReferenceData => String): Label[ReferenceData] =
     this.copy(text = f)
 
-  def withBounds(value: Bounds): Label[ReferenceData] =
-    this.copy(bounds = value)
-
-  // Delegates, for convenience.
-
-  def update[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[Label[ReferenceData]] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].updateModel(context, this)
-
-  def present[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): Outcome[ComponentFragment] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].present(context, this)
-
-  def reflow: Label[ReferenceData] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].reflow(this)
-
-  def cascade(parentBounds: Bounds): Label[ReferenceData] =
-    summon[StatelessComponent[Label[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  // def withBounds(value: Bounds): Label[ReferenceData] =
+  //   this.copy(bounds = value)
 
 object Label:
 
@@ -56,16 +39,16 @@ object Label:
 
   /** Minimal label constructor with custom rendering function
     */
-  def apply[ReferenceData](text: String)(
+  def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, String) => Bounds)(
       present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
   ): Label[ReferenceData] =
-    Label(_ => text, findBounds(text), present)
+    Label(_ => text, present, calculateBounds)
 
-  @targetName("Label_apply_curried")
-  def apply[ReferenceData](text: ReferenceData => String)(
-      present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
-  ): Label[ReferenceData] =
-    Label(text, Bounds(0, 0, 1, 1), present)
+  def apply[ReferenceData](
+      present: (Coords, String, Dimensions) => Outcome[ComponentFragment],
+      calculateBounds: (ReferenceData, String) => Bounds
+  )(text: ReferenceData => String): Label[ReferenceData] =
+    Label(text, present, calculateBounds)
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
@@ -97,8 +80,8 @@ object Label:
   def apply[ReferenceData](text: String, theme: Theme): Label[ReferenceData] =
     Label(
       _ => text,
-      findBounds(text),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
+      (_, t) => findBounds(t)
     )
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with custom
@@ -107,29 +90,30 @@ object Label:
   def apply[ReferenceData](text: ReferenceData => String, theme: Theme): Label[ReferenceData] =
     Label(
       text,
-      Bounds(0, 0, 1, 1),
-      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background)
+      presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),
+      (_, t) => findBounds(t)
     )
 
   given [ReferenceData]: StatelessComponent[Label[ReferenceData], ReferenceData] with
-    def bounds(model: Label[ReferenceData]): Bounds =
-      model.bounds
+    def bounds(reference: ReferenceData, model: Label[ReferenceData]): Bounds =
+      model.calculateBounds(reference, model.text(reference))
 
-    def updateModel(
-        context: UiContext[ReferenceData],
-        model: Label[ReferenceData]
-    ): GlobalEvent => Outcome[Label[ReferenceData]] =
-      case FrameTick =>
-        Outcome(model.withBounds(findBounds(model.text(context.reference))))
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: Label[ReferenceData]
+    // ): GlobalEvent => Outcome[Label[ReferenceData]] =
+    //   // case FrameTick =>
+    //   //   Outcome(model.withBounds(findBounds(model.text(context.reference))))
 
-      case _ =>
-        Outcome(model)
+    //   case _ =>
+    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
         model: Label[ReferenceData]
     ): Outcome[ComponentFragment] =
-      model.render(context.bounds.coords, model.text(context.reference), model.bounds.dimensions)
+      val t = model.text(context.reference)
+      model.render(context.bounds.coords, t, model.calculateBounds(context.reference, t).dimensions)
 
   final case class Theme(
       charSheet: CharSheet,

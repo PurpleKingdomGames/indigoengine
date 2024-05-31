@@ -60,6 +60,10 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     case KeyboardEvent.KeyUp(Key.PAGE_DOWN) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopNext)
 
+    case Log(msg) =>
+      IndigoLogger.info(msg)
+      Outcome(model)
+
     case _ =>
       Outcome(model)
 
@@ -96,3 +100,5 @@ final case class ViewModel()
 object ViewModel:
   def initial: ViewModel =
     ViewModel()
+
+final case class Log(msg: String) extends GlobalEvent

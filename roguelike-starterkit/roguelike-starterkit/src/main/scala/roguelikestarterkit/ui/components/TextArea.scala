@@ -21,34 +21,17 @@ import scala.annotation.targetName
   */
 final case class TextArea[ReferenceData](
     text: ReferenceData => List[String],
-    bounds: Bounds,
-    render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
+    // bounds: Bounds,
+    render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment],
+    calculateBounds: (ReferenceData, String) => Bounds
 ):
   def withText(value: String): TextArea[ReferenceData] =
     this.copy(text = _ => value.split("\n").toList)
   def withText(f: ReferenceData => String): TextArea[ReferenceData] =
     this.copy(text = (r: ReferenceData) => f(r).split("\n").toList)
 
-  def withBounds(value: Bounds): TextArea[ReferenceData] =
-    this.copy(bounds = value)
-
-  // Delegates, for convenience.
-
-  def update[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].updateModel(context, this)
-
-  def present[StartupData, ContextData](
-      context: UiContext[ReferenceData]
-  ): Outcome[ComponentFragment] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].present(context, this)
-
-  def reflow: TextArea[ReferenceData] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].reflow(this)
-
-  def cascade(parentBounds: Bounds): TextArea[ReferenceData] =
-    summon[StatelessComponent[TextArea[ReferenceData], ReferenceData]].cascade(this, parentBounds)
+  // def withBounds(value: Bounds): TextArea[ReferenceData] =
+  //   this.copy(bounds = value)
 
 object TextArea:
 
@@ -129,18 +112,18 @@ object TextArea:
     )
 
   given [ReferenceData]: StatelessComponent[TextArea[ReferenceData], ReferenceData] with
-    def bounds(model: TextArea[ReferenceData]): Bounds =
+    def bounds(reference: ReferenceData, model: TextArea[ReferenceData]): Bounds =
       model.bounds
 
-    def updateModel(
-        context: UiContext[ReferenceData],
-        model: TextArea[ReferenceData]
-    ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
-      case FrameTick =>
-        Outcome(model.withBounds(findBounds(model.text(context.reference))))
+    // def updateModel(
+    //     context: UiContext[ReferenceData],
+    //     model: TextArea[ReferenceData]
+    // ): GlobalEvent => Outcome[TextArea[ReferenceData]] =
+    //   case FrameTick =>
+    //     Outcome(model.withBounds(findBounds(model.text(context.reference))))
 
-      case _ =>
-        Outcome(model)
+    //   case _ =>
+    //     Outcome(model)
 
     def present(
         context: UiContext[ReferenceData],
