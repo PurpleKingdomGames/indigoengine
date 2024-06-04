@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 /** Describes a fixed arrangement of components, manages their layout, and propagates updates and
   * presention calls.
   */
-final case class ComponentGroup[ReferenceData] private (
+final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
@@ -110,8 +110,7 @@ object ComponentGroup:
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.default,
-      roguelikestarterkit.ui.components.common.ComponentLayout
-        .Horizontal(Padding.zero, Overflow.Wrap),
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -121,8 +120,7 @@ object ComponentGroup:
   def apply[ReferenceData](boundsType: BoundsType): ComponentGroup[ReferenceData] =
     ComponentGroup(
       boundsType,
-      roguelikestarterkit.ui.components.common.ComponentLayout
-        .Horizontal(Padding.zero, Overflow.Wrap),
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       Bounds.zero,
       Bounds.zero,
@@ -132,8 +130,7 @@ object ComponentGroup:
   def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
     ComponentGroup(
       BoundsType.Fixed(bounds),
-      roguelikestarterkit.ui.components.common.ComponentLayout
-        .Horizontal(Padding.zero, Overflow.Wrap),
+      ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       bounds,
       Bounds.zero,
@@ -152,20 +149,42 @@ object ComponentGroup:
       case FrameTick =>
         updateComponents(context, model)(FrameTick).map { updated =>
           if model.dirty then
-            val reflowed: ComponentGroup[ReferenceData] = reflow(context.reference, updated)
-            val cascaded: ComponentGroup[ReferenceData] = cascade(reflowed, context.bounds)
-            val contentBounds: Bounds =
-              calculateContentBounds(context.reference, cascaded.components)
-
-            cascaded.copy(
-              dirty = false,
-              contentBounds = contentBounds
-            )
+            refreshLayout(context.reference, context.bounds, updated)
           else updated
         }
 
       case e =>
         updateComponents(context, model)(e)
+
+    private[group] def refreshLayout(
+        reference: ReferenceData,
+        parentBounds: Bounds,
+        model: ComponentGroup[ReferenceData]
+    ) =
+      val reflowed: ComponentGroup[ReferenceData] = reflow(reference, model)
+      val cascaded: ComponentGroup[ReferenceData] = cascade(reflowed, parentBounds)
+      val contentBounds: Bounds =
+        calculateContentBounds(reference, cascaded.components)
+
+      val updatedBounds =
+        cascaded.boundsType match
+          case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
+            cascaded.bounds.withDimensions(contentBounds.dimensions)
+
+          case BoundsType.Dynamic(FitMode.Content, _) =>
+            cascaded.bounds.withWidth(contentBounds.width)
+
+          case BoundsType.Dynamic(_, FitMode.Content) =>
+            cascaded.bounds.withHeight(contentBounds.height)
+
+          case _ =>
+            cascaded.bounds
+
+      cascaded.copy(
+        dirty = false,
+        contentBounds = contentBounds,
+        bounds = updatedBounds
+      )
 
     private def updateComponents[StartupData, ContextData](
         context: UiContext[ReferenceData],
@@ -186,15 +205,6 @@ object ComponentGroup:
               components = updatedComponents
             )
           }
-
-    private def calculateContentBounds[ReferenceData](
-        reference: ReferenceData,
-        components: Batch[ComponentEntry[?, ReferenceData]]
-    ): Bounds =
-      components.foldLeft(Bounds.zero) { (acc, c) =>
-        val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
-        acc.expandToInclude(bounds)
-      }
 
     def present(
         context: UiContext[ReferenceData],
@@ -322,3 +332,12 @@ object ComponentGroup:
 
       case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
         currentBounds.withDimensions(unitsW, unitsH)
+
+  def calculateContentBounds[ReferenceData](
+      reference: ReferenceData,
+      components: Batch[ComponentEntry[?, ReferenceData]]
+  ): Bounds =
+    components.foldLeft(Bounds.zero) { (acc, c) =>
+      val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
+      acc.expandToInclude(bounds)
+    }

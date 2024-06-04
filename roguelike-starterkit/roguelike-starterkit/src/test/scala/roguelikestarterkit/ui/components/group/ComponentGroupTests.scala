@@ -31,6 +31,97 @@ class ComponentGroupTests extends munit.FunSuite:
     def cascade(model: String, parentBounds: Bounds): String =
       model
 
+  test("ComponentGroup.calculateContentBounds should return the correct bounds (Vertical)") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero.withBottom(2))
+        )
+        .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
+        .add("abc", "def")
+
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
+
+    // This normally happens as part of the update process
+    val processed = instance.cascade(instance.reflow((), group), Bounds(0, 0, 100, 100))
+
+    val actual =
+      ComponentGroup.calculateContentBounds((), processed.components)
+
+    val expected =
+      Bounds(0, 0, 3, 4)
+
+    assertEquals(actual, expected)
+  }
+
+  test("ComponentGroup.calculateContentBounds should return the correct bounds (Horizontal)") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Horizontal(Padding.zero.withRight(2))
+        )
+        .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
+        .add("abc", "def")
+
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
+
+    // This normally happens as part of the update process
+    val processed = instance.cascade(instance.reflow((), group), Bounds(0, 0, 100, 100))
+
+    val actual =
+      ComponentGroup.calculateContentBounds((), processed.components)
+
+    val expected =
+      Bounds(0, 0, 8, 1)
+
+    assertEquals(actual, expected)
+  }
+
+  // Write a test for ComponentGroup.calculateCascadeBounds
+  test("ComponentGroup.calculateCascadeBounds should return the correct bounds") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero.withBottom(2))
+        )
+        .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
+        .add("abc", "def")
+
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
+
+    // This normally happens as part of the update process
+    val processed =
+      instance.cascade(instance.reflow((), group), Bounds(0, 0, 100, 100))
+    val updated =
+      processed.copy(
+        contentBounds = ComponentGroup.calculateContentBounds((), processed.components),
+        dirty = false
+      )
+
+    val actualFixed =
+      ComponentGroup.calculateCascadeBounds(
+        updated.bounds,
+        updated.contentBounds,
+        Bounds(0, 0, 100, 100),
+        updated.boundsType
+      )
+
+    assertEquals(actualFixed, Bounds(0, 0, 100, 100))
+
+    val actualDefault =
+      ComponentGroup.calculateCascadeBounds(
+        updated.bounds,
+        updated.contentBounds,
+        Bounds(0, 0, 100, 100),
+        BoundsType.default
+      )
+
+    assertEquals(actualDefault, Bounds(0, 0, 100, 4))
+  }
+
   test("reflow should reapply the layout to all existing components") {
     val group: ComponentGroup[Unit] =
       ComponentGroup()
@@ -62,7 +153,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -79,7 +174,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -98,7 +197,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -117,7 +220,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -136,7 +243,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -155,7 +266,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -174,7 +289,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -193,7 +312,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -212,7 +335,11 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc", "def")
 
     val actual =
-      group.components.map(_.offset).toList
+      summon[Component[ComponentGroup[Unit], Unit]]
+        .reflow((), group)
+        .components
+        .toList
+        .map(_.offset)
 
     val expected =
       List(
@@ -224,15 +351,19 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Cascade should snap to width of parent and height of contents by default.") {
-    val group: ComponentGroup[Unit] =
+    val c =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .cascade(
-          ComponentGroup()
-            .withLayout(ComponentLayout.Vertical(Padding(0)))
-            .add("abc", "def"),
-          Bounds(0, 0, 100, 100)
-        )
 
-    assertEquals(group.contentBounds, Bounds(0, 0, 3, 3))
-    assertEquals(group.bounds, Bounds(0, 0, 100, 3))
+    val group =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero.withBottom(10))
+        )
+        .add("abc", "def")
+
+    val updated: ComponentGroup[Unit] =
+      c.refreshLayout((), Bounds(0, 0, 100, 100), group)
+
+    assertEquals(updated.contentBounds, Bounds(0, 0, 3, 12))
+    assertEquals(updated.bounds, Bounds(0, 0, 100, 12))
   }
