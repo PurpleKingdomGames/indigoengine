@@ -32,14 +32,7 @@ final case class WindowModel[A, ReferenceData](
     this.copy(id = value)
 
   def withBounds(value: Bounds): WindowModel[A, ReferenceData] =
-    val withNewBounds = this.copy(bounds = value)
-
-    withNewBounds.copy(
-      contentModel = windowContent.cascade(
-        contentModel,
-        Window.calculateContentRectangle(value, withNewBounds)
-      )
-    )
+    this.copy(bounds = value)
 
   def withPosition(value: Coords): WindowModel[A, ReferenceData] =
     withBounds(bounds.moveTo(value))
@@ -132,7 +125,9 @@ final case class WindowModel[A, ReferenceData](
     state == WindowState.Closed
 
   def refresh(reference: ReferenceData): WindowModel[A, ReferenceData] =
-    this.copy(contentModel = windowContent.refresh(reference, contentModel))
+    this.copy(contentModel =
+      windowContent.refresh(reference, contentModel, Window.calculateContentRectangle(bounds, this))
+    )
 
 object WindowModel:
 

@@ -18,3 +18,8 @@ enum FitMode:
   /** Fixes the size in one dimension.
     */
   case Fixed(units: Int)
+
+  /** Fills the available space in one dimension, but only up to a certain percentage of the
+    * available space.
+    */
+  case Relative(amount: Double)

@@ -19,9 +19,10 @@ final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
-    bounds: Bounds,
-    contentBounds: Bounds,
-    dirty: Boolean
+    // Internal
+    bounds: Bounds,        // The actual cached bounds of the group
+    contentBounds: Bounds, // The calculated and cached bounds of the content
+    dirty: Boolean // Whether the groups content needs to be refreshed, and it's bounds recalculated
 ):
 
   private def addSingle[A](entry: A)(using
@@ -46,64 +47,10 @@ final case class ComponentGroup[ReferenceData] private[group] (
     this.copy(bounds = value, dirty = true)
 
   def withBoundsType(value: BoundsType): ComponentGroup[ReferenceData] =
-    value match
-      case BoundsType.Fixed(bounds) =>
-        this.copy(boundsType = value, bounds = bounds, dirty = true)
-
-      case _ =>
-        this.copy(boundsType = value, dirty = true)
-
-  def defaultBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.default)
-  def fixedBounds(value: Bounds): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Fixed(value))
-  def inheritBounds: ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Inherit)
-  def relative(x: Double, y: Double, width: Double, height: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Relative(x, y, width, height))
-  def relativePosition(x: Double, y: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.RelativePosition(x, y))
-  def relativeSize(width: Double, height: Double): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.RelativeSize(width, height))
-  def offset(amountPosition: Coords, amountSize: Dimensions): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Offset(amountPosition, amountSize))
-  def offset(x: Int, y: Int, width: Int, height: Int): ComponentGroup[ReferenceData] =
-    offset(Coords(x, y), Dimensions(width, height))
-  def offsetPosition(amount: Coords): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.OffsetPosition(amount))
-  def offsetPosition(x: Int, y: Int): ComponentGroup[ReferenceData] =
-    offsetPosition(Coords(x, y))
-  def offsetSize(amount: Dimensions): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.OffsetSize(amount))
-  def offsetSize(width: Int, height: Int): ComponentGroup[ReferenceData] =
-    offsetSize(Dimensions(width, height))
-  def dynamicBounds(width: FitMode, height: FitMode): ComponentGroup[ReferenceData] =
-    withBoundsType(BoundsType.Dynamic(width, height))
+    this.copy(boundsType = value, dirty = true)
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value, dirty = true)
-
-  def withPosition(value: Coords): ComponentGroup[ReferenceData] =
-    withBounds(bounds.withPosition(value))
-  def moveTo(position: Coords): ComponentGroup[ReferenceData] =
-    withPosition(position)
-  def moveTo(x: Int, y: Int): ComponentGroup[ReferenceData] =
-    moveTo(Coords(x, y))
-  def moveBy(amount: Coords): ComponentGroup[ReferenceData] =
-    withPosition(bounds.coords + amount)
-  def moveBy(x: Int, y: Int): ComponentGroup[ReferenceData] =
-    moveBy(Coords(x, y))
-
-  def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
-    withBounds(bounds.withDimensions(value))
-  def resizeTo(size: Dimensions): ComponentGroup[ReferenceData] =
-    withDimensions(size)
-  def resizeTo(x: Int, y: Int): ComponentGroup[ReferenceData] =
-    resizeTo(Dimensions(x, y))
-  def resizeBy(amount: Dimensions): ComponentGroup[ReferenceData] =
-    withDimensions(bounds.dimensions + amount)
-  def resizeBy(x: Int, y: Int): ComponentGroup[ReferenceData] =
-    resizeBy(Dimensions(x, y))
 
 object ComponentGroup:
 
@@ -127,12 +74,12 @@ object ComponentGroup:
       dirty = true
     )
 
-  def apply[ReferenceData](bounds: Bounds): ComponentGroup[ReferenceData] =
+  def apply[ReferenceData](dimensions: Dimensions): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      BoundsType.Fixed(bounds),
+      BoundsType.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      bounds,
+      Bounds(dimensions),
       Bounds.zero,
       dirty = true
     )
@@ -147,44 +94,14 @@ object ComponentGroup:
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
       case FrameTick =>
+        // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          if model.dirty then
-            refreshLayout(context.reference, context.bounds, updated)
+          if model.dirty then refresh(context.reference, updated, context.bounds)
           else updated
         }
 
       case e =>
         updateComponents(context, model)(e)
-
-    private[group] def refreshLayout(
-        reference: ReferenceData,
-        parentBounds: Bounds,
-        model: ComponentGroup[ReferenceData]
-    ) =
-      val reflowed: ComponentGroup[ReferenceData] = reflow(reference, model)
-      val cascaded: ComponentGroup[ReferenceData] = cascade(reflowed, parentBounds)
-      val contentBounds: Bounds =
-        calculateContentBounds(reference, cascaded.components)
-
-      val updatedBounds =
-        cascaded.boundsType match
-          case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
-            cascaded.bounds.withDimensions(contentBounds.dimensions)
-
-          case BoundsType.Dynamic(FitMode.Content, _) =>
-            cascaded.bounds.withWidth(contentBounds.width)
-
-          case BoundsType.Dynamic(_, FitMode.Content) =>
-            cascaded.bounds.withHeight(contentBounds.height)
-
-          case _ =>
-            cascaded.bounds
-
-      cascaded.copy(
-        dirty = false,
-        contentBounds = contentBounds,
-        bounds = updatedBounds
-      )
 
     private def updateComponents[StartupData, ContextData](
         context: UiContext[ReferenceData],
@@ -212,132 +129,111 @@ object ComponentGroup:
     ): Outcome[ComponentFragment] =
       ContainerLikeFunctions.present(context, model.components)
 
-    def reflow(
+    def refresh(
         reference: ReferenceData,
-        model: ComponentGroup[ReferenceData]
-    ): ComponentGroup[ReferenceData] =
-      val reflowed: Batch[ComponentEntry[?, ReferenceData]] = model.components.map { c =>
-        c.copy(
-          model = c.component.reflow(reference, c.model)
-        )
-      }
-
-      val nextOffset =
-        ContainerLikeFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
-
-      val newComponents = reflowed.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
-        (acc, entry) =>
-          val reflowed = entry.copy(
-            offset = nextOffset(reference, acc),
-            model = entry.component.reflow(reference, entry.model)
-          )
-
-          acc :+ reflowed
-      }
-
-      model.copy(
-        components = newComponents
-      )
-
-    def cascade(
         model: ComponentGroup[ReferenceData],
         parentBounds: Bounds
     ): ComponentGroup[ReferenceData] =
-      val newBounds: Bounds =
-        calculateCascadeBounds(
-          model.bounds,
-          model.contentBounds,
-          parentBounds,
-          model.boundsType
-        )
 
-      model
-        .copy(
-          bounds = newBounds,
-          components = model.components.map(_.cascade(newBounds)),
-          dirty = true
-        )
+      // First, calculate the bounds without content
+      val boundsWithoutContent =
+        model.boundsType match
+          case BoundsType(FitMode.Available, FitMode.Available) =>
+            parentBounds
 
-  def calculateCascadeBounds(
-      currentBounds: Bounds,
-      contentBounds: Bounds,
-      parentBounds: Bounds,
-      boundsType: BoundsType
-  ): Bounds =
-    boundsType match
-      case BoundsType.Fixed(b) =>
-        b
+          case BoundsType(FitMode.Available, FitMode.Content) =>
+            parentBounds.withHeight(0)
 
-      case BoundsType.Inherit =>
-        parentBounds
+          case BoundsType(FitMode.Available, FitMode.Fixed(height)) =>
+            parentBounds.withHeight(height)
 
-      case BoundsType.Relative(x, y, width, height) =>
-        Bounds(
-          (parentBounds.width.toDouble * x).toInt,
-          (parentBounds.height.toDouble * y).toInt,
-          (parentBounds.width.toDouble * width).toInt,
-          (parentBounds.height.toDouble * height).toInt
-        )
+          case BoundsType(FitMode.Available, FitMode.Relative(amountH)) =>
+            parentBounds.withHeight((parentBounds.height * amountH).toInt)
 
-      case BoundsType.RelativePosition(x, y) =>
-        currentBounds.withPosition(
-          (parentBounds.width.toDouble * x).toInt,
-          (parentBounds.height.toDouble * y).toInt
-        )
+          case BoundsType(FitMode.Content, FitMode.Available) =>
+            Bounds.zero.withHeight(parentBounds.height)
 
-      case BoundsType.RelativeSize(width, height) =>
-        currentBounds.withDimensions(
-          (parentBounds.width.toDouble * width).toInt,
-          (parentBounds.height.toDouble * height).toInt
-        )
+          case BoundsType(FitMode.Content, FitMode.Content) =>
+            Bounds.zero
 
-      case BoundsType.Offset(amountPosition, amountSize) =>
-        Bounds(parentBounds.coords + amountPosition, parentBounds.dimensions + amountSize)
+          case BoundsType(FitMode.Content, FitMode.Fixed(height)) =>
+            Bounds.zero.withHeight(height)
 
-      case BoundsType.OffsetPosition(amount) =>
-        currentBounds.withPosition(parentBounds.coords + amount)
+          case BoundsType(FitMode.Content, FitMode.Relative(amountH)) =>
+            Bounds.zero.withHeight((parentBounds.height * amountH).toInt)
 
-      case BoundsType.OffsetSize(amount) =>
-        currentBounds.withDimensions(parentBounds.dimensions + amount)
+          case BoundsType(FitMode.Fixed(width), FitMode.Available) =>
+            Bounds.zero.withDimensions(width, parentBounds.height)
 
-      case BoundsType.Dynamic(FitMode.Available, FitMode.Available) =>
-        parentBounds
+          case BoundsType(FitMode.Fixed(width), FitMode.Content) =>
+            Bounds.zero.withWidth(width)
 
-      case BoundsType.Dynamic(FitMode.Available, FitMode.Content) =>
-        parentBounds.withDimensions(
-          parentBounds.dimensions.width,
-          contentBounds.dimensions.height
-        )
+          case BoundsType(FitMode.Fixed(width), FitMode.Fixed(height)) =>
+            Bounds.zero.withDimensions(width, height)
 
-      case BoundsType.Dynamic(FitMode.Available, FitMode.Fixed(units)) =>
-        parentBounds.withDimensions(parentBounds.dimensions.width, units)
+          case BoundsType(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
+            Bounds.zero.withDimensions(width, (parentBounds.height * amountH).toInt)
 
-      case BoundsType.Dynamic(FitMode.Content, FitMode.Available) =>
-        parentBounds.withDimensions(
-          contentBounds.dimensions.height,
-          parentBounds.dimensions.width
-        )
+          case BoundsType(FitMode.Relative(amountW), FitMode.Available) =>
+            Bounds.zero.withDimensions((parentBounds.width * amountW).toInt, parentBounds.height)
 
-      case BoundsType.Dynamic(FitMode.Content, FitMode.Content) =>
-        contentBounds
+          case BoundsType(FitMode.Relative(amountW), FitMode.Content) =>
+            Bounds.zero.withWidth((parentBounds.width * amountW).toInt)
 
-      case BoundsType.Dynamic(FitMode.Content, FitMode.Fixed(units)) =>
-        contentBounds.withDimensions(contentBounds.dimensions.width, units)
+          case BoundsType(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
+            Bounds.zero.withDimensions((parentBounds.width * amountW).toInt, height)
 
-      case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Available) =>
-        parentBounds.withDimensions(units, parentBounds.dimensions.height)
+          case BoundsType(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
+            Bounds.zero.withDimensions(
+              (parentBounds.width * amountW).toInt,
+              (parentBounds.height * amountH).toInt
+            )
 
-      case BoundsType.Dynamic(FitMode.Fixed(units), FitMode.Content) =>
-        contentBounds.withDimensions(units, contentBounds.dimensions.height)
+      // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds
+      val updatedComponents =
+        model.components.map { c =>
+          val refreshed = c.component.refresh(reference, c.model, boundsWithoutContent)
+          c.copy(model = refreshed)
+        }
 
-      case BoundsType.Dynamic(FitMode.Fixed(unitsW), FitMode.Fixed(unitsH)) =>
-        currentBounds.withDimensions(unitsW, unitsH)
+      // Now we need to set the offset of each child, based on the layout
+      val withOffsets =
+        updatedComponents.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) { (acc, next) =>
+          val nextOffset =
+            ContainerLikeFunctions.calculateNextOffset[ReferenceData](
+              boundsWithoutContent,
+              model.layout
+            )(reference, acc)
 
-  def calculateContentBounds[ReferenceData](
-      reference: ReferenceData,
-      components: Batch[ComponentEntry[?, ReferenceData]]
-  ): Bounds =
-    components.foldLeft(Bounds.zero) { (acc, c) =>
-      val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
-      acc.expandToInclude(bounds)
-    }
+          acc :+ next.copy(offset = nextOffset)
+        }
+
+      // Now we can calculate the content bounds
+      val contentBounds: Bounds =
+        withOffsets.foldLeft(Bounds.zero) { (acc, c) =>
+          val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
+          acc.expandToInclude(bounds)
+        }
+
+      // And finally, we can calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
+      val updatedBounds =
+        model.boundsType match
+          case BoundsType(FitMode.Content, FitMode.Content) =>
+            boundsWithoutContent.withDimensions(contentBounds.dimensions)
+
+          case BoundsType(FitMode.Content, _) =>
+            boundsWithoutContent.withWidth(contentBounds.width)
+
+          case BoundsType(_, FitMode.Content) =>
+            boundsWithoutContent.withHeight(contentBounds.height)
+
+          case _ =>
+            boundsWithoutContent
+
+      // Return the updated model with the new bounds and content bounds and dirty flag reset
+      model.copy(
+        dirty = false,
+        contentBounds = contentBounds,
+        bounds = updatedBounds,
+        components = withOffsets
+      )

@@ -20,7 +20,6 @@ trait StatelessComponent[A, ReferenceData] extends Component[A, ReferenceData]:
       model: A
   ): Outcome[ComponentFragment]
 
-  def reflow(reference: ReferenceData, model: A): A                        = model
-  def cascade(model: A, parentBounds: Bounds): A = model
+  def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A = model
   def updateModel(context: UiContext[ReferenceData], model: A): GlobalEvent => Outcome[A] =
     case e => Outcome(model)

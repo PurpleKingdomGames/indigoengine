@@ -29,14 +29,9 @@ trait WindowContent[A, ReferenceData]:
       model: A
   ): Outcome[Layer]
 
-  /** Called when the window's content area bounds changes, gives the model an opportunity to
-    * respond to the new content area.
-    */
-  def cascade(model: A, newBounds: Bounds): A
-
   /** Called when a window has been told to refresh its content, possibly by the content itself.
     */
-  def refresh(reference: ReferenceData, model: A): A
+  def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A
 
 /** Companion object for `WindowContent` */
 object WindowContent:
@@ -59,11 +54,5 @@ object WindowContent:
     ): Outcome[Layer] =
       comp.present(context, model).map(_.toLayer)
 
-    def cascade(
-        model: A,
-        newBounds: Bounds
-    ): A =
-      comp.cascade(model, newBounds)
-
-    def refresh(reference: ReferenceData, model: A): A =
-      comp.reflow(reference, model)
+    def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A =
+      comp.refresh(reference, model, parentBounds)

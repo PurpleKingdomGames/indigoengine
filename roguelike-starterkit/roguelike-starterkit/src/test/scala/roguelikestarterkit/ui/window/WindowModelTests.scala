@@ -26,10 +26,7 @@ class WindowModelTests extends munit.FunSuite:
       ): Outcome[Layer] =
         Outcome(Layer.empty)
 
-      def cascade(model: Bounds, newBounds: Bounds): Bounds =
-        newBounds
-
-      def refresh(reference: Unit, model: Bounds): Bounds =
+      def refresh(reference: Unit, model: Bounds, parentBounds: Bounds): Bounds =
         model
 
     val charSheet =
@@ -227,14 +224,12 @@ class WindowModelTests extends munit.FunSuite:
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
 
-    def reflow(reference: Unit, model: String): String =
-      model
-
-    def cascade(model: String, parentBounds: Bounds): String =
+    def refresh(reference: Unit, model: String, parentBounds: Bounds): String =
       model
 
   given Component[Bounds, Unit] with
-    def bounds(reference: Unit, model: Bounds): Bounds = model
+    def bounds(reference: Unit, model: Bounds): Bounds =
+      model
 
     def updateModel(
         context: UiContext[Unit],
@@ -248,8 +243,5 @@ class WindowModelTests extends munit.FunSuite:
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
 
-    def reflow(reference: Unit, model: Bounds): Bounds =
+    def refresh(reference: Unit, model: Bounds, parentBounds: Bounds): Bounds =
       model
-
-    def cascade(model: Bounds, parentBounds: Bounds): Bounds =
-      parentBounds

@@ -327,10 +327,7 @@ object Input:
         context.running
       )
 
-    def reflow(reference: ReferenceData, model: Input): Input =
-      model
-
-    def cascade(model: Input, parentBounds: Bounds): Input =
+    def refresh(reference: ReferenceData, model: Input, parentBounds: Bounds): Input =
       model
 
   final case class Theme(
