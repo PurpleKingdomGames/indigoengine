@@ -84,6 +84,9 @@ object ComponentGroup:
       dirty = true
     )
 
+  def apply[ReferenceData](width: Int, height: Int): ComponentGroup[ReferenceData] =
+    ComponentGroup(Dimensions(width, height))
+
   given [ReferenceData]: Component[ComponentGroup[ReferenceData], ReferenceData] with
 
     def bounds(reference: ReferenceData, model: ComponentGroup[ReferenceData]): Bounds =
