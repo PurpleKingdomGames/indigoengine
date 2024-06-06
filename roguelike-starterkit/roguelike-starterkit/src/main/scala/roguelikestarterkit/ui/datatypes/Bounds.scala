@@ -10,6 +10,7 @@ object Bounds:
 
   inline def apply(r: Rectangle): Bounds                            = r
   inline def apply(x: Int, y: Int, width: Int, height: Int): Bounds = Rectangle(x, y, width, height)
+  inline def apply(width: Int, height: Int): Bounds                 = Rectangle(0, 0, width, height)
   inline def apply(dimensions: Dimensions): Bounds                  = Rectangle(dimensions.toSize)
   inline def apply(coords: Coords, dimensions: Dimensions): Bounds =
     Rectangle(coords.toPoint, dimensions.toSize)
@@ -18,8 +19,8 @@ object Bounds:
 
   extension (r: Bounds)
     inline def unsafeToRectangle: Rectangle = r
-    inline def coords: Coords                                  = Coords(r.position)
-    inline def dimensions: Dimensions                          = Dimensions(r.size)
+    inline def coords: Coords               = Coords(r.position)
+    inline def dimensions: Dimensions       = Dimensions(r.size)
     inline def toScreenSpace(charSize: Size): Rectangle =
       Rectangle(r.position * charSize.toPoint, r.size * charSize)
 
@@ -77,7 +78,7 @@ object Bounds:
       resize(newSize)
     def withDimensions(x: Int, y: Int): Bounds =
       resize(Size(x, y))
-    
+
     def withWidth(newWidth: Int): Bounds =
       resize(Size(newWidth, height))
     def withHeight(newHeight: Int): Bounds =
@@ -85,4 +86,3 @@ object Bounds:
 
     def expandToInclude(other: Bounds): Bounds =
       Bounds(Rectangle.expandToInclude(r, other))
-    
