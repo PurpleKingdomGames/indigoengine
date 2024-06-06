@@ -1,8 +1,10 @@
 package roguelikestarterkit
 
+import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.events.GlobalEvent
 
 import ui.components.common.ComponentLayout
 import ui.components.common.Overflow
@@ -19,6 +21,23 @@ object syntax:
           }
         }
       )
+
+  extension [A, ReferenceData] (component: A)(using c: Component[A, ReferenceData])
+    def update[StartupData, ContextData](
+        context: UiContext[ReferenceData]
+    ): GlobalEvent => Outcome[A] =
+      c.updateModel(context, component)
+
+    def present[StartupData, ContextData](
+        context: UiContext[ReferenceData]
+    ): Outcome[ComponentFragment] =
+      c.present(context, component)
+
+    def refresh(
+        reference: ReferenceData,
+        parentBounds: Bounds
+    ): A =
+      c.refresh(reference, component, parentBounds)
 
 end syntax
 
