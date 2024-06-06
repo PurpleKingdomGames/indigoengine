@@ -64,6 +64,9 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
       IndigoLogger.info(msg)
       Outcome(model)
 
+    case SceneEvent.SceneChange(_, _, _) =>
+      Outcome(model.copy(mouseOverWindows = Batch.empty))
+
     case _ =>
       Outcome(model)
 
