@@ -16,7 +16,7 @@ import scala.annotation.tailrec
 final case class ComponentList[ReferenceData] private (
     content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
     layout: ComponentLayout,
-    bounds: Bounds
+    dimensions: Dimensions
 ):
 
   private def addSingle[A](entry: ReferenceData => A)(using
@@ -57,38 +57,25 @@ final case class ComponentList[ReferenceData] private (
         (r: ReferenceData) => content(r) ++ entries(r).map(v => ComponentEntry(Coords.zero, v, c))
     )
 
-  def withBounds(value: Bounds): ComponentList[ReferenceData] =
-    this.copy(bounds = value)
+  def withDimensions(value: Dimensions): ComponentList[ReferenceData] =
+    this.copy(dimensions = value)
 
   def withLayout(value: ComponentLayout): ComponentList[ReferenceData] =
     this.copy(layout = value)
 
-  def withPosition(value: Coords): ComponentList[ReferenceData] =
-    withBounds(bounds.withPosition(value))
-  def moveTo(position: Coords): ComponentList[ReferenceData] =
-    withPosition(position)
-  def moveTo(x: Int, y: Int): ComponentList[ReferenceData] =
-    moveTo(Coords(x, y))
-  def moveBy(amount: Coords): ComponentList[ReferenceData] =
-    withPosition(bounds.coords + amount)
-  def moveBy(x: Int, y: Int): ComponentList[ReferenceData] =
-    moveBy(Coords(x, y))
-
-  def withDimensions(value: Dimensions): ComponentList[ReferenceData] =
-    withBounds(bounds.withDimensions(value))
   def resizeTo(size: Dimensions): ComponentList[ReferenceData] =
     withDimensions(size)
   def resizeTo(x: Int, y: Int): ComponentList[ReferenceData] =
     resizeTo(Dimensions(x, y))
   def resizeBy(amount: Dimensions): ComponentList[ReferenceData] =
-    withDimensions(bounds.dimensions + amount)
+    withDimensions(dimensions + amount)
   def resizeBy(x: Int, y: Int): ComponentList[ReferenceData] =
     resizeBy(Dimensions(x, y))
 
 object ComponentList:
 
   def apply[ReferenceData, A](
-      bounds: Bounds
+      dimensions: Dimensions
   )(contents: ReferenceData => Batch[A])(using
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
@@ -98,11 +85,11 @@ object ComponentList:
     ComponentList(
       f,
       ComponentLayout.Vertical(Padding.zero),
-      bounds
+      dimensions
     )
 
   def apply[ReferenceData, A](
-      bounds: Bounds
+      dimensions: Dimensions
   )(contents: A*)(using
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
@@ -112,7 +99,7 @@ object ComponentList:
     ComponentList(
       f,
       ComponentLayout.Vertical(Padding.zero),
-      bounds
+      dimensions
     )
 
   given [ReferenceData]: StatelessComponent[ComponentList[ReferenceData], ReferenceData] with
@@ -121,7 +108,7 @@ object ComponentList:
         context: ReferenceData,
         model: ComponentList[ReferenceData]
     ): Bounds =
-      model.bounds
+      Bounds(model.dimensions)
 
     def present(
         context: UiContext[ReferenceData],
@@ -134,7 +121,8 @@ object ComponentList:
         model: ComponentList[ReferenceData]
     ): Batch[ComponentEntry[?, ReferenceData]] =
       val nextOffset =
-        ContainerLikeFunctions.calculateNextOffset[ReferenceData](model.bounds, model.layout)
+        ContainerLikeFunctions
+          .calculateNextOffset[ReferenceData](model.dimensions, model.layout)
 
       model.content(reference).foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) {
         (acc, entry) =>

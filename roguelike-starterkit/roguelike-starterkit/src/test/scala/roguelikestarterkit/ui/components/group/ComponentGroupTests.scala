@@ -3,6 +3,7 @@ package roguelikestarterkit.ui.components.group
 import indigo.*
 import roguelikestarterkit.Bounds
 import roguelikestarterkit.Coords
+import roguelikestarterkit.Dimensions
 import roguelikestarterkit.UiContext
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.*
@@ -26,10 +27,10 @@ class ComponentGroupTests extends munit.FunSuite:
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
 
-    def refresh(reference: Unit, model: String, parentBounds: Bounds): String =
+    def refresh(reference: Unit, model: String, parentDimensions: Dimensions): String =
       model
 
-    def cascade(model: String, parentBounds: Bounds): String =
+    def cascade(model: String, parentDimensions: Bounds): String =
       model
 
   test("ComponentGroup.calculateContentBounds should return the correct bounds (Vertical)") {
@@ -45,7 +46,7 @@ class ComponentGroupTests extends munit.FunSuite:
       summon[Component[ComponentGroup[Unit], Unit]]
 
     // This normally happens as part of the update process
-    val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
+    val processed = instance.refresh((), group, Dimensions(100, 100))
 
     val actual =
       processed.contentBounds
@@ -69,7 +70,7 @@ class ComponentGroupTests extends munit.FunSuite:
       summon[Component[ComponentGroup[Unit], Unit]]
 
     // This normally happens as part of the update process
-    val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
+    val processed = instance.refresh((), group, Dimensions(100, 100))
 
     val actual =
       processed.contentBounds
@@ -95,17 +96,17 @@ class ComponentGroupTests extends munit.FunSuite:
 
     // This normally happens as part of the update process
     val processed =
-      instance.refresh((), group, Bounds(0, 0, 100, 100))
+      instance.refresh((), group, Dimensions(100, 100))
 
     val actualFixed =
-      processed.bounds
+      processed.dimensions
 
-    assertEquals(actualFixed, Bounds(0, 0, 100, 100))
+    assertEquals(actualFixed, Dimensions(100, 100))
 
     val actualDefault =
-      group.withBoundsType(BoundsType.default).refresh((), Bounds(0, 0, 100, 100)).bounds
+      group.withBoundsType(BoundsType.default).refresh((), Dimensions(100, 100)).dimensions
 
-    assertEquals(actualDefault, Bounds(0, 0, 100, 4))
+    assertEquals(actualDefault, Dimensions(100, 4))
   }
 
   test("refresh should re-apply the layout to all existing components") {
@@ -119,7 +120,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -140,7 +141,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -161,7 +162,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -184,7 +185,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -207,7 +208,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -230,7 +231,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -253,7 +254,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -276,7 +277,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -299,7 +300,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -322,7 +323,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Bounds(0, 0, 3, 5))
+        .refresh((), group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -348,8 +349,33 @@ class ComponentGroupTests extends munit.FunSuite:
         .add("abc", "def")
 
     val updated: ComponentGroup[Unit] =
-      c.refresh((), group, Bounds(0, 0, 100, 100))
+      c.refresh((), group, Dimensions(100, 100))
 
     assertEquals(updated.contentBounds, Bounds(0, 0, 3, 12))
-    assertEquals(updated.bounds, Bounds(0, 0, 100, 12))
+    assertEquals(updated.dimensions, Dimensions(100, 12))
+  }
+
+  test("Calculate the next offset for nested components".only) {
+    val group = ComponentGroup()
+      .withLayout(ComponentLayout.Vertical())
+      .add(
+        ComponentGroup()
+          .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+      )
+      .add("abc")
+
+    val actual =
+      group
+        .refresh((), Dimensions(100, 100))
+        .components
+        .toList
+        .map(_.offset)
+
+    val expected =
+      List(
+        Coords(0, 50000),
+        Coords(0, 70)
+      )
+
+    assertEquals(actual, expected)
   }

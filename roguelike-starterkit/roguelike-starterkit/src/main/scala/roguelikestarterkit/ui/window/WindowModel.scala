@@ -126,7 +126,11 @@ final case class WindowModel[A, ReferenceData](
 
   def refresh(reference: ReferenceData): WindowModel[A, ReferenceData] =
     this.copy(contentModel =
-      windowContent.refresh(reference, contentModel, Window.calculateContentRectangle(bounds, this))
+      windowContent.refresh(
+        reference,
+        contentModel,
+        Window.calculateContentRectangle(bounds, this).dimensions
+      )
     )
 
 object WindowModel:

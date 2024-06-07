@@ -5,6 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import roguelikestarterkit.Component
 import roguelikestarterkit.ComponentGroup
+import roguelikestarterkit.Dimensions
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UiContext
 
@@ -31,7 +32,7 @@ trait WindowContent[A, ReferenceData]:
 
   /** Called when a window has been told to refresh its content, possibly by the content itself.
     */
-  def refresh(reference: ReferenceData, model: A, contentBounds: Bounds): A
+  def refresh(reference: ReferenceData, model: A, contentDimensions: Dimensions): A
 
 /** Companion object for `WindowContent` */
 object WindowContent:
@@ -54,5 +55,5 @@ object WindowContent:
     ): Outcome[Layer] =
       comp.present(context, model).map(_.toLayer)
 
-    def refresh(reference: ReferenceData, model: A, contentBounds: Bounds): A =
-      comp.refresh(reference, model, contentBounds)
+    def refresh(reference: ReferenceData, model: A, contentDimensions: Dimensions): A =
+      comp.refresh(reference, model, contentDimensions)

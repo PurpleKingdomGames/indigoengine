@@ -26,8 +26,8 @@ class WindowModelTests extends munit.FunSuite:
     ): Outcome[Layer] =
       Outcome(Layer.empty)
 
-    def refresh(reference: Unit, model: Bounds, contentBounds: Bounds): Bounds =
-      contentBounds
+    def refresh(reference: Unit, model: Bounds, contentDimensions: Dimensions): Bounds =
+      Bounds(contentDimensions)
 
   given Component[Bounds, Unit] with
     def bounds(reference: Unit, model: Bounds): Bounds =
@@ -45,8 +45,8 @@ class WindowModelTests extends munit.FunSuite:
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
 
-    def refresh(reference: Unit, model: Bounds, parentBounds: Bounds): Bounds =
-      parentBounds
+    def refresh(reference: Unit, model: Bounds, parentDimensions: Dimensions): Bounds =
+      Bounds(parentDimensions)
 
   given Component[String, Unit] with
     def bounds(reference: Unit, model: String): Bounds =
@@ -64,7 +64,7 @@ class WindowModelTests extends munit.FunSuite:
     ): Outcome[ComponentFragment] =
       Outcome(ComponentFragment.empty)
 
-    def refresh(reference: Unit, model: String, parentBounds: Bounds): String =
+    def refresh(reference: Unit, model: String, parentDimensions: Dimensions): String =
       model
 
   // tests
@@ -118,7 +118,7 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
         .refresh(())
 
-    assertEquals(model.contentModel.bounds, Bounds(0, 0, 100, 100))
+    assertEquals(model.contentModel.dimensions, Dimensions(100, 100))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Inherit") {
@@ -130,7 +130,7 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
         .refresh(())
 
-    assertEquals(model.contentModel.bounds, Bounds(1, 1, 38, 38))
+    assertEquals(model.contentModel.dimensions, Dimensions(38, 38))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative") {
@@ -142,7 +142,7 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
         .refresh(())
 
-    assertEquals(model.contentModel.bounds, Bounds(9, 9))
+    assertEquals(model.contentModel.dimensions, Dimensions(9, 9))
   }
 
   test("model cascades bounds changes to component group - BoundsType.Relative 100%") {
@@ -154,7 +154,7 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
         .refresh(())
 
-    assertEquals(model.contentModel.bounds, Bounds(0, 0, 38, 38))
+    assertEquals(model.contentModel.dimensions, Dimensions(38, 38))
   }
 
   test("model cascades bounds changes to component group - BoundsType.RelativePosition") {
@@ -166,7 +166,7 @@ class WindowModelTests extends munit.FunSuite:
       ).withBounds(Bounds(0, 0, 40, 40))
         .refresh(())
 
-    assertEquals(model.contentModel.bounds, Bounds(0, 0, 19, 19))
+    assertEquals(model.contentModel.dimensions, Dimensions(19, 19))
   }
 
   test("model cascades bounds changes to nested component groups") {
@@ -191,7 +191,7 @@ class WindowModelTests extends munit.FunSuite:
         .refresh(())
 
     // Window cascades to top level component group
-    assertEquals(model.contentModel.bounds, Bounds(1, 1, 38, 38))
+    assertEquals(model.contentModel.dimensions, Dimensions(38, 38))
 
     model.contentModel.components.headOption match
       case None =>
@@ -201,7 +201,7 @@ class WindowModelTests extends munit.FunSuite:
         val cg = value.model.asInstanceOf[ComponentGroup[Unit]]
 
         // top comp group cascades to next level.
-        assertEquals(cg.bounds, Bounds(0, 0, 19, 19))
+        assertEquals(cg.dimensions, Dimensions(19, 19))
 
         cg.components.headOption match
           case None =>

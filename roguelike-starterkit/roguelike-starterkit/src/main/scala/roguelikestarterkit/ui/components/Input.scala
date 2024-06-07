@@ -327,7 +327,7 @@ object Input:
         context.running
       )
 
-    def refresh(reference: ReferenceData, model: Input, parentBounds: Bounds): Input =
+    def refresh(reference: ReferenceData, model: Input, parentDimensions: Dimensions): Input =
       model
 
   final case class Theme(

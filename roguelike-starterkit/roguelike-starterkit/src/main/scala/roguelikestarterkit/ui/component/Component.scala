@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.component
 
 import indigo.*
 import roguelikestarterkit.ui.datatypes.Bounds
+import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
 /** A typeclass that confirms that some type `A` can be used as a `Component` provides the necessary
@@ -31,4 +32,4 @@ trait Component[A, ReferenceData]:
     * should reflow/refresh it's contents - whatever that means in the context of this component
     * type.
     */
-  def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A
+  def refresh(reference: ReferenceData, model: A, parentDimensions: Dimensions): A

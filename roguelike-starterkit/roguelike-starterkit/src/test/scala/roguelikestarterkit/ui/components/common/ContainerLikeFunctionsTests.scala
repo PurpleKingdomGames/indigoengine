@@ -16,75 +16,75 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
       FontKey("test")
     )
 
-  // test("calculateNextOffset labels") {
+  test("calculateNextOffset labels") {
 
-  //   val c: Component[Label[Unit], Unit] =
-  //     summon[Component[Label[Unit], Unit]]
+    val c: Component[Label[Unit], Unit] =
+      summon[Component[Label[Unit], Unit]]
 
-  //   val group: ComponentGroup[Unit] =
-  //     ComponentGroup()
-  //       .withLayout(
-  //         ComponentLayout.Vertical(Padding.zero)
-  //       )
-  //       .add(
-  //         Label("label 1", Label.Theme(charSheet)),
-  //         Label("label 2", Label.Theme(charSheet)),
-  //         Label("label 3", Label.Theme(charSheet))
-  //       )
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero)
+        )
+        .add(
+          Label("label 1", Label.Theme(charSheet)),
+          Label("label 2", Label.Theme(charSheet)),
+          Label("label 3", Label.Theme(charSheet))
+        )
 
-  //   val updated: ComponentGroup[Unit] =
-  //     summon[Component[ComponentGroup[Unit], Unit]].refreshLayout((), Bounds(0, 0, 100, 100), group)
+    val updated: ComponentGroup[Unit] =
+      summon[Component[ComponentGroup[Unit], Unit]].refresh((), group, Dimensions(100, 100))
 
-  //   val actual =
-  //     ContainerLikeFunctions.calculateNextOffset[Unit](
-  //       Bounds(0, 0, 20, 20),
-  //       updated.layout
-  //     )((), updated.components)
+    val actual =
+      ContainerLikeFunctions.calculateNextOffset[Unit](
+        Dimensions(20, 20),
+        updated.layout
+      )((), updated.components)
 
-  //   val expected =
-  //     Coords(0, 3)
+    val expected =
+      Coords(0, 3)
 
-  //   assertEquals(actual, expected)
-  // }
+    assertEquals(actual, expected)
+  }
 
-  // test("calculateNextOffset group of labels".only) {
+  test("calculateNextOffset group of labels".only) {
 
-  //   val group: ComponentGroup[Unit] =
-  //     ComponentGroup()
-  //       .withLayout(
-  //         ComponentLayout.Horizontal()
-  //       )
-  //       .add(
-  //         ComponentGroup()
-  //           .withLayout(
-  //             ComponentLayout.Vertical(Padding.zero)
-  //           )
-  //           .add(
-  //             Label("label 1", Label.Theme(charSheet)),
-  //             Label("label 2", Label.Theme(charSheet)),
-  //             Label("label 3", Label.Theme(charSheet))
-  //           )
-  //       )
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Horizontal()
+        )
+        .add(
+          ComponentGroup()
+            .withLayout(
+              ComponentLayout.Vertical(Padding.zero)
+            )
+            .add(
+              Label("label 1", Label.Theme(charSheet)),
+              Label("label 2", Label.Theme(charSheet)),
+              Label("label 3", Label.Theme(charSheet))
+            )
+        )
 
-  //   val parentBounds = Bounds(0, 0, 100, 100)
+    val parentDimensions = Dimensions(100, 100)
 
-  //   val updated: ComponentGroup[Unit] =
-  //     summon[Component[ComponentGroup[Unit], Unit]].refreshLayout((), parentBounds, group)
+    val updated: ComponentGroup[Unit] =
+      summon[Component[ComponentGroup[Unit], Unit]].refresh((), group, parentDimensions)
 
-  //   assertEquals(updated.contentBounds, Bounds(0, 0, 100, 3))
-  //   assertEquals(updated.bounds, Bounds(0, 0, 100, 3))
+    assertEquals(updated.contentBounds, Bounds(0, 0, 100, 3))
+    assertEquals(updated.dimensions, Dimensions(100, 3))
 
-  //   val c: Component[ComponentGroup[Unit], Unit] =
-  //     summon[Component[ComponentGroup[Unit], Unit]]
+    val c: Component[ComponentGroup[Unit], Unit] =
+      summon[Component[ComponentGroup[Unit], Unit]]
 
-  //   val actual =
-  //     ContainerLikeFunctions.calculateNextOffset[Unit](
-  //       Bounds(0, 0, 20, 20),
-  //       updated.layout
-  //     )((), updated.components)
+    val actual =
+      ContainerLikeFunctions.calculateNextOffset[Unit](
+        Dimensions(20, 20),
+        updated.layout
+      )((), updated.components)
 
-  //   val expected =
-  //     Coords(100, 100)
+    val expected =
+      Coords(100, 100)
 
-  //   assertEquals(actual, expected)
-  // }
+    assertEquals(actual, expected)
+  }

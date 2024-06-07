@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
+import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
 object ContainerLikeFunctions:
@@ -12,7 +13,7 @@ object ContainerLikeFunctions:
     def withPadding(p: Padding): Bounds =
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
-  def calculateNextOffset[ReferenceData](bounds: Bounds, layout: ComponentLayout)(
+  def calculateNextOffset[ReferenceData](dimensions: Dimensions, layout: ComponentLayout)(
       reference: ReferenceData,
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Coords =
@@ -40,7 +41,7 @@ object ContainerLikeFunctions:
             val padded      = c.component.bounds(reference, c.model).withPadding(padding)
             val maybeOffset = c.offset + Coords(padded.right, 0)
 
-            if padded.moveBy(maybeOffset).right < bounds.width then maybeOffset
+            if padded.moveBy(maybeOffset).right < dimensions.width then maybeOffset
             else Coords(padding.left, maxY)
           }
           .getOrElse(Coords(padding.left, padding.top))

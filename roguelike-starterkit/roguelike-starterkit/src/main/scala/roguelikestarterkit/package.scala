@@ -22,7 +22,7 @@ object syntax:
         }
       )
 
-  extension [A, ReferenceData] (component: A)(using c: Component[A, ReferenceData])
+  extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
     def update[StartupData, ContextData](
         context: UiContext[ReferenceData]
     ): GlobalEvent => Outcome[A] =
@@ -35,9 +35,9 @@ object syntax:
 
     def refresh(
         reference: ReferenceData,
-        parentBounds: Bounds
+        parentDimensions: Dimensions
     ): A =
-      c.refresh(reference, component, parentBounds)
+      c.refresh(reference, component, parentDimensions)
 
 end syntax
 

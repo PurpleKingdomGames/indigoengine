@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.component
 
 import indigo.*
 import roguelikestarterkit.ui.datatypes.Bounds
+import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
 /** A typeclass that confirms that some type `A` can be used as a `Component` provides the necessary
@@ -20,6 +21,6 @@ trait StatelessComponent[A, ReferenceData] extends Component[A, ReferenceData]:
       model: A
   ): Outcome[ComponentFragment]
 
-  def refresh(reference: ReferenceData, model: A, parentBounds: Bounds): A = model
+  def refresh(reference: ReferenceData, model: A, parentDimensions: Dimensions): A = model
   def updateModel(context: UiContext[ReferenceData], model: A): GlobalEvent => Outcome[A] =
     case e => Outcome(model)
