@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.Bounds
 import roguelikestarterkit.Coords
 import roguelikestarterkit.UiContext
+import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.*
 import roguelikestarterkit.ui.components.common.*
 
@@ -31,96 +32,81 @@ class ComponentGroupTests extends munit.FunSuite:
     def cascade(model: String, parentBounds: Bounds): String =
       model
 
-  // test("ComponentGroup.calculateContentBounds should return the correct bounds (Vertical)") {
-  //   val group: ComponentGroup[Unit] =
-  //     ComponentGroup()
-  //       .withLayout(
-  //         ComponentLayout.Vertical(Padding.zero.withBottom(2))
-  //       )
-  //       .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
-  //       .add("abc", "def")
+  test("ComponentGroup.calculateContentBounds should return the correct bounds (Vertical)") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero.withBottom(2))
+        )
+        .withBoundsType(BoundsType.fixed(100, 100))
+        .add("abc", "def")
 
-  //   val instance =
-  //     summon[Component[ComponentGroup[Unit], Unit]]
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
 
-  //   // This normally happens as part of the update process
-  //   val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
+    // This normally happens as part of the update process
+    val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
 
-  //   val actual =
-  //     ComponentGroup.calculateContentBounds((), processed.components)
+    val actual =
+      processed.contentBounds
 
-  //   val expected =
-  //     Bounds(0, 0, 3, 4)
+    val expected =
+      Bounds(0, 0, 3, 4)
 
-  //   assertEquals(actual, expected)
-  // }
+    assertEquals(actual, expected)
+  }
 
-  // test("ComponentGroup.calculateContentBounds should return the correct bounds (Horizontal)") {
-  //   val group: ComponentGroup[Unit] =
-  //     ComponentGroup()
-  //       .withLayout(
-  //         ComponentLayout.Horizontal(Padding.zero.withRight(2))
-  //       )
-  //       .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
-  //       .add("abc", "def")
+  test("ComponentGroup.calculateContentBounds should return the correct bounds (Horizontal)") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Horizontal(Padding.zero.withRight(2))
+        )
+        .withBoundsType(BoundsType.fixed(100, 100))
+        .add("abc", "def")
 
-  //   val instance =
-  //     summon[Component[ComponentGroup[Unit], Unit]]
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
 
-  //   // This normally happens as part of the update process
-  //   val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
+    // This normally happens as part of the update process
+    val processed = instance.refresh((), group, Bounds(0, 0, 100, 100))
 
-  //   val actual =
-  //     ComponentGroup.calculateContentBounds((), processed.components)
+    val actual =
+      processed.contentBounds
 
-  //   val expected =
-  //     Bounds(0, 0, 8, 1)
+    val expected =
+      Bounds(0, 0, 8, 1)
 
-  //   assertEquals(actual, expected)
-  // }
+    assertEquals(actual, expected)
+  }
 
-  // // Write a test for ComponentGroup.calculateCascadeBounds
-  // test("ComponentGroup.calculateCascadeBounds should return the correct bounds") {
-  //   val group: ComponentGroup[Unit] =
-  //     ComponentGroup()
-  //       .withLayout(
-  //         ComponentLayout.Vertical(Padding.zero.withBottom(2))
-  //       )
-  //       .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
-  //       .add("abc", "def")
+  // Write a test for ComponentGroup.calculateCascadeBounds
+  test("ComponentGroup.calculateCascadeBounds should return the correct bounds") {
+    val group: ComponentGroup[Unit] =
+      ComponentGroup()
+        .withLayout(
+          ComponentLayout.Vertical(Padding.zero.withBottom(2))
+        )
+        .withBoundsType(BoundsType.fixed(100, 100))
+        .add("abc", "def")
 
-  //   val instance =
-  //     summon[Component[ComponentGroup[Unit], Unit]]
+    val instance =
+      summon[Component[ComponentGroup[Unit], Unit]]
 
-  //   // This normally happens as part of the update process
-  //   val processed =
-  //     instance.refresh((), group, Bounds(0, 0, 100, 100))
-  //   val updated =
-  //     processed.copy(
-  //       contentBounds = ComponentGroup.calculateContentBounds((), processed.components),
-  //       dirty = false
-  //     )
+    // This normally happens as part of the update process
+    val processed =
+      instance.refresh((), group, Bounds(0, 0, 100, 100))
 
-  //   val actualFixed =
-  //     ComponentGroup.calculateCascadeBounds(
-  //       updated.bounds,
-  //       updated.contentBounds,
-  //       Bounds(0, 0, 100, 100),
-  //       updated.boundsType
-  //     )
+    val actualFixed =
+      processed.bounds
 
-  //   assertEquals(actualFixed, Bounds(0, 0, 100, 100))
+    assertEquals(actualFixed, Bounds(0, 0, 100, 100))
 
-  //   val actualDefault =
-  //     ComponentGroup.calculateCascadeBounds(
-  //       updated.bounds,
-  //       updated.contentBounds,
-  //       Bounds(0, 0, 100, 100),
-  //       BoundsType.default
-  //     )
+    val actualDefault =
+      group.withBoundsType(BoundsType.default).refresh((), Bounds(0, 0, 100, 100)).bounds
 
-  //   assertEquals(actualDefault, Bounds(0, 0, 100, 4))
-  // }
+    assertEquals(actualDefault, Bounds(0, 0, 100, 4))
+  }
 
   test("refresh should re-apply the layout to all existing components") {
     val group: ComponentGroup[Unit] =
@@ -128,7 +114,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
         )
-        .withBoundsType(BoundsType.Fixed(Bounds(0, 0, 100, 100)))
+        .withBoundsType(BoundsType.fixed(100, 100))
         .add("abc", "def")
 
     val actual =
@@ -148,7 +134,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - vertical, padding 0") {
-    val group = ComponentGroup(Bounds(0, 0, 10, 5))
+    val group = ComponentGroup(10, 5)
       .withLayout(ComponentLayout.Vertical(Padding(0)))
       .add("abc", "def")
 
@@ -169,7 +155,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - vertical, padding 5") {
-    val group = ComponentGroup(Bounds(0, 0, 10, 5))
+    val group = ComponentGroup(10, 5)
       .withLayout(ComponentLayout.Vertical(Padding(5)))
       .add("abc", "def")
 
@@ -190,7 +176,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - vertical, padding top=5") {
-    val group = ComponentGroup(Bounds(0, 0, 10, 5))
+    val group = ComponentGroup(10, 5)
       .withLayout(
         ComponentLayout.Vertical(Padding(5, 0, 0, 0))
       )
@@ -213,7 +199,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding 0, hidden") {
-    val group = ComponentGroup(Bounds(0, 0, 5, 5))
+    val group = ComponentGroup(5, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(0), Overflow.Hidden)
       )
@@ -236,7 +222,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding 5, hidden") {
-    val group = ComponentGroup(Bounds(0, 0, 5, 5))
+    val group = ComponentGroup(5, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(5), Overflow.Hidden)
       )
@@ -259,7 +245,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding left=5, hidden") {
-    val group = ComponentGroup(Bounds(0, 0, 5, 5))
+    val group = ComponentGroup(5, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(0, 0, 0, 5), Overflow.Hidden)
       )
@@ -282,7 +268,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding 0, wrap") {
-    val group = ComponentGroup(Bounds(0, 0, 5, 5))
+    val group = ComponentGroup(5, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(0), Overflow.Wrap)
       )
@@ -305,7 +291,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding 5, wrap") {
-    val group = ComponentGroup(Bounds(0, 0, 5, 5))
+    val group = ComponentGroup(5, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
       )
@@ -328,7 +314,7 @@ class ComponentGroupTests extends munit.FunSuite:
   }
 
   test("Calculate the next offset - horizontal, padding left=5 top=2, wrap") {
-    val group = ComponentGroup(Bounds(0, 0, 3, 5))
+    val group = ComponentGroup(3, 5)
       .withLayout(
         ComponentLayout.Horizontal(Padding(2, 0, 0, 5), Overflow.Wrap)
       )
