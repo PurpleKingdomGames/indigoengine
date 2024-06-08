@@ -2,6 +2,7 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.syntax.*
 
 object ColourWindow:
 
@@ -41,36 +42,34 @@ object ColourWindow:
       windowId,
       charSheet,
       ColorPalette(
-        // ComponentGroup(Bounds(0, 0, 23, 23))
-        //   .withLayout(ComponentLayout.Vertical())
-        //   .inheritBounds
-        //   // .add(
-        //   //   ComponentGroup(Bounds(0, 0, 23, 10))
-        //   //     .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
-        //   //     .offsetSize(0, -4)
-        //   //     .add(
-        //   //       // Custom rendered buttons for the swatches
-        //   //       outrunner16.colors.map { rgba =>
-        //   //         Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
-        //   //           // .onClick(<Emit some event...>)
-        //   //           .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
-        //   //           .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
-        //   //       }
-        //   //     )
-        //   // )
-        //   .add(
-        //     // Default button renderer
-        //     Button(
-        //       "Load palette",
-        //       Button.Theme(
-        //         charSheet,
-        //         RGBA.Silver -> RGBA.Black,
-        //         RGBA.White  -> RGBA.Black,
-        //         RGBA.Black  -> RGBA.White,
-        //         hasBorder = true
-        //       )
-        //     )
-        //   )
+        ComponentGroup()
+          .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
+          .add(
+            ComponentGroup()
+              .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+              .add(
+                // Custom rendered buttons for the swatches
+                outrunner16.colors.map { rgba =>
+                  Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
+                    // .onClick(<Emit some event...>)
+                    .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
+                    .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
+                }
+              )
+          )
+          .add(
+            // Default button renderer
+            Button(
+              "Load palette",
+              Button.Theme(
+                charSheet,
+                RGBA.Silver -> RGBA.Black,
+                RGBA.White  -> RGBA.Black,
+                RGBA.Black  -> RGBA.White,
+                hasBorder = true
+              )
+            )
+          )
       )
     )
       .withTitle("Colour Palette")
@@ -110,7 +109,7 @@ object ColourWindow:
         )
       )
 
-final case class ColorPalette(/*componentGroup: ComponentGroup[Unit]*/)
+final case class ColorPalette(componentGroup: ComponentGroup[Unit])
 object ColorPalette:
 
   given WindowContent[ColorPalette, Unit] with
@@ -120,26 +119,17 @@ object ColorPalette:
         model: ColorPalette
     ): GlobalEvent => Outcome[ColorPalette] =
       case e =>
-        Outcome(model)
-        // model.componentGroup.update(context)(e).map { c =>
-        //   model.copy(componentGroup = c)
-        // }
+        model.componentGroup.update(context)(e).map { c =>
+          model.copy(componentGroup = c)
+        }
 
     def present(
         context: UiContext[Unit],
         model: ColorPalette
     ): Outcome[Layer] =
-      // model.componentGroup.present(context).map(_.toLayer)
-      Outcome(Layer.empty)
+      model.componentGroup.present(context).map(_.toLayer)
 
-    def cascade(model: ColorPalette, newBounds: Bounds): ColorPalette =
-      model
-      // .copy(
-      //   componentGroup = model.componentGroup.cascade(newBounds)
-      // )
-
-    def refresh(reference: Unit, model: ColorPalette): ColorPalette =
-      model
-      // .copy(
-      //   componentGroup = model.componentGroup.reflow
-      // )
+    def refresh(reference: Unit, model: ColorPalette, contentDimensions: Dimensions): ColorPalette =
+      model.copy(
+        componentGroup = model.componentGroup.refresh(reference, contentDimensions)
+      )
