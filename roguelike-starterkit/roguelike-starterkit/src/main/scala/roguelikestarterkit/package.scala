@@ -131,6 +131,8 @@ val WindowContent: ui.window.WindowContent.type = ui.window.WindowContent
 
 type Component[A, ReferenceData] = ui.component.Component[A, ReferenceData]
 
+type StatelessComponent[A, ReferenceData] = ui.component.StatelessComponent[A, ReferenceData]
+
 type ComponentFragment = ui.component.ComponentFragment
 val ComponentFragment: ui.component.ComponentFragment.type = ui.component.ComponentFragment
 
