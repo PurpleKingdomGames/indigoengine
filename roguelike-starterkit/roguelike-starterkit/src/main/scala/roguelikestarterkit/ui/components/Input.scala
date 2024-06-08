@@ -22,7 +22,7 @@ import scala.annotation.targetName
   */
 final case class Input(
     text: String,
-    bounds: Bounds,
+    dimensions: Dimensions,
     render: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment],
     change: String => Batch[GlobalEvent],
     //
@@ -37,11 +37,11 @@ final case class Input(
   def withText(value: String): Input =
     this.copy(text = value)
 
-  def withBounds(value: Bounds): Input =
-    this.copy(bounds = value)
+  def withDimensions(value: Dimensions): Input =
+    this.copy(dimensions = value)
 
   def withWidth(value: Int): Input =
-    this.copy(bounds = bounds.withDimensions(value, bounds.height))
+    this.copy(dimensions = dimensions.withWidth(value))
 
   def onChange(events: String => Batch[GlobalEvent]): Input =
     this.copy(change = events)
@@ -148,16 +148,16 @@ object Input:
 
   /** Minimal input constructor with custom rendering function
     */
-  def apply(bounds: Bounds)(
+  def apply(dimensions: Dimensions)(
       present: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment]
   ): Input =
     Input(
       "",
-      bounds,
+      dimensions,
       present,
       _ => Batch.empty,
       //
-      characterLimit = bounds.width,
+      characterLimit = dimensions.width,
       cursor = Cursor.default,
       hasFocus = false,
       () => Batch.empty,
@@ -256,7 +256,7 @@ object Input:
   def apply(width: Int, theme: Theme): Input =
     Input(
       "",
-      Bounds(0, 0, width, 1),
+      Dimensions(width, 1),
       presentInput(theme.charSheet, theme.colors.foreground, theme.colors.background),
       _ => Batch.empty,
       //
@@ -269,17 +269,18 @@ object Input:
 
   given [ReferenceData]: Component[Input, ReferenceData] with
     def bounds(reference: ReferenceData, model: Input): Bounds =
-      model.bounds.resizeBy(2, 2)
+      Bounds(model.dimensions).resizeBy(2, 2)
 
     def updateModel(
         context: UiContext[ReferenceData],
         model: Input
     ): GlobalEvent => Outcome[Input] =
       case _: MouseEvent.Click
-          if model.bounds
+          if Bounds(model.dimensions)
             .resizeBy(2, 2)
             .moveBy(context.bounds.coords)
             .contains(context.mouseCoords) =>
+        println(context.bounds.coords)
         model.giveFocus
 
       case _: MouseEvent.Click =>
@@ -322,7 +323,7 @@ object Input:
     ): Outcome[ComponentFragment] =
       model.render(
         context.bounds.coords,
-        model.bounds,
+        Bounds(model.dimensions),
         model,
         context.running
       )
