@@ -14,8 +14,6 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UiContext
 
-// import scala.annotation.targetName
-
 /** Labels are a simple `Component` that render text.
   */
 final case class Label[ReferenceData](
