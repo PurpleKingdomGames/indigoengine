@@ -281,7 +281,6 @@ object Input:
             .resizeBy(2, 2)
             .moveBy(context.bounds.coords)
             .contains(context.mouseCoords) =>
-        println(context.bounds.coords)
         model.giveFocus
 
       case _: MouseEvent.Click =>
