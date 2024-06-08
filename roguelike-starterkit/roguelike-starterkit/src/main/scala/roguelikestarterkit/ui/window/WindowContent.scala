@@ -9,8 +9,6 @@ import roguelikestarterkit.Dimensions
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.UiContext
 
-// The only difference between this and Component is the bounds method. Can we merge them? Oh, and the fact that refresh is called reflow in Component.
-
 /** A typeclass that confirms that some type `A` can be used as a `WindowContent` provides the
   * necessary operations for that type to act as a window content.
   */
