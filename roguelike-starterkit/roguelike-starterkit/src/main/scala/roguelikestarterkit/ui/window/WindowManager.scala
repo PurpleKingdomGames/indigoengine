@@ -132,7 +132,18 @@ object WindowManager:
     case e: WindowEvent =>
       handleWindowEvents(context, model)(e)
 
+    case e: MouseEvent.Click =>
+      updateWindows(context, model)(e)
+        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
+
     case e =>
+      updateWindows(context, model)(e)
+
+  private def updateWindows[ReferenceData](
+      context: UIContext[ReferenceData],
+      model: WindowManagerModel[ReferenceData]
+  ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
+    e =>
       model.windows
         .map { w =>
           Window.updateModel(
@@ -151,7 +162,7 @@ object WindowManager:
       model.refresh(id, context.reference)
 
     case WindowEvent.GiveFocusAt(position) =>
-      Outcome(model.giveFocusAndSurfaceAt(position))
+      Outcome(model.focusAt(position))
         .addGlobalEvents(WindowInternalEvent.Redraw)
 
     case WindowEvent.Open(id) =>

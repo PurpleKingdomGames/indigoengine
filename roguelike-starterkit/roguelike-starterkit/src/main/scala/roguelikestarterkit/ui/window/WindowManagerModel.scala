@@ -45,11 +45,11 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[WindowModel[?,
           Batch(if isOpen then WindowEvent.Closed(id) else WindowEvent.Opened(id))
         )
 
-  def giveFocusAndSurfaceAt(coords: Coords): WindowManagerModel[ReferenceData] =
+  def focusAt(coords: Coords): WindowManagerModel[ReferenceData] =
     val reordered =
       windows.reverse.find(w => !w.static && w.bounds.contains(coords)) match
         case None =>
-          windows
+          windows.map(_.blur)
 
         case Some(w) =>
           windows.filterNot(_.id == w.id).map(_.blur) :+ w.focus

@@ -126,15 +126,9 @@ object Window:
         if actionsAllowed && model.closeable && gridPos == model.bounds.topRight + Coords(-1, 0)
         then Batch(WindowEvent.Close(model.id))
         else Batch.empty
-      val focus =
-        if actionsAllowed && !model.static && model.bounds
-            .resize(model.bounds.dimensions - 1)
-            .contains(gridPos)
-        then Batch(WindowEvent.GiveFocusAt(gridPos))
-        else Batch.empty
 
       Outcome(viewModel)
-        .addGlobalEvents(close ++ focus)
+        .addGlobalEvents(close)
 
     case e: MouseEvent.MouseDown
         if context.isActive && model.draggable &&
@@ -144,7 +138,6 @@ object Window:
       val d = calculateDragBy(model.charSheet.charSize, e.position, model.bounds.coords)
 
       Outcome(viewModel.copy(dragData = Option(DragData(d, d))))
-        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
     case e: MouseEvent.MouseDown
         if context.isActive && model.resizable &&
@@ -153,7 +146,6 @@ object Window:
       val d = calculateDragBy(model.charSheet.charSize, e.position, model.bounds.coords)
 
       Outcome(viewModel.copy(resizeData = Option(DragData(d, d))))
-        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
     case e: MouseEvent.MouseUp if viewModel.dragData.isDefined =>
       Outcome(viewModel)
