@@ -59,7 +59,7 @@ object ComponentsWindow2:
         )
     )
       .withTitle("More component examples")
-      .moveTo(2, 2)
+      .moveTo(2, 5)
       .resizeTo(25, 25)
       .isDraggable
       .isResizable

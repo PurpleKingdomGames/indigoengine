@@ -144,10 +144,15 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     e =>
+      val windowUnderMouse = model.windowAt(context.mouseCoords)
+
       model.windows
         .map { w =>
           Window.updateModel(
-            context.copy(state = if w.hasFocus then UIState.Active else UIState.InActive),
+            context.copy(state =
+              if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
+              else UIState.InActive
+            ),
             w
           )(e)
         }
@@ -213,6 +218,8 @@ object WindowManager:
       Outcome(viewModel.changeMagnification(next))
 
     case e =>
+      val windowUnderMouse = model.windowAt(context.mouseCoords)
+
       val updated =
         val prunedVM = viewModel.prune(model)
         model.windows.flatMap { m =>
@@ -225,7 +232,10 @@ object WindowManager:
               case Some(vm) =>
                 Batch(
                   vm.update(
-                    context.copy(state = if m.hasFocus then UIState.Active else UIState.InActive),
+                    context.copy(state =
+                      if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active
+                      else UIState.InActive
+                    ),
                     m,
                     e
                   )
@@ -240,6 +250,8 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
+    val windowUnderMouse = model.windowAt(context.mouseCoords)
+
     val windowLayers: Outcome[Batch[Layer]] =
       model.windows
         .filter(_.isOpen)
@@ -253,7 +265,10 @@ object WindowManager:
               Batch(
                 Window
                   .present(
-                    context.copy(state = if m.hasFocus then UIState.Active else UIState.InActive),
+                    context.copy(state =
+                      if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active
+                      else UIState.InActive
+                    ),
                     m,
                     vm
                   )

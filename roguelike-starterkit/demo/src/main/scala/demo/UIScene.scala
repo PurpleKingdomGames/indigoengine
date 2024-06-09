@@ -39,7 +39,13 @@ object UIScene extends Scene[Size, Model, ViewModel]:
             Model.defaultCharSheet
           )
         )
+        .register(
+          MenuWindow.window(
+            Model.defaultCharSheet
+          )
+        )
         .open(
+          MenuWindow.windowId,
           ComponentsWindow.windowId,
           ComponentsWindow2.windowId
         )
