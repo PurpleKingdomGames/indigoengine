@@ -58,7 +58,7 @@ final case class Input(
 
   def giveFocus: Outcome[Input] =
     Outcome(
-      this.copy(hasFocus = true, cursor = cursor.moveCursorTo(length, length)),
+      this.copy(hasFocus = true),
       onFocus()
     )
 
@@ -84,10 +84,7 @@ final case class Input(
     this.copy(cursor = cursor.cursorHome)
 
   def moveCursorTo(newCursorPosition: Int): Input =
-    if newCursorPosition >= 0 && newCursorPosition < length then
-      this.copy(cursor = cursor.moveTo(newCursorPosition))
-    else if newCursorPosition < 0 then this.copy(cursor = cursor.moveTo(0))
-    else this.copy(cursor = cursor.moveTo(length - 1))
+    this.copy(cursor = cursor.moveCursorTo(newCursorPosition, length))
 
   def cursorEnd: Input =
     this.copy(cursor = cursor.cursorEnd(length))
@@ -281,7 +278,9 @@ object Input:
             .resizeBy(2, 2)
             .moveBy(context.bounds.coords)
             .contains(context.mouseCoords) =>
-        model.giveFocus
+        model
+          .moveCursorTo(context.mouseCoords.x - context.bounds.coords.x - 1)
+          .giveFocus
 
       case _: MouseEvent.Click =>
         model.loseFocus
@@ -381,10 +380,10 @@ final case class Cursor(
     this.copy(position = 0)
 
   def moveCursorTo(newCursorPosition: Int, maxLength: Int): Cursor =
-    if newCursorPosition >= 0 && newCursorPosition < maxLength then
+    if newCursorPosition >= 0 && newCursorPosition <= maxLength then
       this.copy(position = newCursorPosition)
     else if newCursorPosition < 0 then this.copy(position = 0)
-    else this.copy(position = Math.max(0, maxLength - 1))
+    else this.copy(position = Math.max(0, maxLength))
 
   def cursorEnd(maxLength: Int): Cursor =
     this.copy(position = maxLength)
