@@ -44,19 +44,19 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
+    val tb =
+      TextBox("").withColor(RGBA.Red)
+
     val label =
-      Label[Int]("Custom rendered label", (_, t) => Bounds(0, 0, 150, 20)) {
-        case (offset, label, dimensions) =>
-          Outcome(
-            ComponentFragment(
-              TextBox(
-                label,
-                dimensions.width,
-                dimensions.height
-              ).moveTo(offset.x, offset.y)
-                .withColor(RGBA.Red)
-            )
+      Label[Int](
+        "Custom rendered label",
+        (_, label) => Bounds(context.boundaryLocator.measureText(tb.withText(label)))
+      ) { case (offset, label, dimensions) =>
+        Outcome(
+          ComponentFragment(
+            tb.withText(label).moveTo(offset.unsafeToPoint).withSize(dimensions.unsafeToSize)
           )
+        )
       }
 
     val rendered =
