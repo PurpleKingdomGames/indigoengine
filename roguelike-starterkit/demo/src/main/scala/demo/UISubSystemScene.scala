@@ -26,7 +26,7 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
       WindowManager[Model, Unit](
         SubSystemId("window manager"),
         RogueLikeGame.magnification,
-        Model.defaultCharSheet,
+        Size(Model.defaultCharSheet.charSize),
         _ => ()
       )
         .withLayerKey(BindingKey("UI Layer"))

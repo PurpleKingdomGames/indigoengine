@@ -26,7 +26,7 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       WindowManager[Model, Int](
         SubSystemId("window manager 2"),
         RogueLikeGame.magnification,
-        Model.defaultCharSheet,
+        Size(Model.defaultCharSheet.charSize),
         _.mouseOverWindows.length
       )
         .register(

@@ -8,7 +8,7 @@ import roguelikestarterkit.ui.datatypes.UIState
 final case class WindowManager[StartUpData, Model, RefData](
     id: SubSystemId,
     initialMagnification: Int,
-    charSheet: CharSheet,
+    snapGrid: Size,
     extractReference: Model => RefData,
     startUpData: StartUpData,
     layerKey: Option[BindingKey],
@@ -36,13 +36,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UIContext(context, charSheet),
+          UIContext(context, snapGrid),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UIContext(context, charSheet),
+            UIContext(context, snapGrid),
             updatedModel,
             model.viewModel
           )(e)
@@ -54,7 +54,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UIContext(context, charSheet),
+      UIContext(context, snapGrid),
       model.model,
       model.viewModel
     )
@@ -77,7 +77,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     WindowManager(
       id,
       initialMagnification,
-      charSheet,
+      snapGrid,
       extractReference,
       newStartupData,
       layerKey,
@@ -92,24 +92,24 @@ object WindowManager:
   def apply[Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      charSheet: CharSheet,
+      snapGrid: Size,
       extractReference: Model => ReferenceData
   ): WindowManager[Unit, Model, ReferenceData] =
-    WindowManager(id, magnification, charSheet, extractReference, (), None, Batch.empty)
+    WindowManager(id, magnification, snapGrid, extractReference, (), None, Batch.empty)
 
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      charSheet: CharSheet,
+      snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData
   ): WindowManager[StartUpData, Model, ReferenceData] =
-    WindowManager(id, magnification, charSheet, extractReference, startUpData, None, Batch.empty)
+    WindowManager(id, magnification, snapGrid, extractReference, startUpData, None, Batch.empty)
 
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      charSheet: CharSheet,
+      snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData,
       layerKey: BindingKey
@@ -117,7 +117,7 @@ object WindowManager:
     WindowManager(
       id,
       magnification,
-      charSheet,
+      snapGrid,
       extractReference,
       startUpData,
       Option(layerKey),

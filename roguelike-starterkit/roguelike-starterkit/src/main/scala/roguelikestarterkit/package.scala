@@ -35,6 +35,13 @@ object syntax:
     ): A =
       c.refresh(reference, component, parentDimensions)
 
+  extension (c: ComponentFragment.type)
+    def fromTerminalClones(terminalClones: TerminalClones): ComponentFragment =
+      ComponentFragment(terminalClones.clones, terminalClones.blanks)
+
+    def apply(terminalClones: TerminalClones): ComponentFragment =
+      fromTerminalClones(terminalClones)
+
 end syntax
 
 object shaders:

@@ -199,14 +199,14 @@ object Window:
 
     case MouseEvent.Move(pt)
         if viewModel.mouseIsOver && !model.bounds
-          .toScreenSpace(context.charSheet.size)
+          .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(mouseIsOver = false))
         .addGlobalEvents(WindowEvent.MouseOut(model.id))
 
     case MouseEvent.Move(pt)
         if !viewModel.mouseIsOver && model.bounds
-          .toScreenSpace(context.charSheet.size)
+          .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(mouseIsOver = true))
         .addGlobalEvents(WindowEvent.MouseOver(model.id))
@@ -233,7 +233,7 @@ object Window:
             l.withBlendMaterial(
               LayerMask(
                 viewModel.contentRectangle
-                  .toScreenSpace(context.charSheet.size * viewModel.magnification)
+                  .toScreenSpace(context.snapGrid * viewModel.magnification)
               )
             )
           )
@@ -245,7 +245,7 @@ object Window:
                 l.withBlendMaterial(
                   LayerMask(
                     viewModel.contentRectangle
-                      .toScreenSpace(context.charSheet.size * viewModel.magnification)
+                      .toScreenSpace(context.snapGrid * viewModel.magnification)
                   )
                 )
 

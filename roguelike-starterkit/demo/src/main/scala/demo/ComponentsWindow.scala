@@ -2,6 +2,7 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.syntax.*
 
 object ComponentsWindow:
 
