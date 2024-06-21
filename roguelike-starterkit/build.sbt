@@ -68,6 +68,19 @@ lazy val roguelike =
           )
       }.taskValue
     )
+    .dependsOn(ui)
+
+lazy val ui =
+  (project in file("ui"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(commonSettings: _*)
+    // .settings(publishSettings: _*)
+    .settings(
+      name := "ui",
+      libraryDependencies ++= Seq(
+        "io.indigoengine" %%% "indigo"        % indigoVersion
+      )
+    )
 
 lazy val demoOptions: IndigoOptions =
   IndigoOptions.defaults
@@ -139,7 +152,7 @@ lazy val roguelikeStarterKit =
       publish / skip      := true,
       publishLocal / skip := true
     )
-    .aggregate(roguelike, demo, benchmarks)
+    .aggregate(ui, roguelike, demo, benchmarks)
     .settings(
       logo := rawLogo + "(v" + version.value.toString + ")",
       usefulTasks := Seq(
