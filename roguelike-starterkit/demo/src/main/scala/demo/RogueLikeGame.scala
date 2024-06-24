@@ -85,7 +85,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(mouseOverWindows: Batch[WindowId])
+final case class Model(mouseOverWindows: Batch[WindowId], componentList: ComponentList[Int])
 
 object Model:
 
@@ -98,7 +98,26 @@ object Model:
     )
 
   val initial: Model =
-    Model(Batch.empty)
+    Model(
+      Batch.empty,
+      ComponentList(Dimensions(200, 200)) { (_: Int) =>
+        Batch.fill(3) {
+          Label[Int](
+            "Custom rendered label",
+            (_, label) => Bounds(0, 0, 150, 10)
+          ) { case (offset, label, dimensions) =>
+            Outcome(
+              ComponentFragment(
+                TextBox(label)
+                  .withColor(RGBA.Red)
+                  .moveTo(offset.unsafeToPoint)
+                  .withSize(dimensions.unsafeToSize)
+              )
+            )
+          }
+        }
+      }
+    )
 
 final case class ViewModel()
 object ViewModel:

@@ -29,8 +29,12 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       context: SceneContext[Size],
       model: Model
   ): GlobalEvent => Outcome[Model] =
-    case _ =>
-      Outcome(model)
+    case e =>
+      val ctx = UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1))
+      summon[Component[ComponentList[Int], Int]].updateModel(ctx, model.componentList)(e).map {
+        cl =>
+          model.copy(componentList = cl)
+      }
 
   def updateViewModel(
       context: SceneContext[Size],
@@ -44,24 +48,13 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    val tb =
-      TextBox("").withColor(RGBA.Red)
-
-    val label =
-      Label[Int](
-        "Custom rendered label",
-        (_, label) => Bounds(context.boundaryLocator.measureText(tb.withText(label)))
-      ) { case (offset, label, dimensions) =>
-        Outcome(
-          ComponentFragment(
-            tb.withText(label).moveTo(offset.unsafeToPoint).withSize(dimensions.unsafeToSize)
-          )
-        )
-      }
 
     val rendered =
-      summon[StatelessComponent[Label[Int], Int]]
-        .present(UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1)), label)
+      summon[Component[ComponentList[Int], Int]]
+        .present(
+          UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1)),
+          model.componentList
+        )
 
     rendered.map { componentFragment =>
       SceneUpdateFragment(

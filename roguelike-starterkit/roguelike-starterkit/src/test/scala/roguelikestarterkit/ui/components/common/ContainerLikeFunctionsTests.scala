@@ -8,13 +8,11 @@ import roguelikestarterkit.ui.datatypes.*
 
 class ContainerLikeFunctionsTests extends munit.FunSuite:
 
-  val charSheet =
-    CharSheet(
-      AssetName("test"),
-      Size(10),
-      Batch.empty,
-      FontKey("test")
-    )
+  def calcBounds[ReferenceData]: (ReferenceData, String) => Bounds =
+    (_, text) => Bounds(0, 0, text.length, 1)
+
+  val present: (Coords, String, Dimensions) => Outcome[ComponentFragment] =
+    (_, _, _) => Outcome(ComponentFragment.empty)
 
   test("calculateNextOffset labels") {
 
@@ -24,9 +22,9 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
           ComponentLayout.Vertical(Padding.zero)
         )
         .add(
-          Label("label 1", Label.Theme(charSheet)),
-          Label("label 2", Label.Theme(charSheet)),
-          Label("label 3", Label.Theme(charSheet))
+          Label("label 1", calcBounds)(present),
+          Label("label 2", calcBounds)(present),
+          Label("label 3", calcBounds)(present)
         )
 
     val updated: ComponentGroup[Unit] =
@@ -57,9 +55,9 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
               ComponentLayout.Vertical()
             )
             .add(
-              Label("label 1", Label.Theme(charSheet)),
-              Label("label 2", Label.Theme(charSheet)),
-              Label("label 3", Label.Theme(charSheet))
+              Label("label 1", calcBounds)(present),
+              Label("label 2", calcBounds)(present),
+              Label("label 3", calcBounds)(present)
             )
         )
 
