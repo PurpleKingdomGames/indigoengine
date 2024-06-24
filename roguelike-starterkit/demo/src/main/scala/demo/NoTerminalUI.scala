@@ -4,6 +4,9 @@ import indigo.*
 import indigo.scenes.*
 import indigo.shared.subsystems.SubSystemFrameContext.*
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.component.Component
+import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.list.ComponentList
 
 object NoTerminalUI extends Scene[Size, Model, ViewModel]:
 
@@ -31,9 +34,8 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
   ): GlobalEvent => Outcome[Model] =
     case e =>
       val ctx = UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1))
-      summon[Component[ComponentList[Int], Int]].updateModel(ctx, model.componentList)(e).map {
-        cl =>
-          model.copy(componentList = cl)
+      summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
+        model.copy(components = cl)
       }
 
   def updateViewModel(
@@ -50,10 +52,10 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
 
     val rendered =
-      summon[Component[ComponentList[Int], Int]]
+      summon[Component[ComponentGroup[Int], Int]]
         .present(
           UIContext(context.frameContext.forSubSystems.copy(reference = 0), Size(1)),
-          model.componentList
+          model.components
         )
 
     rendered.map { componentFragment =>

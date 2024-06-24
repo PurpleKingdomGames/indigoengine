@@ -2,7 +2,13 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.common.ComponentLayout
+import roguelikestarterkit.ui.components.common.Overflow
+import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.list.ComponentList
 
 object ComponentsWindow2:
 

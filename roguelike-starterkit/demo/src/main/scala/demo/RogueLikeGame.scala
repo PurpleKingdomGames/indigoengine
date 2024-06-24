@@ -4,6 +4,10 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
+import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.group.BoundsType
+import roguelikestarterkit.ui.components.group.ComponentGroup
+import roguelikestarterkit.ui.components.list.ComponentList
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -85,7 +89,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(mouseOverWindows: Batch[WindowId], componentList: ComponentList[Int])
+final case class Model(mouseOverWindows: Batch[WindowId], components: ComponentGroup[Int])
 
 object Model:
 
@@ -100,23 +104,41 @@ object Model:
   val initial: Model =
     Model(
       Batch.empty,
-      ComponentList(Dimensions(200, 200)) { (_: Int) =>
-        Batch.fill(3) {
+      ComponentGroup(BoundsType.fixed(200, 200))
+        .add(
+          ComponentList(Dimensions(200, 40)) { (_: Int) =>
+            Batch.fill(3) {
+              Label[Int](
+                "Custom rendered label",
+                (_, label) => Bounds(0, 0, 150, 10)
+              ) { case (offset, label, dimensions) =>
+                Outcome(
+                  ComponentFragment(
+                    TextBox(label)
+                      .withColor(RGBA.Red)
+                      .moveTo(offset.unsafeToPoint)
+                      .withSize(dimensions.unsafeToSize)
+                  )
+                )
+              }
+            }
+          }
+        )
+        .add(
           Label[Int](
-            "Custom rendered label",
+            "Another label",
             (_, label) => Bounds(0, 0, 150, 10)
           ) { case (offset, label, dimensions) =>
             Outcome(
               ComponentFragment(
                 TextBox(label)
-                  .withColor(RGBA.Red)
+                  .withColor(RGBA.White)
                   .moveTo(offset.unsafeToPoint)
                   .withSize(dimensions.unsafeToSize)
               )
             )
           }
-        }
-      }
+        )
     )
 
 final case class ViewModel()

@@ -3,6 +3,11 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
+import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.common.ComponentLayout
+import roguelikestarterkit.ui.components.common.Overflow
+import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.group.ComponentGroup
 
 object ColourWindow:
 

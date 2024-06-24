@@ -1,4 +1,4 @@
-package roguelikestarterkit.ui.components.common
+package roguelikestarterkit.ui.components
 
 import indigo.*
 
