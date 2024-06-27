@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -62,9 +63,9 @@ object ColourWindow:
           )
           .add(
             // Default button renderer
-            Button(
+            TerminalButton(
               "Load palette",
-              Button.Theme(
+              TerminalButton.Theme(
                 charSheet,
                 RGBA.Silver -> RGBA.Black,
                 RGBA.White  -> RGBA.Black,

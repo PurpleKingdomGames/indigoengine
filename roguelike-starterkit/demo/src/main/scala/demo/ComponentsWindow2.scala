@@ -3,6 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
@@ -40,9 +41,9 @@ object ComponentsWindow2:
                 "Controls" -> Batch(),
                 "Quit"     -> Batch()
               ).map { case (label, clickEvents) =>
-                Button(
+                TerminalButton(
                   label,
-                  Button.Theme(charSheet)
+                  TerminalButton.Theme(charSheet)
                 ).onClick(clickEvents)
               }
             )
@@ -54,9 +55,9 @@ object ComponentsWindow2:
           }
             .add((count: Int) =>
               Batch.fill(count)(
-                Button[Int]("Button", Button.Theme(charSheet)).onClick(Log("count: " + count))
+                TerminalButton[Int]("Button", TerminalButton.Theme(charSheet)).onClick(Log("count: " + count))
               )
-                :+ Button[Int]("test", Button.Theme(charSheet)).onClick(Log("test"))
+                :+ TerminalButton[Int]("test", TerminalButton.Theme(charSheet)).onClick(Log("test"))
             )
             .add((i: Int) => TextArea[Int]("abc.\nde,f\n0123456! " + i, TextArea.Theme(charSheet)))
             .withLayout(ComponentLayout.Vertical(Padding.zero))

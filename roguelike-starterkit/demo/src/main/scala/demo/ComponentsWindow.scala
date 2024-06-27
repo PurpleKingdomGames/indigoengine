@@ -4,6 +4,7 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
@@ -25,9 +26,9 @@ object ComponentsWindow:
       ComponentGroup()
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1)))
         .add(
-          Button(
+          TerminalButton(
             "Hello!",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.White  -> RGBA.Black,
@@ -37,9 +38,9 @@ object ComponentsWindow:
           )
         )
         .add(
-          Button(
+          TerminalButton(
             "World!",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.Green  -> RGBA.Black,
@@ -47,12 +48,12 @@ object ComponentsWindow:
               hasBorder = false
             )
           ),
-          Button("Default!", Button.Theme(charSheet))
+          TerminalButton("Default!", TerminalButton.Theme(charSheet))
         )
         .add {
-          Button(
+          TerminalButton(
             (i: Int) => "Count" + (if i > 0 then s": $i" else ""),
-            Button.Theme(charSheet).addBorder
+            TerminalButton.Theme(charSheet).addBorder
           )
         }
         .add(

@@ -3,6 +3,7 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.component.ComponentFragment
+import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -21,9 +22,9 @@ object MenuWindow:
       charSheet,
       ComponentList(Dimensions(20, 3)) { (_: Int) =>
         Batch(
-          Button[Int](
+          TerminalButton[Int](
             "Window 1",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.White  -> RGBA.Black,
@@ -31,9 +32,9 @@ object MenuWindow:
               hasBorder = false
             )
           ).onClick(Log("Window 1"), WindowEvent.Open(ComponentsWindow.windowId)),
-          Button[Int](
+          TerminalButton[Int](
             "Window 2",
-            Button.Theme(
+            TerminalButton.Theme(
               charSheet,
               RGBA.Silver -> RGBA.Black,
               RGBA.Green  -> RGBA.Black,
