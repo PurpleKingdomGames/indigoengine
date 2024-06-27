@@ -18,7 +18,7 @@ final case class LayerMask(mask: Rectangle) extends BlendMaterial:
 object LayerMask:
   val shader: UltravioletShader =
     UltravioletShader.blendFragment(
-      ShaderId("rogueui-masked-layer"),
+      ShaderId("[indigo]-ui-masked-layer"),
       BlendShader.fragment(
         fragment,
         Env.ref
