@@ -12,6 +12,7 @@ import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.components.list.ComponentList
+import roguelikestarterkit.ui.window.TerminalWindow
 
 object ComponentsWindow2:
 
@@ -20,9 +21,9 @@ object ComponentsWindow2:
   def window(
       charSheet: CharSheet
   ): Window[ComponentGroup[Int], Int] =
-    Window(
+    TerminalWindow(
       windowId,
-      Size(charSheet.charSize),
+      charSheet,
       ComponentGroup()
         .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
         .add(

@@ -24,10 +24,6 @@ final case class WindowViewModel[ReferenceData](
   ): Outcome[WindowViewModel[ReferenceData]] =
     WindowViewModel.updateViewModel(context, model, this)(event)
 
-  def resize[A](model: Window[A, ReferenceData]): WindowViewModel[ReferenceData] =
-    this // TODO
-    // this.copy(terminal = WindowViewModel.makeWindowTerminal(model, terminal))
-
 object WindowViewModel:
 
   def initial[ReferenceData](id: WindowId, magnification: Int): WindowViewModel[ReferenceData] =
@@ -173,127 +169,10 @@ object WindowViewModel:
             .getOrElse(Coords.zero)
         )
 
-    val vm = viewModel.resize(tempModel)
-    // val clones =
-    //   vm.terminal.toCloneTiles(
-    //     CloneId("window_tile"),
-    //     tempModel.bounds.coords.toScreenSpace(model.snapGrid),
-    //     model.charSheet.charCrops
-    //   ) { case (fg, bg) =>
-    //     graphic.withMaterial(TerminalMaterial(model.charSheet.assetName, fg, bg))
-    //   }
-
     val contentRectangle =
       WindowView.calculateContentRectangle(tempModel.bounds, model)
 
-    vm.copy(
-      // terminalClones = clones,
+    viewModel.copy(
       modelHashCode = model.bounds.hashCode(),
       contentRectangle = contentRectangle
     )
-
-  // def makeWindowTerminal[A, ReferenceData](
-  //     model: WindowModel[A, ReferenceData],
-  //     current: RogueTerminalEmulator
-  // ): RogueTerminalEmulator =
-  //   val validSize =
-  //     model.bounds.dimensions.max(if model.title.isDefined then Dimensions(3) else Dimensions(2))
-
-  //   val tiles: Batch[(Point, MapTile)] =
-  //     val grey  = RGBA.White.mix(RGBA.Black, if model.hasFocus then 0.4 else 0.8)
-  //     val title = model.title.getOrElse("").take(model.bounds.dimensions.width - 2).toCharArray()
-
-  //     (0 to validSize.height).toBatch.flatMap { _y =>
-  //       (0 to validSize.width).toBatch.map { _x =>
-  //         val maxX   = validSize.width - 1
-  //         val maxY   = validSize.height - 1
-  //         val coords = Point(_x, _y)
-
-  //         coords match
-  //           // When there is a title
-  //           case Point(0, 1) if model.title.isDefined =>
-  //             // Title bar left
-  //             coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 1) if model.title.isDefined && x == maxX =>
-  //             // Title bar right
-  //             coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 1) if model.title.isDefined =>
-  //             // Title text, x starts at 2
-  //             val idx = x - 1
-  //             val tile =
-  //               if idx >= 0 && idx < title.length then
-  //                 val c = title(idx)
-  //                 Tile.charCodes.get(if c == '\\' then "\\" else c.toString) match
-  //                   case None       => Tile.SPACE
-  //                   case Some(char) => Tile(char)
-  //               else Tile.SPACE
-
-  //             coords -> MapTile(tile, RGBA.White, RGBA.Black)
-
-  //           case Point(0, 2) if model.title.isDefined =>
-  //             // Title bar line left
-  //             val tile = if maxY > 2 then Tile.`├` else Tile.`└`
-  //             coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 2) if model.title.isDefined && x == maxX =>
-  //             // Title bar line right
-  //             val tile = if maxY > 2 then Tile.`┤` else Tile.`┘`
-  //             coords -> MapTile(tile, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 2) if model.title.isDefined =>
-  //             // Title bar line
-  //             coords -> MapTile(Tile.`─`, RGBA.White, RGBA.Black)
-
-  //           // Normal window frame
-
-  //           case Point(0, 0) =>
-  //             // top left
-  //             coords -> MapTile(Tile.`┌`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 0) if model.closeable && x == maxX =>
-  //             // top right closable
-  //             coords -> MapTile(Tile.`x`, RGBA.Black, RGBA.White)
-
-  //           case Point(x, 0) if x == maxX =>
-  //             // top right
-  //             coords -> MapTile(Tile.`┐`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, 0) =>
-  //             // top
-  //             coords -> MapTile(Tile.`─`, RGBA.White, RGBA.Black)
-
-  //           case Point(0, y) if y == maxY =>
-  //             // bottom left
-  //             coords -> MapTile(Tile.`└`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, y) if model.resizable && x == maxX && y == maxY =>
-  //             // bottom right with resize
-  //             coords -> MapTile(Tile.`▼`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, y) if x == maxX && y == maxY =>
-  //             // bottom right
-  //             coords -> MapTile(Tile.`┘`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, y) if y == maxY =>
-  //             // bottom
-  //             coords -> MapTile(Tile.`─`, RGBA.White, RGBA.Black)
-
-  //           case Point(0, y) =>
-  //             // Middle left
-  //             coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, y) if x == maxX =>
-  //             // Middle right
-  //             coords -> MapTile(Tile.`│`, RGBA.White, RGBA.Black)
-
-  //           case Point(x, y) =>
-  //             // Window background
-  //             coords -> MapTile(Tile.`░`, grey, RGBA.Black)
-
-  //       }
-  //     }
-
-  //   RogueTerminalEmulator(validSize.unsafeToSize)
-  //     .put(tiles)

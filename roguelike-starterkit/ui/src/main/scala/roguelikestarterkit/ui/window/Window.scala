@@ -20,7 +20,12 @@ final case class Window[A, ReferenceData](
     static: Boolean,
     minSize: Option[Dimensions],
     maxSize: Option[Dimensions],
-    state: WindowState
+    state: WindowState,
+    present: (
+        UIContext[ReferenceData],
+        Window[A, ReferenceData],
+        WindowViewModel[ReferenceData]
+    ) => Outcome[Layer]
 ):
 
   lazy val minAllowedSize: Dimensions =
@@ -138,6 +143,12 @@ object Window:
       id: WindowId,
       snapGrid: Size,
       content: A
+  )(
+      present: (
+          UIContext[ReferenceData],
+          Window[A, ReferenceData],
+          WindowViewModel[ReferenceData]
+      ) => Outcome[Layer]
   )(using c: WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
     Window(
       id,
@@ -153,7 +164,8 @@ object Window:
       false,
       None,
       None,
-      WindowState.Closed
+      WindowState.Closed,
+      present
     )
 
   def updateModel[A, ReferenceData](

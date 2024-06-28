@@ -20,19 +20,19 @@ object WindowView:
         context.copy(bounds = viewModel.contentRectangle),
         model.contentModel
       )
-      .map {
+      .flatMap {
         case l: Layer.Content =>
-          Layer.Stack(
-            // Layer
-            //   .Content(viewModel.terminalClones.clones)
-            //   .addCloneBlanks(viewModel.terminalClones.blanks),
-            l.withBlendMaterial(
-              LayerMask(
-                viewModel.contentRectangle
-                  .toScreenSpace(context.snapGrid * viewModel.magnification)
+          model.present(context, model, viewModel).map { windowChrome =>
+            Layer.Stack(
+              windowChrome,
+              l.withBlendMaterial(
+                LayerMask(
+                  viewModel.contentRectangle
+                    .toScreenSpace(context.snapGrid * viewModel.magnification)
+                )
               )
             )
-          )
+          }
 
         case l: Layer.Stack =>
           val masked =
@@ -49,11 +49,11 @@ object WindowView:
                 l
             }
 
-          Layer.Stack(
-            // Layer
-            //   .Content(viewModel.terminalClones.clones)
-            //   .addCloneBlanks(viewModel.terminalClones.blanks) :: masked
-          )
+          model.present(context, model, viewModel).map { windowChrome =>
+            Layer.Stack(
+              windowChrome :: masked
+            )
+          }
       }
 
   def calculateContentRectangle[A, ReferenceData](
