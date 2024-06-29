@@ -147,10 +147,14 @@ object WindowViewModel:
     case _ =>
       Outcome(viewModel)
 
-  def calculateDragBy(charSize: Size, mousePosition: Point, windowPosition: Coords): Coords =
+  private def calculateDragBy(
+      charSize: Size,
+      mousePosition: Point,
+      windowPosition: Coords
+  ): Coords =
     Coords(mousePosition / charSize.toPoint) - windowPosition
 
-  def redraw[A, ReferenceData](
+  private def redraw[A, ReferenceData](
       context: UIContext[ReferenceData],
       model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
