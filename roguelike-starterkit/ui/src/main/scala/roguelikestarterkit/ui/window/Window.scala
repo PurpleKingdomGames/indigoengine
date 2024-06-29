@@ -21,11 +21,7 @@ final case class Window[A, ReferenceData](
     minSize: Option[Dimensions],
     maxSize: Option[Dimensions],
     state: WindowState,
-    present: (
-        UIContext[ReferenceData],
-        Window[A, ReferenceData],
-        WindowViewModel[ReferenceData]
-    ) => Outcome[Layer]
+    present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
 ):
 
   lazy val minAllowedSize: Dimensions =
@@ -144,11 +140,7 @@ object Window:
       snapGrid: Size,
       content: A
   )(
-      present: (
-          UIContext[ReferenceData],
-          Window[A, ReferenceData],
-          WindowViewModel[ReferenceData]
-      ) => Outcome[Layer]
+      present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
   )(using c: WindowContent[A, ReferenceData]): Window[A, ReferenceData] =
     Window(
       id,

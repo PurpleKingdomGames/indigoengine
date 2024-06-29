@@ -36,11 +36,8 @@ object TerminalWindow:
       None,
       None,
       WindowState.Closed,
-      (
-          context: UIContext[ReferenceData],
-          model: Window[A, ReferenceData],
-          viewModel: WindowViewModel[ReferenceData]
-      ) => present(context, model, viewModel, charSheet)
+      (context: UIContext[ReferenceData], model: Window[A, ReferenceData]) =>
+        present(context, model, charSheet)
     )
 
   private val graphic: Graphic[TerminalMaterial] =
@@ -49,7 +46,6 @@ object TerminalWindow:
   def present[A, ReferenceData](
       context: UIContext[ReferenceData],
       model: Window[A, ReferenceData],
-      viewModel: WindowViewModel[ReferenceData],
       charSheet: CharSheet
   ): Outcome[Layer] =
     val validSize =
