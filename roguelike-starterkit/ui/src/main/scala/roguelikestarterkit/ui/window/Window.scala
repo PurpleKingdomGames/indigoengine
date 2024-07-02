@@ -33,6 +33,10 @@ In order to replicate a "traditional" window, our components need some new funct
 
 ---
 
+Missing stuff:
+
+Optional backgrounds on ComponentGroups? Would allow you to make title bars our of a component group and a label, for example.
+
 Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
 
 Might also need model windows that sit above everything.

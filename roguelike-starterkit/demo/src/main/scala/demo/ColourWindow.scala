@@ -6,6 +6,7 @@ import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
+import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -73,6 +74,16 @@ object ColourWindow:
                 RGBA.White  -> RGBA.Black,
                 RGBA.Black  -> RGBA.White,
                 hasBorder = true
+              )
+            )
+          )
+          .add(
+            TerminalLabel(
+              "Colour palette",
+              TerminalLabel.Theme(
+                charSheet,
+                RGBA.White,
+                RGBA.Black
               )
             )
           )
