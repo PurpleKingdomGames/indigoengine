@@ -7,6 +7,7 @@ import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
@@ -87,7 +88,7 @@ object ColourWindow:
               )
             )
           )
-          .add(
+          .anchor(
             TerminalButton(
               "x",
               TerminalButton.Theme(
@@ -99,7 +100,8 @@ object ColourWindow:
               )
             ).onClick(
               WindowEvent.Close(windowId)
-            )
+            ),
+            Anchor.TopRight
           )
       )
     )

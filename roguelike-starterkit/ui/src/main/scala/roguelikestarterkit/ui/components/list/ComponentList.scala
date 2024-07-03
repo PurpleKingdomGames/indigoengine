@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components.list
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentEntry
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
@@ -23,7 +24,7 @@ final case class ComponentList[ReferenceData] private (
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f =
-      (r: ReferenceData) => content(r) :+ ComponentEntry(Coords.zero, entry(r), c)
+      (r: ReferenceData) => content(r) :+ ComponentEntry(Coords.zero, entry(r), c, Anchor.None)
 
     this.copy(
       content = f
@@ -53,8 +54,8 @@ final case class ComponentList[ReferenceData] private (
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     this.copy(
-      content =
-        (r: ReferenceData) => content(r) ++ entries(r).map(v => ComponentEntry(Coords.zero, v, c))
+      content = (r: ReferenceData) =>
+        content(r) ++ entries(r).map(v => ComponentEntry(Coords.zero, v, c, Anchor.None))
     )
 
   def withDimensions(value: Dimensions): ComponentList[ReferenceData] =
@@ -80,7 +81,7 @@ object ComponentList:
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      r => contents(r).map(v => ComponentEntry(Coords.zero, v, c))
+      r => contents(r).map(v => ComponentEntry(Coords.zero, v, c, Anchor.None))
 
     ComponentList(
       f,
@@ -94,7 +95,7 @@ object ComponentList:
       c: StatelessComponent[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      _ => Batch.fromSeq(contents).map(v => ComponentEntry(Coords.zero, v, c))
+      _ => Batch.fromSeq(contents).map(v => ComponentEntry(Coords.zero, v, c, Anchor.None))
 
     ComponentList(
       f,

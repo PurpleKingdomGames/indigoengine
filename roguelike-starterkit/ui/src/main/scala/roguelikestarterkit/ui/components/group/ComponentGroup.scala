@@ -2,6 +2,7 @@ package roguelikestarterkit.ui.components.group
 
 import indigo.*
 import roguelikestarterkit.ui.component.*
+import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentEntry
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.ContainerLikeFunctions
@@ -28,7 +29,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentEntry(Coords.zero, entry, c),
+      components = components :+ ComponentEntry(Coords.zero, entry, c, Anchor.None),
       dirty = true
     )
 
@@ -41,6 +42,14 @@ final case class ComponentGroup[ReferenceData] private[group] (
     entries.foldLeft(this.copy(dirty = true)) { case (acc, next) => acc.addSingle(next) }
   def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
+
+  def anchor[A](entry: A, anchor: Anchor)(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    this.copy(
+      components = components :+ ComponentEntry(Coords.zero, entry, c, anchor),
+      dirty = true
+    )
 
   def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
     this.copy(dimensions = value, dirty = true)
@@ -204,13 +213,18 @@ object ComponentGroup:
       // Now we need to set the offset of each child, based on the layout
       val withOffsets =
         updatedComponents.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) { (acc, next) =>
-          val nextOffset =
-            ContainerLikeFunctions.calculateNextOffset[ReferenceData](
-              boundsWithoutContent,
-              model.layout
-            )(reference, acc)
+          next.anchor match
+            case Anchor.None =>
+              val nextOffset =
+                ContainerLikeFunctions.calculateNextOffset[ReferenceData](
+                  boundsWithoutContent,
+                  model.layout
+                )(reference, acc)
 
-          acc :+ next.copy(offset = nextOffset)
+              acc :+ next.copy(offset = nextOffset)
+
+            case _ =>
+              acc :+ next
         }
 
       // Now we can calculate the content bounds
@@ -220,7 +234,7 @@ object ComponentGroup:
           acc.expandToInclude(bounds)
         }
 
-      // And finally, we can calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
+      // We can now calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
       val updatedBounds =
         model.boundsType match
           case BoundsType(FitMode.Content, FitMode.Content) =>
@@ -235,10 +249,24 @@ object ComponentGroup:
           case _ =>
             boundsWithoutContent
 
+      // Finally, we can apply the anchors to the components that are not set to Anchor.None based on the updatedBounds
+      val withAnchors =
+        withOffsets.map { c =>
+          c.anchor match
+            case Anchor.None =>
+              c
+
+            case a =>
+              val componentBounds = c.component.bounds(reference, c.model)
+              val offset          = a.position(updatedBounds, componentBounds.dimensions)
+
+              c.copy(offset = offset)
+        }
+
       // Return the updated model with the new bounds and content bounds and dirty flag reset
       model.copy(
         dirty = false,
         contentBounds = contentBounds,
         dimensions = updatedBounds,
-        components = withOffsets
+        components = withAnchors
       )
