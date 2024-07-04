@@ -47,6 +47,8 @@ Labels with borders.
 
 Some way to define the content rectangle of a window?
 
+Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
+
  */
 
 final case class Window[A, ReferenceData](
