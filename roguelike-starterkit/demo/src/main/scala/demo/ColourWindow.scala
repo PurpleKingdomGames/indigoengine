@@ -11,6 +11,7 @@ import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
 import roguelikestarterkit.ui.components.common.Padding
+import roguelikestarterkit.ui.components.group.BoundsType
 import roguelikestarterkit.ui.components.group.ComponentGroup
 import roguelikestarterkit.ui.window.TerminalWindow
 
@@ -51,6 +52,7 @@ object ColourWindow:
       charSheet,
       ColorPalette(
         ComponentGroup()
+          .withBoundsType(BoundsType.inherit)
           .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
           .add(
             ComponentGroup()
@@ -78,7 +80,7 @@ object ColourWindow:
               )
             )
           )
-          .add(
+          .anchor(
             TerminalLabel(
               "Colour palette",
               TerminalLabel.Theme(
@@ -86,7 +88,23 @@ object ColourWindow:
                 RGBA.White,
                 RGBA.Black
               )
-            )
+            ),
+            Anchor.TopLeft
+          )
+          .anchor(
+            TerminalButton(
+              ">",
+              TerminalButton.Theme(
+                charSheet,
+                RGBA.Black -> RGBA.Silver,
+                RGBA.Black -> RGBA.White,
+                RGBA.White -> RGBA.Black,
+                hasBorder = false
+              )
+            ).onClick(
+              WindowEvent.Close(windowId)
+            ),
+            Anchor.BottomRight
           )
           .anchor(
             TerminalButton(
