@@ -7,6 +7,20 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
+/* 
+
+Time to revisit Stateless Components.
+
+We have them for ComponentList, which needs to be able to recreate componenets and work purely on the view because the state can / will be lost.
+
+However, we can store the state off to one side in a key'd and managed map.
+
+If we do that, the ComponentGroup contents can be dynamic, and we don't need ComponentList any more.
+
+And if we do that, then button's etc can be stateful, and therefore draggable.
+
+*/
+
 /*
 
 Let's start over.
