@@ -43,8 +43,6 @@ Might also need model windows that sit above everything.
 
 Padding on anchors.
 
-Labels with borders.
-
 Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
 
 Some way to define the content rectangle of a window? Or just remove it.
