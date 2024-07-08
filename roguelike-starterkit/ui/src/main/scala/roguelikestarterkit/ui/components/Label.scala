@@ -9,10 +9,6 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-// TODO: One problem here is that if you want to use, say, a TextBox, then you need
-// a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext
-// present as it makes the code untestable currently.
-
 /** Labels are a simple `Component` that render text.
   */
 final case class Label[ReferenceData](

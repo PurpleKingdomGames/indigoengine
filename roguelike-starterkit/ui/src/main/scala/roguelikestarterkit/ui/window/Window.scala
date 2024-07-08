@@ -51,6 +51,8 @@ Warpping needs to take padding into account.
 
 Components need a way to fill the available space.
 
+One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
+
  */
 
 final case class Window[A, ReferenceData](
