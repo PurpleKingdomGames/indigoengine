@@ -20,7 +20,7 @@ object TerminalWindow:
       charSheet: CharSheet,
       content: A
   )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
-    Window(id, charSheet.size, content)(present(charSheet))
+    Window(id, charSheet.size, Dimensions(3), content)(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))

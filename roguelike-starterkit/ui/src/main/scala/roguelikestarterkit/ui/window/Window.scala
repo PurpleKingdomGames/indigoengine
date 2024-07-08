@@ -62,15 +62,11 @@ final case class Window[A, ReferenceData](
     content: A,
     component: Component[A, ReferenceData],
     hasFocus: Boolean,
-    minSize: Option[Dimensions],
+    minSize: Dimensions,
     maxSize: Option[Dimensions],
     state: WindowState,
     present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
 ):
-
-  // TODO: Does this still make sense? 3 whats?
-  lazy val minAllowedSize: Dimensions =
-    Dimensions(3)
 
   def withId(value: WindowId): Window[A, ReferenceData] =
     this.copy(id = value)
@@ -90,7 +86,7 @@ final case class Window[A, ReferenceData](
     moveBy(Coords(x, y))
 
   def withDimensions(value: Dimensions): Window[A, ReferenceData] =
-    val d = value.max(minAllowedSize)
+    val d = value.max(minSize)
     withBounds(bounds.withDimensions(maxSize.fold(d)(_.min(d))))
   def resizeTo(size: Dimensions): Window[A, ReferenceData] =
     withDimensions(size)
@@ -112,11 +108,9 @@ final case class Window[A, ReferenceData](
     withFocus(false)
 
   def withMinSize(min: Dimensions): Window[A, ReferenceData] =
-    this.copy(minSize = Option(min))
+    this.copy(minSize = min)
   def withMinSize(width: Int, height: Int): Window[A, ReferenceData] =
-    this.copy(minSize = Option(Dimensions(width, height)))
-  def noMinSize: Window[A, ReferenceData] =
-    this.copy(minSize = None)
+    this.copy(minSize = Dimensions(width, height))
 
   def withMaxSize(max: Dimensions): Window[A, ReferenceData] =
     this.copy(maxSize = Option(max))
@@ -151,6 +145,7 @@ object Window:
   def apply[A, ReferenceData](
       id: WindowId,
       snapGrid: Size,
+      minSize: Dimensions,
       content: A
   )(
       present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
@@ -162,7 +157,7 @@ object Window:
       content,
       c,
       false,
-      None,
+      minSize,
       None,
       WindowState.Closed,
       present
