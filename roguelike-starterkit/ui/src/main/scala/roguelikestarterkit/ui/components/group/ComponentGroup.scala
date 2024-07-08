@@ -13,7 +13,8 @@ import roguelikestarterkit.ui.datatypes.*
 
 import scala.annotation.tailrec
 
-/** Describes a fixed arrangement of components, manages their layout, which may include anchored components.
+/** Describes a fixed arrangement of components, manages their layout, which may include anchored
+  * components.
   */
 final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsType,
@@ -29,8 +30,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components =
-        components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, Anchor.None),
+      components = components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, None),
       dirty = true
     )
 
@@ -48,7 +48,8 @@ final case class ComponentGroup[ReferenceData] private[group] (
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
-      components = components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, anchor),
+      components =
+        components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, Option(anchor)),
       dirty = true
     )
 
@@ -215,7 +216,7 @@ object ComponentGroup:
       val withOffsets =
         updatedComponents.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) { (acc, next) =>
           next.anchor match
-            case Anchor.None =>
+            case None =>
               val nextOffset =
                 ContainerLikeFunctions.calculateNextOffset[ReferenceData](
                   boundsWithoutContent,
@@ -254,12 +255,12 @@ object ComponentGroup:
       val withAnchors =
         withOffsets.map { c =>
           c.anchor match
-            case Anchor.None =>
+            case None =>
               c
 
-            case a =>
+            case Some(a) =>
               val componentBounds = c.component.bounds(reference, c.model)
-              val offset          = a.position(updatedBounds, componentBounds.dimensions)
+              val offset          = a.calculatePosition(updatedBounds, componentBounds.dimensions)
 
               c.copy(offset = offset)
         }

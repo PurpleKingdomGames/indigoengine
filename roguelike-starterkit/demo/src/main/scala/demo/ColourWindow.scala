@@ -120,7 +120,7 @@ object ColourWindow:
         ).onClick(
           WindowEvent.Close(windowId)
         ),
-        Anchor.TopRight
+        Anchor.TopRight.withPadding(Padding(1))
       )
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =

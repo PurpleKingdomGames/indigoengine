@@ -13,6 +13,6 @@ final case class ComponentEntry[A, ReferenceData](
     offset: Coords,
     model: A,
     component: Component[A, ReferenceData],
-    anchor: Anchor
+    anchor: Option[Anchor]
 ):
   type Out = A

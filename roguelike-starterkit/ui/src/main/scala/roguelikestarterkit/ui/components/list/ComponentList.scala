@@ -29,7 +29,7 @@ final case class ComponentList[ReferenceData] private (
       (r: ReferenceData) =>
         content(r) :+ {
           val (id, a) = entry(r)
-          ComponentEntry(id, Coords.zero, a, c, Anchor.None)
+          ComponentEntry(id, Coords.zero, a, c, None)
         }
 
     this.copy(
@@ -61,7 +61,7 @@ final case class ComponentList[ReferenceData] private (
   ): ComponentList[ReferenceData] =
     this.copy(
       content = (r: ReferenceData) =>
-        content(r) ++ entries(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, Anchor.None))
+        content(r) ++ entries(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
     )
 
   def withDimensions(value: Dimensions): ComponentList[ReferenceData] =
@@ -87,7 +87,7 @@ object ComponentList:
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      r => contents(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, Anchor.None))
+      r => contents(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
 
     ComponentList(
       f,
@@ -102,7 +102,7 @@ object ComponentList:
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      _ => Batch.fromSeq(contents).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, Anchor.None))
+      _ => Batch.fromSeq(contents).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
 
     ComponentList(
       f,
