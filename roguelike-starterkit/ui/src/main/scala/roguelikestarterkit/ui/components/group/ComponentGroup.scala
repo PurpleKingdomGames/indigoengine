@@ -20,6 +20,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsType,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
+    background: Bounds => ComponentFragment,
     // Internal
     dimensions: Dimensions, // The actual cached dimensions of the group
     contentBounds: Bounds,  // The calculated and cached bounds of the content
@@ -62,6 +63,9 @@ final case class ComponentGroup[ReferenceData] private[group] (
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value, dirty = true)
 
+  def withBackground(present: Bounds => ComponentFragment): ComponentGroup[ReferenceData] =
+    this.copy(background = present, dirty = true)
+
 object ComponentGroup:
 
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
@@ -69,6 +73,7 @@ object ComponentGroup:
       BoundsType.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
+      _ => ComponentFragment.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -79,6 +84,7 @@ object ComponentGroup:
       boundsType,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
+      _ => ComponentFragment.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -89,6 +95,7 @@ object ComponentGroup:
       BoundsType.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
+      _ => ComponentFragment.empty,
       dimensions,
       Bounds.zero,
       dirty = true
@@ -143,7 +150,10 @@ object ComponentGroup:
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[ComponentFragment] =
-      ContainerLikeFunctions.present(context, model.components)
+      ContainerLikeFunctions.present(context, model.components).map { components =>
+        val background = model.background(Bounds(context.bounds.coords, model.dimensions))
+        background |+| components
+      }
 
     def refresh(
         reference: ReferenceData,

@@ -12,11 +12,9 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 Missing stuff:
 
-Optional backgrounds on ComponentGroups? Would allow you to make title bars our of a component group and a label, for example.
-
 Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
 
-Might also need model windows that sit above everything.
+Might also need 'modal' windows that sit above everything.
 
 Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
 
@@ -38,7 +36,7 @@ final case class Window[A, ReferenceData](
     minSize: Dimensions,
     maxSize: Option[Dimensions],
     state: WindowState,
-    present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer],
+    background: WindowContext => Outcome[Layer],
     mask: Padding
 ):
 
@@ -117,6 +115,9 @@ final case class Window[A, ReferenceData](
       )
     )
 
+  def withBackground(present: WindowContext => Outcome[Layer]): Window[A, ReferenceData] =
+    this.copy(background = present)
+
 object Window:
 
   def apply[A, ReferenceData](
@@ -124,8 +125,6 @@ object Window:
       snapGrid: Size,
       minSize: Dimensions,
       content: A
-  )(
-      present: (UIContext[ReferenceData], Window[A, ReferenceData]) => Outcome[Layer]
   )(using c: Component[A, ReferenceData]): Window[A, ReferenceData] =
     Window(
       id,
@@ -137,7 +136,29 @@ object Window:
       minSize,
       None,
       WindowState.Closed,
-      present,
+      _ => Outcome(Layer.empty),
+      Padding.zero
+    )
+
+  def apply[A, ReferenceData](
+      id: WindowId,
+      snapGrid: Size,
+      minSize: Dimensions,
+      content: A
+  )(
+      background: WindowContext => Outcome[Layer]
+  )(using c: Component[A, ReferenceData]): Window[A, ReferenceData] =
+    Window(
+      id,
+      snapGrid,
+      Bounds(Coords.zero, Dimensions.zero),
+      content,
+      c,
+      false,
+      minSize,
+      None,
+      WindowState.Closed,
+      background,
       Padding.zero
     )
 
@@ -149,3 +170,19 @@ object Window:
       model.component
         .updateModel(context.copy(bounds = model.bounds), model.content)(e)
         .map(model.withModel)
+
+final case class WindowContext(
+    bounds: Bounds,
+    hasFocus: Boolean,
+    mouseIsOver: Boolean,
+    magnification: Int
+)
+object WindowContext:
+
+  def from(model: Window[?, ?], viewModel: WindowViewModel[?]): WindowContext =
+    WindowContext(
+      model.bounds,
+      model.hasFocus,
+      viewModel.mouseIsOver,
+      viewModel.magnification
+    )

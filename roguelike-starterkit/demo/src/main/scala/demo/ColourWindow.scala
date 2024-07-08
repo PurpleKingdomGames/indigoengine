@@ -153,6 +153,17 @@ object ColourWindow:
           )
         )
       )
+      .withBackground { bounds =>
+        ComponentFragment(
+          Shape.Box(
+            Rectangle(
+              bounds.coords.toScreenSpace(charSheet.size),
+              bounds.dimensions.toScreenSpace(charSheet.size)
+            ),
+            Fill.Color(RGBA.Cyan.withAlpha(0.5))
+          )
+        )
+      }
 
   def presentSwatch(
       charSheet: CharSheet,

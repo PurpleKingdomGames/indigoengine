@@ -65,6 +65,17 @@ object ComponentsWindow2:
                 ComponentId("w" + i) -> TerminalLabel("x " + i, TerminalLabel.Theme(charSheet))
               }
           }
+            .withBackground { bounds =>
+              ComponentFragment(
+                Shape.Box(
+                  Rectangle(
+                    bounds.coords.toScreenSpace(charSheet.size),
+                    bounds.dimensions.toScreenSpace(charSheet.size)
+                  ),
+                  Fill.Color(RGBA.Magenta.withAlpha(0.5))
+                )
+              )
+            }
             .add((_: Int) =>
               ComponentId("input_dynamic") -> TerminalInput(20, TerminalInput.Theme(charSheet))
             )

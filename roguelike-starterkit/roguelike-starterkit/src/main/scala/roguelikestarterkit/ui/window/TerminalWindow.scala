@@ -21,22 +21,21 @@ object TerminalWindow:
       charSheet: CharSheet,
       content: A
   )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
-    val w: Window[A, ReferenceData] =
-      Window(id, charSheet.size, Dimensions(3), content)(present(charSheet))
-    w.withMaskPadding(Padding.bottom(1).withRight(1))
+    Window(id, charSheet.size, Dimensions(3), content)
+      .withMaskPadding(Padding.bottom(1).withRight(1))
+      .withBackground(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   def present[A, ReferenceData](charSheet: CharSheet)(
-      context: UIContext[ReferenceData],
-      model: Window[A, ReferenceData]
+      context: WindowContext
   ): Outcome[Layer] =
     val validSize =
-      model.bounds.dimensions.max(Dimensions(2))
+      context.bounds.dimensions.max(Dimensions(2))
 
     val tiles: Batch[(Point, MapTile)] =
-      val grey = RGBA.White.mix(RGBA.Black, if model.hasFocus then 0.4 else 0.8)
+      val grey = RGBA.White.mix(RGBA.Black, if context.hasFocus then 0.4 else 0.8)
 
       (0 to validSize.height).toBatch.flatMap { _y =>
         (0 to validSize.width).toBatch.map { _x =>
@@ -88,7 +87,7 @@ object TerminalWindow:
         .put(tiles)
         .toCloneTiles(
           CloneId("terminal_window_tile_clone_id"),
-          model.bounds.coords.toScreenSpace(charSheet.size),
+          context.bounds.coords.toScreenSpace(charSheet.size),
           charSheet.charCrops
         ) { case (fg, bg) =>
           graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

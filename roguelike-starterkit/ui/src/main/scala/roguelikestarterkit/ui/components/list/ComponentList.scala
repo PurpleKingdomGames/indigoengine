@@ -19,7 +19,8 @@ final case class ComponentList[ReferenceData] private (
     content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
     stateMap: Map[ComponentId, Any],
     layout: ComponentLayout,
-    dimensions: Dimensions
+    dimensions: Dimensions,
+    background: Bounds => ComponentFragment
 ):
 
   private def addSingle[A](entry: ReferenceData => (ComponentId, A))(using
@@ -79,6 +80,9 @@ final case class ComponentList[ReferenceData] private (
   def resizeBy(x: Int, y: Int): ComponentList[ReferenceData] =
     resizeBy(Dimensions(x, y))
 
+  def withBackground(present: Bounds => ComponentFragment): ComponentList[ReferenceData] =
+    this.copy(background = present)
+
 object ComponentList:
 
   def apply[ReferenceData, A](
@@ -93,7 +97,8 @@ object ComponentList:
       f,
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
-      dimensions
+      dimensions,
+      _ => ComponentFragment.empty
     )
 
   def apply[ReferenceData, A](
@@ -108,7 +113,8 @@ object ComponentList:
       f,
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
-      dimensions
+      dimensions,
+      _ => ComponentFragment.empty
     )
 
   given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with
@@ -188,10 +194,15 @@ object ComponentList:
                 entry.copy(model = savedState.asInstanceOf[entry.Out])
           }
 
-      ContainerLikeFunctions.present(
-        context,
-        contentReflow(context.reference, model.dimensions, model.layout, entries)
-      )
+      ContainerLikeFunctions
+        .present(
+          context,
+          contentReflow(context.reference, model.dimensions, model.layout, entries)
+        )
+        .map { components =>
+          val background = model.background(Bounds(context.bounds.coords, model.dimensions))
+          background |+| components
+        }
 
     // ComponentList's have a fixed size, so we don't need to do anything here,
     // and since this component's size doesn't change, nor do we need to

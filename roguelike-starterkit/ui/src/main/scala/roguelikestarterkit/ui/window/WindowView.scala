@@ -24,7 +24,7 @@ object WindowView:
       .map(_.toLayer)
       .flatMap {
         case l: Layer.Content =>
-          model.present(context, model).map { windowChrome =>
+          model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
             Layer.Stack(
               windowChrome,
               l.withBlendMaterial(
@@ -61,7 +61,7 @@ object WindowView:
                 l
             }
 
-          model.present(context, model).map { windowChrome =>
+          model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
             Layer.Stack(
               windowChrome :: masked
             )
