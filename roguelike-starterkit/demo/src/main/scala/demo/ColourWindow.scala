@@ -52,98 +52,107 @@ object ColourWindow:
       windowId,
       charSheet,
       ColorPalette(
-        ComponentGroup()
-          .withBoundsType(BoundsType.inherit)
-          .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
-          .add(
-            ComponentGroup()
-              .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
-              .add(
-                // Custom rendered buttons for the swatches
-                outrunner16.colors.map { rgba =>
-                  Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
-                    // .onClick(<Emit some event...>)
-                    .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
-                    .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
-                }
-              )
-          )
-          .add(
-            // Default button renderer
-            TerminalButton(
-              "Load palette",
-              TerminalButton.Theme(
-                charSheet,
-                RGBA.Silver -> RGBA.Black,
-                RGBA.White  -> RGBA.Black,
-                RGBA.Black  -> RGBA.White,
-                hasBorder = true
-              )
-            )
-          )
-          .anchor(
-            TerminalButton(
-              "Colour palette",
-              TerminalButton
-                .Theme(
-                  charSheet,
-                  RGBA.White,
-                  RGBA.Black
-                )
-                .addBorder
-            ).onDrag { (_: Unit, dragData) =>
-              Batch(
-                WindowEvent
-                  .Move(
-                    windowId,
-                    dragData.position - dragData.offset - 1, // The +2 is to account for the border, for now.
-                    Space.Screen
-                  )
-              )
-            }.reportDrag,
-            Anchor.TopLeft
-          )
-          .anchor(
-            TerminalButton(
-              ">",
-              TerminalButton.Theme(
-                charSheet,
-                RGBA.Black -> RGBA.Silver,
-                RGBA.Black -> RGBA.White,
-                RGBA.White -> RGBA.Black,
-                hasBorder = false
-              )
-            ).onDrag { (_: Unit, dragData) =>
-              Batch(
-                WindowEvent
-                  .Resize(
-                    windowId,
-                    dragData.position.toDimensions + 2, // The +2 is to account for the border, for now.
-                    Space.Screen
-                  )
-              )
-            }.reportDrag,
-            Anchor.BottomRight
-          )
-          .anchor(
-            TerminalButton(
-              "x",
-              TerminalButton.Theme(
-                charSheet,
-                RGBA.Black -> RGBA.Silver,
-                RGBA.Black -> RGBA.White,
-                RGBA.White -> RGBA.Black,
-                hasBorder = false
-              )
-            ).onClick(
-              WindowEvent.Close(windowId)
-            ),
-            Anchor.TopRight
-          )
+        windowChrome(charSheet, content(charSheet))
       )
     )
       .moveTo(5, 5)
       .resizeTo(20, 20)
+
+  def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
+    ComponentGroup()
+      .withBoundsType(BoundsType.inherit)
+      .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
+      .add(content)
+      .anchor(
+        TerminalButton(
+          "Colour palette",
+          TerminalButton
+            .Theme(
+              charSheet,
+              RGBA.White,
+              RGBA.Black
+            )
+            .addBorder
+        ).onDrag { (_: Unit, dragData) =>
+          Batch(
+            WindowEvent
+              .Move(
+                windowId,
+                dragData.position - dragData.offset,
+                Space.Screen
+              )
+          )
+        }.reportDrag,
+        Anchor.TopLeft
+      )
+      .anchor(
+        TerminalButton(
+          ">",
+          TerminalButton.Theme(
+            charSheet,
+            RGBA.Black -> RGBA.Silver,
+            RGBA.Black -> RGBA.White,
+            RGBA.White -> RGBA.Black,
+            hasBorder = false
+          )
+        ).onDrag { (_: Unit, dragData) =>
+          Batch(
+            WindowEvent
+              .Resize(
+                windowId,
+                dragData.position.toDimensions,
+                Space.Screen
+              )
+          )
+        }.reportDrag,
+        Anchor.BottomRight
+      )
+      .anchor(
+        TerminalButton(
+          "x",
+          TerminalButton.Theme(
+            charSheet,
+            RGBA.Black -> RGBA.Silver,
+            RGBA.Black -> RGBA.White,
+            RGBA.White -> RGBA.Black,
+            hasBorder = false
+          )
+        ).onClick(
+          WindowEvent.Close(windowId)
+        ),
+        Anchor.TopRight
+      )
+
+  def content(charSheet: CharSheet): ComponentGroup[Unit] =
+    ComponentGroup()
+      .withBoundsType(BoundsType.inherit)
+      .withLayout(ComponentLayout.Vertical(Padding.zero.withBottom(1)))
+      .add(
+        ComponentGroup()
+          .withLayout(ComponentLayout.Horizontal(Overflow.Wrap))
+          .add(
+            // Custom rendered buttons for the swatches
+            outrunner16.colors.map { rgba =>
+              Button(Bounds(0, 0, 3, 3))(presentSwatch(charSheet, rgba, None))
+                // .onClick(<Emit some event...>)
+                .presentOver(presentSwatch(charSheet, rgba, Option(RGBA.White)))
+                .presentDown(presentSwatch(charSheet, rgba, Option(RGBA.Black)))
+            }
+          )
+      )
+      .add(
+        // Default button renderer
+        TerminalButton(
+          "Load palette",
+          TerminalButton.Theme(
+            charSheet,
+            RGBA.Silver -> RGBA.Black,
+            RGBA.White  -> RGBA.Black,
+            RGBA.Black  -> RGBA.White,
+            hasBorder = true
+          )
+        )
+      )
 
   def presentSwatch(
       charSheet: CharSheet,

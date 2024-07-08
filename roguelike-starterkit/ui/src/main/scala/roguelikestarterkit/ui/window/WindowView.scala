@@ -18,7 +18,7 @@ object WindowView:
   ): Outcome[Layer] =
     model.component
       .present(
-        context.copy(bounds = viewModel.contentRectangle),
+        context.copy(bounds = model.bounds),
         model.content
       )
       .map(_.toLayer)
@@ -29,7 +29,7 @@ object WindowView:
               windowChrome,
               l.withBlendMaterial(
                 LayerMask(
-                  viewModel.contentRectangle
+                  model.bounds
                     .toScreenSpace(context.snapGrid * viewModel.magnification)
                 )
               )
@@ -42,7 +42,7 @@ object WindowView:
               case l: Layer.Content =>
                 l.withBlendMaterial(
                   LayerMask(
-                    viewModel.contentRectangle
+                    model.bounds
                       .toScreenSpace(context.snapGrid * viewModel.magnification)
                   )
                 )
@@ -57,12 +57,3 @@ object WindowView:
             )
           }
       }
-
-  // TODO: This is now wrong.
-  def calculateContentRectangle[A, ReferenceData](
-      workingBounds: Bounds,
-      model: Window[A, ReferenceData]
-  ): Bounds =
-    workingBounds
-      .resize((workingBounds.dimensions - Dimensions(2, 2)).max(Dimensions.zero))
-      .moveTo(workingBounds.coords + Coords(1, 1))

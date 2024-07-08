@@ -10,7 +10,6 @@ import roguelikestarterkit.ui.datatypes.UIContext
 final case class WindowViewModel[ReferenceData](
     id: WindowId,
     modelHashCode: Int,
-    contentRectangle: Bounds,
     mouseIsOver: Boolean,
     magnification: Int
 ):
@@ -28,7 +27,6 @@ object WindowViewModel:
     WindowViewModel(
       id,
       0,
-      Bounds.zero,
       false,
       magnification
     )
@@ -73,10 +71,6 @@ object WindowViewModel:
       model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): WindowViewModel[ReferenceData] =
-    val contentRectangle =
-      WindowView.calculateContentRectangle(model.bounds, model)
-
     viewModel.copy(
-      modelHashCode = model.bounds.hashCode(),
-      contentRectangle = contentRectangle
+      modelHashCode = model.bounds.hashCode()
     )

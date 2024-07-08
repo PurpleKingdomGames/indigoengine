@@ -45,10 +45,11 @@ Padding on anchors.
 
 Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
 
-Some way to define the content rectangle of a window? Or just remove it.
-Terminal window border. Shouldn't be a thing. Content has padding, and the window has a background, that's all. I think.
-
 We need a standard window template. Title bar, close button, resize button.
+
+Warpping needs to take padding into account.
+
+Components need a way to fill the available space.
 
  */
 
@@ -139,7 +140,7 @@ final case class Window[A, ReferenceData](
       component.refresh(
         reference,
         content,
-        WindowView.calculateContentRectangle(bounds, this).dimensions
+        bounds.dimensions
       )
     )
 
@@ -170,8 +171,6 @@ object Window:
       model: Window[A, ReferenceData]
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
     case e =>
-      val contentRectangle = WindowView.calculateContentRectangle(model.bounds, model)
-
       model.component
-        .updateModel(context.copy(bounds = contentRectangle), model.content)(e)
+        .updateModel(context.copy(bounds = model.bounds), model.content)(e)
         .map(model.withModel)
