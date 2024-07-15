@@ -16,8 +16,6 @@ Oh and we're still missing scrolling. Not totally sure where that goes yet. Clea
 
 Might also need 'modal' windows that sit above everything.
 
-Terminal components, supplying a string isn't always nice, would be good to allow a Batch[Tile] or something.
-
 We need a standard window template. Title bar, close button, resize button.
 
 One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
