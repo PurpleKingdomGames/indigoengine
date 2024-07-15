@@ -12,15 +12,13 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 Missing stuff:
 
-Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
+- Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
+- One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
+- Components should respect UIState.Active/Inactive in the context.
 
-Might also need 'modal' windows that sit above everything.
-
-We need a standard window template. Title bar, close button, resize button.
-
-One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
-
-Package aliases.
+Polishing up:
+- Package aliases.
+- We need a standard window template. Title bar, close button, resize button.
 
 A demo of a non-ASCII window.
 
@@ -37,7 +35,8 @@ final case class Window[A, ReferenceData](
     maxSize: Option[Dimensions],
     state: WindowState,
     background: WindowContext => Outcome[Layer],
-    mask: Padding
+    mask: Padding,
+    mode: WindowMode
 ):
 
   def withId(value: WindowId): Window[A, ReferenceData] =
@@ -118,6 +117,13 @@ final case class Window[A, ReferenceData](
   def withBackground(present: WindowContext => Outcome[Layer]): Window[A, ReferenceData] =
     this.copy(background = present)
 
+  def withWindowMode(value: WindowMode): Window[A, ReferenceData] =
+    this.copy(mode = value)
+  def modal: Window[A, ReferenceData] =
+    withWindowMode(WindowMode.Modal)
+  def standard: Window[A, ReferenceData] =
+    withWindowMode(WindowMode.Standard)
+
 object Window:
 
   def apply[A, ReferenceData](
@@ -137,7 +143,8 @@ object Window:
       None,
       WindowState.Closed,
       _ => Outcome(Layer.empty),
-      Padding.zero
+      Padding.zero,
+      WindowMode.Standard
     )
 
   def apply[A, ReferenceData](
@@ -159,7 +166,8 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      Padding.zero
+      Padding.zero,
+      WindowMode.Standard
     )
 
   def updateModel[A, ReferenceData](

@@ -56,6 +56,17 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
 
     this.copy(windows = reordered)
 
+  def focusOn(id: WindowId): WindowManagerModel[ReferenceData] =
+    val reordered =
+      windows.find(_.id == id) match
+        case None =>
+          windows
+
+        case Some(w) =>
+          windows.filterNot(_.id == w.id).map(_.blur) :+ w.focus
+
+    this.copy(windows = reordered)
+
   def windowAt(coords: Coords): Option[WindowId] =
     windows.reverse.find(_.bounds.contains(coords)).map(_.id)
 

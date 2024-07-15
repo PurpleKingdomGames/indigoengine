@@ -56,6 +56,24 @@ enum WindowEvent extends GlobalEvent:
   /** Tells a window request its content to refresh */
   case Refresh(id: WindowId)
 
+  def windowId: Option[WindowId] =
+    this match
+      case MouseOver(id)          => Some(id)
+      case MouseOut(id)           => Some(id)
+      case Resized(id)            => Some(id)
+      case Opened(id)             => Some(id)
+      case Closed(id)             => Some(id)
+      case Open(id)               => Some(id)
+      case OpenAt(id, _)          => Some(id)
+      case Close(id)              => Some(id)
+      case Toggle(id)             => Some(id)
+      case Move(id, _, _)         => Some(id)
+      case Resize(id, _, _)       => Some(id)
+      case Transform(id, _, _)    => Some(id)
+      case Refresh(id)            => Some(id)
+      case GiveFocusAt(_)         => None
+      case ChangeMagnification(_) => None
+
 enum Space:
   case Screen
   case Window

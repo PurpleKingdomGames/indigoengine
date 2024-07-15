@@ -126,23 +126,43 @@ object WindowManager:
       Batch.empty
     )
 
+  private def modalWindowOpen[ReferenceData](
+      model: WindowManagerModel[ReferenceData]
+  ): Option[WindowId] =
+    model.windows.find(w => w.isOpen && w.mode == WindowMode.Modal).map(_.id)
+
   private[window] def updateModel[ReferenceData](
       context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case e: WindowEvent =>
-      handleWindowEvents(context, model)(e)
+      modalWindowOpen(model) match
+        case None =>
+          handleWindowEvents(context, model)(e)
+
+        case modelId =>
+          if modelId == e.windowId then handleWindowEvents(context, model)(e)
+          else Outcome(model)
 
     case e: MouseEvent.Click =>
-      updateWindows(context, model)(e)
+      updateWindows(context, model, modalWindowOpen(model))(e)
         .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
 
+    case FrameTick =>
+      modalWindowOpen(model) match
+        case None =>
+          updateWindows(context, model, None)(FrameTick)
+
+        case _id @ Some(id) =>
+          updateWindows(context, model, _id)(FrameTick).map(_.focusOn(id))
+
     case e =>
-      updateWindows(context, model)(e)
+      updateWindows(context, model, modalWindowOpen(model))(e)
 
   private def updateWindows[ReferenceData](
       context: UIContext[ReferenceData],
-      model: WindowManagerModel[ReferenceData]
+      model: WindowManagerModel[ReferenceData],
+      modalWindow: Option[WindowId]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     e =>
       val windowUnderMouse = model.windowAt(context.mouseCoords)
@@ -150,9 +170,16 @@ object WindowManager:
       model.windows
         .map { w =>
           Window.updateModel(
-            context.copy(state =
-              if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
-              else UIState.InActive
+            context.copy(state = modalWindow match
+              case Some(id) if id == w.id =>
+                UIState.Active
+
+              case Some(_) =>
+                UIState.InActive
+
+              case None =>
+                if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
+                else UIState.InActive
             ),
             w
           )(e)
