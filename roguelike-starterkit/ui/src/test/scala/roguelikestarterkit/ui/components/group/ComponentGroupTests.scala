@@ -38,7 +38,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Vertical(Padding.zero.withBottom(2))
         )
-        .withBoundsType(BoundsMode.fixed(100, 100))
+        .withBoundsMode(BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -62,7 +62,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Horizontal(Padding.zero.withRight(2))
         )
-        .withBoundsType(BoundsMode.fixed(100, 100))
+        .withBoundsMode(BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -87,7 +87,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Vertical(Padding.zero.withBottom(2))
         )
-        .withBoundsType(BoundsMode.fixed(100, 100))
+        .withBoundsMode(BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val instance =
@@ -104,7 +104,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actualDefault =
       val c = summon[Component[ComponentGroup[Unit], Unit]]
-      c.refresh((), group.withBoundsType(BoundsMode.default), Dimensions(100, 100)).dimensions
+      c.refresh((), group.withBoundsMode(BoundsMode.default), Dimensions(100, 100)).dimensions
 
     assertEquals(actualDefault, Dimensions(100, 4))
   }
@@ -115,7 +115,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .withLayout(
           ComponentLayout.Horizontal(Padding(5), Overflow.Wrap)
         )
-        .withBoundsType(BoundsMode.fixed(100, 100))
+        .withBoundsMode(BoundsMode.fixed(100, 100))
         .add("abc", "def")
 
     val actual =
