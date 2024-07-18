@@ -2,7 +2,6 @@ package demo
 
 import indigo.*
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.common.ComponentLayout

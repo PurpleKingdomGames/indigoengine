@@ -3,7 +3,6 @@ package demo
 import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
 import roguelikestarterkit.ui.components.common.ComponentLayout
@@ -60,7 +59,7 @@ object ComponentsWindow:
         .add(
           Button[Int](Bounds(0, 0, 5, 2)) { case (coords, bounds, _) =>
             Outcome(
-              ComponentFragment(
+              Layer(
                 Shape.Box(
                   bounds.toScreenSpace(charSheet.size).moveTo(coords.toScreenSpace(charSheet.size)),
                   Fill.LinearGradient(Point.zero, RGBA.Cyan, Point(50, 0), RGBA.Magenta)
@@ -85,7 +84,7 @@ object ComponentsWindow:
                     graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
                   }
 
-              Outcome(ComponentFragment(terminal))
+              Outcome(Layer.Content(terminal))
           }
         )
         .add(

@@ -5,8 +5,8 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.Layer
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 
 object syntax:
 
@@ -28,7 +28,7 @@ object syntax:
 
     def present[StartupData, ContextData](
         context: UIContext[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       c.present(context, component)
 
     def refresh(
@@ -37,11 +37,11 @@ object syntax:
     ): A =
       c.refresh(reference, component, parentDimensions)
 
-  extension (c: ComponentFragment.type)
-    def fromTerminalClones(terminalClones: TerminalClones): ComponentFragment =
-      ComponentFragment(terminalClones.clones, terminalClones.blanks)
+  extension (c: Layer.Content.type)
+    def fromTerminalClones(terminalClones: TerminalClones): Layer.Content =
+      Layer.Content(terminalClones.clones).addCloneBlanks(terminalClones.blanks)
 
-    def apply(terminalClones: TerminalClones): ComponentFragment =
+    def apply(terminalClones: TerminalClones): Layer.Content =
       fromTerminalClones(terminalClones)
 
 end syntax

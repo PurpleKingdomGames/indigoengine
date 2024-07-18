@@ -7,7 +7,6 @@ import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.tiles.Tile
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.Button
 import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
@@ -24,7 +23,7 @@ object TerminalButton:
       bgColor: RGBA,
       charSheet: CharSheet,
       hasBorder: Boolean
-  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
     if hasBorder then presentButtonWithBorder(label, fgColor, bgColor, charSheet)
     else presentButtonNoBorder(label, fgColor, bgColor, charSheet)
 
@@ -33,7 +32,7 @@ object TerminalButton:
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
-  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
     (offset, bounds, ref) =>
       val size = bounds.dimensions.unsafeToSize
 
@@ -51,14 +50,14 @@ object TerminalButton:
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
           }
 
-      Outcome(ComponentFragment(terminal))
+      Outcome(Layer.Content(terminal))
 
   private def presentButtonWithBorder[ReferenceData](
       label: ReferenceData => Batch[Tile],
       fgColor: RGBA,
       bgColor: RGBA,
       charSheet: CharSheet
-  ): (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, ReferenceData) => Outcome[Layer] =
     (offset, bounds, ref) =>
       val txt  = label(ref).take(bounds.width - 2)
       val hBar = Batch.fill(bounds.width - 2)("─").mkString
@@ -89,11 +88,7 @@ object TerminalButton:
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
           }
 
-      Outcome(
-        ComponentFragment(
-          terminalClones.clones
-        ).addCloneBlanks(terminalClones.blanks)
-      )
+      Outcome(Layer.Content(terminalClones))
 
   private def findBounds(labelLength: Int, hasBorder: Boolean): Bounds =
     if hasBorder then Bounds(0, 0, labelLength + 2, 3) else Bounds(0, 0, labelLength, 1)

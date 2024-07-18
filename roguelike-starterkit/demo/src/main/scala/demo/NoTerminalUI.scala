@@ -58,8 +58,4 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
           model.components
         )
 
-    rendered.map { componentFragment =>
-      SceneUpdateFragment(
-        componentFragment.toLayer
-      )
-    }
+    rendered.map(l => SceneUpdateFragment(l))

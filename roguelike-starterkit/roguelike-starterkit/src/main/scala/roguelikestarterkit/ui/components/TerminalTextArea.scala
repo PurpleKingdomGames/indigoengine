@@ -4,7 +4,6 @@ import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
@@ -28,7 +27,7 @@ object TerminalTextArea:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, List[String], Dimensions) => Outcome[ComponentFragment] = {
+  ): (Coords, List[String], Dimensions) => Outcome[Layer] = {
     case (offset, label, dimensions) =>
       val size = dimensions.unsafeToSize
 
@@ -43,7 +42,7 @@ object TerminalTextArea:
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
           }
 
-      Outcome(ComponentFragment(terminal))
+      Outcome(Layer.Content(terminal))
   }
 
   /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a

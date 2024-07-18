@@ -4,7 +4,6 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.common.ComponentId
 import roguelikestarterkit.ui.components.group.BoundsMode
 import roguelikestarterkit.ui.components.group.ComponentGroup
@@ -116,7 +115,7 @@ object Model:
                 (_, label) => Bounds(0, 0, 150, 10)
               ) { case (offset, label, dimensions) =>
                 Outcome(
-                  ComponentFragment(
+                  Layer(
                     TextBox(label)
                       .withColor(RGBA.Red)
                       .moveTo(offset.unsafeToPoint)
@@ -133,7 +132,7 @@ object Model:
             (_, label) => Bounds(0, 0, 150, 10)
           ) { case (offset, label, dimensions) =>
             Outcome(
-              ComponentFragment(
+              Layer(
                 TextBox(label)
                   .withColor(RGBA.White)
                   .moveTo(offset.unsafeToPoint)

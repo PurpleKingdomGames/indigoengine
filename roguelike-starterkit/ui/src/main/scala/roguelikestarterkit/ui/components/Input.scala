@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -17,7 +16,7 @@ import scala.annotation.targetName
 final case class Input(
     text: String,
     dimensions: Dimensions,
-    render: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment],
+    render: (Coords, Bounds, Input, Seconds) => Outcome[Layer],
     change: String => Batch[GlobalEvent],
     //
     characterLimit: Int,
@@ -140,7 +139,7 @@ object Input:
   /** Minimal input constructor with custom rendering function
     */
   def apply(dimensions: Dimensions)(
-      present: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, Input, Seconds) => Outcome[Layer]
   ): Input =
     Input(
       "",
@@ -212,7 +211,7 @@ object Input:
     def present(
         context: UIContext[ReferenceData],
         model: Input
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       model.render(
         context.bounds.coords,
         Bounds(model.dimensions),

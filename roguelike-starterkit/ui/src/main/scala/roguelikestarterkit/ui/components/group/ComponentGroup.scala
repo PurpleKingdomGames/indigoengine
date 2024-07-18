@@ -20,7 +20,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
     boundsType: BoundsMode,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
-    background: Bounds => ComponentFragment,
+    background: Bounds => Layer,
     // Internal
     dimensions: Dimensions, // The actual cached dimensions of the group
     contentBounds: Bounds,  // The calculated and cached bounds of the content
@@ -63,7 +63,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value, dirty = true)
 
-  def withBackground(present: Bounds => ComponentFragment): ComponentGroup[ReferenceData] =
+  def withBackground(present: Bounds => Layer): ComponentGroup[ReferenceData] =
     this.copy(background = present, dirty = true)
 
 object ComponentGroup:
@@ -73,7 +73,7 @@ object ComponentGroup:
       BoundsMode.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => ComponentFragment.empty,
+      _ => Layer.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -84,7 +84,7 @@ object ComponentGroup:
       boundsType,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => ComponentFragment.empty,
+      _ => Layer.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -95,7 +95,7 @@ object ComponentGroup:
       BoundsMode.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => ComponentFragment.empty,
+      _ => Layer.empty,
       dimensions,
       Bounds.zero,
       dirty = true
@@ -149,10 +149,10 @@ object ComponentGroup:
     def present(
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       ContainerLikeFunctions.present(context, model.components).map { components =>
         val background = model.background(Bounds(context.bounds.coords, model.dimensions))
-        background |+| components
+        Layer.Stack(background, components)
       }
 
     def refresh(

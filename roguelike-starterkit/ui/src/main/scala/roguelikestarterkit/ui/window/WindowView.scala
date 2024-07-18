@@ -21,7 +21,6 @@ object WindowView:
         context.copy(bounds = model.bounds),
         model.content
       )
-      .map(_.toLayer)
       .flatMap {
         case l: Layer.Content =>
           model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
@@ -43,22 +42,18 @@ object WindowView:
 
         case l: Layer.Stack =>
           val masked =
-            l.layers.map {
-              case l: Layer.Content =>
-                l.withBlendMaterial(
-                  LayerMask(
-                    (model.bounds + Bounds(
-                      model.mask.left,
-                      model.mask.top,
-                      -model.mask.right,
-                      -model.mask.bottom
-                    ))
-                      .toScreenSpace(context.snapGrid * viewModel.magnification)
-                  )
+            l.toBatch.map { l =>
+              l.withBlendMaterial(
+                LayerMask(
+                  (model.bounds + Bounds(
+                    model.mask.left,
+                    model.mask.top,
+                    -model.mask.right,
+                    -model.mask.bottom
+                  ))
+                    .toScreenSpace(context.snapGrid * viewModel.magnification)
                 )
-
-              case l =>
-                l
+              )
             }
 
           model.background(WindowContext.from(model, viewModel)).map { windowChrome =>

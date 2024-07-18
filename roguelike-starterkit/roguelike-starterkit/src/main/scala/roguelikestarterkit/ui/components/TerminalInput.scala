@@ -9,7 +9,6 @@ import roguelikestarterkit.terminal.TerminalMaterial
 import roguelikestarterkit.tiles.RoguelikeTiles10x10
 import roguelikestarterkit.tiles.RoguelikeTiles5x6
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
@@ -25,7 +24,7 @@ object TerminalInput:
   /** Minimal input constructor with custom rendering function
     */
   def apply(dimensions: Dimensions)(
-      present: (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, Input, Seconds) => Outcome[Layer]
   ): Input =
     Input(
       "",
@@ -65,7 +64,7 @@ object TerminalInput:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, Bounds, Input, Seconds) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, Input, Seconds) => Outcome[Layer] =
     (offset, bounds, input, runningTime) =>
       val correctedLabel =
         if input.text.length == bounds.width then input.text
@@ -124,7 +123,7 @@ object TerminalInput:
                 .at(runningTime)
         else Batch.empty
 
-      Outcome(ComponentFragment(terminalClones).addNodes(cursor))
+      Outcome(Layer.Content(terminalClones).addNodes(cursor))
 
   /** Creates a TerminalInput rendered using the RogueTerminalEmulator based on a
     * `TerminalInput.Theme`, where the bounds are the supplied width, height 1, plus border.

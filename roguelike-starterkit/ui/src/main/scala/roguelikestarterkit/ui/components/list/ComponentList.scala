@@ -20,7 +20,7 @@ final case class ComponentList[ReferenceData] private (
     stateMap: Map[ComponentId, Any],
     layout: ComponentLayout,
     dimensions: Dimensions,
-    background: Bounds => ComponentFragment
+    background: Bounds => Layer
 ):
 
   private def addSingle[A](entry: ReferenceData => (ComponentId, A))(using
@@ -80,7 +80,7 @@ final case class ComponentList[ReferenceData] private (
   def resizeBy(x: Int, y: Int): ComponentList[ReferenceData] =
     resizeBy(Dimensions(x, y))
 
-  def withBackground(present: Bounds => ComponentFragment): ComponentList[ReferenceData] =
+  def withBackground(present: Bounds => Layer): ComponentList[ReferenceData] =
     this.copy(background = present)
 
 object ComponentList:
@@ -98,7 +98,7 @@ object ComponentList:
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
       dimensions,
-      _ => ComponentFragment.empty
+      _ => Layer.empty
     )
 
   def apply[ReferenceData, A](
@@ -114,7 +114,7 @@ object ComponentList:
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
       dimensions,
-      _ => ComponentFragment.empty
+      _ => Layer.empty
     )
 
   given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with
@@ -178,7 +178,7 @@ object ComponentList:
     def present(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       // Pull the state out of the stateMap and present it
       val entries =
         model
@@ -201,7 +201,7 @@ object ComponentList:
         )
         .map { components =>
           val background = model.background(Bounds(context.bounds.coords, model.dimensions))
-          background |+| components
+          Layer.Stack(background, components)
         }
 
     // ComponentList's have a fixed size, so we don't need to do anything here,

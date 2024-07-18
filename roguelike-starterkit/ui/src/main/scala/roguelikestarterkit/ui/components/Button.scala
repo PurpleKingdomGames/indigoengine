@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -14,9 +13,9 @@ import roguelikestarterkit.ui.datatypes.UIContext
 final case class Button[ReferenceData](
     bounds: Bounds,
     state: ButtonState,
-    up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment],
-    over: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
-    down: Option[(Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]],
+    up: (Coords, Bounds, ReferenceData) => Outcome[Layer],
+    over: Option[(Coords, Bounds, ReferenceData) => Outcome[Layer]],
+    down: Option[(Coords, Bounds, ReferenceData) => Outcome[Layer]],
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
@@ -29,17 +28,17 @@ final case class Button[ReferenceData](
   val isDragged: Boolean = dragStart.isDefined
 
   def presentUp(
-      up: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      up: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(up = up)
 
   def presentOver(
-      over: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      over: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(over = Option(over))
 
   def presentDown(
-      down: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      down: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(down = Option(down))
 
@@ -94,7 +93,7 @@ object Button:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](boundsType: BoundsType[ReferenceData, Unit])(
-      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       Bounds.zero,
@@ -115,7 +114,7 @@ object Button:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](bounds: Bounds)(
-      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       bounds,
@@ -136,7 +135,7 @@ object Button:
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
   def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
-      present: (Coords, Bounds, ReferenceData) => Outcome[ComponentFragment]
+      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       Bounds.zero,
@@ -247,7 +246,7 @@ object Button:
     def present(
         context: UIContext[ReferenceData],
         model: Button[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       val b =
         if model.isDragged && model.dragOptions.followMouse then
           model.bounds.moveBy(

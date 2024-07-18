@@ -1,7 +1,6 @@
 package roguelikestarterkit.ui.components.common
 
 import indigo.*
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -58,10 +57,10 @@ object ContainerLikeFunctions:
   def present[ReferenceData](
       context: UIContext[ReferenceData],
       components: Batch[ComponentEntry[?, ReferenceData]]
-  ): Outcome[ComponentFragment] =
+  ): Outcome[Layer] =
     components
       .map { c =>
         c.component.present(context.copy(bounds = context.bounds.moveBy(c.offset)), c.model)
       }
       .sequence
-      .map(_.foldLeft(ComponentFragment.empty)(_ |+| _))
+      .map(_.foldLeft(Layer.Stack.empty)(_ :+ _))

@@ -26,7 +26,7 @@ trait Component[A, ReferenceData]:
   def present(
       context: UIContext[ReferenceData],
       model: A
-  ): Outcome[ComponentFragment]
+  ): Outcome[Layer]
 
   /** Used internally to instruct the component that the layout has changed in some way, and that it
     * should reflow/refresh it's contents - whatever that means in the context of this component

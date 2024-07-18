@@ -5,7 +5,6 @@ import indigo.syntax.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.terminal.RogueTerminalEmulator
 import roguelikestarterkit.terminal.TerminalMaterial
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalTileColors
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.CharSheet
@@ -25,7 +24,7 @@ object TerminalLabel:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, String, Dimensions) => Outcome[ComponentFragment] = {
+  ): (Coords, String, Dimensions) => Outcome[Layer] = {
     case (offset, label, dimensions) =>
       val size = dimensions.unsafeToSize
 
@@ -40,7 +39,7 @@ object TerminalLabel:
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
           }
 
-      Outcome(ComponentFragment(terminal))
+      Outcome(Layer.Content(terminal))
   }
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds

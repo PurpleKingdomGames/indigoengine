@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -15,7 +14,7 @@ import scala.annotation.targetName
   */
 final case class TextArea[ReferenceData](
     text: ReferenceData => List[String],
-    render: (Coords, List[String], Dimensions) => Outcome[ComponentFragment],
+    render: (Coords, List[String], Dimensions) => Outcome[Layer],
     calculateBounds: (ReferenceData, List[String]) => Bounds
 ):
   def withText(value: String): TextArea[ReferenceData] =
@@ -26,7 +25,7 @@ final case class TextArea[ReferenceData](
 object TextArea:
 
   def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, List[String]) => Bounds)(
-      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
+      present: (Coords, List[String], Dimensions) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (_: ReferenceData) => text.split("\n").toList,
@@ -39,7 +38,7 @@ object TextArea:
       text: ReferenceData => String,
       calculateBounds: (ReferenceData, List[String]) => Bounds
   )(
-      present: (Coords, List[String], Dimensions) => Outcome[ComponentFragment]
+      present: (Coords, List[String], Dimensions) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (r: ReferenceData) => text(r).split("\n").toList,
@@ -60,7 +59,7 @@ object TextArea:
     def present(
         context: UIContext[ReferenceData],
         model: TextArea[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       model.render(
         context.bounds.coords,
         model.text(context.reference),

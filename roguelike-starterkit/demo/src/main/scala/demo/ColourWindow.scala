@@ -4,7 +4,6 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.BoundsType
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
@@ -161,7 +160,7 @@ object ColourWindow:
         )
       )
       .withBackground { bounds =>
-        ComponentFragment(
+        Layer(
           Shape.Box(
             Rectangle(
               bounds.coords.toScreenSpace(charSheet.size),
@@ -176,10 +175,10 @@ object ColourWindow:
       charSheet: CharSheet,
       colour: RGBA,
       stroke: Option[RGBA]
-  ): (Coords, Bounds, Unit) => Outcome[ComponentFragment] =
+  ): (Coords, Bounds, Unit) => Outcome[Layer] =
     (offset, bounds, _) =>
       Outcome(
-        ComponentFragment(
+        Layer(
           stroke match
             case None =>
               Shape.Box(
@@ -222,7 +221,7 @@ object ColorPalette:
     def present(
         context: UIContext[Unit],
         model: ColorPalette
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       model.componentGroup.present(context)
 
     def refresh(reference: Unit, model: ColorPalette, contentDimensions: Dimensions): ColorPalette =

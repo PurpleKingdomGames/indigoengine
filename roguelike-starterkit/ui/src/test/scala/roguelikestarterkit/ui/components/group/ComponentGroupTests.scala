@@ -23,8 +23,8 @@ class ComponentGroupTests extends munit.FunSuite:
     def present(
         context: UIContext[Unit],
         model: String
-    ): Outcome[ComponentFragment] =
-      Outcome(ComponentFragment.empty)
+    ): Outcome[Layer] =
+      Outcome(Layer.empty)
 
     def refresh(reference: Unit, model: String, parentDimensions: Dimensions): String =
       model

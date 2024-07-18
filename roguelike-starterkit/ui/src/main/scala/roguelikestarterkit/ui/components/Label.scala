@@ -3,7 +3,6 @@ package roguelikestarterkit.ui.components
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.datatypes.Bounds
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
@@ -13,7 +12,7 @@ import roguelikestarterkit.ui.datatypes.UIContext
   */
 final case class Label[ReferenceData](
     text: ReferenceData => String,
-    render: (Coords, String, Dimensions) => Outcome[ComponentFragment],
+    render: (Coords, String, Dimensions) => Outcome[Layer],
     calculateBounds: (ReferenceData, String) => Bounds
 ):
   def withText(value: String): Label[ReferenceData] =
@@ -26,7 +25,7 @@ object Label:
   /** Minimal label constructor with custom rendering function
     */
   def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, String) => Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[ComponentFragment]
+      present: (Coords, String, Dimensions) => Outcome[Layer]
   ): Label[ReferenceData] =
     Label(_ => text, present, calculateBounds)
 
@@ -43,7 +42,7 @@ object Label:
     def present(
         context: UIContext[ReferenceData],
         model: Label[ReferenceData]
-    ): Outcome[ComponentFragment] =
+    ): Outcome[Layer] =
       val t = model.text(context.reference)
       model.render(context.bounds.coords, t, model.calculateBounds(context.reference, t).dimensions)
 

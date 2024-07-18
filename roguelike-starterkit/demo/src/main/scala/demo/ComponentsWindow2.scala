@@ -3,7 +3,6 @@ package demo
 import indigo.*
 import indigo.syntax.*
 import roguelikestarterkit.*
-import roguelikestarterkit.ui.component.ComponentFragment
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalInput
 import roguelikestarterkit.ui.components.TerminalLabel
@@ -66,7 +65,7 @@ object ComponentsWindow2:
               }
           }
             .withBackground { bounds =>
-              ComponentFragment(
+              Layer(
                 Shape.Box(
                   Rectangle(
                     bounds.coords.toScreenSpace(charSheet.size),
