@@ -22,7 +22,8 @@ final case class ScrollPane[A, ReferenceData] private[group] (
     boundsType: BoundsMode,
     component: ComponentEntry[A, ReferenceData],
     dimensions: Dimensions, // The actual cached dimensions of the scroll pane
-    contentBounds: Bounds   // The calculated and cached bounds of the content
+    contentBounds: Bounds,   // The calculated and cached bounds of the content
+    scrollAmount: Double
 ):
 
   def withComponent[B](component: B)(using
@@ -58,7 +59,8 @@ object ScrollPane:
       BoundsMode.default,
       ScrollPane.makeComponentEntry(component),
       Dimensions.zero,
-      Bounds.zero
+      Bounds.zero,
+      0.0
     )
 
   def apply[A, ReferenceData](boundsType: BoundsMode, component: A)(using
@@ -68,7 +70,8 @@ object ScrollPane:
       boundsType,
       ScrollPane.makeComponentEntry(component),
       Dimensions.zero,
-      Bounds.zero
+      Bounds.zero,
+      0.0
     )
 
   def apply[A, ReferenceData](dimensions: Dimensions, component: A)(using
@@ -78,7 +81,8 @@ object ScrollPane:
       BoundsMode.fixed(dimensions),
       ScrollPane.makeComponentEntry(component),
       dimensions,
-      Bounds.zero
+      Bounds.zero,
+      0.0
     )
 
   def apply[A, ReferenceData](width: Int, height: Int, component: A)(using
@@ -119,9 +123,15 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): Outcome[Layer] =
+      val scrollOffset: Coords =
+        if model.contentBounds.height > model.dimensions.height then
+          Coords(0, ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt)
+        else
+          Coords.zero
+
       ContainerLikeFunctions
         .present(
-          context,
+          context.moveBoundsBy(scrollOffset),
           Batch(model.component)
         )
         .map {

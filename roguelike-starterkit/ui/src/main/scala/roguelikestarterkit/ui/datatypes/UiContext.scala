@@ -32,6 +32,9 @@ final case class UIContext[ReferenceData](
   lazy val screenSpaceBounds: Rectangle =
     bounds.toScreenSpace(snapGrid)
 
+  def moveBoundsBy(offset: Coords): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveBy(offset))
+
   val isActive: Boolean =
     state == UIState.Active
 
