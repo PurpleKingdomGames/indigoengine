@@ -10,15 +10,40 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
+Plan for scrolling:
+
+I had thought to put scrolling on the window, but now I think that won't work.
+
+The window knows how big the content area is and such, but a typical window is going to be a nested group affair, because the top level group is likely going to inherit from the window in order to place window control buttons and so on.
+
+So now what we need are ComponentGroups that can scroll content, controlled by events.
+The controls will live on the group anchoring the buttons, but they'll just emit events to do the work.
+
+During refresh the Component gets it's parents bounds, and that is the basis of scrolling.
+
+- scrolling enabled/disabled
+- scroll up/down/left/right arrow buttons
+- mouse wheel events
+- dragging a scroll bar
+- ways to describe scrolling: Fixed amount, proportional, etc.
+
+ */
+
+/*
+
 Missing stuff:
 
+- ComponentGroup - rename boundsType to boundsMode
+- Possible to disable the rest of the UI while holding down on a button?
+
 - Support for Pointer events on components and windows(?). (Once the issues with PointerState are resolved.)
-- Oh and we're still missing scrolling. Not totally sure where that goes yet. Clearly it's going to be important. I _think_ it's _probably_ and component group / list thing.
 - One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
+- Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use/use with scrolling.
 
 Polishing up:
+- Check for TODOs.
 - Package aliases.
-- We need a standard window template. Title bar, close button, resize button.
+- We need a standard window template. Title bar, close button, resize button... scroll bars...
 
 A demo of a non-ASCII window.
 
