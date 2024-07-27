@@ -63,13 +63,32 @@ object ColourWindow:
   def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
     ComponentGroup()
       .withBoundsMode(BoundsMode.inherit)
-      .withLayout(ComponentLayout.Vertical(Padding(4, 1, 1, 1)))
+      .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
       .anchor(
         ScrollPane(
-          BoundsMode.offset(-2, -5),
-          content
+          BindingKey("colour-window-scroll-pane"),
+          BoundsMode.offset(-2, -4),
+          content,
+          TerminalButton
+            .fromTile(
+              Tile.`#`,
+              TerminalButton.Theme(
+                charSheet,
+                RGBA.Black -> RGBA.Silver,
+                RGBA.Black -> RGBA.White,
+                RGBA.White -> RGBA.Black,
+                hasBorder = false
+              )
+            )
+        ).withScrollBackground(bounds =>
+          Layer(
+            Shape.Box(
+              bounds.toScreenSpace(charSheet.size),
+              Fill.Color(RGBA.Green)
+            )
+          )
         ),
-        Anchor.TopLeft.withPadding(Padding(4, 1, 1, 1))
+        Anchor.TopLeft.withPadding(Padding(3, 1, 1, 1))
       )
       .anchor(
         TerminalButton(
@@ -91,48 +110,8 @@ object ColourWindow:
               )
           )
         }.reportDrag
-          .withBoundsType(BoundsType.FillWidth(3, Padding(1))),
-        Anchor.TopLeft.withPadding(Padding(1))
-      )
-      .anchor(
-        ComponentGroup()
-          .withLayout(ComponentLayout.Vertical())
-          .withBoundsMode(BoundsMode(FitMode.Fixed(1), FitMode.Offset(-6)))
-          .withBackground(bounds =>
-            Layer.Content(
-              Shape.Box(
-                bounds.toScreenSpace(charSheet.size),
-                Fill.Color(RGBA.Green)
-              )
-            )
-          )
-          .add(
-            TerminalButton
-              .fromTile(
-                Tile.`#`,
-                TerminalButton.Theme(
-                  charSheet,
-                  RGBA.Black -> RGBA.Silver,
-                  RGBA.Black -> RGBA.White,
-                  RGBA.White -> RGBA.Black,
-                  hasBorder = false
-                )
-              )
-              // .onDrag { (_: Unit, dragData) =>
-              //   Batch(
-              //     WindowEvent
-              //       .Resize(
-              //         windowId,
-              //         dragData.position.toDimensions + Dimensions(1),
-              //         Space.Screen
-              //       )
-              //   )
-              // }
-              .makeDraggable
-              .inheritDragArea
-              .constrainDragVertically
-          ),
-        Anchor.TopRight.withPadding(Padding(4, 1, 2, 0))
+          .withBoundsType(BoundsType.FillWidth(3, Padding(0))),
+        Anchor.TopLeft
       )
       .anchor(
         TerminalButton
@@ -157,7 +136,7 @@ object ColourWindow:
             )
           }
           .reportDrag,
-        Anchor.BottomRight.withPadding(Padding(1))
+        Anchor.BottomRight
       )
       .anchor(
         TerminalButton
@@ -174,7 +153,7 @@ object ColourWindow:
           .onClick(
             WindowEvent.Close(windowId)
           ),
-        Anchor.TopRight.withPadding(Padding(1))
+        Anchor.TopRight
       )
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =

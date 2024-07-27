@@ -132,7 +132,8 @@ object ComponentGroup:
           .map { c =>
             c.component
               .updateModel(
-                context.copy(bounds = Bounds(context.bounds.moveBy(c.offset).coords, model.dimensions)),
+                context
+                  .copy(bounds = Bounds(context.bounds.moveBy(c.offset).coords, model.dimensions)),
                 c.model
               )(e)
               .map { updated =>
@@ -150,9 +151,10 @@ object ComponentGroup:
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): Outcome[Layer] =
-      ContainerLikeFunctions.present(context, model.dimensions, model.components).map { components =>
-        val background = model.background(Bounds(context.bounds.coords, model.dimensions))
-        Layer.Stack(background, components)
+      ContainerLikeFunctions.present(context, model.dimensions, model.components).map {
+        components =>
+          val background = model.background(Bounds(context.bounds.coords, model.dimensions))
+          Layer.Stack(background, components)
       }
 
     def refresh(

@@ -374,30 +374,30 @@ final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: Dr
   def withMode(mode: DragMode): DragOptions =
     this.copy(mode = mode)
 
-  def constrainCoords(coords: Coords, parentBounds: Bounds): Coords =
+  def constrainCoords(mouseCoords: Coords, parentBounds: Bounds): Coords =
     val areaConstrained =
       area match
         case DragArea.None =>
-          coords
+          mouseCoords
 
         case DragArea.Fixed(bounds) =>
           Coords(
-            if coords.x < bounds.left then bounds.left
-            else if coords.x > bounds.right then bounds.right
-            else coords.x,
-            if coords.y < bounds.top then bounds.top
-            else if coords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
-            else coords.y
+            if mouseCoords.x < bounds.left then bounds.left
+            else if mouseCoords.x > bounds.right then bounds.right
+            else mouseCoords.x,
+            if mouseCoords.y < bounds.top then bounds.top
+            else if mouseCoords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1 // TODO!!
+            else mouseCoords.y
           )
 
         case DragArea.Inherit =>
           Coords(
-            if coords.x < parentBounds.left then parentBounds.left
-            else if coords.x > parentBounds.right then parentBounds.right
-            else coords.x,
-            if coords.y < parentBounds.top then parentBounds.top
-            else if coords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
-            else coords.y
+            if mouseCoords.x < parentBounds.left then parentBounds.left
+            else if mouseCoords.x > parentBounds.right then parentBounds.right
+            else mouseCoords.x,
+            if mouseCoords.y < parentBounds.top then parentBounds.top
+            else if mouseCoords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+            else mouseCoords.y
           )
 
     contraints match

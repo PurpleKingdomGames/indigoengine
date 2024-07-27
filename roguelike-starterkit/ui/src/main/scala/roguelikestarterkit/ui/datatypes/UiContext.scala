@@ -13,7 +13,8 @@ final case class UIContext[ReferenceData](
     boundaryLocator: BoundaryLocator,
     reference: ReferenceData,
     state: UIState,
-    magnification: Int
+    magnification: Int,
+    additionalOffset: Coords
 ):
 
   val running: Seconds = gameTime.running
@@ -38,6 +39,12 @@ final case class UIContext[ReferenceData](
   val isActive: Boolean =
     state == UIState.Active
 
+  def unitReference: UIContext[Unit] =
+    this.copy(reference = ())
+
+  def withAdditionalOffset(offset: Coords): UIContext[ReferenceData] =
+    this.copy(additionalOffset = offset)
+
 object UIContext:
 
   def apply[ReferenceData](
@@ -56,7 +63,29 @@ object UIContext:
       subSystemFrameContext.boundaryLocator,
       subSystemFrameContext.reference,
       UIState.Active,
-      magnification
+      magnification,
+      Coords.zero
+    )
+
+  def apply[ReferenceData](
+      subSystemFrameContext: SubSystemFrameContext[ReferenceData],
+      snapGrid: Size,
+      magnification: Int,
+      additionalOffset: Coords
+  ): UIContext[ReferenceData] =
+    val mouseCoords = Coords(subSystemFrameContext.mouse.position / snapGrid.toPoint)
+    UIContext(
+      Bounds.zero,
+      snapGrid,
+      mouseCoords,
+      subSystemFrameContext.gameTime,
+      subSystemFrameContext.dice,
+      subSystemFrameContext.inputState,
+      subSystemFrameContext.boundaryLocator,
+      subSystemFrameContext.reference,
+      UIState.Active,
+      magnification,
+      additionalOffset
     )
 
 enum UIState:
