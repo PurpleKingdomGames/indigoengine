@@ -29,6 +29,7 @@ During refresh the Component gets it's parents bounds, and that is the basis of 
 
 - disable and hide if the content is shorted than the scroll pane height.
 - hide the scroll bar if the content is shorter than the scroll pane height.
+- scroll button size can be adjusted based on the content size.
 
  */
 
