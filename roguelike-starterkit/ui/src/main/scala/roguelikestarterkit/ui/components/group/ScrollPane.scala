@@ -293,14 +293,7 @@ object ScrollPane:
               )
             }
 
-          stack.copy(layers = masked) :+
-            Layer( // TODO: Remove. Temporary, for debugging.
-              Shape.Box(
-                ctx.bounds.toScreenSpace(ctx.snapGrid),
-                Fill.None,
-                Stroke(1, RGBA.Magenta)
-              )
-            )
+          stack.copy(layers = masked)
         }
 
     def refresh(
