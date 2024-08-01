@@ -7,6 +7,7 @@ import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.BoundsType
 import roguelikestarterkit.ui.components.TerminalButton
 import roguelikestarterkit.ui.components.TerminalLabel
+import roguelikestarterkit.ui.components.TerminalScrollPane
 import roguelikestarterkit.ui.components.common.Anchor
 import roguelikestarterkit.ui.components.common.ComponentLayout
 import roguelikestarterkit.ui.components.common.Overflow
@@ -65,28 +66,11 @@ object ColourWindow:
       .withBoundsMode(BoundsMode.inherit)
       .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
       .anchor(
-        ScrollPane(
+        TerminalScrollPane(
           BindingKey("colour-window-scroll-pane"),
           BoundsMode.offset(-2, -4),
           content,
-          TerminalButton
-            .fromTile(
-              Tile.`#`,
-              TerminalButton.Theme(
-                charSheet,
-                RGBA.Black -> RGBA.Silver,
-                RGBA.Black -> RGBA.White,
-                RGBA.White -> RGBA.Black,
-                hasBorder = false
-              )
-            )
-        ).withScrollBackground(bounds =>
-          Layer(
-            Shape.Box(
-              bounds.toScreenSpace(charSheet.size),
-              Fill.Color(RGBA.SlateGray)
-            )
-          )
+          charSheet
         ),
         Anchor.TopLeft.withPadding(Padding(3, 1, 1, 1))
       )
