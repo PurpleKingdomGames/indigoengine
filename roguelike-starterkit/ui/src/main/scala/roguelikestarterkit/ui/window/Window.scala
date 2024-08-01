@@ -10,23 +10,14 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Plan for scrolling:
+Scolling TODOs:
 
-I had thought to put scrolling on the window, but now I think that won't work.
-
-The window knows how big the content area is and such, but a typical window is going to be a nested group affair, because the top level group is likely going to inherit from the window in order to place window control buttons and so on.
-
-So now what we need are ComponentGroups that can scroll content, controlled by events.
-The controls will live on the group anchoring the buttons, but they'll just emit events to do the work.
-
-During refresh the Component gets it's parents bounds, and that is the basis of scrolling.
-
+- ScrollOptions is not used.
+- horizontal scrolling
 - scrolling enabled/disabled
 - scroll up/down/left/right arrow buttons
 - mouse wheel events
-- dragging a scroll bar
 - ways to describe scrolling: Fixed amount, proportional, etc.
-
 - disable and hide if the content is shorted than the scroll pane height.
 - hide the scroll bar if the content is shorter than the scroll pane height.
 - scroll button size can be adjusted based on the content size.
