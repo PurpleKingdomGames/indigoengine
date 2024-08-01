@@ -18,8 +18,6 @@ Scolling TODOs:
 - scroll up/down/left/right arrow buttons
 - mouse wheel events
 - ways to describe scrolling: Fixed amount, proportional, etc.
-- disable and hide if the content is shorted than the scroll pane height.
-- hide the scroll bar if the content is shorter than the scroll pane height.
 - scroll button size can be adjusted based on the content size.
 - TerminalScrollPane
 

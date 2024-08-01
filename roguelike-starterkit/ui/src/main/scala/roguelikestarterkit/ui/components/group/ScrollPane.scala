@@ -169,13 +169,14 @@ object ScrollPane:
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
       e =>
-        val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
-        val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-        val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
+        val scrollingActive = model.contentBounds.height > model.dimensions.height
+        val ctx             = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
 
-        for {
-          updatedContent <- model.content.component.updateModel(ctx, model.content.model)(e)
-          updatedScrollBar <- c.updateModel(
+        def updateScrollBar: Outcome[Button[Unit]] =
+          val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
+          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
+
+          c.updateModel(
             unitContext
               .moveBoundsBy(
                 Coords(
@@ -191,6 +192,10 @@ object ScrollPane:
               ),
             model.scrollBar
           )(e)
+
+        for {
+          updatedContent   <- model.content.component.updateModel(ctx, model.content.model)(e)
+          updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
         } yield model.copy(
           content = model.content.copy(model = updatedContent),
           scrollBar = updatedScrollBar
@@ -200,33 +205,16 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): Outcome[Layer] =
-      val adjustBounds = Bounds(context.bounds.coords, model.dimensions)
-      val ctx          = context.copy(bounds = adjustBounds)
+      val scrollingActive = model.contentBounds.height > model.dimensions.height
+      val adjustBounds    = Bounds(context.bounds.coords, model.dimensions)
+      val ctx             = context.copy(bounds = adjustBounds)
       val scrollOffset: Coords =
-        if model.contentBounds.height > model.dimensions.height then
+        if scrollingActive then
           Coords(
             0,
             ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
           )
         else Coords.zero
-
-      val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-      val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
-      val scrollbar =
-        c.present(
-          unitContext.moveBoundsBy(
-            Coords(
-              model.dimensions.width - model.scrollBar.bounds.width,
-              ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
-            )
-          ),
-          model.scrollBar
-        )
-      val scrollBg = model.scrollBarBackground(
-        adjustBounds
-          .moveBy(model.dimensions.width - model.scrollBar.bounds.width, 0)
-          .resize(model.scrollBar.bounds.width, adjustBounds.height)
-      )
 
       val content =
         ContainerLikeFunctions
@@ -236,14 +224,38 @@ object ScrollPane:
             Batch(model.content)
           )
 
-      (content, scrollbar)
-        .map2 { (c, sb) =>
-          Layer.Stack(
-            c,
-            scrollBg,
-            sb
-          )
-        }
+      val layers: Outcome[Layer.Stack] =
+        if scrollingActive then
+          val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
+          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
+          val scrollbar =
+            c.present(
+              unitContext.moveBoundsBy(
+                Coords(
+                  model.dimensions.width - model.scrollBar.bounds.width,
+                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                )
+              ),
+              model.scrollBar
+            )
+          val scrollBg =
+            model.scrollBarBackground(
+              adjustBounds
+                .moveBy(model.dimensions.width - model.scrollBar.bounds.width, 0)
+                .resize(model.scrollBar.bounds.width, adjustBounds.height)
+            )
+
+          (content, scrollbar)
+            .map2 { (c, sb) =>
+              Layer.Stack(
+                c,
+                scrollBg,
+                sb
+              )
+            }
+        else content.map(c => Layer.Stack(c))
+
+      layers
         .map { stack =>
           val masked =
             stack.toBatch.map {
