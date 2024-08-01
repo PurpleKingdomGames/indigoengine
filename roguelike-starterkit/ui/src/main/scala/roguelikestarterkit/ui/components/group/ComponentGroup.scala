@@ -17,7 +17,7 @@ import scala.annotation.tailrec
   * components.
   */
 final case class ComponentGroup[ReferenceData] private[group] (
-    boundsType: BoundsMode,
+    boundsMode: BoundsMode,
     layout: ComponentLayout,
     components: Batch[ComponentEntry[?, ReferenceData]],
     background: Bounds => Layer,
@@ -58,7 +58,7 @@ final case class ComponentGroup[ReferenceData] private[group] (
     this.copy(dimensions = value, dirty = true)
 
   def withBoundsMode(value: BoundsMode): ComponentGroup[ReferenceData] =
-    this.copy(boundsType = value, dirty = true)
+    this.copy(boundsMode = value, dirty = true)
 
   def withLayout(value: ComponentLayout): ComponentGroup[ReferenceData] =
     this.copy(layout = value, dirty = true)
@@ -79,9 +79,9 @@ object ComponentGroup:
       dirty = true
     )
 
-  def apply[ReferenceData](boundsType: BoundsMode): ComponentGroup[ReferenceData] =
+  def apply[ReferenceData](boundsMode: BoundsMode): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      boundsType,
+      boundsMode,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => Layer.empty,
@@ -165,7 +165,7 @@ object ComponentGroup:
 
       // First, calculate the bounds without content
       val boundsWithoutContent =
-        model.boundsType match
+        model.boundsMode match
 
           // Available
 
@@ -288,7 +288,7 @@ object ComponentGroup:
 
       // We can now calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
       val updatedBounds =
-        model.boundsType match
+        model.boundsMode match
           case BoundsMode(FitMode.Content, FitMode.Content) =>
             contentBounds.dimensions
 

@@ -22,7 +22,7 @@ import scala.annotation.tailrec
   */
 final case class ScrollPane[A, ReferenceData] private[group] (
     bindingKey: BindingKey,
-    boundsType: BoundsMode,
+    boundsMode: BoundsMode,
     dimensions: Dimensions, // The actual cached dimensions of the scroll pane
     contentBounds: Bounds,  // The calculated and cached bounds of the content
     scrollAmount: Double,
@@ -43,7 +43,7 @@ final case class ScrollPane[A, ReferenceData] private[group] (
     this.copy(dimensions = value)
 
   def withBoundsMode(value: BoundsMode): ScrollPane[A, ReferenceData] =
-    this.copy(boundsType = value)
+    this.copy(boundsMode = value)
 
   def withScrollBackground(value: Bounds => Layer): ScrollPane[A, ReferenceData] =
     this.copy(scrollBarBackground = value)
@@ -89,7 +89,7 @@ object ScrollPane:
 
   def apply[A, ReferenceData](
       bindingKey: BindingKey,
-      boundsType: BoundsMode,
+      boundsMode: BoundsMode,
       content: A,
       scrollBar: Button[Unit]
   )(using
@@ -97,7 +97,7 @@ object ScrollPane:
   ): ScrollPane[A, ReferenceData] =
     ScrollPane(
       bindingKey,
-      boundsType,
+      boundsMode,
       Dimensions.zero,
       Bounds.zero,
       0.0,
@@ -276,7 +276,7 @@ object ScrollPane:
 
       // First, calculate the bounds without content
       val boundsWithoutContent =
-        model.boundsType match
+        model.boundsMode match
 
           // Available
 
@@ -379,7 +379,7 @@ object ScrollPane:
 
       // We can now calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
       val updatedBounds =
-        model.boundsType match
+        model.boundsMode match
           case BoundsMode(FitMode.Content, FitMode.Content) =>
             contentBounds.dimensions
 

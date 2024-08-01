@@ -37,7 +37,6 @@ During refresh the Component gets it's parents bounds, and that is the basis of 
 
 Missing stuff:
 
-- ComponentGroup - rename boundsType to boundsMode
 - Possible to disable the rest of the UI while holding down on a button?
 
 - Support for Pointer events on components and windows(?). (Once the issues with PointerState are resolved.)
