@@ -10,23 +10,19 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Scrolling TODOs:
-
-- scroll up/down/left/right arrow buttons (use scroll speed in options)
-- scroll button size can be adjusted based on the content size.
-- horizontal scrolling
-
- */
-
-/*
-
 Missing stuff:
 
+- scroll up/down/left/right arrow buttons - can be done with a component. What we
+  need is a way to position and size the scroll bar area.
+- scroll button size can be adjusted based on the content size.
+- horizontal scrolling?
 - Possible to disable the rest of the UI while holding down on a button?
 - Terminal title bar doesn't blend nicely with the rest of the window.
 - Support for Pointer events on components and windows(?). (Once the issues with PointerState are resolved.)
-- One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance. That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
+- One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance.
+  That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
 - Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use/use with scrolling.
+- a nine slice shader...
 
 Polishing up:
 - Check for TODOs.
