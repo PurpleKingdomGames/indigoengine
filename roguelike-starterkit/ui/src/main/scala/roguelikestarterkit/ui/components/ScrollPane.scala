@@ -65,8 +65,11 @@ final case class ScrollPane[A, ReferenceData] private[components] (
   def disableScrolling: ScrollPane[A, ReferenceData] =
     this.copy(scrollOptions = scrollOptions.withScrollMode(ScrollMode.None))
 
-  def withScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withScrollSpeed(value))
+  def withMaxScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withMaxScrollSpeed(value))
+
+  def withMinScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
+    this.copy(scrollOptions = scrollOptions.withMinScrollSpeed(value))
 
   def withScrollMode(value: ScrollMode): ScrollPane[A, ReferenceData] =
     this.copy(scrollOptions = scrollOptions.withScrollMode(value))
@@ -198,8 +201,16 @@ object ScrollPane:
           if model.scrollOptions.isEnabled && Bounds(context.bounds.coords, model.dimensions)
             .contains(context.mouseCoords) =>
         val scrollBy =
+          val speed =
+            if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
+          val clamped =
+            Math.min(
+              model.scrollOptions.maxScrollSpeed,
+              Math.max(model.scrollOptions.minScrollSpeed, speed)
+            )
           val coords =
-            if deltaY < 0 then -model.scrollOptions.scrollSpeed else model.scrollOptions.scrollSpeed
+            if deltaY < 0 then -clamped else clamped
+
           coords.toDouble / model.dimensions.height.toDouble
 
         Outcome(

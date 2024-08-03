@@ -2,14 +2,18 @@ package roguelikestarterkit.ui.components.datatypes
 
 final case class ScrollOptions(
     scrollMode: ScrollMode,
-    scrollSpeed: Int
+    minScrollSpeed: Int,
+    maxScrollSpeed: Int
 ):
 
-  def withScrollMode(scrollMode: ScrollMode): ScrollOptions =
-    copy(scrollMode = scrollMode)
+  def withScrollMode(value: ScrollMode): ScrollOptions =
+    copy(scrollMode = value)
 
-  def withScrollSpeed(scrollSpeed: Int): ScrollOptions =
-    copy(scrollSpeed = scrollSpeed)
+  def withMaxScrollSpeed(value: Int): ScrollOptions =
+    copy(maxScrollSpeed = value)
+
+  def withMinScrollSpeed(value: Int): ScrollOptions =
+    copy(minScrollSpeed = value)
 
   def isEnabled: Boolean =
     scrollMode != ScrollMode.None
@@ -18,7 +22,7 @@ final case class ScrollOptions(
     scrollMode == ScrollMode.None
 
 object ScrollOptions:
-  val default: ScrollOptions = ScrollOptions(ScrollMode.Vertical, 4)
+  val default: ScrollOptions = ScrollOptions(ScrollMode.Vertical, 1, 10)
 
 enum ScrollMode:
   case None
