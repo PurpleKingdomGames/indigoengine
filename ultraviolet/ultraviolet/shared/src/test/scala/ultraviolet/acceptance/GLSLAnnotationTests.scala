@@ -3,6 +3,9 @@ package ultraviolet.acceptance
 import ultraviolet.DebugAST
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class GLSLAnnotationTests extends munit.FunSuite {
 
   test("Annotated variables render correctly") {

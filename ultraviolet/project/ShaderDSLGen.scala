@@ -48,9 +48,6 @@ object ShaderDSLGen {
     val vec4     = List("x", "y", "z", "w")
     val vec4RGBA = List("r", "g", "b", "a")
 
-    def swizzles1(input: List[String]): List[List[String]] =
-      input.map(c => List(c))
-
     def swizzles2(input: List[String]): List[List[String]] = {
       val res =
         for {
@@ -89,11 +86,9 @@ object ShaderDSLGen {
         "",
         "Float",
         "vec2",
-        swizzles1(vec2) ++
-          swizzles2(vec2) ++
+        swizzles2(vec2) ++
           swizzles3(vec2) ++
           swizzles4(vec2) ++
-          swizzles1(vec2RGBA) ++
           swizzles2(vec2RGBA) ++
           swizzles3(vec2RGBA) ++
           swizzles4(vec2RGBA),
@@ -112,11 +107,9 @@ object ShaderDSLGen {
         "",
         "Float",
         "vec3",
-        swizzles1(vec3) ++
-          swizzles2(vec3) ++
+        swizzles2(vec3) ++
           swizzles3(vec3) ++
           swizzles4(vec3) ++
-          swizzles1(vec3RGBA) ++
           swizzles2(vec3RGBA) ++
           swizzles3(vec3RGBA) ++
           swizzles4(vec3RGBA),
@@ -135,11 +128,9 @@ object ShaderDSLGen {
         "",
         "Float",
         "vec4",
-        swizzles1(vec4) ++
-          swizzles2(vec4) ++
+        swizzles2(vec4) ++
           swizzles3(vec4) ++
           swizzles4(vec4) ++
-          swizzles1(vec4RGBA) ++
           swizzles2(vec4RGBA) ++
           swizzles3(vec4RGBA) ++
           swizzles4(vec4RGBA),
@@ -158,11 +149,9 @@ object ShaderDSLGen {
         "b",
         "Boolean",
         "bvec2",
-        swizzles1(vec2) ++
-          swizzles2(vec2) ++
+        swizzles2(vec2) ++
           swizzles3(vec2) ++
           swizzles4(vec2) ++
-          swizzles1(vec2RGBA) ++
           swizzles2(vec2RGBA) ++
           swizzles3(vec2RGBA) ++
           swizzles4(vec2RGBA),
@@ -181,11 +170,9 @@ object ShaderDSLGen {
         "b",
         "Boolean",
         "bvec3",
-        swizzles1(vec3) ++
-          swizzles2(vec3) ++
+        swizzles2(vec3) ++
           swizzles3(vec3) ++
           swizzles4(vec3) ++
-          swizzles1(vec3RGBA) ++
           swizzles2(vec3RGBA) ++
           swizzles3(vec3RGBA) ++
           swizzles4(vec3RGBA),
@@ -204,11 +191,9 @@ object ShaderDSLGen {
         "b",
         "Boolean",
         "bvec4",
-        swizzles1(vec4) ++
-          swizzles2(vec4) ++
+        swizzles2(vec4) ++
           swizzles3(vec4) ++
           swizzles4(vec4) ++
-          swizzles1(vec4RGBA) ++
           swizzles2(vec4RGBA) ++
           swizzles3(vec4RGBA) ++
           swizzles4(vec4RGBA),
@@ -227,11 +212,9 @@ object ShaderDSLGen {
         "i",
         "Int",
         "ivec2",
-        swizzles1(vec2) ++
-          swizzles2(vec2) ++
+        swizzles2(vec2) ++
           swizzles3(vec2) ++
           swizzles4(vec2) ++
-          swizzles1(vec2RGBA) ++
           swizzles2(vec2RGBA) ++
           swizzles3(vec2RGBA) ++
           swizzles4(vec2RGBA),
@@ -250,11 +233,9 @@ object ShaderDSLGen {
         "i",
         "Int",
         "ivec3",
-        swizzles1(vec3) ++
-          swizzles2(vec3) ++
+        swizzles2(vec3) ++
           swizzles3(vec3) ++
           swizzles4(vec3) ++
-          swizzles1(vec3RGBA) ++
           swizzles2(vec3RGBA) ++
           swizzles3(vec3RGBA) ++
           swizzles4(vec3RGBA),
@@ -273,11 +254,9 @@ object ShaderDSLGen {
         "i",
         "Int",
         "ivec4",
-        swizzles1(vec4) ++
-          swizzles2(vec4) ++
+        swizzles2(vec4) ++
           swizzles3(vec4) ++
           swizzles4(vec4) ++
-          swizzles1(vec4RGBA) ++
           swizzles2(vec4RGBA) ++
           swizzles3(vec4RGBA) ++
           swizzles4(vec4RGBA),

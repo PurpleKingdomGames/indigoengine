@@ -15,6 +15,8 @@ object ProceduralShader:
       '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.annotationed) }, ${ Expr(x.main) }) }
   }
 
+  private val pIdentity: PartialFunction[ShaderAST, ShaderAST] = s => s
+
   extension (p: ProceduralShader)
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     inline def render[T](headers: List[ShaderHeader])(using printer: ShaderPrinter[T]): ShaderResult.Output =
@@ -38,7 +40,7 @@ object ProceduralShader:
           val renderedBody = ShaderPrinter.print(body)
 
           val transformedBody: ShaderAST =
-            body.traverse(printer.transformer.orElse(n => n))
+            body.traverse(printer.transformer.orElse(pIdentity))
 
           val code =
             (headers.map(_.value) ++ renderedUBOs ++ renderedAnnotations ++ renderedDefs ++ renderedBody)

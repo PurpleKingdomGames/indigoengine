@@ -3,6 +3,9 @@ package ultraviolet.datatypes
 import ultraviolet.DebugAST
 import ultraviolet.macros.ShaderMacros
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class ProceduralShaderTests extends munit.FunSuite {
   import ShaderAST.*
   import ShaderAST.DataTypes.*

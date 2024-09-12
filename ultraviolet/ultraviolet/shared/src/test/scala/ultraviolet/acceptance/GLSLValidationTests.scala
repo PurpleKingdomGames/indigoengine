@@ -4,6 +4,9 @@ import ultraviolet.DebugAST
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class GLSLValidationTests extends munit.FunSuite {
 
   test("GLSL printer validation error are represented") {

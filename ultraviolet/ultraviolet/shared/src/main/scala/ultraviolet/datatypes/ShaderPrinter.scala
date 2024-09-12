@@ -374,7 +374,7 @@ object ShaderPrinter:
         case ShaderAST.Block(ss) =>
           renderStatements(ss)
 
-        case ShaderAST.ShaderBlock(None,None,None,ss) =>
+        case ShaderAST.ShaderBlock(None, None, None, ss) =>
           renderStatements(ss)
 
         case x =>

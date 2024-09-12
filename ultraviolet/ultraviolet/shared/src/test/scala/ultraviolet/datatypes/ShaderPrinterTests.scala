@@ -2,6 +2,9 @@ package ultraviolet.datatypes
 
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class ShaderPrinterTests extends munit.FunSuite {
 
   test("The default printer can print an AST") {

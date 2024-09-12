@@ -3,6 +3,9 @@ package ultraviolet.datatypes
 import ultraviolet.macros.UBOReader
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class UBODefTests extends munit.FunSuite {
 
   test("UBOField renders correctly") {

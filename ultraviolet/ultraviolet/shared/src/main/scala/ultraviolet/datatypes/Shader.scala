@@ -13,7 +13,7 @@ object Shader:
   inline def apply[In](f: In => Unit): Shader[In, Unit]    = f
 
   @nowarn("msg=discarded")
-  inline def apply(body: => Any): Shader[Unit, Unit]       = (_: Unit) => body
+  inline def apply(body: => Any): Shader[Unit, Unit] = (_: Unit) => body
 
   /** `fromFile` allows you to load raw GLSL code from a file at compile time to produce a shader.
     */

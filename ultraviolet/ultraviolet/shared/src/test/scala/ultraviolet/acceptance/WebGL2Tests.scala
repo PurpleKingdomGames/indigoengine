@@ -3,6 +3,9 @@ package ultraviolet.acceptance
 import ultraviolet.DebugAST
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class WebGL2Tests extends munit.FunSuite {
 
   test("Can generate the simplest valid WebGL 2.0 fragment shader") {

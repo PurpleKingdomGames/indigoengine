@@ -1,7 +1,7 @@
 package ultraviolet.acceptance
 
-import ultraviolet.indigoexamples.WebGL2Merge
 import ultraviolet.indigoexamples.*
+import ultraviolet.indigoexamples.WebGL2Merge
 import ultraviolet.syntax.*
 class IndigoTests extends munit.FunSuite {
 

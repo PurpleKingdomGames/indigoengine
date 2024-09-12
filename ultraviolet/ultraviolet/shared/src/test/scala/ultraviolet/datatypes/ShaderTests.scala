@@ -3,6 +3,9 @@ package ultraviolet.datatypes
 import ultraviolet.DebugAST
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class ShaderTests extends munit.FunSuite {
 
   test("Shader's can be run (and so, tested)") {
@@ -433,7 +436,7 @@ class ShaderTests extends munit.FunSuite {
     inline def shader(inline f: vec4 => Shader[Unit, vec4]): Shader[Unit, Unit] =
       Shader {
         val _f: vec4 => Shader[Unit, vec4] = f
-        var VERTEX: vec4 = null
+        var VERTEX: vec4                   = null
         def vertex: Unit =
           VERTEX = _f(VERTEX).run(())
       }

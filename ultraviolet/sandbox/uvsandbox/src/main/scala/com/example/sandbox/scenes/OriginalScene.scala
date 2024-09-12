@@ -5,8 +5,8 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
-import indigo.ShaderPrimitive.*
 import indigo.*
+import indigo.ShaderPrimitive.*
 import indigo.scenes.*
 
 object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -26,7 +26,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def name: SceneName =
     SceneName("original")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(
@@ -49,7 +49,12 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): Outcome[SceneUpdateFragment] = {
     val scene: SceneUpdateFragment =
       SandboxView
-        .updateView(model, viewModel, context.inputState.mouse, context.boundaryLocator)
+        .updateView(
+          model,
+          viewModel,
+          context.inputState.mouse,
+          context.boundaryLocator
+        )
         .addLayer(
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
@@ -60,19 +65,32 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Layer.empty
-            .withKey(BindingKey("bg"))
+          BindingKey("bg") -> Layer.empty
             .withMagnification(1)
         ) |+| scene
         .addLayer(
-          Layer(
-            CustomShape(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
-          ).withKey(BindingKey("bg"))
+          BindingKey("bg") -> Layer(
+            CustomShape(
+              0,
+              0,
+              228 * 3,
+              140 * 3,
+              Depth(10),
+              ShaderData(Shaders.seaId)
+            )
+          )
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            CustomShape(140, 50, 32, 32, Depth.zero, ShaderData(Shaders.circleId)),
+            CustomShape(
+              140,
+              50,
+              32,
+              32,
+              Depth.zero,
+              ShaderData(Shaders.circleId)
+            ),
             CustomShape(
               140,
               50,
@@ -114,8 +132,14 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
 }
 
-final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode[CustomShape]:
+final case class CustomShape(
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int,
+    depth: Depth,
+    shader: ShaderData
+) extends EntityNode[CustomShape]:
   val flip: Flip                    = Flip.default
   val position: Point               = Point(x, y)
   val size: Size                    = Size(width, height)
@@ -127,8 +151,9 @@ final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Dep
   def withDepth(newDepth: Depth): CustomShape =
     this.copy(depth = newDepth)
 
-  val eventHandlerEnabled: Boolean                                      = false
-  def eventHandler: ((CustomShape, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
+  val eventHandlerEnabled: Boolean = false
+  def eventHandler: ((CustomShape, GlobalEvent)) => Option[GlobalEvent] =
+    Function.const(None)
 
 object Shaders:
 
@@ -142,8 +167,10 @@ object Shaders:
     |}
     |
     |vec4 vertex(vec4 v) {
-    |  float x = sin(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.x;
-    |  float y = cos(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.y;
+    |  float x = sin(timeToRadians(TIME / 2.0)) * ${orbitDist
+        .toString()} + VERTEX.x;
+    |  float y = cos(timeToRadians(TIME / 2.0)) * ${orbitDist
+        .toString()} + VERTEX.y;
     |  vec2 orbit = vec2(x, y);
     |  return vec4(orbit, VERTEX.zw);
     |}

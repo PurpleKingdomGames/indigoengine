@@ -30,7 +30,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData]] = {
+  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
@@ -196,7 +196,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer("fps counter".bindingKey)
+        "fps counter".bindingKey -> Layer.empty
           .withDepth(200.depth)
           .withCamera(Camera.default)
       )

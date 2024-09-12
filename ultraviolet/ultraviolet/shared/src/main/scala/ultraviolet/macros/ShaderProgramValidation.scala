@@ -1,5 +1,6 @@
 package ultraviolet.macros
 
+import ultraviolet.datatypes.*
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderAST.Annotated
 import ultraviolet.datatypes.ShaderAST.Assign
@@ -24,7 +25,6 @@ import ultraviolet.datatypes.ShaderAST.Switch
 import ultraviolet.datatypes.ShaderAST.UBO
 import ultraviolet.datatypes.ShaderAST.Val
 import ultraviolet.datatypes.ShaderAST.While
-import ultraviolet.datatypes.*
 
 import scala.annotation.tailrec
 

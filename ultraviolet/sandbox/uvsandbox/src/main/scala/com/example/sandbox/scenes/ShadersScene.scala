@@ -4,8 +4,8 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.shaders.ShaderPrograms
-import indigo.ShaderPrimitive.*
 import indigo.*
+import indigo.ShaderPrimitive.*
 import indigo.scenes.*
 
 object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -25,7 +25,7 @@ object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   def name: SceneName =
     SceneName("custom shaders")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

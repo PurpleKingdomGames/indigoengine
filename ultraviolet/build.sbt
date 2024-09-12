@@ -2,16 +2,14 @@ import scala.language.postfixOps
 import Misc._
 import Dependencies._
 import org.typelevel.scalacoptions.ScalacOptions
-import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / semanticdbEnabled    := true
 
-val scala3Version = "3.4.1"
+val scala3Version = "3.5.0"
 
-ThisBuild / versionScheme                                  := Some("early-semver")
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-ThisBuild / scalaVersion                                   := scala3Version
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / scalaVersion  := scala3Version
 
 lazy val ultravioletVersion = "0.3.1-SNAPSHOT"
 
@@ -23,7 +21,6 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   scalacOptions ++= Seq("-language:strictEquality"),
   scalafixOnCompile := true,
   semanticdbEnabled := true,
-  semanticdbVersion := scalafixSemanticdb.revision,
   autoAPIMappings   := true,
   logo              := name.value,
   Test / tpolecatExcludeOptions ++= Set(
@@ -68,26 +65,7 @@ lazy val ultravioletProject =
       usefulTasks := customTasksAliases,
       presentationSettings(version)
     )
-    .aggregate(ultraviolet.js, ultraviolet.jvm, sandbox)
-
-// Testing
-
-lazy val sandbox =
-  project
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
-    .dependsOn(ultraviolet.js)
-    .settings(
-      neverPublish,
-      commonSettings,
-      name := "sandbox",
-      libraryDependencies ++= Shared.indigo.value,
-      libraryDependencies ++= Shared.indigoExtras.value,
-      libraryDependencies ++= Shared.indigoJson.value,
-      indigoOptions :=
-        IndigoOptions.defaults
-          .withTitle("Sandbox")
-          .withAssetDirectory(os.RelPath.rel / "sandbox" / "assets")
-    )
+    .aggregate(ultraviolet.js, ultraviolet.jvm)
 
 // Shader
 lazy val ultraviolet =

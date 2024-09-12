@@ -1,10 +1,9 @@
-
 object SbtIndigoVersion {
   def getVersion: String = {
     def rec(path: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
-        case Some(v) => 
+        case Some(v) =>
           println(s"""SBT Indigo version set to '$v'""")
           v
 
@@ -22,7 +21,7 @@ object SbtIndigoVersion {
           throw new Exception(msg)
       }
     }
-    
+
     rec(".indigo-version", 0, None)
   }
 }

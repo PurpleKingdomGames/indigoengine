@@ -1,3 +1,5 @@
+// TODO: This is overkill at this point. Should be able to simplify this.
+
 lazy val releaseProjects: List[String] =
   List(
     "ultravioletJS",
@@ -5,9 +7,7 @@ lazy val releaseProjects: List[String] =
   )
 
 lazy val coreProjects: List[String] =
-  releaseProjects ++ List(
-    "sandbox"
-  )
+  releaseProjects
 
 val allProjects = List("ultravioletProject") // the aggregate
 
@@ -107,42 +107,6 @@ addCommandAlias(
   List(
     "buildUltraviolet",
     "localPublishUltraviolet"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxBuild",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoBuild"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxBuildFull",
-  List(
-    "buildAllNoClean",
-    "sandbox/fullOptJS",
-    "sandbox/indigoBuildFull"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxRun",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoRun"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxRunFull",
-  List(
-    "buildAllNoClean",
-    "sandbox/fullOptJS",
-    "sandbox/indigoRunFull"
   ).mkString(";", ";", "")
 )
 

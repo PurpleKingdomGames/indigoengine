@@ -23,7 +23,7 @@ object SandboxView:
           gameLayer(model, viewModel) ++ uiLayer(bl)
         )
           .withDepth(Depth(300))
-        // .withBlend(Blend.Alpha)
+          // .withBlend(Blend.Alpha)
       )
       .addLayer(
         if (viewModel.useLightingLayer)

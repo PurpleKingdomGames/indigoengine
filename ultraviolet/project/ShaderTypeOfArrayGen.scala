@@ -40,12 +40,13 @@ object ShaderTypeOfArrayGen {
     Seq(file)
   }
 
-  def makeContents(): String = {
-    (0 to 4096).map { i =>
-      s"""  given array$i[A](using sto: ShaderTypeOf[A]): ShaderTypeOf[array[$i, A]] with
+  def makeContents(): String =
+    (0 to 4096)
+      .map { i =>
+        s"""  given array$i[A](using sto: ShaderTypeOf[A]): ShaderTypeOf[array[$i, A]] with
       |    def typeOf: String = s"$${sto.typeOf}[$i]"
       |"""
-    }.mkString("\n")
-  }
+      }
+      .mkString("\n")
 
 }

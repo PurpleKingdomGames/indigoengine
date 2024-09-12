@@ -95,7 +95,7 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
               )
             ) =>
           List(label)
-          
+
         case Inlined(
               _,
               _,

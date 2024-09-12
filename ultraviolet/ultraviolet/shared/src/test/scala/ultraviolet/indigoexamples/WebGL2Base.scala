@@ -3,6 +3,9 @@ package ultraviolet.indigoexamples
 import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object WebGL2Base:
 
   case class IndigoProjectionData(u_projection: mat4)
@@ -194,7 +197,7 @@ object WebGL2Base:
           CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_3_ATLAS_OFFSET)
           CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE
 
-          val transform: mat4 = 
+          val transform: mat4 =
             translate2d(POSITION) *
             rotate2d(-1.0f * ROTATION) *
             scale2d(SIZE * SCALE) *

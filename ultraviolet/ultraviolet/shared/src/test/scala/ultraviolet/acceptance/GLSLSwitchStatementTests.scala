@@ -4,6 +4,9 @@ import ultraviolet.DebugAST
 import ultraviolet.macros.ShaderMacros
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class GLSLSwitchStatementTests extends munit.FunSuite {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

@@ -3,6 +3,9 @@ package ultraviolet.acceptance
 import ultraviolet.DebugAST
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class GLSLScopingTests extends munit.FunSuite {
 
   test("scoping is respected") {

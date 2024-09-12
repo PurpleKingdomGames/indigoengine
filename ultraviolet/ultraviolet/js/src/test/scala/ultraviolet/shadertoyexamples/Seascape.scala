@@ -3,6 +3,9 @@ package ultraviolet.shadertoyexamples
 import ultraviolet.shadertoy.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
 object Seascape:
 

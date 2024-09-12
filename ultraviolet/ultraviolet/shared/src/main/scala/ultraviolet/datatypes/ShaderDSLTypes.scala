@@ -19,7 +19,7 @@ trait ShaderDSLTypes:
     def *(v: vec2): vec2 = vec2(x * v.x, y * v.y)
     def /(v: vec2): vec2 = vec2(x / v.x, y / v.y)
 
-    def `unary_-` : vec2 = vec2(-x, -y)
+    def `unary_-`: vec2 = vec2(-x, -y)
 
     def *(v: mat2): vec2 = vec2(0.0) // TODO: Replace stub
 
@@ -42,7 +42,7 @@ trait ShaderDSLTypes:
     def *(v: vec3): vec3 = vec3(x * v.x, y * v.y, z * v.z)
     def /(v: vec3): vec3 = vec3(x / v.x, y / v.y, z / v.z)
 
-    def `unary_-` : vec3 = vec3(-x, -y, -z)
+    def `unary_-`: vec3 = vec3(-x, -y, -z)
 
     def *(v: mat3): vec3 = vec3(0.0) // TODO: Replace stub
 
@@ -72,7 +72,7 @@ trait ShaderDSLTypes:
     def *(v: vec4): vec4 = vec4(x * v.x, y * v.y, z * v.z, w * v.w)
     def /(v: vec4): vec4 = vec4(x / v.x, y / v.y, z / v.z, w / v.w)
 
-    def `unary_-` : vec4 = vec4(-x, -y, -z, -w)
+    def `unary_-`: vec4 = vec4(-x, -y, -z, -w)
 
     def *(v: mat4): vec4 = vec4(0.0) // TODO: Replace stub
 
@@ -160,7 +160,7 @@ trait ShaderDSLTypes:
     def *(v: ivec2): ivec2 = ivec2(x * v.x, y * v.y)
     def /(v: ivec2): ivec2 = ivec2(x / v.x, y / v.y)
 
-    def `unary_-` : ivec2 = ivec2(-x, -y)
+    def `unary_-`: ivec2 = ivec2(-x, -y)
 
     def *(v: mat2): ivec2 = ivec2(0) // TODO: Replace stub
 
@@ -183,7 +183,7 @@ trait ShaderDSLTypes:
     def *(v: ivec3): ivec3 = ivec3(x * v.x, y * v.y, z * v.z)
     def /(v: ivec3): ivec3 = ivec3(x / v.x, y / v.y, z / v.z)
 
-    def `unary_-` : ivec3 = ivec3(-x, -y, -z)
+    def `unary_-`: ivec3 = ivec3(-x, -y, -z)
 
     def *(v: mat3): ivec3 = ivec3(0) // TODO: Replace stub
 
@@ -213,7 +213,7 @@ trait ShaderDSLTypes:
     def *(v: ivec4): ivec4 = ivec4(x * v.x, y * v.y, z * v.z, w * v.w)
     def /(v: ivec4): ivec4 = ivec4(x / v.x, y / v.y, z / v.z, w / v.w)
 
-    def `unary_-` : ivec4 = ivec4(-x, -y, -z, -w)
+    def `unary_-`: ivec4 = ivec4(-x, -y, -z, -w)
 
     def *(v: mat4): ivec4 = ivec4(0) // TODO: Replace stub
 
@@ -244,7 +244,7 @@ trait ShaderDSLTypes:
 
   @nowarn("msg=unused")
   final case class array[L <: Singleton, T](private val arr: Array[T])(using convert: L => Int):
-    def length: Int       = arr.length
+    def length: Int = arr.length
     def update(i: Int, value: T): Unit =
       arr(i) = value
 
@@ -338,7 +338,7 @@ trait ShaderDSLTypes:
     def *(m: mat4): mat4 = mat4(mat.zip(m.mat).map(_ * _))
     def /(m: mat4): mat4 = mat4(mat.zip(m.mat).map(_ / _))
 
-    def *(v: vec4): vec4 = 
+    def *(v: vec4): vec4 =
       val col1 = Array(mat(0), mat(4), mat(8), mat(12))
       val col2 = Array(mat(1), mat(5), mat(9), mat(13))
       val col3 = Array(mat(2), mat(6), mat(10),mat(14))

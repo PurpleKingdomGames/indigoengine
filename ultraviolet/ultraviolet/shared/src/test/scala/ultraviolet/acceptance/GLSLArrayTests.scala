@@ -4,6 +4,9 @@ import ultraviolet.DebugAST
 import ultraviolet.macros.ShaderMacros
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class GLSLArrayTests extends munit.FunSuite {
 
   test("arrays - initialise and check length") {

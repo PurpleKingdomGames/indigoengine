@@ -1,7 +1,6 @@
 package ultraviolet
 
 import ultraviolet.datatypes.ShaderDSLOps
-import ultraviolet.datatypes.ShaderHeader
 import ultraviolet.macros.UBOReader
 
 import scala.annotation.StaticAnnotation
@@ -49,11 +48,11 @@ object syntax extends ShaderDSLOps:
   type ShaderTypeOf[A] = ultraviolet.macros.ShaderTypeOf[A]
   val ShaderTypeOf: ultraviolet.macros.ShaderTypeOf.type = ultraviolet.macros.ShaderTypeOf
 
-  final class attribute             extends StaticAnnotation
-  final class const                 extends StaticAnnotation
-  final class define                extends StaticAnnotation
-  final class flat                  extends StaticAnnotation
-  final class in                    extends StaticAnnotation
+  final class attribute extends StaticAnnotation
+  final class const     extends StaticAnnotation
+  final class define    extends StaticAnnotation
+  final class flat      extends StaticAnnotation
+  final class in        extends StaticAnnotation
 
   @nowarn("msg=unused")
   final class layout(location: Int) extends StaticAnnotation

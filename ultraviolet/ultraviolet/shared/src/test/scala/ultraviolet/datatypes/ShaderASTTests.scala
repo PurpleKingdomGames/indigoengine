@@ -4,8 +4,10 @@ import ultraviolet.DebugAST
 import ultraviolet.macros.ShaderMacros
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
 import scala.collection.mutable.ListBuffer
 
+@nowarn("msg=unused")
 class ShaderASTTests extends munit.FunSuite {
 
   test("traverse - can find all the val's") {
@@ -18,11 +20,10 @@ class ShaderASTTests extends munit.FunSuite {
     val acc = new ListBuffer[String]()
 
     val ast = ShaderMacros.toAST(fragment).main
-    
-    ast.traverse {
-      case v @ ShaderAST.Val(id, _, _) =>
-        acc += id
-        v
+
+    ast.traverse { case v @ ShaderAST.Val(id, _, _) =>
+      acc += id
+      v
     }
 
     assertEquals(acc.length, 2)

@@ -3,6 +3,9 @@ package ultraviolet.indigoexamples
 import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object NoOp:
 
   object vertex:

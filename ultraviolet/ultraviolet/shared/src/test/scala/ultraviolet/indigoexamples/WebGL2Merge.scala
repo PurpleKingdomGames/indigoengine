@@ -3,6 +3,9 @@ package ultraviolet.indigoexamples
 import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object WebGL2Merge:
 
   case class IndigoMergeData(u_projection: mat4, u_scale: vec2)

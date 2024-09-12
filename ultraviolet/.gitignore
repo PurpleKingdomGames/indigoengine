@@ -44,6 +44,7 @@ metals.sbt
 .bsp/
 .ammonite
 .coursier
+*.semanticdb
 
 # Direnv
 .direnv
