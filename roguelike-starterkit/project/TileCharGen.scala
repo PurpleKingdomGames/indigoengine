@@ -110,8 +110,9 @@ object TileCharGen {
     |  inline def fromInt(char: Int): Tile = Math.min(255, Math.max(0, char))
     |    
     |  extension (t: Tile)
-    |    def toInt: Int = t
-    |    def toFloat: Float = t.toFloat
+    |    def toInt: Int       = t
+    |    def toFloat: Float   = t.toFloat
+    |    def toChar: Char     = t.toChar
     |
     |$charString
     |
