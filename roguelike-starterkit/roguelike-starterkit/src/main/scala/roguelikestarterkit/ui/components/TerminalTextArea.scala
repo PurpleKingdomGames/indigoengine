@@ -24,22 +24,21 @@ object TerminalTextArea:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, List[String], Dimensions) => Outcome[Layer] = {
-    case (offset, label, dimensions) =>
-      val size = dimensions.unsafeToSize
+  ): (Coords, List[String], Dimensions) => Outcome[Layer] = { case (offset, label, dimensions) =>
+    val size = dimensions.unsafeToSize
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .putLines(Point.zero, Batch.fromList(label), fgColor, bgColor)
-          .toCloneTiles(
-            CloneId(s"label_${charSheet.assetName.toString}"),
-            offset.toScreenSpace(charSheet.size),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+    val terminal =
+      RogueTerminalEmulator(size)
+        .putLines(Point.zero, Batch.fromList(label), fgColor, bgColor)
+        .toCloneTiles(
+          CloneId(s"label_${charSheet.assetName.toString}"),
+          offset.toScreenSpace(charSheet.size),
+          charSheet.charCrops
+        ) { case (fg, bg) =>
+          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+        }
 
-      Outcome(Layer.Content(terminal))
+    Outcome(Layer.Content(terminal))
   }
 
   /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a

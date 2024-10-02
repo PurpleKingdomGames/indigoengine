@@ -4,7 +4,7 @@
 // import roguelikestarterkit.syntax.toPoints
 
 // class SyntaxTests extends munit.FunSuite {
-  
+
 //   test("Can convert a rectangle to a grid of points") {
 //     val actual = Rectangle(0,0,4,3).toPoints
 
@@ -26,7 +26,7 @@
 
 //     assertEquals(actual, expected)
 //   }
-  
+
 //   test("Can convert a offset rectangle to a grid of points") {
 //     val actual = Rectangle(10,20,4,3).toPoints
 

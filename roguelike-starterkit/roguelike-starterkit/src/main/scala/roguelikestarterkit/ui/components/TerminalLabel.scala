@@ -22,22 +22,21 @@ object TerminalLabel:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (Coords, String, Dimensions) => Outcome[Layer] = {
-    case (offset, label, dimensions) =>
-      val size = dimensions.unsafeToSize
+  ): (Coords, String, Dimensions) => Outcome[Layer] = { case (offset, label, dimensions) =>
+    val size = dimensions.unsafeToSize
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .putLine(Point.zero, label, fgColor, bgColor)
-          .toCloneTiles(
-            CloneId(s"label_${charSheet.assetName.toString}"),
-            offset.toScreenSpace(charSheet.size),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+    val terminal =
+      RogueTerminalEmulator(size)
+        .putLine(Point.zero, label, fgColor, bgColor)
+        .toCloneTiles(
+          CloneId(s"label_${charSheet.assetName.toString}"),
+          offset.toScreenSpace(charSheet.size),
+          charSheet.charCrops
+        ) { case (fg, bg) =>
+          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+        }
 
-      Outcome(Layer.Content(terminal))
+    Outcome(Layer.Content(terminal))
   }
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds
