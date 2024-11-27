@@ -9,11 +9,11 @@ enum WindowEvent extends GlobalEvent:
 
   // Events sent to the game
 
-  /** Informs the game when the mouse moves into a window's bounds */
-  case MouseOver(id: WindowId)
+  /** Informs the game when the pointer moves into a window's bounds */
+  case PointerOver(id: WindowId)
 
-  /** Informs the game when the mouse moves out of a window's bounds */
-  case MouseOut(id: WindowId)
+  /** Informs the game when the pointer moves out of a window's bounds */
+  case PointerOut(id: WindowId)
 
   /** Informs the game when a window has resized */
   case Resized(id: WindowId)
@@ -58,8 +58,8 @@ enum WindowEvent extends GlobalEvent:
 
   def windowId: Option[WindowId] =
     this match
-      case MouseOver(id)          => Some(id)
-      case MouseOut(id)           => Some(id)
+      case PointerOver(id)        => Some(id)
+      case PointerOut(id)         => Some(id)
       case Resized(id)            => Some(id)
       case Opened(id)             => Some(id)
       case Closed(id)             => Some(id)

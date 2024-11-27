@@ -27,7 +27,7 @@ object UIScene extends Scene[Size, Model, ViewModel]:
         SubSystemId("window manager 2"),
         RogueLikeGame.magnification,
         Size(Model.defaultCharSheet.charSize),
-        _.mouseOverWindows.length
+        _.pointerOverWindows.length
       )
         .register(
           ComponentsWindow.window(
@@ -55,23 +55,23 @@ object UIScene extends Scene[Size, Model, ViewModel]:
       context: SceneContext[Size],
       model: Model
   ): GlobalEvent => Outcome[Model] =
-    case WindowEvent.MouseOver(id) =>
-      println("Mouse over window: " + id)
-      val ids = id :: model.mouseOverWindows.filterNot(_ == id)
+    case WindowEvent.PointerOver(id) =>
+      println("Pointer over window: " + id)
+      val ids = id :: model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
-    case WindowEvent.MouseOut(id) =>
-      println("Mouse out window: " + id)
-      val ids = model.mouseOverWindows.filterNot(_ == id)
+    case WindowEvent.PointerOut(id) =>
+      println("Pointer out window: " + id)
+      val ids = model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
     case WindowEvent.Closed(id) =>
       println("Closed window: " + id)
-      val ids = model.mouseOverWindows.filterNot(_ == id)
+      val ids = model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
     case _ =>
       Outcome(model)

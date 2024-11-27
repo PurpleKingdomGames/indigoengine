@@ -8,7 +8,7 @@ import roguelikestarterkit.ui.datatypes.UIContext
 final case class WindowViewModel[ReferenceData](
     id: WindowId,
     modelHashCode: Int,
-    mouseIsOver: Boolean,
+    pointerIsOver: Boolean,
     magnification: Int
 ):
 
@@ -40,29 +40,29 @@ object WindowViewModel:
     case WindowInternalEvent.Redraw =>
       Outcome(redraw(model, viewModel))
 
-    case MouseEvent.Move(pt)
-        if viewModel.mouseIsOver && !model.bounds
+    case PointerEvent.PointerMove(pt)
+        if viewModel.pointerIsOver && !model.bounds
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
-      Outcome(viewModel.copy(mouseIsOver = false))
-        .addGlobalEvents(WindowEvent.MouseOut(model.id))
+      Outcome(viewModel.copy(pointerIsOver = false))
+        .addGlobalEvents(WindowEvent.PointerOut(model.id))
 
-    case MouseEvent.Move(pt)
-        if !viewModel.mouseIsOver && model.bounds
+    case PointerEvent.PointerMove(pt)
+        if !viewModel.pointerIsOver && model.bounds
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
-      Outcome(viewModel.copy(mouseIsOver = true))
-        .addGlobalEvents(WindowEvent.MouseOver(model.id))
+      Outcome(viewModel.copy(pointerIsOver = true))
+        .addGlobalEvents(WindowEvent.PointerOver(model.id))
 
     case _ =>
       Outcome(viewModel)
 
   // private def calculateDragBy(
   //     charSize: Size,
-  //     mousePosition: Point,
+  //     pointerPosition: Point,
   //     windowPosition: Coords
   // ): Coords =
-  //   Coords(mousePosition / charSize.toPoint) - windowPosition
+  //   Coords(pointerPosition / charSize.toPoint) - windowPosition
 
   private def redraw[A, ReferenceData](
       // context: UIContext[ReferenceData],

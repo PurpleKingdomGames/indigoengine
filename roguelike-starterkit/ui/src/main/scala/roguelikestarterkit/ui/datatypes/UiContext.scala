@@ -6,7 +6,7 @@ final case class UIContext[ReferenceData](
     // Specific to UIContext
     bounds: Bounds,
     snapGrid: Size,
-    mouseCoords: Coords,
+    pointerCoords: Coords,
     state: UIState,
     magnification: Int,
     additionalOffset: Coords,
@@ -37,11 +37,11 @@ object UIContext:
       snapGrid: Size,
       magnification: Int
   ): UIContext[ReferenceData] =
-    val mouseCoords = Coords(subSystemContext.frame.input.mouse.position / snapGrid.toPoint)
+    val pointerCoords = Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint)
     UIContext(
       Bounds.zero,
       snapGrid,
-      mouseCoords,
+      pointerCoords,
       UIState.Active,
       magnification,
       Coords.zero,
@@ -56,11 +56,11 @@ object UIContext:
       magnification: Int,
       additionalOffset: Coords
   ): UIContext[ReferenceData] =
-    val mouseCoords = Coords(subSystemContext.frame.input.mouse.position / snapGrid.toPoint)
+    val pointerCoords = Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint)
     UIContext(
       Bounds.zero,
       snapGrid,
-      mouseCoords,
+      pointerCoords,
       UIState.Active,
       magnification,
       additionalOffset,

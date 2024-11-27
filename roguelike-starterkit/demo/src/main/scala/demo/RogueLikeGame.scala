@@ -70,7 +70,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
       Outcome(model)
 
     case SceneEvent.SceneChange(_, _, _) =>
-      Outcome(model.copy(mouseOverWindows = Batch.empty))
+      Outcome(model.copy(pointerOverWindows = Batch.empty))
 
     case _ =>
       Outcome(model)
@@ -89,7 +89,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(mouseOverWindows: Batch[WindowId], components: ComponentGroup[Int])
+final case class Model(pointerOverWindows: Batch[WindowId], components: ComponentGroup[Int])
 
 object Model:
 

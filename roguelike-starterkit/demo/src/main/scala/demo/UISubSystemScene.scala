@@ -48,23 +48,23 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
     case KeyboardEvent.KeyUp(Key.KEY_T) =>
       Outcome(model).addGlobalEvents(WindowEvent.Toggle(ColourWindow.windowId))
 
-    case WindowEvent.MouseOver(id) =>
-      println("Mouse over window: " + id)
-      val ids = id :: model.mouseOverWindows.filterNot(_ == id)
+    case WindowEvent.PointerOver(id) =>
+      println("Pointer over window: " + id)
+      val ids = id :: model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
-    case WindowEvent.MouseOut(id) =>
-      println("Mouse out window: " + id)
-      val ids = model.mouseOverWindows.filterNot(_ == id)
+    case WindowEvent.PointerOut(id) =>
+      println("Pointer out window: " + id)
+      val ids = model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
     case WindowEvent.Closed(id) =>
       println("Window closed: " + id)
-      val ids = model.mouseOverWindows.filterNot(_ == id)
+      val ids = model.pointerOverWindows.filterNot(_ == id)
 
-      Outcome(model.copy(mouseOverWindows = ids))
+      Outcome(model.copy(pointerOverWindows = ids))
 
     case _ =>
       Outcome(model)
@@ -86,8 +86,8 @@ object UISubSystemScene extends Scene[Size, Model, ViewModel]:
         BindingKey("info") ->
           Layer(
             TextBox(
-              "Mouse over: " +
-                model.mouseOverWindows.mkString("[", ",", "]")
+              "Pointer over: " +
+                model.pointerOverWindows.mkString("[", ",", "]")
             )
               .withTextStyle(TextStyle.default.withColor(RGBA.White).withSize(Pixels(12)))
               .moveTo(0, 260)

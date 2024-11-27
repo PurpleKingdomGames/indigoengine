@@ -129,7 +129,7 @@ object ComponentList:
       case e =>
         // What we're doing here it updating the stateMap, not the content function.
         // However, to do that properly, we need to reflow the content too, to make sure things
-        // like mouse clicks are still in the right place.
+        // like pointer clicks are still in the right place.
         val nextOffset =
           ContainerLikeFunctions
             .calculateNextOffset[ReferenceData](model.dimensions, model.layout)

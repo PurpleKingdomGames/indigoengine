@@ -191,7 +191,7 @@ object ScrollPane:
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
       case MouseEvent.Wheel(pos, deltaY)
           if model.scrollOptions.isEnabled && Bounds(context.bounds.coords, model.dimensions)
-            .contains(context.mouseCoords) =>
+            .contains(context.pointerCoords) =>
         val scrollBy =
           val speed =
             if model.dimensions.height > 0 then model.dimensions.height / 10 else 1

@@ -63,9 +63,9 @@ final case class Button[ReferenceData](
   def onRelease(events: GlobalEvent*): Button[ReferenceData] =
     onRelease(Batch.fromSeq(events))
 
-  /** Drag events are fired when the mouse is pressed on the button and then moved without release.
-    * The Coords argument to the function are RELATIVE to the button's position, i.e. dragging up
-    * and left will result in negative coordinates.
+  /** Drag events are fired when the pointer is pressed on the button and then moved without
+    * release. The Coords argument to the function are RELATIVE to the button's position, i.e.
+    * dragging up and left will result in negative coordinates.
     */
   def onDrag(
       events: (ReferenceData, DragData) => Batch[GlobalEvent]
@@ -199,9 +199,9 @@ object Button:
           if model.isDown then ButtonState.Down
           else if newBounds
               .moveBy(context.bounds.coords + context.additionalOffset)
-              .contains(context.mouseCoords)
+              .contains(context.pointerCoords)
           then
-            if context.frame.input.mouse.isLeftDown then ButtonState.Down
+            if context.frame.input.pointers.isLeftDown then ButtonState.Down
             else ButtonState.Over
           else ButtonState.Up
 
@@ -214,35 +214,35 @@ object Button:
           )
         )
 
-      case _: MouseEvent.Click
+      case _: PointerEvent.PointerClick
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
-            .contains(context.mouseCoords) =>
+            .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
-      case _: MouseEvent.MouseDown
+      case _: PointerEvent.PointerDown
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
-            .contains(context.mouseCoords) =>
+            .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
-      case _: MouseEvent.MouseUp
+      case _: PointerEvent.PointerUp
           if context.isActive && model.bounds
             .moveBy(context.bounds.coords + context.additionalOffset)
-            .contains(context.mouseCoords) =>
+            .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
 
-      case _: MouseEvent.MouseUp =>
+      case _: PointerEvent.PointerUp =>
         // Released Outside.
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
-      case _: MouseEvent.Move
+      case _: PointerEvent.PointerMove
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
         val dragToCoords =
-          model.dragOptions.constrainCoords(context.mouseCoords, context.bounds)
+          model.dragOptions.constrainCoords(context.pointerCoords, context.bounds)
 
         def makeDragData =
           DragData(
@@ -276,9 +276,9 @@ object Button:
         model: Button[ReferenceData]
     ): Outcome[Layer] =
       val b =
-        if model.isDragged && model.dragOptions.followMouse then
+        if model.isDragged && model.dragOptions.followPointer then
           val dragCoords =
-            model.dragOptions.constrainCoords(context.mouseCoords, context.bounds)
+            model.dragOptions.constrainCoords(context.pointerCoords, context.bounds)
 
           model.bounds.moveBy(
             model.dragStart.map(dd => dragCoords - dd.start).getOrElse(Coords.zero)
@@ -361,8 +361,8 @@ final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: Dr
   def isDraggable: Boolean =
     mode.isDraggable
 
-  def followMouse: Boolean =
-    mode.followMouse
+  def followPointer: Boolean =
+    mode.followPointer
 
   def withArea(value: DragArea): DragOptions =
     this.copy(area = value)
@@ -376,33 +376,33 @@ final case class DragOptions(mode: DragMode, contraints: DragConstrain, area: Dr
   def withMode(mode: DragMode): DragOptions =
     this.copy(mode = mode)
 
-  def constrainCoords(mouseCoords: Coords, parentBounds: Bounds): Coords =
+  def constrainCoords(pointerCoords: Coords, parentBounds: Bounds): Coords =
     val areaConstrained =
       area match
         case DragArea.None =>
-          mouseCoords
+          pointerCoords
 
         case DragArea.Fixed(relativeBounds) =>
           val bounds =
             relativeBounds.moveTo(parentBounds.topLeft)
 
           Coords(
-            if mouseCoords.x < bounds.left then bounds.left
-            else if mouseCoords.x > bounds.right then bounds.right
-            else mouseCoords.x,
-            if mouseCoords.y < bounds.top then bounds.top
-            else if mouseCoords.y > bounds.bottom then bounds.bottom
-            else mouseCoords.y
+            if pointerCoords.x < bounds.left then bounds.left
+            else if pointerCoords.x > bounds.right then bounds.right
+            else pointerCoords.x,
+            if pointerCoords.y < bounds.top then bounds.top
+            else if pointerCoords.y > bounds.bottom then bounds.bottom
+            else pointerCoords.y
           )
 
         case DragArea.Inherit =>
           Coords(
-            if mouseCoords.x < parentBounds.left then parentBounds.left
-            else if mouseCoords.x > parentBounds.right then parentBounds.right
-            else mouseCoords.x,
-            if mouseCoords.y < parentBounds.top then parentBounds.top
-            else if mouseCoords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
-            else mouseCoords.y
+            if pointerCoords.x < parentBounds.left then parentBounds.left
+            else if pointerCoords.x > parentBounds.right then parentBounds.right
+            else pointerCoords.x,
+            if pointerCoords.y < parentBounds.top then parentBounds.top
+            else if pointerCoords.y > parentBounds.bottom - 1 then parentBounds.bottom - 1
+            else pointerCoords.y
           )
 
     contraints match
@@ -443,7 +443,7 @@ enum DragMode:
     */
   case ReportDrag
 
-  /** The component follows the mouse movement as well as emitting relevant events.
+  /** The component follows the pointer movement as well as emitting relevant events.
     */
   case Drag
 
@@ -453,7 +453,7 @@ enum DragMode:
       case ReportDrag => true
       case Drag       => true
 
-  def followMouse: Boolean =
+  def followPointer: Boolean =
     this match
       case None       => false
       case ReportDrag => false
@@ -462,9 +462,9 @@ enum DragMode:
 /** Data about the ongoing drag operation, all positions are in screen space.
   *
   * @param start
-  *   The position of the mouse when the drag started
+  *   The position of the pointer when the drag started
   * @param position
-  *   The current position of the mouse
+  *   The current position of the pointer
   * @param offset
   *   The start position relative to the component
   * @param delta

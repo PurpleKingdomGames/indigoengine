@@ -93,7 +93,7 @@ object ComponentsWindow:
           ),
           TerminalLabel("Default theme", TerminalLabel.Theme(charSheet)),
           TerminalLabel(
-            (count: Int) => "Mouse over windows: " + count,
+            (count: Int) => "Pointer over windows: " + count,
             TerminalLabel.Theme(charSheet)
           )
         )

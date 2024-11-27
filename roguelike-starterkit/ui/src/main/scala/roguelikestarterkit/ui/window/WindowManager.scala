@@ -142,9 +142,9 @@ object WindowManager:
           if modelId == e.windowId then handleWindowEvents(context, model)(e)
           else Outcome(model)
 
-    case e: MouseEvent.Click =>
+    case e: PointerEvent.PointerClick =>
       updateWindows(context, model, modalWindowOpen(model))(e)
-        .addGlobalEvents(WindowEvent.GiveFocusAt(context.mouseCoords))
+        .addGlobalEvents(WindowEvent.GiveFocusAt(context.pointerCoords))
 
     case FrameTick =>
       modalWindowOpen(model) match
@@ -163,7 +163,7 @@ object WindowManager:
       modalWindow: Option[WindowId]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     e =>
-      val windowUnderMouse = model.windowAt(context.mouseCoords)
+      val windowUnderPointer = model.windowAt(context.pointerCoords)
 
       model.windows
         .map { w =>
@@ -176,7 +176,7 @@ object WindowManager:
                 UIState.InActive
 
               case None =>
-                if w.hasFocus || windowUnderMouse.exists(_ == w.id) then UIState.Active
+                if w.hasFocus || windowUnderPointer.exists(_ == w.id) then UIState.Active
                 else UIState.InActive
             ),
             w
@@ -226,10 +226,10 @@ object WindowManager:
     case WindowEvent.Resized(_) =>
       Outcome(model)
 
-    case WindowEvent.MouseOver(_) =>
+    case WindowEvent.PointerOver(_) =>
       Outcome(model)
 
-    case WindowEvent.MouseOut(_) =>
+    case WindowEvent.PointerOut(_) =>
       Outcome(model)
 
     case WindowEvent.ChangeMagnification(_) =>
@@ -244,7 +244,7 @@ object WindowManager:
       Outcome(viewModel.changeMagnification(next))
 
     case e =>
-      val windowUnderMouse = model.windowAt(context.mouseCoords)
+      val windowUnderPointer = model.windowAt(context.pointerCoords)
 
       val updated =
         val prunedVM = viewModel.prune(model)
@@ -259,7 +259,7 @@ object WindowManager:
                 Batch(
                   vm.update(
                     context.copy(state =
-                      if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active
+                      if m.hasFocus || windowUnderPointer.exists(_ == m.id) then UIState.Active
                       else UIState.InActive
                     ),
                     m,
@@ -276,7 +276,7 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
-    val windowUnderMouse = model.windowAt(context.mouseCoords)
+    val windowUnderPointer = model.windowAt(context.pointerCoords)
 
     val windowLayers: Outcome[Batch[Layer]] =
       model.windows
@@ -292,7 +292,7 @@ object WindowManager:
                 WindowView
                   .present(
                     context.copy(state =
-                      if m.hasFocus || windowUnderMouse.exists(_ == m.id) then UIState.Active
+                      if m.hasFocus || windowUnderPointer.exists(_ == m.id) then UIState.Active
                       else UIState.InActive
                     ),
                     m,

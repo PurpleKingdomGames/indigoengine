@@ -17,11 +17,11 @@ final case class WindowManagerViewModel[ReferenceData](
   ): Outcome[WindowManagerViewModel[ReferenceData]] =
     WindowManager.updateViewModel(context, model, this)(event)
 
-  def mouseIsOverAnyWindow: Boolean =
-    windows.exists(_.mouseIsOver)
+  def pointerIsOverAnyWindow: Boolean =
+    windows.exists(_.pointerIsOver)
 
-  def mouseIsOver: Batch[WindowId] =
-    windows.collect { case wvm if wvm.mouseIsOver => wvm.id }
+  def pointerIsOver: Batch[WindowId] =
+    windows.collect { case wvm if wvm.pointerIsOver => wvm.id }
 
   def changeMagnification(next: Int): WindowManagerViewModel[ReferenceData] =
     this.copy(
