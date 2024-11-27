@@ -6,6 +6,7 @@ import ultraviolet.macros.UBOReader
 import scala.annotation.StaticAnnotation
 import scala.annotation.nowarn
 import scala.deriving.Mirror
+import scala.util.matching.Regex
 
 object syntax extends ShaderDSLOps:
   type WebGL1 = ultraviolet.datatypes.ShaderPrinter.WebGL1
@@ -90,5 +91,77 @@ object syntax extends ShaderDSLOps:
   def PrecisionHighPFloat: ShaderHeader   = ShaderHeader.PrecisionHighPFloat
   def PrecisionMediumPFloat: ShaderHeader = ShaderHeader.PrecisionMediumPFloat
   def PrecisionLowPFloat: ShaderHeader    = ShaderHeader.PrecisionLowPFloat
+
+  private[ultraviolet] object interpolators:
+
+    object hex:
+      private val hexGroup: String = "([0-9A-F]{2})"
+      private val hex3: Regex      = List.fill(3)(hexGroup).mkString("(?i)#", "", "").r
+      private val hex4: Regex      = List.fill(4)(hexGroup).mkString("(?i)#", "", "").r
+
+      private def toScaledFloat(string: String): Float = Integer.parseInt(string, 16) / 255f
+
+      extension (string: String) {
+        def toVec3: Option[vec3] = Option(string).collect { case hex3(r, g, b) =>
+          vec3(toScaledFloat(r), toScaledFloat(g), toScaledFloat(b))
+        }
+
+        def toVec4: Option[vec4] = Option(string).collect { case hex4(r, g, b, a) =>
+          vec4(toScaledFloat(r), toScaledFloat(g), toScaledFloat(b), toScaledFloat(a))
+        }
+      }
+
+    object rgb:
+      private def is8bit(i: Int): Boolean                      = i >= 0 && i < 256
+      private def toScaledFloat(string: String): Option[Float] = string.toIntOption.filter(is8bit).map(_ / 255f)
+
+      extension (string: String) {
+        def toVec3: Option[vec3] = Option(string.split(",").toList.map(toScaledFloat)).collect {
+          case Some(r) :: Some(g) :: Some(b) :: Nil => vec3(r, g, b)
+        }
+
+        def toVec4: Option[vec4] = Option(string.split(",").toList.map(toScaledFloat)).collect {
+          case Some(r) :: Some(g) :: Some(b) :: Some(a) :: Nil => vec4(r, g, b, a)
+        }
+      }
+
+  extension (sc: StringContext) {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def hex(args: Any*): vec3 =
+      import interpolators.hex.*
+      sc.s(args*).toVec3.getOrElse {
+        throw IllegalArgumentException(
+          s"Invalid hex values ${args.mkString}. Supported formats are #00ff00 and #00ff00ff (case insensitive), using the 'hex' and 'hexa' interpolators, respectively"
+        )
+      }
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def hexa(args: Any*): vec4 =
+      import interpolators.hex.*
+      sc.s(args*).toVec4.getOrElse {
+        throw IllegalArgumentException(
+          s"Invalid hexa values ${args.mkString}. Supported formats are #00ff00 and #00ff00ff (case insensitive), using the 'hex' and 'hexa' interpolators, respectively"
+        )
+      }
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def rgb(args: Int*): vec3 =
+      import interpolators.rgb.*
+      sc.s(args*).toVec3.getOrElse {
+        throw IllegalArgumentException(
+          s"Invalid rgb values ${args.mkString}. Supported formats are 0,255,0 and 0,255,0,255, using the 'rgb' and 'rgba' interpolators, respectively"
+        )
+      }
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def rgba(args: Int*): vec4 =
+      import interpolators.rgb.*
+      sc.s(args*).toVec4.getOrElse {
+        throw IllegalArgumentException(
+          s"Invalid rgba values ${args.mkString}. Supported formats are 0,255,0 and 0,255,0,255, using the 'rgb' and 'rgba' interpolators, respectively"
+        )
+      }
+  }
 
 end syntax

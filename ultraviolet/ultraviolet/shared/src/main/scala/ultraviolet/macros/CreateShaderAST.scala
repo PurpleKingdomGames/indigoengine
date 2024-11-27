@@ -1236,6 +1236,56 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
           case _ =>
             throw ShaderError.Unsupported("Shaders do not support infix operator: " + op)
 
+      case Apply(
+            Apply(Ident(op), List(Apply(_, List(Typed(Repeated(List(Literal(StringConstant(value))), _), _))))),
+            _
+          ) =>
+        op match
+          case "hex" =>
+            import ultraviolet.syntax.interpolators.hex.*
+            value.toVec3.map(v => ShaderAST.DataTypes.vec3(v.x, v.y, v.z)).getOrElse {
+              throw ShaderError.Unsupported(
+                "Hex values must be 6 or 8 characters long using the `hex` or `hexa` interpolators, respectively (e.g. #FF00FF)."
+              )
+            }
+
+          case "hexa" =>
+            import ultraviolet.syntax.interpolators.hex.*
+            value.toVec4.map(v => ShaderAST.DataTypes.vec4(v.x, v.y, v.z, v.a)).getOrElse {
+              throw ShaderError.Unsupported(
+                "Hex values must be 6 or 8 characters long using the `hex` or `hexa` interpolators, respectively (e.g. #FF00FF00)."
+              )
+            }
+
+          case "rgb" =>
+            import ultraviolet.syntax.interpolators.rgb.*
+            value.toVec3
+              .map(v => ShaderAST.DataTypes.vec3(v.x, v.y, v.z))
+              .getOrElse {
+                throw ShaderError.Unsupported(
+                  "RGB values must be 3 or 4 integers long using the `rgb` or `rgba` interpolators, respectively (e.g. 255,0,255)."
+                )
+              }
+
+          case "rgba" =>
+            import ultraviolet.syntax.interpolators.rgb.*
+            value.toVec4
+              .map(v => ShaderAST.DataTypes.vec4(v.x, v.y, v.z, v.a))
+              .getOrElse {
+                throw ShaderError.Unsupported(
+                  "RGB values must be 3 or 4 integers long using the `rgb` or `rgba` interpolators, respectively (e.g. 255,0,255,0)."
+                )
+              }
+
+          case _ =>
+            throw ShaderError.Unsupported("Shaders do not support interpolators of type: " + op)
+
+      case Apply(
+            Apply(Ident(op), List(Apply(_, List(Typed(Repeated(_, _), _))))),
+            _
+          ) =>
+        throw ShaderError.Unsupported("Shader interpolated colours must be string literals, e.g. #ff0000")
+
       case Apply(Apply(Ident(op), List(l)), List(r)) =>
         op match
           case "<" | "<=" | ">" | ">=" | "==" | "!=" =>
