@@ -14,7 +14,6 @@ import roguelikestarterkit.ui.components.datatypes.ComponentLayout
 import roguelikestarterkit.ui.components.datatypes.Padding
 import roguelikestarterkit.ui.window.TerminalWindow
 
-// format: off
 object ComponentsWindow2:
 
   val windowId: WindowId = WindowId("ComponentsWindow2")
@@ -106,4 +105,3 @@ object ComponentsWindow2:
     )
       .moveTo(2, 5)
       .resizeTo(25, 25)
-// format: on

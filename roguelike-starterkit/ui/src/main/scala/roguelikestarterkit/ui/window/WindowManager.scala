@@ -177,8 +177,7 @@ object WindowManager:
 
               case None =>
                 if w.hasFocus || windowUnderPointer.exists(_ == w.id) then UIState.Active
-                else UIState.InActive
-            ),
+                else UIState.InActive),
             w
           )(e)
         }

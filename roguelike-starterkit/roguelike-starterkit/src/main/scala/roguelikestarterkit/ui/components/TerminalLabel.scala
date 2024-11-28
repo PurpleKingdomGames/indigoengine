@@ -9,7 +9,7 @@ import roguelikestarterkit.ui.datatypes.CharSheet
 import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 
-/** TerminalLabel are a simple `Component`s that render text using a Terminal.
+/** TerminalLabel are a simple `Component` s that render text using a Terminal.
   */
 object TerminalLabel:
 

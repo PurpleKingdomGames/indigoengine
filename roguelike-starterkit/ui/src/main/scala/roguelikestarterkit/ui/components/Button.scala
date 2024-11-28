@@ -8,7 +8,7 @@ import roguelikestarterkit.ui.datatypes.Coords
 import roguelikestarterkit.ui.datatypes.Dimensions
 import roguelikestarterkit.ui.datatypes.UIContext
 
-/** Buttons `Component`s allow you to create buttons for your UI.
+/** Buttons `Component` s allow you to create buttons for your UI.
   */
 final case class Button[ReferenceData](
     bounds: Bounds,
