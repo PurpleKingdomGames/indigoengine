@@ -52,7 +52,7 @@ object ShadersScene
         Layer(
           BlankEntity(100, 100, ShaderData(CircleShader.shader.id))
             .moveTo(20, 20),
-          BlankEntity(100, 100, ShaderData(SquareShader.shader.id))
+          BlankEntity(100, 100, ShaderData(BoxShader.shader.id))
             .moveTo(100, 20),
           BlankEntity(100, 100, ShaderData(StarShader.shader.id))
             .moveTo(20, 100)

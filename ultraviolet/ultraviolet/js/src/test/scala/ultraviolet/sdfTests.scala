@@ -51,7 +51,7 @@ class sdfTests extends munit.FunSuite {
 
         import ultraviolet.sdf.*
 
-        def proxy: (vec2, vec2) => Float = (p, b) => square(p, b)
+        def proxy: (vec2, vec2) => Float = (p, b) => box(p, b)
 
         proxy(vec2(0.5f), vec2(1.5f))
       }

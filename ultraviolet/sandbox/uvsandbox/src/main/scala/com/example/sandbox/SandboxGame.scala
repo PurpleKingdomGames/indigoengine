@@ -77,7 +77,7 @@ object SandboxGame
           Shaders.external,
           Shaders.sea,
           CircleShader.shader,
-          SquareShader.shader,
+          BoxShader.shader,
           StarShader.shader
         )
     )

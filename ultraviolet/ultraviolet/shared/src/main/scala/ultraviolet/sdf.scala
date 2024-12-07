@@ -4,13 +4,19 @@ import ultraviolet.syntax.*
 
 object sdf:
 
+  /** Determines the distance from a point to edge of a circle centered at the origin.
+    */
   inline def circle(point: vec2, radius: Float): Float =
     length(point) - radius
 
-  inline def square(point: vec2, halfSize: vec2): Float =
+  /** Determines the distance from a point to edge of a box centered at the origin.
+    */
+  inline def box(point: vec2, halfSize: vec2): Float =
     val d = abs(point) - halfSize
     length(max(d, 0.0f)) + min(max(d.x, d.y), 0.0f)
 
+  /** Determines the distance from a point to edge of a five pointed star centered at the origin.
+    */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   inline def star(point: vec2, radius: Float, innerRadius: Float): Float =
     val k1: vec2 = vec2(0.809016994375f, -0.587785252292f)

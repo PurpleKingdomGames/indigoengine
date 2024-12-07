@@ -28,11 +28,11 @@ object CircleShader:
         calculateColour(env.UV, circle(env.UV - 0.5f, 0.5f))
     }
 
-object SquareShader:
+object BoxShader:
 
   val shader: UltravioletShader =
     UltravioletShader.entityFragment(
-      ShaderId("square shader"),
+      ShaderId("box shader"),
       EntityShader.fragment(fragment, FragmentEnv.reference)
     )
 
@@ -44,7 +44,7 @@ object SquareShader:
       import ultraviolet.sdf.*
 
       def proxy: (vec2, vec2) => Float =
-        (p, b) => square(p, b)
+        (p, b) => box(p, b)
 
       def calculateColour(uv: vec2, sdf: Float): vec4 =
         val fill       = vec4(uv, 0.0f, 1.0f)
