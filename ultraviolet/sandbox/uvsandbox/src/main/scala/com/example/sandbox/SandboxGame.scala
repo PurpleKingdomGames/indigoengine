@@ -1,6 +1,7 @@
 package com.example.sandbox
 
 import com.example.sandbox.scenes.*
+import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.json.Json
 import indigo.scenes.*
@@ -11,7 +12,13 @@ import indigoextras.ui.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object SandboxGame
+    extends IndigoGame[
+      SandboxBootData,
+      SandboxStartupData,
+      SandboxGameModel,
+      SandboxViewModel
+    ]:
 
   val magnificationLevel: Int = 2
   val gameWidth: Int          = 228
@@ -22,7 +29,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(ShadersScene.name)
 
-  def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
+  def scenes(bootData: SandboxBootData): NonEmptyList[
+    Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]
+  ] =
     NonEmptyList(
       OriginalScene,
       ShadersScene
@@ -30,7 +39,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
+  def boot(
+      flags: Map[String, String]
+  ): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
@@ -47,7 +58,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
           magnification = magnificationLevel
         ),
-        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
+        SandboxBootData(
+          flags.getOrElse("key", "No entry for 'key'."),
+          gameViewport
+        )
       ).withAssets(
         SandboxAssets.assets ++
           Shaders.assets
@@ -62,7 +76,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.circle,
           Shaders.external,
           Shaders.sea,
-          CustomShader.shader
+          CircleShader.shader,
+          SquareShader.shader,
+          StarShader.shader
         )
     )
   }
@@ -89,8 +105,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
               aseprite,
               spriteAndAnimations.sprite
                 .withDepth(Depth(3))
-                .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
-                .moveTo(screenCenter) // Also place him in the middle of the screen initially
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .moveTo(
+                  screenCenter
+                ) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips
             ),
@@ -100,10 +118,15 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[SandboxStartupData]] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.toString + "-json"))
-      aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
-      clips               <- aseprite.toClips(SandboxAssets.dudeName)
+      json <- assetCollection.findTextDataByName(
+        AssetName(SandboxAssets.dudeName.toString + "-json")
+      )
+      aseprite <- Json.asepriteFromJson(json)
+      spriteAndAnimations <- aseprite.toSpriteAndAnimations(
+        dice,
+        SandboxAssets.dudeName
+      )
+      clips <- aseprite.toClips(SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations, clips)
 
     Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
@@ -112,19 +135,43 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
     Outcome(SandboxModel.initialModel(startupData))
 
-  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
+  def initialViewModel(
+      startupData: SandboxStartupData,
+      model: SandboxGameModel
+  ): Outcome[SandboxViewModel] = {
     val assets =
       InputFieldAssets(
-        Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
-        Graphic(0, 0, 16, 16, 2, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
+        Text(
+          "placeholder",
+          0,
+          0,
+          0,
+          Fonts.fontKey,
+          SandboxAssets.fontMaterial
+        ).alignLeft,
+        Graphic(
+          0,
+          0,
+          16,
+          16,
+          2,
+          Material
+            .ImageEffects(SandboxAssets.smallFontName)
+            .withTint(RGB(0, 0, 1))
+        )
           .withCrop(188, 78, 14, 23)
       )
 
     Outcome(
       SandboxViewModel(
         Point.zero,
-        InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
-        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
+        InputField("single", assets)
+          .withKey(BindingKey("single"))
+          .makeSingleLine,
+        InputField("multi\nline", assets)
+          .withKey(BindingKey("multi"))
+          .makeMultiLine
+          .moveTo(5, 5),
         true
       )
     )

@@ -1,28 +1,23 @@
 package com.example.sandbox.shaders
 
-import ultraviolet.syntax.*
+import indigo.*
 
 import scala.annotation.nowarn
 
-object ShaderPrograms:
+object CircleShader:
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  final case class FragEnv(UV: vec2, var COLOR: vec4)
+  val shader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      ShaderId("circle shader"),
+      EntityShader.fragment(fragment, FragmentEnv.reference)
+    )
 
-  inline def fragment1 =
-    Shader[FragEnv, vec4] { env =>
-      val zero  = 0.0f
-      val alpha = 1.0f
-      vec4(env.UV, zero, alpha)
-    }
-
-  val frag1: String = fragment1.toGLSL[WebGL2].toOutput.code
+  import ultraviolet.syntax.*
 
   @nowarn
-  inline def fragment2 =
-    Shader[FragEnv] { env =>
-      def circleSdf(p: vec2, r: Float): Float =
-        length(p) - r
+  inline def fragment =
+    Shader[FragmentEnv] { env =>
+      import ultraviolet.sdf.*
 
       def calculateColour(uv: vec2, sdf: Float): vec4 =
         val fill       = vec4(uv, 0.0f, 1.0f)
@@ -30,26 +25,59 @@ object ShaderPrograms:
         vec4(fill.xyz * fillAmount, fillAmount)
 
       def fragment(color: vec4): vec4 =
-        val sdf = circleSdf(env.UV - 0.5f, 0.5f)
-        calculateColour(env.UV, sdf)
+        calculateColour(env.UV, circle(env.UV - 0.5f, 0.5f))
     }
 
-  val frag2: String = fragment2.toGLSL[WebGL2].toOutput.code
+object SquareShader:
 
-  inline def glsl: String =
-    """
-    vec4 fragment(vec4 c) {
-      float zero = 0.0;
-      float alpha = 1.0;
-      return vec4(UV, zero, alpha);
+  val shader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      ShaderId("square shader"),
+      EntityShader.fragment(fragment, FragmentEnv.reference)
+    )
+
+  import ultraviolet.syntax.*
+
+  @nowarn
+  inline def fragment =
+    Shader[FragmentEnv] { env =>
+      import ultraviolet.sdf.*
+
+      def proxy: (vec2, vec2) => Float =
+        (p, b) => square(p, b)
+
+      def calculateColour(uv: vec2, sdf: Float): vec4 =
+        val fill       = vec4(uv, 0.0f, 1.0f)
+        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+        vec4(fill.xyz * fillAmount, fillAmount)
+
+      def fragment(color: vec4): vec4 =
+        calculateColour(env.UV, proxy(env.UV - 0.5f, vec2(0.4f, 0.6f)))
     }
-    """
 
-  inline def fragment3 =
-    Shader {
-      raw(
-        glsl
-      )
+object StarShader:
+
+  val shader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      ShaderId("star shader"),
+      EntityShader.fragment(fragment, FragmentEnv.reference)
+    )
+
+  import ultraviolet.syntax.*
+
+  @nowarn
+  inline def fragment =
+    Shader[FragmentEnv] { env =>
+      import ultraviolet.sdf.*
+
+      def proxy: (vec2, Float, Float) => Float =
+        (p, rt, r) => star(p, rt, r)
+
+      def calculateColour(uv: vec2, sdf: Float): vec4 =
+        val fill       = vec4(uv, 0.0f, 1.0f)
+        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+        vec4(fill.xyz * fillAmount, fillAmount)
+
+      def fragment(color: vec4): vec4 =
+        calculateColour(env.UV, proxy(env.UV - 0.5f, 0.3f, 0.6f))
     }
-
-  val frag3: String = fragment3.toGLSL[WebGL2].toOutput.code

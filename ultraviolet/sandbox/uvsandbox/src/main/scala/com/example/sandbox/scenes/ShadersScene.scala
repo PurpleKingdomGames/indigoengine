@@ -3,12 +3,13 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import com.example.sandbox.shaders.ShaderPrograms
+import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.ShaderPrimitive.*
 import indigo.scenes.*
 
-object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object ShadersScene
+    extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
@@ -49,44 +50,14 @@ object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     Outcome(
       SceneUpdateFragment(
         Layer(
-          CustomShader(
-            20,
-            20,
-            100,
-            100,
-            Depth.zero,
-            ShaderData(CustomShader.shaderId)
-          )
+          BlankEntity(100, 100, ShaderData(CircleShader.shader.id))
+            .moveTo(20, 20),
+          BlankEntity(100, 100, ShaderData(SquareShader.shader.id))
+            .moveTo(100, 20),
+          BlankEntity(100, 100, ShaderData(StarShader.shader.id))
+            .moveTo(20, 100)
         ).withMagnification(1)
       )
     )
 
 }
-
-final case class CustomShader(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode[CustomShader]:
-  val flip: Flip                    = Flip.default
-  val position: Point               = Point(x, y)
-  val size: Size                    = Size(width, height)
-  val ref: Point                    = Point.zero
-  val rotation: Radians             = Radians.zero
-  val scale: Vector2                = Vector2.one
-  lazy val toShaderData: ShaderData = shader
-
-  def withDepth(newDepth: Depth): CustomShader =
-    this.copy(depth = newDepth)
-
-  val eventHandlerEnabled: Boolean                                       = false
-  def eventHandler: ((CustomShader, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
-
-object CustomShader:
-
-  val shaderId: ShaderId =
-    ShaderId("custom shader")
-
-  // println(ShaderPrograms.frag2)
-
-  val shader: EntityShader.Source =
-    EntityShader
-      .Source(shaderId)
-      .withFragmentProgram(ShaderPrograms.frag2)
