@@ -12,7 +12,20 @@ object DebugAST:
 
     import quotes.reflect.*
 
-    println(">>> Everything")
+    println(">>> AST (Shader[In, Out]):")
+    println(Printer.TreeStructure.show(expr.asTerm))
+    println("<<<")
+
+    Expr("Done.")
+  }
+
+  inline def any[In, Out](inline expr: Any): String = ${ anyToASTImpl('{ expr }) }
+
+  private def anyToASTImpl[In, Out: Type](expr: Expr[Any])(using Quotes): Expr[String] = {
+
+    import quotes.reflect.*
+
+    println(">>> AST (Any):")
     println(Printer.TreeStructure.show(expr.asTerm))
     println("<<<")
 
