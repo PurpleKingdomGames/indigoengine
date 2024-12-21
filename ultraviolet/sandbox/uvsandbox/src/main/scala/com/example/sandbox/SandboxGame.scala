@@ -27,14 +27,15 @@ object SandboxGame
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ShadersScene.name)
+    Some(NoiseScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[
     Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]
   ] =
     NonEmptyList(
       OriginalScene,
-      ShadersScene
+      ShadersScene,
+      NoiseScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -81,7 +82,12 @@ object SandboxGame
           HexagonShader.shader,
           SegmentShader.shader,
           StarShader.shader,
-          TriangleShader.shader
+          TriangleShader.shader,
+          CellularNoiseShader.shader,
+          PerlinNoiseShader.shader,
+          GradientNoiseShader.shader,
+          SimplexNoiseShader.shader,
+          WhiteNoiseShader.shader
         )
     )
   }
