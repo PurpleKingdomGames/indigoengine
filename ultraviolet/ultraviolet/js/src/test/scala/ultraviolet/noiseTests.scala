@@ -25,17 +25,17 @@ class noiseTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec2 def1(in vec2 x){
-      |  return x-((floor(x*0.0034602077212184668))*289.0);
+      |vec2 def1(in vec2 value){
+      |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
-      |vec3 def2(in vec3 x){
-      |  return x-((floor(x*0.1428571492433548))*7.0);
+      |vec3 def2(in vec3 value){
+      |  return value-((floor(value*0.1428571492433548))*7.0);
       |}
       |vec3 def4(in vec3 value){
       |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
-      |vec3 def3(in vec3 x){
-      |  return def4(((34.0*x)+10.0)*x);
+      |vec3 def3(in vec3 value){
+      |  return def4(((34.0*value)+10.0)*value);
       |}
       |vec2 def0(in vec2 p){
       |  float K=0.1428571492433548;
@@ -111,20 +111,20 @@ class noiseTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec4 def1(in vec4 x){
-      |  return x-((floor(x*0.0034602077212184668))*289.0);
+      |vec4 def1(in vec4 value){
+      |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
       |vec4 def3(in vec4 value){
       |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
-      |vec4 def2(in vec4 x){
-      |  return def3(((x*34.0)+10.0)*x);
+      |vec4 def2(in vec4 value){
+      |  return def3(((value*34.0)+10.0)*value);
       |}
-      |vec4 def4(in vec4 x){
-      |  return 1.7928428649902344-(0.8537347316741943*x);
+      |vec4 def4(in vec4 value){
+      |  return 1.7928428649902344-(0.8537347316741943*value);
       |}
-      |vec2 def5(in vec2 x){
-      |  return ((x*x)*x)*((x*((x*6.0)-15.0))+10.0);
+      |vec2 def5(in vec2 value){
+      |  return ((value*value)*value)*((value*((value*6.0)-15.0))+10.0);
       |}
       |float def0(in vec2 p){
       |  vec4 Pi=floor(p.xyxy)+vec4(0.0,0.0,1.0,1.0);
@@ -182,9 +182,9 @@ class noiseTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec2 def1(in vec2 p){
+      |vec2 def1(in vec2 value){
       |  vec2 k=vec2(0.3183099031448364,0.36787939071655273);
-      |  vec2 y=(p*k)+k.yx;
+      |  vec2 y=(value*k)+k.yx;
       |  return (-1.0)+(2.0*(fract((16.0*k)*(fract((y.x*y.y)*(y.x+y.y))))));
       |}
       |vec3 def0(in vec2 p){
@@ -227,14 +227,14 @@ class noiseTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec2 def1(in vec2 x){
-      |  return x-((floor(x*0.0034602077212184668))*289.0);
+      |vec2 def1(in vec2 value){
+      |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
       |vec3 def3(in vec3 value){
       |  return value-((floor(value*0.0034602077212184668))*289.0);
       |}
-      |vec3 def2(in vec3 x){
-      |  return def3(((34.0*x)+10.0)*x);
+      |vec3 def2(in vec3 value){
+      |  return def3(((34.0*value)+10.0)*value);
       |}
       |float def0(in vec2 p){
       |  vec4 C=vec4(0.21132487058639526,0.3660254180431366,-0.5773502588272095,0.024390242993831635);

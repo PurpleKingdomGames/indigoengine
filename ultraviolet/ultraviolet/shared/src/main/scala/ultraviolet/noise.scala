@@ -19,17 +19,17 @@ object noise:
     val mod289Vec3: vec3 => vec3 = value => _mod289Vec3(value)
     mod289Vec3((34.0f * x + 10.0f) * x)
 
-  inline def cellular(P: vec2): vec2 = {
-    val mod289Vec2: vec2 => vec2 = x => _mod289Vec2(x)
-    val mod7: vec3 => vec3       = x => _mod7(x)
-    val permute: vec3 => vec3    = x => _permute(x)
+  inline def cellular(_ptArg: vec2): vec2 = {
+    val mod289Vec2: vec2 => vec2 = value => _mod289Vec2(value)
+    val mod7: vec3 => vec3       = value => _mod7(value)
+    val permute: vec3 => vec3    = value => _permute(value)
 
     val K      = 0.142857142857f
     val Ko     = 0.428571428571f
     val jitter = 1.0f
 
-    val Pi: vec2 = mod289Vec2(floor(P))
-    val Pf: vec2 = fract(P)
+    val Pi: vec2 = mod289Vec2(floor(_ptArg))
+    val Pf: vec2 = fract(_ptArg)
 
     val oi: vec3 = vec3(-1.0, 0.0, 1.0)
     val of: vec3 = vec3(-0.5, 0.5, 1.5)
@@ -88,14 +88,14 @@ object noise:
   inline private def _fade(t: vec2): vec2 =
     t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f)
 
-  inline def perlin(P: vec2): Float =
-    val mod289Vec4: vec4 => vec4    = x => _mod289Vec4(x)
-    val permuteVec4: vec4 => vec4   = x => _permuteVec4(x)
-    val taylorInvSqrt: vec4 => vec4 = x => _taylorInvSqrt(x)
-    val fade: vec2 => vec2          = x => _fade(x)
+  inline def perlin(_ptArg: vec2): Float =
+    val mod289Vec4: vec4 => vec4    = value => _mod289Vec4(value)
+    val permuteVec4: vec4 => vec4   = value => _permuteVec4(value)
+    val taylorInvSqrt: vec4 => vec4 = value => _taylorInvSqrt(value)
+    val fade: vec2 => vec2          = value => _fade(value)
 
-    var Pi: vec4 = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0)
-    val Pf: vec4 = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0)
+    var Pi: vec4 = floor(_ptArg.xyxy) + vec4(0.0, 0.0, 1.0, 1.0)
+    val Pf: vec4 = fract(_ptArg.xyxy) - vec4(0.0, 0.0, 1.0, 1.0)
     Pi = mod289Vec4(Pi)
 
     val ix: vec4 = Pi.xzxz
@@ -140,12 +140,12 @@ object noise:
     val y = x * k + k.yx
     -1.0f + 2.0f * fract(16.0f * k * fract(y.x * y.y * (y.x + y.y)))
 
-  inline def gradient(p: vec2): vec3 =
+  inline def gradient(_ptArg: vec2): vec3 =
     val hash: vec2 => vec2 =
-      p => _hash(p)
+      value => _hash(value)
 
-    val i: vec2  = floor(p)
-    val f: vec2  = fract(p)
+    val i: vec2  = floor(_ptArg)
+    val f: vec2  = fract(_ptArg)
     val u: vec2  = f * f * (3.0f - 2.0f * f)
     val du: vec2 = 6.0f * f * (1.0f - f)
     val ga: vec2 = hash(i + vec2(0.0f, 0.0f))
@@ -166,9 +166,9 @@ object noise:
 
   // Simplex noise
 
-  inline def simplex(v: vec2): Float =
-    val mod289Vec2: vec2 => vec2 = x => _mod289Vec2(x)
-    val permute: vec3 => vec3    = x => _permute(x)
+  inline def simplex(_ptArg: vec2): Float =
+    val mod289Vec2: vec2 => vec2 = value => _mod289Vec2(value)
+    val permute: vec3 => vec3    = value => _permute(value)
 
     val C: vec4 = vec4(
       0.211324865405187,
@@ -177,8 +177,8 @@ object noise:
       0.024390243902439
     )
 
-    var i: vec2  = floor(v + dot(v, C.yy))
-    val x0: vec2 = v - i + dot(i, C.xx)
+    var i: vec2  = floor(_ptArg + dot(_ptArg, C.yy))
+    val x0: vec2 = _ptArg - i + dot(i, C.xx)
 
     val i1: vec2  = if x0.x > x0.y then vec2(1.0, 0.0) else vec2(0.0, 1.0)
     var x12: vec4 = x0.xyxy + C.xxzz
@@ -207,7 +207,7 @@ object noise:
     130.0f * dot(m, g)
 
   // White noise
-  inline def white(p: vec2): vec3 =
-    var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
+  inline def white(_ptArg: vec2): vec3 =
+    var a: vec3 = fract(_ptArg.xyx * vec3(123.34f, 234.34f, 345.65f))
     a = a + dot(a, a + 34.45f)
     fract(vec3(a.x * a.y, a.y * a.z, a.z * a.x))
