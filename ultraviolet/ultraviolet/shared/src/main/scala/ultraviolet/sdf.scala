@@ -6,37 +6,57 @@ object sdf:
 
   /** Determines the distance from a point to edge of a box centered at the origin.
     */
-  inline def box(point: vec2, halfSize: vec2): Float =
+  inline private def _box(point: vec2, halfSize: vec2): Float =
     val d = abs(point) - halfSize
     length(max(d, 0.0f)) + min(max(d.x, d.y), 0.0f)
 
+  inline def box(point: vec2, halfSize: vec2): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, vec2) => Float = (_ptArg, _hsArg) => _box(_ptArg, _hsArg)
+    proxy(point, halfSize)
+
   /** Determines the distance from a point to edge of a circle centered at the origin.
     */
-  inline def circle(point: vec2, radius: Float): Float =
+  inline private def _circle(point: vec2, radius: Float): Float =
     length(point) - radius
+
+  inline def circle(point: vec2, radius: Float): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, Float) => Float = (_ptArg, _rArg) => _circle(_ptArg, _rArg)
+    proxy(point, radius)
 
   /** Determines the distance from a point to edge of a hexagon centered at the origin.
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def hexagon(point: vec2, radius: Float): Float =
+  inline private def _hexagon(point: vec2, radius: Float): Float =
     val k  = vec3(-0.866025404f, 0.5f, 0.577350269f)
     var pt = abs(point)
     pt = pt - (2.0f * min(dot(k.xy, pt), 0.0f) * k.xy)
     pt = pt - (vec2(clamp(pt.x, -k.z * radius, k.z * radius), radius))
     length(pt) * sign(pt.y)
 
+  inline def hexagon(point: vec2, radius: Float): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, Float) => Float = (_ptArg, _rArg) => _hexagon(_ptArg, _rArg)
+    proxy(point, radius)
+
   /** Determines the distance from a point to edge of a segment centered at the origin.
     */
-  inline def segment(point: vec2, a: vec2, b: vec2): Float =
+  inline private def _segment(point: vec2, a: vec2, b: vec2): Float =
     val pa = point - a
     val ba = b - a
     val h  = clamp(dot(pa, ba) / dot(ba, ba), 0.0f, 1.0f)
     length(pa - ba * h)
 
+  inline def segment(point: vec2, a: vec2, b: vec2): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, vec2, vec2) => Float = (_ptArg, _aArg, _bArg) => _segment(_ptArg, _aArg, _bArg)
+    proxy(point, a, b)
+
   /** Determines the distance from a point to edge of a five pointed star centered at the origin.
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def star(point: vec2, radius: Float, innerRadius: Float): Float =
+  inline private def _star(point: vec2, radius: Float, innerRadius: Float): Float =
     val k1: vec2 = vec2(0.809016994375f, -0.587785252292f)
     val k2: vec2 = vec2(-k1.x, k1.y)
     var p2       = vec2(abs(point.x), -point.y)
@@ -50,13 +70,23 @@ object sdf:
 
     length(p2 - ba * h) * sign(p2.y * ba.x - p2.x * ba.y)
 
+  inline def star(point: vec2, radius: Float, innerRadius: Float): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, Float, Float) => Float = (_ptArg, _rArg, _irArg) => _star(_ptArg, _rArg, _irArg)
+    proxy(point, radius, innerRadius)
+
   /** Determines the distance from a point to edge of an equilateral triangle centered at the origin.
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def triangle(point: vec2, radius: Float): Float =
+  inline private def _triangle(point: vec2, radius: Float): Float =
     val k  = sqrt(3.0f)
     var pt = vec2(abs(point.x) - radius, -point.y + radius / k)
     if (pt.x + k * pt.y > 0.0f)
       pt = vec2(pt.x - k * pt.y, -k * pt.x - pt.y) / 2.0f
     pt = vec2(pt.x - clamp(pt.x, -radius, 0.0f), pt.y)
     -length(pt) * sign(pt.y)
+
+  inline def triangle(point: vec2, radius: Float): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: (vec2, Float) => Float = (_ptArg, _rArg) => _triangle(_ptArg, _rArg)
+    proxy(point, radius)

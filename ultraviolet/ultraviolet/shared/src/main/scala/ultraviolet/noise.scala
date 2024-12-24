@@ -19,7 +19,8 @@ object noise:
     val mod289Vec3: vec3 => vec3 = value => _mod289Vec3(value)
     mod289Vec3((34.0f * x + 10.0f) * x)
 
-  inline def cellular(_ptArg: vec2): vec2 = {
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline private def _cellular(_ptArg: vec2): vec2 = {
     val mod289Vec2: vec2 => vec2 = value => _mod289Vec2(value)
     val mod7: vec3 => vec3       = value => _mod7(value)
     val permute: vec3 => vec3    = value => _permute(value)
@@ -73,6 +74,13 @@ object noise:
     sqrt(d1Flip3.xy)
   }
 
+  /** Cellular noise function.
+    */
+  inline def cellular(p: vec2): vec2 =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: vec2 => vec2 = _ptArg => _cellular(_ptArg)
+    proxy(p)
+
   // Classic Perlin noise
 
   inline private def _mod289Vec4(x: vec4): vec4 =
@@ -88,7 +96,8 @@ object noise:
   inline private def _fade(t: vec2): vec2 =
     t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f)
 
-  inline def perlin(_ptArg: vec2): Float =
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline private def _perlin(_ptArg: vec2): Float =
     val mod289Vec4: vec4 => vec4    = value => _mod289Vec4(value)
     val permuteVec4: vec4 => vec4   = value => _permuteVec4(value)
     val taylorInvSqrt: vec4 => vec4 = value => _taylorInvSqrt(value)
@@ -133,6 +142,13 @@ object noise:
 
     2.3f * n_xy
 
+  /** Perlin noise function.
+    */
+  inline def perlin(p: vec2): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: vec2 => Float = _ptArg => _perlin(_ptArg)
+    proxy(p)
+
   // Gradient noise
 
   inline private def _hash(x: vec2): vec2 =
@@ -140,7 +156,7 @@ object noise:
     val y = x * k + k.yx
     -1.0f + 2.0f * fract(16.0f * k * fract(y.x * y.y * (y.x + y.y)))
 
-  inline def gradient(_ptArg: vec2): vec3 =
+  inline private def _gradient(_ptArg: vec2): vec3 =
     val hash: vec2 => vec2 =
       value => _hash(value)
 
@@ -164,9 +180,17 @@ object noise:
         du * (u.yx * (va - vb - vc + vd) + vec2(vb, vc) - va)
     )
 
+  /** Gradient noise function.
+    */
+  inline def gradient(p: vec2): vec3 =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: vec2 => vec3 = _ptArg => _gradient(_ptArg)
+    proxy(p)
+
   // Simplex noise
 
-  inline def simplex(_ptArg: vec2): Float =
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline private def _simplex(_ptArg: vec2): Float =
     val mod289Vec2: vec2 => vec2 = value => _mod289Vec2(value)
     val permute: vec3 => vec3    = value => _permute(value)
 
@@ -206,8 +230,23 @@ object noise:
 
     130.0f * dot(m, g)
 
+  /** Simplex noise function.
+    */
+  inline def simplex(p: vec2): Float =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: vec2 => Float = _ptArg => _simplex(_ptArg)
+    proxy(p)
+
   // White noise
-  inline def white(_ptArg: vec2): vec3 =
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline private def _white(_ptArg: vec2): vec3 =
     var a: vec3 = fract(_ptArg.xyx * vec3(123.34f, 234.34f, 345.65f))
     a = a + dot(a, a + 34.45f)
     fract(vec3(a.x * a.y, a.y * a.z, a.z * a.x))
+
+  /** White noise function.
+    */
+  inline def white(p: vec2): vec3 =
+    // Delegate to reduce the chance of argument name collisions
+    val proxy: vec2 => vec3 = _ptArg => _white(_ptArg)
+    proxy(p)
