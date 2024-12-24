@@ -45,10 +45,13 @@ object CircleShader:
       import ultraviolet.sdf.*
       import FillColorHelper.*
 
+      def proxy: (vec2, Float) => Float =
+        (p, r) => circle(p, r)
+
       def calculateColour: (vec2, Float) => vec4 = (uv, sdf) => fill(uv, sdf)
 
       def fragment(color: vec4): vec4 =
-        calculateColour(env.UV, circle(env.UV - 0.5f, 0.4f))
+        calculateColour(env.UV, proxy(env.UV - 0.5f, 0.4f))
     }
 
 object HexagonShader:
