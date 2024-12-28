@@ -191,15 +191,21 @@ object WindowManager:
     case WindowEvent.Refresh(id) =>
       model.refresh(id, context.reference)
 
+    case WindowEvent.Focus(id) =>
+      Outcome(model.focusOn(id))
+
     case WindowEvent.GiveFocusAt(position) =>
       Outcome(model.focusAt(position))
         .addGlobalEvents(WindowInternalEvent.Redraw)
 
     case WindowEvent.Open(id) =>
-      model.open(id)
+      model.open(id).addGlobalEvents(WindowEvent.Focus(id))
 
     case WindowEvent.OpenAt(id, coords) =>
-      model.open(id).map(_.moveTo(id, coords, Space.Screen))
+      model
+        .open(id)
+        .map(_.moveTo(id, coords, Space.Screen))
+        .addGlobalEvents(WindowEvent.Focus(id))
 
     case WindowEvent.Close(id) =>
       model.close(id)

@@ -38,6 +38,9 @@ enum WindowEvent extends GlobalEvent:
   /** Tells a window to toggle between open and closed. */
   case Toggle(id: WindowId)
 
+  /** Brings a window into focus */
+  case Focus(id: WindowId)
+
   /** Focuses the top window at the given location */
   case GiveFocusAt(coords: Coords)
 
@@ -71,6 +74,7 @@ enum WindowEvent extends GlobalEvent:
       case Resize(id, _, _)       => Some(id)
       case Transform(id, _, _)    => Some(id)
       case Refresh(id)            => Some(id)
+      case Focus(id)              => Some(id)
       case GiveFocusAt(_)         => None
       case ChangeMagnification(_) => None
 
