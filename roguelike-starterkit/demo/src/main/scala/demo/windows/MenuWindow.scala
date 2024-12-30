@@ -46,7 +46,7 @@ object MenuWindow:
             ).onClick(Log("Window 2"), WindowEvent.Open(ComponentsWindow2.windowId))
         )
       }
-        .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
+        .withLayout(ComponentLayout.Horizontal(Padding(1, 0, 0, 1)))
     )
       .moveTo(0, 0)
       .resizeTo(20, 3)

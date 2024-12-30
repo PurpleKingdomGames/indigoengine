@@ -4,18 +4,13 @@ import indigo.*
 import roguelikestarterkit.*
 import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
-import roguelikestarterkit.ui.components.BoundsType
 import roguelikestarterkit.ui.components.ComponentGroup
-import roguelikestarterkit.ui.components.ScrollPane
 import roguelikestarterkit.ui.components.TerminalButton
-import roguelikestarterkit.ui.components.TerminalScrollPane
-import roguelikestarterkit.ui.components.datatypes.Anchor
-import roguelikestarterkit.ui.components.datatypes.BoundsMode
 import roguelikestarterkit.ui.components.datatypes.ComponentLayout
 import roguelikestarterkit.ui.components.datatypes.Overflow
 import roguelikestarterkit.ui.components.datatypes.Padding
-import roguelikestarterkit.ui.window.Space
 import roguelikestarterkit.ui.window.TerminalWindow
+import roguelikestarterkit.ui.window.TerminalWindowChrome
 
 object ColourWindow:
 
@@ -53,94 +48,16 @@ object ColourWindow:
       windowId,
       charSheet,
       ColorPalette(
-        windowChrome(charSheet, content(charSheet))
+        TerminalWindowChrome[Unit](
+          windowId,
+          charSheet
+        )
+          .withTitle("Colour palette")
+          .build(content(charSheet))
       )
     )
       .moveTo(5, 5)
       .resizeTo(20, 20)
-
-  def windowChrome(charSheet: CharSheet, content: ComponentGroup[Unit]): ComponentGroup[Unit] =
-    ComponentGroup()
-      .withBoundsMode(BoundsMode.inherit)
-      .withLayout(ComponentLayout.Vertical(Padding(3, 1, 1, 1)))
-      .anchor(
-        TerminalScrollPane(
-          BindingKey("colour-window-scroll-pane"),
-          BoundsMode.offset(-2, -4),
-          content,
-          charSheet
-        ),
-        Anchor.TopLeft.withPadding(Padding(3, 1, 1, 1))
-      )
-      .anchor(
-        TerminalButton(
-          "Colour palette",
-          TerminalButton
-            .Theme(
-              charSheet,
-              RGBA.White,
-              RGBA.Black
-            )
-            .addBorder
-            .modifyBorderTiles(
-              _.withBottomLeft(Tile.`├`)
-                .withBottomRight(Tile.`┤`)
-            )
-        ).onDrag { (_: Unit, dragData) =>
-          Batch(
-            WindowEvent
-              .Move(
-                windowId,
-                dragData.position - dragData.offset,
-                Space.Screen
-              )
-          )
-        }.reportDrag
-          .withBoundsType(BoundsType.FillWidth(3, Padding(0))),
-        Anchor.TopLeft
-      )
-      .anchor(
-        TerminalButton
-          .fromTile(
-            Tile.BLACK_DOWN_POINTING_TRIANGLE,
-            TerminalButton.Theme(
-              charSheet,
-              RGBA.Black -> RGBA.Silver,
-              RGBA.Black -> RGBA.White,
-              RGBA.White -> RGBA.Black,
-              hasBorder = false
-            )
-          )
-          .onDrag { (_: Unit, dragData) =>
-            Batch(
-              WindowEvent
-                .Resize(
-                  windowId,
-                  dragData.position.toDimensions + Dimensions(1),
-                  Space.Screen
-                )
-            )
-          }
-          .reportDrag,
-        Anchor.BottomRight
-      )
-      .anchor(
-        TerminalButton
-          .fromTile(
-            Tile.x,
-            TerminalButton.Theme(
-              charSheet,
-              RGBA.Black -> RGBA.Silver,
-              RGBA.Black -> RGBA.White,
-              RGBA.White -> RGBA.Black,
-              hasBorder = false
-            )
-          )
-          .onClick(
-            WindowEvent.Close(windowId)
-          ),
-        Anchor.TopRight
-      )
 
   def content(charSheet: CharSheet): ComponentGroup[Unit] =
     ComponentGroup()

@@ -40,6 +40,7 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
           )
         )
         .open(ColourWindow.windowId)
+        .focus(ColourWindow.windowId)
     )
 
   def updateModel(
