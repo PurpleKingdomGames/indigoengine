@@ -8,66 +8,35 @@ import roguelikestarterkit.ui.components.datatypes.ComponentEntry
 import roguelikestarterkit.ui.components.datatypes.ComponentId
 import roguelikestarterkit.ui.components.datatypes.ContainerLikeFunctions
 import roguelikestarterkit.ui.components.datatypes.FitMode
-import roguelikestarterkit.ui.components.datatypes.ScrollMode
-import roguelikestarterkit.ui.components.datatypes.ScrollOptions
 import roguelikestarterkit.ui.datatypes.*
 import roguelikestarterkit.ui.shaders.LayerMask
 
 /** Describes a fixed arrangement of components, manages their layout, which may include anchored
-  * components, and masks the content outside of the pane, providing a vertical scroll bar to make
-  * it visible.
+  * components, and masks the content outside of the pane. Like a ScrollPane without the scrolling!
   */
-final case class ScrollPane[A, ReferenceData] private[components] (
+final case class MaskedPane[A, ReferenceData] private[components] (
     bindingKey: BindingKey,
     boundsMode: BoundsMode,
     dimensions: Dimensions, // The actual cached dimensions of the scroll pane
     contentBounds: Bounds,  // The calculated and cached bounds of the content
-    scrollAmount: Double,
     // Components
-    content: ComponentEntry[A, ReferenceData],
-    scrollBar: Button[Unit],
-    scrollBarBackground: Bounds => Layer,
-    scrollOptions: ScrollOptions
+    content: ComponentEntry[A, ReferenceData]
 ):
 
   def withContent[B](component: B)(using
       c: Component[B, ReferenceData]
-  ): ScrollPane[B, ReferenceData] =
+  ): MaskedPane[B, ReferenceData] =
     this.copy(
-      content = ScrollPane.makeComponentEntry(component)
+      content = MaskedPane.makeComponentEntry(component)
     )
 
-  def withDimensions(value: Dimensions): ScrollPane[A, ReferenceData] =
+  def withDimensions(value: Dimensions): MaskedPane[A, ReferenceData] =
     this.copy(dimensions = value)
 
-  def withBoundsMode(value: BoundsMode): ScrollPane[A, ReferenceData] =
+  def withBoundsMode(value: BoundsMode): MaskedPane[A, ReferenceData] =
     this.copy(boundsMode = value)
 
-  def withScrollBar(value: Button[Unit]): ScrollPane[A, ReferenceData] =
-    this.copy(scrollBar = value)
-
-  def withScrollBackground(value: Bounds => Layer): ScrollPane[A, ReferenceData] =
-    this.copy(scrollBarBackground = value)
-
-  def withScrollOptions(value: ScrollOptions): ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = value)
-
-  def enableScrolling: ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withScrollMode(ScrollMode.Vertical))
-
-  def disableScrolling: ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withScrollMode(ScrollMode.None))
-
-  def withMaxScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withMaxScrollSpeed(value))
-
-  def withMinScrollSpeed(value: Int): ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withMinScrollSpeed(value))
-
-  def withScrollMode(value: ScrollMode): ScrollPane[A, ReferenceData] =
-    this.copy(scrollOptions = scrollOptions.withScrollMode(value))
-
-object ScrollPane:
+object MaskedPane:
 
   private def makeComponentEntry[A, ReferenceData](
       content: A
@@ -80,226 +49,114 @@ object ScrollPane:
       None
     )
 
-  private val scrollDragEvent: BindingKey => (Unit, DragData) => Batch[GlobalEvent] =
-    key => (unit, dragData) => Batch(ScrollPaneEvent.Scroll(key, dragData.position.y))
-
-  private val setupScrollButton: (BindingKey, Button[Unit]) => Button[Unit] =
-    (key, button) =>
-      button.reportDrag
-        .fixedDragArea(Bounds.zero)
-        .constrainDragVertically
-        .onDrag(scrollDragEvent(key))
-
   def apply[A, ReferenceData](
       bindingKey: BindingKey,
-      content: A,
-      scrollBar: Button[Unit]
-  )(using c: Component[A, ReferenceData]): ScrollPane[A, ReferenceData] =
-    ScrollPane(
+      content: A
+  )(using c: Component[A, ReferenceData]): MaskedPane[A, ReferenceData] =
+    MaskedPane(
       bindingKey,
       roguelikestarterkit.ui.components.datatypes.BoundsMode.default,
       Dimensions.zero,
       Bounds.zero,
-      0.0,
-      ScrollPane.makeComponentEntry(content),
-      setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
-      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
+      MaskedPane.makeComponentEntry(content)
     )
 
   def apply[A, ReferenceData](
       bindingKey: BindingKey,
       boundsMode: BoundsMode,
-      content: A,
-      scrollBar: Button[Unit]
+      content: A
   )(using
       c: Component[A, ReferenceData]
-  ): ScrollPane[A, ReferenceData] =
-    ScrollPane(
+  ): MaskedPane[A, ReferenceData] =
+    MaskedPane(
       bindingKey,
       boundsMode,
       Dimensions.zero,
       Bounds.zero,
-      0.0,
-      ScrollPane.makeComponentEntry(content),
-      setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
-      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
+      MaskedPane.makeComponentEntry(content)
     )
 
   def apply[A, ReferenceData](
       bindingKey: BindingKey,
       dimensions: Dimensions,
-      content: A,
-      scrollBar: Button[Unit]
+      content: A
   )(using
       c: Component[A, ReferenceData]
-  ): ScrollPane[A, ReferenceData] =
-    ScrollPane(
+  ): MaskedPane[A, ReferenceData] =
+    MaskedPane(
       bindingKey,
       roguelikestarterkit.ui.components.datatypes.BoundsMode.fixed(dimensions),
       dimensions,
       Bounds.zero,
-      0.0,
-      ScrollPane.makeComponentEntry(content),
-      setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
-      roguelikestarterkit.ui.components.datatypes.ScrollOptions.default
+      MaskedPane.makeComponentEntry(content)
     )
 
   def apply[A, ReferenceData](
       bindingKey: BindingKey,
       width: Int,
       height: Int,
-      content: A,
-      scrollBar: Button[Unit]
+      content: A
   )(using
       c: Component[A, ReferenceData]
-  ): ScrollPane[A, ReferenceData] =
-    ScrollPane(
+  ): MaskedPane[A, ReferenceData] =
+    MaskedPane(
       bindingKey,
       Dimensions(width, height),
-      content,
-      setupScrollButton(bindingKey, scrollBar)
+      content
     )
 
-  given [A, ReferenceData]: Component[ScrollPane[A, ReferenceData], ReferenceData] with
+  given [A, ReferenceData]: Component[MaskedPane[A, ReferenceData], ReferenceData] with
 
-    def bounds(reference: ReferenceData, model: ScrollPane[A, ReferenceData]): Bounds =
+    def bounds(reference: ReferenceData, model: MaskedPane[A, ReferenceData]): Bounds =
       Bounds(model.dimensions)
 
     def updateModel(
         context: UIContext[ReferenceData],
-        model: ScrollPane[A, ReferenceData]
-    ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
+        model: MaskedPane[A, ReferenceData]
+    ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
           refresh(context.reference, updated, context.bounds.dimensions)
         }
 
-      case ScrollPaneEvent.Scroll(bindingKey, yPos) if bindingKey == model.bindingKey =>
-        val bounds    = Bounds(context.bounds.coords, model.dimensions)
-        val newAmount = (yPos + 1 - bounds.y).toDouble / bounds.height.toDouble
-        Outcome(model.copy(scrollAmount = newAmount))
-
       case e =>
         updateComponents(context, model)(e)
 
     private def updateComponents[StartupData, ContextData](
         context: UIContext[ReferenceData],
-        model: ScrollPane[A, ReferenceData]
-    ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
-      case MouseEvent.Wheel(pos, deltaY)
-          if model.scrollOptions.isEnabled && Bounds(context.bounds.coords, model.dimensions)
-            .contains(context.pointerCoords) =>
-        val scrollBy =
-          val speed =
-            if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
-          val clamped =
-            Math.min(
-              model.scrollOptions.maxScrollSpeed,
-              Math.max(model.scrollOptions.minScrollSpeed, speed)
-            )
-          val coords =
-            if deltaY < 0 then -clamped else clamped
-
-          coords.toDouble / model.dimensions.height.toDouble
-
-        Outcome(
-          model.copy(
-            scrollAmount = Math.min(1.0d, Math.max(0.0d, model.scrollAmount + scrollBy))
-          )
-        )
-
+        model: MaskedPane[A, ReferenceData]
+    ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
       case e =>
-        val scrollingActive =
-          model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
         val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
 
-        def updateScrollBar: Outcome[Button[Unit]] =
-          val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
-
-          c.updateModel(
-            unitContext
-              .moveBoundsBy(
-                Coords(
-                  model.dimensions.width - model.scrollBar.bounds.width,
-                  0
-                )
+        model.content.component
+          .updateModel(ctx, model.content.model)(e)
+          .flatMap { updatedContent =>
+            Outcome(
+              model.copy(
+                content = model.content.copy(model = updatedContent)
               )
-              .withAdditionalOffset(
-                Coords(
-                  0,
-                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
-                )
-              ),
-            model.scrollBar
-          )(e)
-
-        for {
-          updatedContent   <- model.content.component.updateModel(ctx, model.content.model)(e)
-          updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
-        } yield model.copy(
-          content = model.content.copy(model = updatedContent),
-          scrollBar = updatedScrollBar
-        )
+            )
+          }
 
     def present(
         context: UIContext[ReferenceData],
-        model: ScrollPane[A, ReferenceData]
+        model: MaskedPane[A, ReferenceData]
     ): Outcome[Layer] =
-      val scrollingActive =
-        model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
       val adjustBounds = Bounds(context.bounds.coords, model.dimensions)
       val ctx          = context.copy(bounds = adjustBounds)
-      val scrollOffset: Coords =
-        if scrollingActive then
-          Coords(
-            0,
-            ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
-          )
-        else Coords.zero
 
       val content =
         ContainerLikeFunctions
           .present(
-            ctx.moveBoundsBy(scrollOffset),
+            ctx,
             model.dimensions,
             Batch(model.content)
           )
 
       val layers: Outcome[Layer.Stack] =
-        if scrollingActive then
-          val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
-          val scrollbar =
-            c.present(
-              unitContext.moveBoundsBy(
-                Coords(
-                  model.dimensions.width - model.scrollBar.bounds.width,
-                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
-                )
-              ),
-              model.scrollBar
-            )
-          val scrollBg =
-            model.scrollBarBackground(
-              adjustBounds
-                .moveBy(model.dimensions.width - model.scrollBar.bounds.width, 0)
-                .resize(model.scrollBar.bounds.width, adjustBounds.height)
-            )
-
-          (content, scrollbar)
-            .map2 { (c, sb) =>
-              Layer.Stack(
-                c,
-                scrollBg,
-                sb
-              )
-            }
-        else content.map(c => Layer.Stack(c))
+        content.map(c => Layer.Stack(c))
 
       layers
         .map { stack =>
@@ -320,9 +177,9 @@ object ScrollPane:
 
     def refresh(
         reference: ReferenceData,
-        model: ScrollPane[A, ReferenceData],
+        model: MaskedPane[A, ReferenceData],
         parentDimensions: Dimensions
-    ): ScrollPane[A, ReferenceData] =
+    ): MaskedPane[A, ReferenceData] =
       // Note: This is note _quite_ the same process as found in ComponentGroup
 
       // First, calculate the bounds without content
@@ -447,17 +304,5 @@ object ScrollPane:
       model.copy(
         contentBounds = contentBounds,
         dimensions = updatedBounds,
-        content = updatedComponent,
-        scrollBar = model.scrollBar
-          .fixedDragArea(
-            Bounds(
-              updatedBounds.width - model.scrollBar.bounds.width,
-              0,
-              1,
-              updatedBounds.height - 1
-            )
-          )
+        content = updatedComponent
       )
-
-enum ScrollPaneEvent extends GlobalEvent:
-  case Scroll(bindingKey: BindingKey, amount: Int)
