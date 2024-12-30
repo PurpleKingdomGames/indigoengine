@@ -35,8 +35,20 @@ final case class ComponentGroup[ReferenceData] private[components] (
       dirty = true
     )
 
-  def add[A](entry: A)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
+  def add[A](entry: A)(using Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     addSingle(entry)
+
+  def addOptional[A](entry: Option[A])(using
+      Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    entry match
+      case None    => this
+      case Some(a) => addSingle(a)
+
+  def addConditional[A](condition: Boolean)(entry: A)(using
+      Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    if condition then addSingle(entry) else this
 
   def add[A](entries: Batch[A])(using
       c: Component[A, ReferenceData]
@@ -45,7 +57,7 @@ final case class ComponentGroup[ReferenceData] private[components] (
   def add[A](entries: A*)(using c: Component[A, ReferenceData]): ComponentGroup[ReferenceData] =
     add(Batch.fromSeq(entries))
 
-  def anchor[A](entry: A, anchor: Anchor)(using
+  private def _anchor[A](entry: A, anchor: Anchor)(using
       c: Component[A, ReferenceData]
   ): ComponentGroup[ReferenceData] =
     this.copy(
@@ -53,6 +65,23 @@ final case class ComponentGroup[ReferenceData] private[components] (
         components :+ ComponentEntry(ComponentId.None, Coords.zero, entry, c, Option(anchor)),
       dirty = true
     )
+
+  def anchor[A](entry: A, anchor: Anchor)(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    _anchor(entry, anchor)
+
+  def anchorOptional[A](entry: Option[A], anchor: Anchor)(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    entry match
+      case None    => this
+      case Some(a) => _anchor(a, anchor)
+
+  def anchorConditional[A](condition: Boolean)(entry: A, anchor: Anchor)(using
+      c: Component[A, ReferenceData]
+  ): ComponentGroup[ReferenceData] =
+    if condition then _anchor(entry, anchor) else this
 
   def withDimensions(value: Dimensions): ComponentGroup[ReferenceData] =
     this.copy(dimensions = value, dirty = true)
