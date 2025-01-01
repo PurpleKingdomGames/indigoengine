@@ -18,14 +18,9 @@ High priority:
 - Possible to disable the rest of the UI while holding down on a button?
 - Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use with scrolling.
 - A demo of a non-ASCII window.
-- Move to Indigo.
+- Move to Indigo + aliases
 - Checkboxes
 - Radio buttons
-
-Polishing up:
-- Check for TODOs.
-- Bring back tests.
-- Package aliases.
 
 Low priority / nice to have / non-essential for first release:
 - horizontal scrolling?

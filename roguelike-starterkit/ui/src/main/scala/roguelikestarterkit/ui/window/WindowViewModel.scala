@@ -57,13 +57,6 @@ object WindowViewModel:
     case _ =>
       Outcome(viewModel)
 
-  // private def calculateDragBy(
-  //     charSize: Size,
-  //     pointerPosition: Point,
-  //     windowPosition: Coords
-  // ): Coords =
-  //   Coords(pointerPosition / charSize.toPoint) - windowPosition
-
   private def redraw[A, ReferenceData](
       // context: UIContext[ReferenceData],
       model: Window[A, ReferenceData],

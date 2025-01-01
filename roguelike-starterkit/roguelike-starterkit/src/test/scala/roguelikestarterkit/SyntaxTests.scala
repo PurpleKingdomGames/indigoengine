@@ -1,7 +1,7 @@
 package roguelikestarterkit
 
 import indigo.*
-import roguelikestarterkit.syntax.toPoints
+import roguelikestarterkit.syntax.*
 
 class SyntaxTests extends munit.FunSuite {
 
