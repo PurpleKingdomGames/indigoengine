@@ -33,3 +33,25 @@ trait Component[A, ReferenceData]:
     * type.
     */
   def refresh(reference: ReferenceData, model: A, parentDimensions: Dimensions): A
+
+object Component:
+
+  given [ReferenceData]: Component[Unit, ReferenceData] =
+    new Component[Unit, ReferenceData]:
+      def bounds(reference: ReferenceData, model: Unit): Bounds =
+        Bounds.zero
+
+      def updateModel(
+          context: UIContext[ReferenceData],
+          model: Unit
+      ): GlobalEvent => Outcome[Unit] =
+        _ => Outcome(model)
+
+      def present(
+          context: UIContext[ReferenceData],
+          model: Unit
+      ): Outcome[Layer] =
+        Outcome(Layer.empty)
+
+      def refresh(reference: ReferenceData, model: Unit, parentDimensions: Dimensions): Unit =
+        ()
