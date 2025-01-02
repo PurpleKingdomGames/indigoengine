@@ -18,7 +18,7 @@ object TerminalWindow:
       charSheet: CharSheet,
       content: A
   )(using Component[A, ReferenceData]): Window[A, ReferenceData] =
-    Window(id, charSheet.size, Dimensions(3), content)
+    Window(id, charSheet.size, Dimensions(5), content)
       .withBackground(present(charSheet))
 
   private val graphic: Graphic[TerminalMaterial] =
@@ -28,7 +28,7 @@ object TerminalWindow:
       context: WindowContext
   ): Outcome[Layer] =
     val validSize =
-      context.bounds.dimensions.max(Dimensions(2))
+      context.bounds.dimensions.max(Dimensions(5))
 
     val tiles: Batch[(Point, MapTile)] =
       val grey = RGBA.White.mix(RGBA.Black, if context.hasFocus then 0.4 else 0.8)
