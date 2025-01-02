@@ -25,4 +25,3 @@ object Helper:
         parentDimensions: Dimensions
     ): A =
       c.refresh(reference, component, parentDimensions)
-
