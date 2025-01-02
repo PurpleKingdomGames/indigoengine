@@ -137,7 +137,7 @@ object Window:
     Window(
       id,
       snapGrid,
-      Bounds(Coords.zero, Dimensions.zero),
+      Bounds(Coords.zero, minSize),
       content,
       c,
       false,
@@ -159,7 +159,7 @@ object Window:
     Window(
       id,
       snapGrid,
-      Bounds(Coords.zero, Dimensions.zero),
+      Bounds(Coords.zero, minSize),
       content,
       c,
       false,
@@ -172,12 +172,18 @@ object Window:
 
   def updateModel[A, ReferenceData](
       context: UIContext[ReferenceData],
-      model: Window[A, ReferenceData]
+      window: Window[A, ReferenceData]
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
     case e =>
-      model.component
-        .updateModel(context.copy(bounds = model.bounds), model.content)(e)
-        .map(model.withModel)
+      val minBounds = window.bounds.withDimensions(window.bounds.dimensions.max(window.minSize))
+
+      window.component
+        .updateModel(
+          context
+            .copy(bounds = minBounds),
+          window.content
+        )(e)
+        .map(m => window.withModel(m).withBounds(minBounds))
 
 final case class WindowContext(
     bounds: Bounds,
