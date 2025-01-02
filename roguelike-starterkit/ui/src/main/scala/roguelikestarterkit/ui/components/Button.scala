@@ -63,10 +63,6 @@ final case class Button[ReferenceData](
   def onRelease(events: GlobalEvent*): Button[ReferenceData] =
     onRelease(Batch.fromSeq(events))
 
-  /** Drag events are fired when the pointer is pressed on the button and then moved without
-    * release. The Coords argument to the function are RELATIVE to the button's position, i.e.
-    * dragging up and left will result in negative coordinates.
-    */
   def onDrag(
       events: (ReferenceData, DragData) => Batch[GlobalEvent]
   ): Button[ReferenceData] =
@@ -109,6 +105,20 @@ final case class Button[ReferenceData](
 
   def withBoundsType(value: BoundsType[ReferenceData, Unit]): Button[ReferenceData] =
     this.copy(boundsType = value)
+
+  def toHitArea: HitArea[ReferenceData] =
+    HitArea(
+      bounds,
+      state,
+      click,
+      press,
+      release,
+      drag,
+      boundsType,
+      isDown,
+      dragOptions,
+      dragStart
+    )
 
 object Button:
 
