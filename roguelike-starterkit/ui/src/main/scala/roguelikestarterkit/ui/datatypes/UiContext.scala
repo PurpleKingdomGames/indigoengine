@@ -1,6 +1,7 @@
 package roguelikestarterkit.ui.datatypes
 
 import indigo.*
+import indigo.scenes.SceneContext
 
 final case class UIContext[ReferenceData](
     // Specific to UIContext
@@ -68,6 +69,34 @@ object UIContext:
       subSystemContext.frame,
       subSystemContext.services
     )
+
+  def fromContext[ReferenceData](
+      ctx: Context[?],
+      reference: ReferenceData
+  ): UIContext[ReferenceData] =
+    UIContext(
+      Bounds.zero,
+      Size(1),
+      Coords.zero,
+      UIState.Active,
+      1,
+      Coords.zero,
+      reference,
+      ctx.frame,
+      ctx.services
+    )
+
+  def fromSceneContext[ReferenceData](
+      ctx: SceneContext[?],
+      reference: ReferenceData
+  ): UIContext[ReferenceData] =
+    fromContext(ctx.toFrameContext, reference)
+
+  def fromSubSystemContext[ReferenceData](
+      ctx: SubSystemContext[?],
+      reference: ReferenceData
+  ): UIContext[ReferenceData] =
+    fromContext(ctx.toContext, reference)
 
 enum UIState:
   case Active, InActive
