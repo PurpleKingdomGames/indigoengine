@@ -6,6 +6,7 @@ import indigo.*
 import indigo.scenes.*
 import indigo.shared.subsystems.SubSystemContext.*
 import roguelikestarterkit.*
+import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.component.Component
 import roguelikestarterkit.ui.components.ComponentGroup
 
@@ -51,12 +52,6 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-
-    val rendered =
-      summon[Component[ComponentGroup[Int], Int]]
-        .present(
-          UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1),
-          model.components
-        )
-
-    rendered.map(l => SceneUpdateFragment(l))
+    model.components
+      .present(UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1))
+      .map(l => SceneUpdateFragment(l))
