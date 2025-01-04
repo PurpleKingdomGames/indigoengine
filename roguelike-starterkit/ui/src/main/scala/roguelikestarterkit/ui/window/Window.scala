@@ -9,22 +9,9 @@ import roguelikestarterkit.ui.datatypes.UIContext
 
 /*
 
-Check status against latest Indigo:
-- One problem here is that if you want to use, say, a TextBox, then you need a BoundaryLocator instance.
-  That comes from UIContext, but we can't have UIContext present as it makes the code untestable currently.
-
 High priority:
 
 - Possible to disable the rest of the UI while holding down on a button? What is ctx.isActive again?
-- Might need to make ComponentList's adjust their size based on their content, otherwise they'll be hard to use with scrolling.
-- A demo of a non-ASCII window.
-- Move to Indigo + aliases
-
-Low priority / nice to have / non-essential for first release:
-- horizontal scrolling?
-- scroll up/down/left/right arrow buttons - can be done with a component. What we
-  need is a way to position and size the scroll bar area.
-- scroll button size can be adjusted based on the content size.
 
  */
 
