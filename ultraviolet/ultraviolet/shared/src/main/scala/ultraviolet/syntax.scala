@@ -78,6 +78,40 @@ object syntax extends ShaderDSLOps:
       f(a)
       a = next(a)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  inline def cfor[A, B](init: (A, B), cond: (A, B) => Boolean, next: (A, B) => (A, B))(f: (A, B) => Unit) =
+    var (a, b) = init
+    while cond(a, b) do
+      f(a, b)
+      val n = next(a, b)
+      a = n._1
+      b = n._2
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  inline def cfor[A, B, C](init: (A, B, C), cond: (A, B, C) => Boolean, next: (A, B, C) => (A, B, C))(
+      f: (A, B, C) => Unit
+  ) =
+    var (a, b, c) = init
+    while cond(a, b, c) do
+      f(a, b, c)
+      val n = next(a, b, c)
+      a = n._1
+      b = n._2
+      c = n._3
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  inline def cfor[A, B, C, D](init: (A, B, C, D), cond: (A, B, C, D) => Boolean, next: (A, B, C, D) => (A, B, C, D))(
+      f: (A, B, C, D) => Unit
+  ) =
+    var (a, b, c, d) = init
+    while cond(a, b, c, d) do
+      f(a, b, c, d)
+      val n = next(a, b, c, d)
+      a = n._1
+      b = n._2
+      c = n._3
+      d = n._4
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   sealed trait WebGLEnv:
     var gl_FragColor: vec4

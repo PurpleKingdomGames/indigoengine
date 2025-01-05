@@ -15,6 +15,7 @@ import ultraviolet.datatypes.ShaderAST.For
 import ultraviolet.datatypes.ShaderAST.FunctionRef
 import ultraviolet.datatypes.ShaderAST.If
 import ultraviolet.datatypes.ShaderAST.Infix
+import ultraviolet.datatypes.ShaderAST.MultiStatements
 import ultraviolet.datatypes.ShaderAST.Neg
 import ultraviolet.datatypes.ShaderAST.New
 import ultraviolet.datatypes.ShaderAST.Not
@@ -150,6 +151,32 @@ object ShaderProgramValidation:
           case None =>
             Val(id, validate(level + 1, knownRefs)(value), typeOf)
       else Val(id, validate(level + 1, knownRefs)(value), typeOf)
+
+    case MultiStatements(typeOf, vals) =>
+      val vs = vals.map {
+        case Val(id, value, typeOf_) =>
+          // TODO: typeof
+          if level == 0 then
+            value.find {
+              case ShaderAST.Function(_, _, _, _)                         => true
+              case ShaderAST.FunctionRef(_, _, _)                         => true
+              case ShaderAST.CallFunction(_, _, _)                        => true
+              case ShaderAST.Block(List(ShaderAST.Function(_, _, _, _)))  => true
+              case ShaderAST.Block(List(ShaderAST.FunctionRef(_, _, _)))  => true
+              case ShaderAST.Block(List(ShaderAST.CallFunction(_, _, _))) => true
+              case _                                                      => false
+            } match
+              case Some(_) =>
+                throw ShaderError.Validation(mustBeConstantMsg(id))
+              case None =>
+                Val(id, validate(level + 1, knownRefs)(value), typeOf)
+          else Val(id, validate(level + 1, knownRefs)(value), typeOf)
+        case Assign(left, right) =>
+          Assign(validate(level + 1, knownRefs)(left), validate(level + 1, knownRefs)(right))
+        case _ =>
+          throw ShaderError.Validation("unsupported type")
+      }
+      MultiStatements(typeOf, vs)
 
     case Annotated(name, param, value) =>
       Annotated(name, param, validate(level, knownRefs)(value))

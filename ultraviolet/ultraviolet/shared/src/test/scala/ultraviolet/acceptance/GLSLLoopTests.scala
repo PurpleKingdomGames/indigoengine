@@ -71,6 +71,126 @@ class GLSLLoopTests extends munit.FunSuite {
     )
   }
 
+  test("for loops (cfor) tuple 2 - int") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment: Shader[FragEnv, Int] =
+      Shader { _ =>
+        val steps = 10
+        var acc1  = 0
+        var acc2  = 0
+        cfor((0, -1), (i, _) => i < steps, (i, _) => (i + 1, i)) { (i, j) =>
+          acc1 += i
+          acc2 += j
+        }
+        acc1 + acc2
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+         |int steps=10;
+         |int acc1=0;
+         |int acc2=0;
+         |for(int i=0,j=-1;i<steps;i=i+1,j=i){
+         |  acc1=acc1+i;
+         |  acc2=acc2+j;
+         |}
+         |acc1+acc2;
+         |""".stripMargin.trim
+    )
+  }
+
+  test("for loops (cfor) tuple 3 - int") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment: Shader[FragEnv, Int] =
+      Shader { _ =>
+        val steps = 10
+        var acc1  = 0
+        var acc2  = 0
+        var acc3  = 0
+        cfor((1, 2, 3), (i, _, _) => i < steps, (i, _, _) => (i + 1, i, i * 2)) { (i, j, k) =>
+          acc1 += i
+          acc2 += j
+          acc3 += k
+        }
+        acc1 + acc2 + acc3
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+         |int steps=10;
+         |int acc1=0;
+         |int acc2=0;
+         |int acc3=0;
+         |for(int i=1,j=2,k=3;i<steps;i=i+1,j=i,k=i*2){
+         |  acc1=acc1+i;
+         |  acc2=acc2+j;
+         |  acc3=acc3+k;
+         |}
+         |(acc1+acc2)+acc3;
+         |""".stripMargin.trim
+    )
+  }
+
+  test("for loops (cfor) tuple 4 - int") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment: Shader[FragEnv, Int] =
+      Shader { _ =>
+        val steps = 10
+        var acc1  = 0
+        var acc2  = 0
+        var acc3  = 0
+        var acc4  = 0
+        cfor((1, 2, 3, 4), (i, _, _, _) => i < steps, (i, _, k, _) => (i + 1, i, k * 2, i * i)) { (i, j, k, l) =>
+          acc1 += i
+          acc2 += j
+          acc3 += k
+          acc4 += l
+        }
+        acc1 + acc2 + acc3 + acc4
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+         |int steps=10;
+         |int acc1=0;
+         |int acc2=0;
+         |int acc3=0;
+         |int acc4=0;
+         |for(int i=1,j=2,k=3,l=4;i<steps;i=i+1,j=i,k=k*2,l=i*i){
+         |  acc1=acc1+i;
+         |  acc2=acc2+j;
+         |  acc3=acc3+k;
+         |  acc4=acc4+l;
+         |}
+         |((acc1+acc2)+acc3)+acc4;
+         |""".stripMargin.trim
+    )
+  }
+
   test("for loops (cfor) - float") {
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

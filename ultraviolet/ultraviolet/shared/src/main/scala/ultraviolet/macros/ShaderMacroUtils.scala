@@ -4,6 +4,7 @@ import ultraviolet.datatypes.ShaderAST
 
 trait ShaderMacroUtils:
 
+  val isTuple                                   = "^Tuple\\d+".r
   val isSwizzle                                 = "^([xyzwrgba]+)$".r
   val isSwizzleable                             = "^(vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4)$".r
   def isGLSLReservedWord(word: String): Boolean = allReservedWords.contains(word)
@@ -30,6 +31,7 @@ trait ShaderMacroUtils:
     case v: ShaderAST.For                     => ShaderAST.unknownType
     case v: ShaderAST.Switch                  => ShaderAST.unknownType
     case v: ShaderAST.Val                     => findReturnType(v.value)
+    case v: ShaderAST.MultiStatements         => findReturnType(v.statements.head)
     case v: ShaderAST.Annotated               => findReturnType(v.value)
     case v: ShaderAST.RawLiteral              => ShaderAST.unknownType
     case v: ShaderAST.Field                   => ShaderAST.unknownType

@@ -302,6 +302,18 @@ object ShaderPrinter:
           case _ =>
             List(s"${render(genType).mkString}.$swizzle")
 
+      case MultiStatements(typeOf, vals) =>
+        val lead = render(typeOf).headOption.map(s => s"$s ").getOrElse("")
+        val rest = vals.map {
+          case Val(id, value, _) =>
+            s"""$id=${render(value).mkString}"""
+          case Assign(ShaderAST.DataTypes.ident(id), value) =>
+            s"""${id}=${render(value).mkString}"""
+          case v =>
+            s"""${render(v)}"""
+        }
+        List(s"""${lead}${rest.mkString(",")}""")
+
       case v @ Val(id, value, typeOf) =>
         val tOf = render(typeOf).headOption.getOrElse("void")
         value match
@@ -414,6 +426,7 @@ object ShaderPrinter:
       case Cast(_, as)                    => as
       case Infix(_, _, _, rt)             => render(rt).headOption.getOrElse("void")
       case Assign(_, _)                   => "void"
+      case MultiStatements(_, _)          => "void"
       case If(_, _, _)                    => "void"
       case While(_, _)                    => "void"
       case For(_, _, _, _)                => "void"

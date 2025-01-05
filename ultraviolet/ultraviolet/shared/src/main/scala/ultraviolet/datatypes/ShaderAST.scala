@@ -24,6 +24,7 @@ object ShaderAST:
         case v: Cast                 => Expr(v)
         case v: Infix                => Expr(v)
         case v: Assign               => Expr(v)
+        case v: MultiStatements      => Expr(v)
         case v: If                   => Expr(v)
         case v: While                => Expr(v)
         case v: For                  => Expr(v)
@@ -225,6 +226,16 @@ object ShaderAST:
     given ToExpr[Val] with {
       def apply(x: Val)(using Quotes): Expr[Val] =
         '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }, ${ Expr(x.typeOf) }) }
+    }
+
+  final case class MultiStatements(
+      leading: ShaderAST,
+      statements: List[ShaderAST]
+  ) extends ShaderAST
+  object MultiStatements:
+    given ToExpr[MultiStatements] with {
+      def apply(m: MultiStatements)(using Quotes): Expr[MultiStatements] =
+        '{ MultiStatements(${ Expr(m.leading) }, ${ Expr(m.statements) }) }
     }
 
   final case class Annotated(name: ShaderAST, param: ShaderAST, value: ShaderAST) extends ShaderAST
@@ -435,6 +446,7 @@ object ShaderAST:
               case For(_, _, _, b)               => rec(b :: xs, acc)
               case Switch(_, cs)                 => rec(cs.map(_._2) ++ xs, acc)
               case Val(_, body, _)               => rec(body :: xs, acc)
+              case MultiStatements(_, as)        => rec(as ++ xs, acc)
               case Annotated(_, _, body)         => rec(body :: xs, acc)
               case RawLiteral(_)                 => rec(xs, acc)
               case Field(t, _)                   => rec(t :: xs, acc)
@@ -493,6 +505,7 @@ object ShaderAST:
         case For(i, c, n, b)                         => f(For(i, c, n, b.traverse(f)))
         case Switch(c, cs)                           => f(Switch(c, cs.map(p => p._1 -> p._2.traverse(f))))
         case Val(id, value, typeOf)                  => f(Val(id, value.traverse(f), typeOf))
+        case MultiStatements(typeOf, vs)             => f(MultiStatements(typeOf, vs.map(f)))
         case Annotated(id, param, value)             => f(Annotated(id, param, value.traverse(f)))
         case v @ RawLiteral(_)                       => f(v)
         case Field(t, n)                             => f(Field(t.traverse(f), n))
@@ -540,6 +553,7 @@ object ShaderAST:
         case For(_, _, _, _)                => unknownType
         case Switch(_, _)                   => unknownType
         case Val(id, value, typeOf)         => typeOf.typeIdent
+        case MultiStatements(typeOf, _)     => typeOf.typeIdent
         case Annotated(_, _, value)         => value.typeIdent
         case RawLiteral(_)                  => unknownType
         case Field(t, n)                    => unknownType
