@@ -4,7 +4,7 @@ import Dependencies._
 import org.typelevel.scalacoptions.ScalacOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-// Global / semanticdbEnabled    := true
+Global / semanticdbEnabled    := true
 
 val scala3Version = "3.6.2"
 
