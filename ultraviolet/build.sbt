@@ -6,7 +6,7 @@ import org.typelevel.scalacoptions.ScalacOptions
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / semanticdbEnabled    := true
 
-val scala3Version = "3.6.2"
+val scala3Version = "3.6.3"
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scalaVersion  := scala3Version
@@ -52,7 +52,7 @@ lazy val publishSettings = {
       )
     ),
     sonatypeCredentialHost := "oss.sonatype.org",
-    sonatypeRepository := "https://oss.sonatype.org/service/local"
+    sonatypeRepository     := "https://oss.sonatype.org/service/local"
   )
 }
 
