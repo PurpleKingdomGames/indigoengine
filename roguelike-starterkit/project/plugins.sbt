@@ -1,5 +1,5 @@
 addSbtPlugin("org.scala-js"        % "sbt-scalajs"        % "1.18.1")
-addSbtPlugin("io.indigoengine"    %% "sbt-indigo"         % "0.17.1-SNAPSHOT")
+addSbtPlugin("io.indigoengine"    %% "sbt-indigo"         % "0.18.0")
 addSbtPlugin("org.typelevel"       % "sbt-tpolecat"       % "0.5.2")
 addSbtPlugin("ch.epfl.scala"       % "sbt-scalafix"       % "0.14.0")
 addSbtPlugin("org.scalameta"       % "sbt-scalafmt"       % "2.5.2")
