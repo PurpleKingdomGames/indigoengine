@@ -6,10 +6,12 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
 import indigo.*
-import indigo.ShaderPrimitive.*
 import indigo.scenes.*
+import indigo.shared.shader.*
+import indigo.shared.shader.ShaderPrimitive.*
 
-object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object OriginalScene
+    extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
@@ -52,13 +54,13 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         .updateView(
           model,
           viewModel,
-          context.inputState.mouse,
-          context.boundaryLocator
+          context.frame.input.mouse,
+          context.services.bounds
         )
         .addLayer(
           Layer(
-            // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-            viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+            // viewModel.single.draw(context.frame.time, context.services.bounds) //|+|
+            viewModel.multi.draw(context.frame.time, context.services.bounds)
           ).withDepth(Depth(1000))
         )
 
@@ -99,11 +101,13 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
               Depth.zero,
               ShaderData(
                 Shaders.externalId,
-                UniformBlock(
-                  UniformBlockName("CustomData"),
-                  Batch(
-                    Uniform("ALPHA")        -> float(0.75),
-                    Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+                Batch(
+                  UniformBlock(
+                    UniformBlockName("CustomData"),
+                    Batch(
+                      Uniform("ALPHA")        -> float(0.75),
+                      Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+                    )
                   )
                 )
               )
@@ -116,11 +120,13 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
               Depth.zero,
               ShaderData(
                 Shaders.externalId,
-                UniformBlock(
-                  UniformBlockName("CustomData"),
-                  Batch(
-                    Uniform("ALPHA")        -> float(0.5),
-                    Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
+                Batch(
+                  UniformBlock(
+                    UniformBlockName("CustomData"),
+                    Batch(
+                      Uniform("ALPHA")        -> float(0.5),
+                      Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
+                    )
                   )
                 )
               )

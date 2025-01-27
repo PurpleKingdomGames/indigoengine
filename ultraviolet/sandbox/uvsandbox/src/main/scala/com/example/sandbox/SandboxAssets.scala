@@ -14,7 +14,7 @@ object SandboxAssets {
   val light: AssetName         = AssetName("light")
   val dots: AssetName          = AssetName("dots")
 
-  val fontMaterial: Material.ImageEffects  = Material.ImageEffects(smallFontName)
+  val fontMaterial: Material.ImageEffects = Material.ImageEffects(smallFontName)
   val lightMaterial: Material.ImageEffects = Material.ImageEffects(light)
   val dudeMaterial: Material.ImageEffects  = Material.ImageEffects(dudeName)
 
@@ -23,14 +23,21 @@ object SandboxAssets {
       .ImageEffects(dots)
       // .withOverlay(Overlay.Color(RGBA.Magenta.withAlpha(0.75)))
       // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
-      .withOverlay(Fill.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+      .withOverlay(
+        Fill.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta)
+      )
 
-  val colouredDots: Graphic[Material.Bitmap] = Graphic(32, 32, Material.Bitmap(dots))
+  val colouredDots: Graphic[Material.Bitmap] =
+    Graphic(32, 32, Material.Bitmap(dots))
 
-  val redDot: Graphic[Material.Bitmap]    = Graphic(Rectangle(0, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
-  val greenDot: Graphic[Material.Bitmap]  = Graphic(Rectangle(16, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
-  val blueDot: Graphic[Material.Bitmap]   = Graphic(Rectangle(0, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
-  val yellowDot: Graphic[Material.Bitmap] = Graphic(Rectangle(16, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val redDot: Graphic[Material.Bitmap] =
+    Graphic(Rectangle(0, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val greenDot: Graphic[Material.Bitmap] =
+    Graphic(Rectangle(16, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val blueDot: Graphic[Material.Bitmap] =
+    Graphic(Rectangle(0, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val yellowDot: Graphic[Material.Bitmap] =
+    Graphic(Rectangle(16, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
 
   val junctionBoxAlbedo: AssetName    = AssetName("junctionbox_albedo")
   val junctionBoxEmission: AssetName  = AssetName("junctionbox_emission")
@@ -71,26 +78,61 @@ object SandboxAssets {
 
   def assets: Set[AssetType] =
     Set(
-      AssetType.Font(pixelFont, AssetPath(s"assets/fonts/${pixelFont.toString}.woff2")),
+      AssetType.Font(
+        pixelFont,
+        AssetPath(s"assets/fonts/${pixelFont.toString}.woff2")
+      ),
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
-      AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
+      AssetType.Text(
+        AssetName(dudeName.toString + "-json"),
+        AssetPath("assets/" + dudeName + ".json")
+      ),
       AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png")),
       AssetType.Image(dots, AssetPath("assets/" + dots + ".png")),
       AssetType.Image(captainName, AssetPath("assets/Captain Clown Nose.png")),
       AssetType.Tagged("atlas1")(
-        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
-        AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission + ".png")),
-        AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal + ".png")),
-        AssetType.Image(junctionBoxRoughness, AssetPath("assets/" + junctionBoxRoughness + ".png")),
-        AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName + ".png")),
-        AssetType.Image(foliageName, AssetPath("assets/" + foliageName + ".png")),
-        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName + ".png")),
-        AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName + ".png"))
+        AssetType.Image(
+          junctionBoxAlbedo,
+          AssetPath("assets/" + junctionBoxAlbedo + ".png")
+        ),
+        AssetType.Image(
+          junctionBoxEmission,
+          AssetPath("assets/" + junctionBoxEmission + ".png")
+        ),
+        AssetType.Image(
+          junctionBoxNormal,
+          AssetPath("assets/" + junctionBoxNormal + ".png")
+        ),
+        AssetType.Image(
+          junctionBoxRoughness,
+          AssetPath("assets/" + junctionBoxRoughness + ".png")
+        ),
+        AssetType.Image(
+          imageLightName,
+          AssetPath("assets/" + imageLightName + ".png")
+        ),
+        AssetType
+          .Image(foliageName, AssetPath("assets/" + foliageName + ".png")),
+        AssetType.Image(
+          smoothBumpName,
+          AssetPath("assets/" + smoothBumpName + ".png")
+        ),
+        AssetType
+          .Image(normalMapName, AssetPath("assets/" + normalMapName + ".png"))
       ),
-      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png")),
-      AssetType.Image(cratesDiffuseName, AssetPath("assets/" + cratesDiffuseName + ".png")),
-      AssetType.Image(cratesNormalName, AssetPath("assets/" + cratesNormalName + ".png"))
+      AssetType.Image(
+        trafficLightsName,
+        AssetPath("assets/" + trafficLightsName + ".png")
+      ),
+      AssetType.Image(
+        cratesDiffuseName,
+        AssetPath("assets/" + cratesDiffuseName + ".png")
+      ),
+      AssetType.Image(
+        cratesNormalName,
+        AssetPath("assets/" + cratesNormalName + ".png")
+      )
     )
 
 }
@@ -100,7 +142,12 @@ object Fonts {
   val fontKey: FontKey = FontKey("Sandbox font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
+    FontInfo(
+      fontKey,
+      320,
+      230,
+      FontChar(" ", 145, 52, 23, 23)
+    ).isCaseInSensitive
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

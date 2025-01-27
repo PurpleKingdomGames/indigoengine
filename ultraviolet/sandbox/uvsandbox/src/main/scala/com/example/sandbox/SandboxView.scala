@@ -10,7 +10,7 @@ object SandboxView:
       model: SandboxGameModel,
       viewModel: SandboxViewModel,
       mouse: Mouse,
-      bl: BoundaryLocator
+      bl: Context.Services.Bounds
   ): SceneUpdateFragment = {
     mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.toString())
@@ -41,7 +41,10 @@ object SandboxView:
     // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): Batch[SceneNode] =
+  def gameLayer(
+      currentState: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): Batch[SceneNode] =
     Batch(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -85,24 +88,73 @@ object SandboxView:
 
   def lightingLayer(mouse: Mouse): Batch[SceneNode] =
     Batch(
-      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Red))
+      Graphic(
+        114,
+        64 - 20,
+        320,
+        240,
+        1,
+        SandboxAssets.lightMaterial.withTint(RGBA.Red)
+      )
         .withRef(Point(160, 120)),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Green))
+      Graphic(
+        114 - 20,
+        64 + 20,
+        320,
+        240,
+        1,
+        SandboxAssets.lightMaterial.withTint(RGBA.Green)
+      )
         .withRef(Point(160, 120)),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Blue))
+      Graphic(
+        114 + 20,
+        64 + 20,
+        320,
+        240,
+        1,
+        SandboxAssets.lightMaterial.withTint(RGBA.Blue)
+      )
         .withRef(Point(160, 120)),
-      Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA(1, 1, 0.0, 1)).withAlpha(1))
+      Graphic(
+        0,
+        0,
+        320,
+        240,
+        1,
+        SandboxAssets.lightMaterial.withTint(RGBA(1, 1, 0.0, 1)).withAlpha(1)
+      )
         .withRef(Point(160, 120))
         .moveTo(mouse.position.x, mouse.position.y)
     )
 
-  def uiLayer(bl: BoundaryLocator): Batch[SceneNode] =
+  def uiLayer(bl: Context.Services.Bounds): Batch[SceneNode] =
     Batch(
-      Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
-      Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
+      Text(
+        "AB!\n!C",
+        2,
+        2,
+        5,
+        Fonts.fontKey,
+        SandboxAssets.fontMaterial.withAlpha(0.5)
+      ).alignLeft,
+      Text(
+        "AB!\n!C",
+        100,
+        2,
+        5,
+        Fonts.fontKey,
+        SandboxAssets.fontMaterial.withAlpha(0.5)
+      ).alignCenter,
+      Text(
+        "AB!\n!C",
+        200,
+        2,
+        5,
+        Fonts.fontKey,
+        SandboxAssets.fontMaterial.withAlpha(0.5)
+      ).alignRight
         .withEventHandler {
-          case (txt, MouseEvent.Click(pt)) if bl.bounds(txt).contains(pt) =>
+          case (txt, MouseEvent.Click(pt)) if bl.find(txt).contains(pt) =>
             println("Clicked me!")
             None
 

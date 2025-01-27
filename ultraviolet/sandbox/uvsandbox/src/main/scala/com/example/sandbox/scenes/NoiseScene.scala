@@ -5,10 +5,10 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.shaders.*
 import indigo.*
-import indigo.ShaderPrimitive.*
 import indigo.scenes.*
 
-object NoiseScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object NoiseScene
+    extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel

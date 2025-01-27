@@ -29,7 +29,7 @@ lazy val uvsandbox =
       scalaVersion := "3.6.2",
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.29" % Test
+        "org.scalameta" %%% "munit" % "1.0.4" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       scalafixOnCompile := true,
@@ -39,9 +39,9 @@ lazy val uvsandbox =
     .settings( // Indigo specific settings
       indigoOptions := gameOptions,
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % "0.17.0",
-        "io.indigoengine" %%% "indigo"            % "0.17.0",
-        "io.indigoengine" %%% "indigo-extras"     % "0.17.0"
+        "io.indigoengine" %%% "indigo-json-circe" % "0.18.0",
+        "io.indigoengine" %%% "indigo"            % "0.18.0",
+        "io.indigoengine" %%% "indigo-extras"     % "0.18.0"
       )
     )
     .dependsOn(ultraviolet)
@@ -55,7 +55,6 @@ lazy val sandbox =
         UsefulTask("buildGame", "Build web version").noAlias,
         UsefulTask("runGameFull", "Run the fully optimised game").noAlias,
         UsefulTask("buildGameFull", "Build the fully optimised web version").noAlias,
-        UsefulTask("code", "Launch VSCode").noAlias
       ),
       logoColor        := scala.Console.MAGENTA,
       aliasColor       := scala.Console.YELLOW,

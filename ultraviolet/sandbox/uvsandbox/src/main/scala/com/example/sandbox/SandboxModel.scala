@@ -1,7 +1,7 @@
 package com.example.sandbox
 
 import indigo.*
-import indigoextras.ui.InputFieldChange
+import indigoextras.ui.simple.InputFieldChange
 
 object SandboxModel {
 
@@ -12,7 +12,9 @@ object SandboxModel {
       None
     )
 
-  def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
+  def updateModel(
+      state: SandboxGameModel
+  ): GlobalEvent => Outcome[SandboxGameModel] = {
     case rd @ RendererDetails(_, _, _) =>
       println(rd)
       Outcome(state)
@@ -54,7 +56,7 @@ object SandboxModel {
           Outcome(state)
       }
 
-    case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
       println("left")
       Outcome(
         state.copy(
@@ -62,21 +64,21 @@ object SandboxModel {
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.RIGHT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_RIGHT) =>
       Outcome(
         state.copy(
           dude = state.dude.walkRight
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.UP_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_UP) =>
       Outcome(
         state.copy(
           dude = state.dude.walkUp
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.DOWN_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_DOWN) =>
       Outcome(
         state.copy(
           dude = state.dude.walkDown
@@ -128,11 +130,21 @@ final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
 sealed trait DudeDirection derives CanEqual {
   val cycleName: CycleLabel
 }
-case object DudeIdle  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("blink")      }
-case object DudeLeft  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk left")  }
-case object DudeRight extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk right") }
-case object DudeUp    extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk up")    }
-case object DudeDown  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk down")  }
+case object DudeIdle extends DudeDirection {
+  val cycleName: CycleLabel = CycleLabel("blink")
+}
+case object DudeLeft extends DudeDirection {
+  val cycleName: CycleLabel = CycleLabel("walk left")
+}
+case object DudeRight extends DudeDirection {
+  val cycleName: CycleLabel = CycleLabel("walk right")
+}
+case object DudeUp extends DudeDirection {
+  val cycleName: CycleLabel = CycleLabel("walk up")
+}
+case object DudeDown extends DudeDirection {
+  val cycleName: CycleLabel = CycleLabel("walk down")
+}
 
 // States of a state machine - could use Phantom types to force order but...
 enum SaveLoadPhases derives CanEqual:

@@ -7,7 +7,7 @@ import indigo.json.Json
 import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.subsystems.FPSCounter
-import indigoextras.ui.*
+import indigoextras.ui.simple.*
 
 import scala.scalajs.js.annotation.*
 
@@ -187,13 +187,13 @@ object SandboxGame
   }
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] = {
@@ -202,7 +202,7 @@ object SandboxGame
 
     case FrameTick =>
       val updateOffset: Point =
-        context.inputState.gamepad.dpad match {
+        context.frame.input.gamepad.dpad match {
           case GamepadDPad(true, _, _, _) =>
             viewModel.offset + Point(0, -1)
 
@@ -246,13 +246,13 @@ object SandboxGame
   }
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        "fps counter".bindingKey -> Layer.empty
+        "fps counter".toBindingKey -> Layer.empty
           .withDepth(200.depth)
           .withCamera(Camera.default)
       )
