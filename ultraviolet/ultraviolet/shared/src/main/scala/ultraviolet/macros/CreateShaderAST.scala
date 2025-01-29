@@ -695,23 +695,17 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         val retType   = findReturnType(vals.head)
         val multiVals = ShaderAST.MultiStatements(retType, vals)
 
-        def replaceName: PartialFunction[ShaderAST, ShaderAST] = {
-          // TODO
-          case x =>
-            x
-        }
-
         val n = ShaderAST.MultiStatements(
           ShaderAST.Empty(),
           (valNames zip nextArgs).map { (varName, next) =>
             ShaderAST.Assign(
               ShaderAST.DataTypes.ident(varName),
-              walkTerm(next, envVarName).traverse(replaceName)
+              walkTerm(next, envVarName)
             )
           }
         )
 
-        val b = walkTerm(body, envVarName).traverse(replaceName)
+        val b = walkTerm(body, envVarName)
         val c = walkTerm(condition, envVarName)
         ShaderAST.For(multiVals, c, n, b)
 
