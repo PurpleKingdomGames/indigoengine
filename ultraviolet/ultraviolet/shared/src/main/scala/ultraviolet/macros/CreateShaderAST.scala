@@ -1758,5 +1758,5 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         ShaderAST.While(walkTerm(cond, envVarName), walkTerm(body, envVarName))
 
       case x =>
-        val sample = Printer.TreeStructure.show(x).take(1000)
+        val sample = Printer.TreeStructure.show(x).take(100)
         throw ShaderError.UnexpectedConstruction("Unexpected Term: " + sample + "(..)")
