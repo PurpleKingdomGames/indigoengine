@@ -1,6 +1,6 @@
 //> using scala "3.3.5"
 //> using lib "io.indigoengine::ultraviolet:0.1.3"
-//> using lib "com.lihaoyi::os-lib:0.9.3"
+//> using lib "com.lihaoyi::os-lib:0.11.4"
 
 import ultraviolet.shadertoy.*
 import ultraviolet.syntax.*
