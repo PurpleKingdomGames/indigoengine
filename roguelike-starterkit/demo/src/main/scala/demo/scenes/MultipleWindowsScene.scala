@@ -55,7 +55,7 @@ object MultipleWindowsScene extends Scene[Size, Model, ViewModel]:
           ComponentsWindow.windowId,
           ComponentsWindow2.windowId
         )
-        .focus(ComponentsWindow.windowId)
+        .focus(ComponentsWindow2.windowId)
     )
 
   def updateModel(

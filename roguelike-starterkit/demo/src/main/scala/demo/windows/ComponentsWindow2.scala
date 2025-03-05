@@ -33,6 +33,9 @@ object ComponentsWindow2:
     ComponentGroup[Int]()
       .withLayout(ComponentLayout.Vertical(Padding(0, 0, 1, 0)))
       .add(
+        TerminalInput[Int]("Input 1", 20, TerminalInput.Theme(charSheet))
+      )
+      .add(
         ComponentGroup()
           .withLayout(ComponentLayout.Horizontal(Padding(0, 1, 0, 0)))
           .add(
@@ -82,7 +85,7 @@ object ComponentsWindow2:
           }
           .add((_: UIContext[Int]) =>
             ComponentId("input_dynamic") -> TerminalInput[Int](
-              "",
+              "Input 2",
               20,
               TerminalInput.Theme(charSheet)
             )
@@ -108,7 +111,4 @@ object ComponentsWindow2:
             )
           )
           .withLayout(ComponentLayout.Vertical(Padding.zero))
-      )
-      .add(
-        TerminalInput[Int]("", 20, TerminalInput.Theme(charSheet))
       )

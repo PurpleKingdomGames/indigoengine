@@ -15,22 +15,21 @@ object TerminalInput:
     */
   def apply[ReferenceData](placeholder: String, width: Int, theme: Theme): Input[ReferenceData] =
     Input[ReferenceData](
-      placeholder,
-      Dimensions(width, 1),
-      presentInput(
+      text = placeholder,
+      dimensions = Dimensions(width, 1) + 2, // Account for border
+      render = presentInput(
         theme.charSheet,
         theme.colors.foreground,
         theme.colors.background,
         theme.borderTiles
       ),
-      _ => Batch.empty,
-      (_, label) => label.length,
-      //
+      change = _ => Batch.empty,
+      calculateLineLength = (_, label) => label.length,
       characterLimit = width,
       cursor = Cursor.default,
       hasFocus = false,
-      () => Batch.empty,
-      () => Batch.empty
+      onFocus = () => Batch.empty,
+      onLoseFocus = () => Batch.empty
     )
 
   private val graphic = Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
@@ -74,8 +73,8 @@ object TerminalInput:
         RogueTerminalEmulator(size)
           .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
           .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
-          .put(Point(0, size.height - 1), borderTiles.bottomLeft, fgColor, bgColor)
-          .put(Point(size.width - 1, size.height - 1), borderTiles.bottomRight, fgColor, bgColor)
+          .put(Point(0, 2), borderTiles.bottomLeft, fgColor, bgColor)
+          .put(Point(size.width - 1, 2), borderTiles.bottomRight, fgColor, bgColor)
           .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
           .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
           .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
@@ -108,7 +107,10 @@ object TerminalInput:
             case Some(blinkRate) =>
               Signal
                 .Pulse(blinkRate)
-                .map(p => if (context.frame.time.running - input.cursor.lastModified < Seconds(0.5)) true else p)
+                .map(p =>
+                  if (context.frame.time.running - input.cursor.lastModified < Seconds(0.5)) true
+                  else p
+                )
                 .map {
                   case false =>
                     Batch.empty
