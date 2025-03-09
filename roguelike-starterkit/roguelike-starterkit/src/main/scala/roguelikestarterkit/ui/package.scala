@@ -5,12 +5,12 @@ package roguelikestarterkit.ui
 type TerminalBorderTiles = components.TerminalBorderTiles
 val TerminalBorderTiles: components.TerminalBorderTiles.type = components.TerminalBorderTiles
 
-val TerminalButton: components.TerminalButton.type = components.TerminalButton
-val TerminalInput: components.TerminalInput.type = components.TerminalInput
-val TerminalLabel: components.TerminalLabel.type = components.TerminalLabel
+val TerminalButton: components.TerminalButton.type         = components.TerminalButton
+val TerminalInput: components.TerminalInput.type           = components.TerminalInput
+val TerminalLabel: components.TerminalLabel.type           = components.TerminalLabel
 val TerminalScrollPane: components.TerminalScrollPane.type = components.TerminalScrollPane
-val TerminalSwitch: components.TerminalSwitch.type = components.TerminalSwitch
-val TerminalTextArea: components.TerminalTextArea.type = components.TerminalTextArea
+val TerminalSwitch: components.TerminalSwitch.type         = components.TerminalSwitch
+val TerminalTextArea: components.TerminalTextArea.type     = components.TerminalTextArea
 
 type TerminalTile = components.TerminalTile
 val TerminalTile: components.TerminalTile.type = components.TerminalTile

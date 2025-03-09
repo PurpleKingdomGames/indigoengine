@@ -69,9 +69,10 @@ object ComponentsWindow:
       )
       .add {
         TerminalButton(
-          (ctx: UIContext[Int]) => 
+          (ctx: UIContext[Int]) =>
             val i = ctx.reference
-            "Count" + (if i > 0 then s": $i" else ""),
+            "Count" + (if i > 0 then s": $i" else "")
+          ,
           TerminalButton.Theme(charSheet).addBorder
         )
       }
@@ -80,7 +81,10 @@ object ComponentsWindow:
           Outcome(
             Layer(
               Shape.Box(
-                btn.bounds(ctx).toScreenSpace(charSheet.size).moveTo(ctx.parent.coords.toScreenSpace(charSheet.size)),
+                btn
+                  .bounds(ctx)
+                  .toScreenSpace(charSheet.size)
+                  .moveTo(ctx.parent.coords.toScreenSpace(charSheet.size)),
                 Fill.LinearGradient(Point.zero, RGBA.Cyan, Point(50, 0), RGBA.Magenta)
               )
             )

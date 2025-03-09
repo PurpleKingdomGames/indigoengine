@@ -51,7 +51,10 @@ object TerminalLabel:
   /** Creates a Label with dynamic text, rendered using the RogueTerminalEmulator based on a
     * `Label.Theme`, with bounds based on the text length.
     */
-  def apply[ReferenceData](text: UIContext[ReferenceData] => String, theme: Theme): Label[ReferenceData] =
+  def apply[ReferenceData](
+      text: UIContext[ReferenceData] => String,
+      theme: Theme
+  ): Label[ReferenceData] =
     Label(
       text,
       presentLabel(theme.charSheet, theme.colors.foreground, theme.colors.background),

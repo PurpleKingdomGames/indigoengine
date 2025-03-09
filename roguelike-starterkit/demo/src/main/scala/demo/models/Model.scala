@@ -2,6 +2,7 @@ package demo.models
 
 import demo.Assets
 import demo.scenes.NoTerminalUIComponents
+import demo.scenes.TerminalUIComponents
 import indigo.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
@@ -11,7 +12,8 @@ import roguelikestarterkit.ui.*
 final case class Model(
     pointerOverWindows: Batch[WindowId],
     num: Int,
-    components: ComponentGroup[Int]
+    components: ComponentGroup[Int],
+    button: Button[Unit]
 )
 
 object Model:
@@ -30,7 +32,8 @@ object Model:
     Model(
       Batch.empty,
       0,
-      NoTerminalUIComponents.components
+      NoTerminalUIComponents.components,
+      TerminalUIComponents.customButton
     )
 
 final case class ChangeValue(value: Int) extends GlobalEvent
