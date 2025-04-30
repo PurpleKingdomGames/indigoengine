@@ -16,7 +16,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   scalaVersion := scala3Version,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "1.1.0" % Test
+    "org.scalameta" %%% "munit" % "1.1.1" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
