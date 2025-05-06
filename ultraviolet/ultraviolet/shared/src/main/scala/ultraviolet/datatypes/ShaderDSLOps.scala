@@ -92,11 +92,12 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def cos(x: vec4): vec4   = vec4(cos(x.x), cos(x.y), cos(x.z), cos(x.w))
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/cross.xhtml
-  def cross(x: vec3, y: vec3): Float =
-    val a = x.y * y.z - y.y * x.z
-    val b = x.z * y.x - y.z * x.x
-    val c = x.x * y.y - y.x * x.y
-    a * b * c
+  def cross(x: vec3, y: vec3): vec3 =
+    vec3(
+      (x.y * y.z) - (x.z * y.y),
+      (x.z * y.x) - (x.x * y.z),
+      (x.x * y.y) - (x.y * y.x)
+    )
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/degrees.xhtml
   def degrees(radians: Float): Float = ((180.0 * radians) / Math.PI).toFloat
