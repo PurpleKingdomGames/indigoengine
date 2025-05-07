@@ -49,10 +49,9 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
         )
         .withSubSystems(
           FPSCounter(
-            Point(10, 350),
             RoguelikeTiles.Size10x10.Fonts.fontKey,
             Assets.assets.AnikkiSquare10x10
-          )
+          ).moveTo(Point(10, 350))
         )
     )
 

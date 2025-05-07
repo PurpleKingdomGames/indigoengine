@@ -5,7 +5,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.*
 import roguelikestarterkit.*
-import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.*
 
 object ComponentsWindow2:

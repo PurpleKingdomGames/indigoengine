@@ -23,7 +23,7 @@ object TerminalWindow:
     Graphic(0, 0, TerminalMaterial(AssetName(""), RGBA.White, RGBA.Black))
 
   def present[A, ReferenceData](charSheet: CharSheet)(
-      context: WindowContext
+      context: WindowContext[ReferenceData]
   ): Outcome[Layer] =
     val validSize =
       context.bounds.dimensions.max(Dimensions(5))

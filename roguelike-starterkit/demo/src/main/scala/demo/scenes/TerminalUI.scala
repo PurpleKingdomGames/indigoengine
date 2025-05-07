@@ -40,7 +40,7 @@ object TerminalUI extends Scene[Size, Model, ViewModel]:
       Outcome(model)
 
     case e =>
-      val ctx = UIContext(context.toContext)
+      val ctx = UIContext(context.toContext, 1)
         .withSnapGrid(TerminalUIComponents.charSheet.size)
         .moveParentBy(Coords(5, 5))
         .withPointerCoords(
@@ -65,7 +65,7 @@ object TerminalUI extends Scene[Size, Model, ViewModel]:
       model: Model,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    val ctx = UIContext(context.toContext)
+    val ctx = UIContext(context.toContext, 1)
       .withSnapGrid(TerminalUIComponents.charSheet.size)
       .moveParentBy(Coords(5, 5))
       .withPointerCoords(

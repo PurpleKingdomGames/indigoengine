@@ -4,7 +4,6 @@ import indigo.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
-import roguelikestarterkit.syntax.*
 import roguelikestarterkit.ui.*
 
 object ColourWindow:
