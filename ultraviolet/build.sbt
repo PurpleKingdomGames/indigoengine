@@ -11,7 +11,7 @@ val scala3Version = "3.7.1"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scalaVersion  := scala3Version
 
-lazy val ultravioletVersion = "0.6.1-SNAPSHOT"
+lazy val ultravioletVersion = "0.7.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := ultravioletVersion,
@@ -29,32 +29,6 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
     ScalacOptions.warnUnusedLocals
   )
 )
-
-lazy val neverPublish = Seq(
-  publish / skip      := true,
-  publishLocal / skip := true
-)
-
-lazy val publishSettings = {
-  import xerial.sbt.Sonatype._
-  Seq(
-    publishTo              := sonatypePublishToBundle.value,
-    publishMavenStyle      := true,
-    sonatypeProfileName    := "io.indigoengine",
-    licenses               := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
-    sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "ultraviolet", "indigo@purplekingdomgames.com")),
-    developers := List(
-      Developer(
-        id = "davesmith00000",
-        name = "David Smith",
-        email = "indigo@purplekingdomgames.com",
-        url = url("https://github.com/davesmith00000")
-      )
-    ),
-    sonatypeCredentialHost := "oss.sonatype.org",
-    sonatypeRepository     := "https://oss.sonatype.org/service/local"
-  )
-}
 
 // Root
 lazy val ultravioletProject =
@@ -87,3 +61,48 @@ def shaderDSLGen = Def.task {
 def shaderTypeOfArrayGen = Def.task {
   ShaderTypeOfArrayGen.makeArrayInstances((Compile / sourceManaged).value)
 }
+
+// Publishing settings
+
+lazy val neverPublish = Seq(
+  publish / skip      := true,
+  publishLocal / skip := true
+)
+
+lazy val publishSettings =
+  // import xerial.sbt.Sonatype._
+  Seq(
+    organization         := "io.indigoengine",
+    organizationName     := "PurpleKingdomGames",
+    organizationHomepage := Some(url("https://purplekingdomgames.com/")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/PurpleKingdomGames/ultraviolet"),
+        "scm:git@github.com:PurpleKingdomGames/ultraviolet.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id = "davesmith00000",
+        name = "David Smith",
+        email = "indigo@purplekingdomgames.com",
+        url = url("https://github.com/davesmith00000")
+      )
+    ),
+    description := "Some description about your project.",
+    licenses := List(
+      "MIT" -> url("https://opensource.org/licenses/MIT")
+    ),
+    homepage := Some(url("https://github.com/PurpleKingdomGames/ultraviolet")),
+
+    // Remove all additional repository other than Maven Central from POM
+    pomIncludeRepository := { _ => false },
+    publishMavenStyle    := true,
+
+    // new setting for the Central Portal
+    publishTo := {
+      val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+      if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+      else localStaging.value
+    }
+  )

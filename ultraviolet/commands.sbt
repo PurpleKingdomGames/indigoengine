@@ -171,7 +171,8 @@ addCommandAlias(
     "crossUpdateReleaseable",
     "crossBuildReleaseable",
     "crossUltravioletPublishAllSigned",
-    "sonatypeBundleRelease"
+    "sonaUpload",
+    "sonaRelease"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
