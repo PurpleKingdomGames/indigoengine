@@ -11,7 +11,7 @@ val scala3Version = "3.7.3"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scalaVersion  := scala3Version
 
-lazy val ultravioletVersion = "0.8.0"
+lazy val ultravioletVersion = "0.8.1-SNAPSHOT"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := ultravioletVersion,
