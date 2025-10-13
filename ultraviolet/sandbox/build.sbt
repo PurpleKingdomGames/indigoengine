@@ -29,7 +29,7 @@ lazy val uvsandbox =
       scalaVersion := "3.7.1",
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "1.2.0" % Test
+        "org.scalameta" %%% "munit" % "1.2.1" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       scalafixOnCompile := true,
