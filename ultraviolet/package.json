@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "electron": "^32.1.0"
+    "electron": "^32.1.0",
+    "parcel": "^2.16.0"
   }
 }

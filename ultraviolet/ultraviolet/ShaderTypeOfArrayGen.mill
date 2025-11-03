@@ -1,0 +1,51 @@
+package build.ultraviolet
+
+object ShaderTypeOfArrayGen {
+
+  val tripleQuotes: String = "\"\"\""
+
+  def template(
+      name: String,
+      contents: String
+  ): String =
+    s"""package ultraviolet.macros
+    |
+    |import ultraviolet.syntax.*
+    |
+    |trait ${name}:
+    |
+    |$contents
+    |""".stripMargin
+
+  def gen(sourceManagedDir: os.Path): Seq[os.Path] = {
+    println("Generating Indigo ShaderTypeOf instances for array...")
+
+    val name = "ShaderTypeOfArrayInstances"
+
+    val file: os.Path =
+      sourceManagedDir / (name + ".scala")
+
+    if (!os.exists(file)) {
+      val newContents: String =
+        template(name, makeContents())
+
+      os.write(file, newContents)
+
+      println("Written: " + file.toString)
+    } else {
+      println("Found, skipping: " + file.toString)
+    }
+
+    Seq(file)
+  }
+
+  def makeContents(): String =
+    (0 to 4096)
+      .map { i =>
+        s"""  given array$i[A](using sto: ShaderTypeOf[A]): ShaderTypeOf[array[$i, A]] with
+      |    def typeOf: String = s"$${sto.typeOf}[$i]"
+      |"""
+      }
+      .mkString("\n")
+
+}

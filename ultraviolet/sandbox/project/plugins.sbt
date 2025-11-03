@@ -1,5 +1,0 @@
-addSbtPlugin("org.scala-js"        % "sbt-scalajs"  % "1.20.1")
-addSbtPlugin("io.indigoengine"    %% "sbt-indigo"   % "0.21.0")
-addSbtPlugin("org.scalameta"       % "sbt-scalafmt" % "2.5.6")
-addSbtPlugin("ch.epfl.scala"       % "sbt-scalafix" % "0.14.0")
-addSbtPlugin("com.github.reibitto" % "sbt-welcome"  % "0.5.0")

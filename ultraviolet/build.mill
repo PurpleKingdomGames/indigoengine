@@ -1,0 +1,66 @@
+//| mill-version: 1.0.6
+//| mvnDeps: [
+//|  "com.goyeau::mill-scalafix::0.6.0",
+//|  "org.typelevel::scalac-options:0.1.8",
+//| ]
+
+package build
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
+import com.goyeau.mill.scalafix.ScalafixModule
+
+trait Shared extends ScalafmtModule, ScalafixModule:
+  def scalaVersion = "3.7.3"
+
+  override def scalacOptions = Task {
+    super.scalacOptions() ++
+      ScalacOptions.tokensForVersion(
+        ScalaVersion.unsafeFromString(scalaVersion()),
+        (ScalacOptions.default ++ ScalacOptions.fatalWarningOptions)
+          .filterNot(_ == ScalacOptions.warnValueDiscard)
+          .filterNot(_ == ScalacOptions.warnUnusedImports)
+          .filterNot(_ == ScalacOptions.warnUnusedLocals)
+      )
+  }
+
+trait SharedJVM extends Shared, ScalaModule:
+  object test extends ScalaTests:
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit::1.2.1"
+    )
+
+    def testFramework = Task("munit.Framework")
+
+trait SharedJS extends Shared, ScalaJSModule:
+  def scalaJSVersion = Task("1.20.1")
+
+  object test extends ScalaJSTests:
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit::1.2.1"
+    )
+
+    override def moduleKind = Task(mill.scalajslib.api.ModuleKind.CommonJSModule)
+
+    def testFramework = Task("munit.Framework")
+
+trait SharedPublish extends PublishModule:
+
+  def publishVersion = "0.8.1-SNAPSHOT"
+
+  def pomSettings =
+    PomSettings(
+      description = "ultraviolet",
+      organization = "io.indigoengine",
+      url = "https://github.com/PurpleKingdomGames/ultraviolet",
+      licenses = Seq(License.MIT),
+      versionControl = VersionControl.github("PurpleKingdomGames", "ultraviolet"),
+      developers = Seq(
+        Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
+      )
+    )

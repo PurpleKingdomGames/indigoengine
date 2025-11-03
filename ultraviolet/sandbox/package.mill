@@ -1,0 +1,24 @@
+package build.sandbox
+
+import mill.*
+import mill.scalalib.*
+import mill.scalajslib.*
+import mill.scalajslib.api.*
+
+import build.SharedJS
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule:
+
+    // TODO: Implement the MillIndigo build for the sandbox once Indigo > 0.22.0 is out, or do something else here.
+
+    def moduleDeps = Seq(build.ultraviolet.js)
+
+    def mvnDeps = Seq(
+      mvn"io.indigoengine::indigo-json-circe::0.21.0",
+      mvn"io.indigoengine::indigo::0.21.0",
+      mvn"io.indigoengine::indigo-extras::0.21.0"
+    )
+
+    override def moduleKind = ModuleKind.ESModule

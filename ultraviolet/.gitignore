@@ -45,6 +45,7 @@ metals.sbt
 .ammonite
 .coursier
 *.semanticdb
+.parcel-cache
 
 # Direnv
 .direnv
