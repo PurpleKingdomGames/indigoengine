@@ -1,0 +1,40 @@
+package build.`roguelike-starterkit`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalajslib.*
+import mill.scalajslib.api.*
+
+import build.SharedJS
+import build.SharedPublish
+
+object `package` extends Module:
+
+  // TODO: Only re-run if not already generated.
+  private def _customGeneratedSources = Task {
+    TileCharGen.gen("RoguelikeTiles", "roguelikestarterkit.tiles", Task.dest)
+
+    Seq(PathRef(Task.dest))
+  }
+
+  private def moveGeneratedSources(sources: Seq[PathRef], dest: os.Path): Seq[PathRef] =
+    sources.flatMap: p =>
+      os.list(p.path)
+        .map: from =>
+          os.copy(from, dest / from.last)
+          PathRef(dest / from.last)
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def mvnDeps =
+      Seq(
+        mvn"io.indigoengine::indigo-json-circe::0.22.1-SNAPSHOT",
+        mvn"io.indigoengine::indigo::0.22.1-SNAPSHOT",
+        mvn"io.indigoengine::indigo-extras::0.22.1-SNAPSHOT"
+      )
+
+    override def generatedSources =
+      Task {
+        super.generatedSources() ++
+          moveGeneratedSources(_customGeneratedSources(), Task.dest)
+      }

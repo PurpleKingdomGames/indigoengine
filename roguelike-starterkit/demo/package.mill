@@ -1,0 +1,40 @@
+package build.demo
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+
+import build.SharedJS
+
+import indigoplugin.*
+
+object `package` extends Module:
+
+  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+
+    // This is the root directory of the workspace / project.
+    private val workspaceDir: os.Path =
+      BuildCtx.workspaceRoot
+
+    def indigoAssets =
+      Task.Source(BuildCtx.workspaceRoot / "demo" / "assets")
+
+    def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
+      IndigoOptions.defaults
+        .withTitle("Indigo Roguelike!")
+        .withBackgroundColor("black")
+        .withWindowSize(800, 600)
+        .useElectronExecutable("npx electron")
+
+    def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
+      IndigoGenerators("demo")
+        .listAssets("Assets")
+        .generateConfig("Config")
+
+    def moduleDeps =
+      Seq(
+        build.`roguelike-starterkit`.js
+      )
