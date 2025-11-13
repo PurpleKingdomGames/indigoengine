@@ -1,4 +1,4 @@
-package build.benchmarks
+package build.`indigo-benchmarks`
 
 // TODO: This module is broken, the jpolly benchmark lib relies heavily on sbt,
 //       and React, so work will need to be done to bring it back to life, sadly.

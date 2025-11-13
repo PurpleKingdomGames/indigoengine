@@ -1,4 +1,4 @@
-package build.shader
+package build.`indigo-sandboxes`.shader
 
 import mill.*
 import mill.scalalib.*
@@ -20,7 +20,7 @@ object `package` extends Module:
       BuildCtx.workspaceRoot
 
     def indigoAssets =
-      Task.Source(BuildCtx.workspaceRoot / "shader" / "assets")
+      Task.Source(BuildCtx.workspaceRoot / "indigo-sandboxes" / "shader" / "assets")
 
     def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
       IndigoOptions.defaults

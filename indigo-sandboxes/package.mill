@@ -1,0 +1,3 @@
+package build.`indigo-sandboxes`
+
+object `package` extends mill.Module

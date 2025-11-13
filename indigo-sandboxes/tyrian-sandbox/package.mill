@@ -1,4 +1,4 @@
-package build.`tyrian-sandbox`
+package build.`indigo-sandboxes`.`tyrian-sandbox`
 
 import mill.*
 import mill.scalalib.*

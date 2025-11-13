@@ -1,4 +1,4 @@
-package build.physics
+package build.`indigo-sandboxes`.sandbox
 
 import mill.*
 import mill.scalalib.*
@@ -20,35 +20,29 @@ object `package` extends Module:
       BuildCtx.workspaceRoot
 
     def indigoAssets =
-      Task.Source(BuildCtx.workspaceRoot / "physics" / "assets")
+      Task.Source(BuildCtx.workspaceRoot / "indigo-sandboxes" / "sandbox" / "assets")
 
     def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
       IndigoOptions.defaults
-        .withTitle("Physics")
+        .withTitle("Sandbox")
         .withWindowSize(800, 600)
         .withBackgroundColor("black")
-        .excludeAssets {
-          case p if p.endsWith(os.RelPath.rel / ".DS_Store") => true
-          case _                                             => false
-        }
 
     def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
       IndigoGenerators("example")
         .generateConfig("Config")
         .embedFont(
-          moduleName = "PixelatedFont",
-          font = workspaceDir / "physics" / "generator-data" / "pixelated.ttf",
-          fontOptions = FontOptions(
-            fontKey = "Pixelated",
-            fontSize = 32,
-            charSet = CharSet.ASCII,
-            color = RGB.White,
-            antiAlias = false,
-            layout = FontLayout.default
-          ),
-          imageOut = assetsDirectory / "generated"
+          "TestFont",
+          assetsDirectory / "fonts" / "VCR_OSD_MONO_1.001.ttf",
+          FontOptions(
+            "test font",
+            16,
+            CharSet.ASCII
+          )
+            .withColor(RGB.White)
+            .noAntiAliasing,
+          assetsDirectory / "generated"
         )
-        .listAssets("Assets")
 
     def moduleDeps =
       Seq(
