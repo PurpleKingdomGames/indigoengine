@@ -1,8 +1,7 @@
-package build.demo
+package build.`roguelike-starterkit-demo`
 
 import mill.*
 import mill.scalalib.*
-import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 import mill.api.BuildCtx
@@ -20,7 +19,7 @@ object `package` extends Module:
       BuildCtx.workspaceRoot
 
     def indigoAssets =
-      Task.Source(BuildCtx.workspaceRoot / "demo" / "assets")
+      Task.Source(BuildCtx.workspaceRoot / "roguelike-starterkit-demo" / "assets")
 
     def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
       IndigoOptions.defaults

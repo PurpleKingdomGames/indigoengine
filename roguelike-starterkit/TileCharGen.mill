@@ -111,6 +111,8 @@ object TileCharGen {
     |    def toFloat: Float   = t.toFloat
     |    def toChar: Char     = t.toChar
     |
+    |  given CanEqual[Tile, Tile] = CanEqual.derived
+    |
     |$charString
     |
     |$lookUp
