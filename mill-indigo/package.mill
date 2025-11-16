@@ -1,0 +1,38 @@
+package build.`mill-indigo`
+
+import build.SharedJVM
+import build.SharedPublish
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.util.BuildInfo.{millVersion, millBinPlatform}
+
+object `package` extends SharedJVM, SharedPublish:
+
+  // override def artifactName = "mill-indigo"
+
+  def platformSuffix = s"_mill$millBinPlatform"
+
+  def moduleDeps =
+    Seq(
+      build.`indigo-plugin`
+    )
+
+  override def mvnDeps =
+    super.mvnDeps() ++
+      Seq(
+        mvn"com.lihaoyi::mill-libs:$millVersion"
+      )
+
+  // override def pomSettings =
+  //   PomSettings(
+  //     description = "mill-indigo",
+  //     organization = "io.indigoengine",
+  //     url = "https://github.com/PurpleKingdomGames/indigo",
+  //     licenses = Seq(License.MIT),
+  //     versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
+  //     developers = Seq(
+  //       Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
+  //     )
+  //   )

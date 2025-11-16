@@ -1,0 +1,47 @@
+package build
+
+import mill.*
+import mill.scalalib.*
+import mill.meta.MillBuildRootModule
+
+import mill.api.BuildCtx
+
+object `package` extends MillBuildRootModule:
+  def scalaVersion = "3.7.1"
+
+  def indigoPluginSources = Task.Sources(
+    BuildCtx.workspaceRoot / "indigo-plugin" / "src"
+  )
+
+  def millPluginSources = Task.Sources(
+    BuildCtx.workspaceRoot / "mill-indigo" / "src"
+  )
+
+  def sources = Task {
+    super.sources() ++ indigoPluginSources() ++ millPluginSources()
+  }
+
+  val circeVersion: String = "0.14.14"
+  val osLibVersion: String = "0.11.5"
+
+  def mvnDeps = Seq(
+    mvn"com.lihaoyi::os-lib:$osLibVersion",
+    mvn"io.circe::circe-core:$circeVersion",
+    mvn"io.circe::circe-parser:$circeVersion"
+  )
+
+  def generatedSources = Task {
+    os.write(
+      Task.dest / "DepVersions.scala",
+      s"""
+         |package millbuild
+         |
+         |object DepVersions {
+         |  def circeVersion: String = "$circeVersion"
+         |  def osLibVersion: String = "$osLibVersion"
+         |}
+      """.stripMargin
+    )
+
+    super.generatedSources() ++ Seq(PathRef(Task.dest))
+  }

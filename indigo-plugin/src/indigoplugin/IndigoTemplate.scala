@@ -1,9 +1,12 @@
 package indigoplugin
 
+// TODO: Convert to enum
 /** Tells Indigo whether to generate the default static site for your game, or use a custom provided template instead.
   */
 sealed trait IndigoTemplate
 object IndigoTemplate {
+
+  given CanEqual[IndigoTemplate, IndigoTemplate] = CanEqual.derived
 
   /** Use the detault static site template */
   case object Default extends IndigoTemplate

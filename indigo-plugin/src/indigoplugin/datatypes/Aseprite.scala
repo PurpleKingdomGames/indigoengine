@@ -1,6 +1,6 @@
 package indigoplugin.datatypes
 
-import io.circe._
+import io.circe.*
 
 // format: off
 final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) {

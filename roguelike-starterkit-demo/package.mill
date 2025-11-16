@@ -1,39 +1,39 @@
 package build.`roguelike-starterkit-demo`
 
-import mill.*
-import mill.scalalib.*
-import mill.scalalib.scalafmt.*
-import mill.scalajslib.*
-import mill.api.BuildCtx
+// import mill.*
+// import mill.scalalib.*
+// import mill.scalalib.scalafmt.*
+// import mill.scalajslib.*
+// import mill.api.BuildCtx
 
-import build.SharedJS
+// import build.SharedJS
 
-import indigoplugin.*
+// import indigoplugin.*
 
-object `package` extends Module:
+// object `package` extends Module:
 
-  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+//   object js extends MillIndigo, SharedJS, PlatformScalaModule:
 
-    // This is the root directory of the workspace / project.
-    private val workspaceDir: os.Path =
-      BuildCtx.workspaceRoot
+//     // This is the root directory of the workspace / project.
+//     private val workspaceDir: os.Path =
+//       BuildCtx.workspaceRoot
 
-    def indigoAssets =
-      Task.Source(BuildCtx.workspaceRoot / "roguelike-starterkit-demo" / "assets")
+//     def indigoAssets =
+//       Task.Source(BuildCtx.workspaceRoot / "roguelike-starterkit-demo" / "assets")
 
-    def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
-      IndigoOptions.defaults
-        .withTitle("Indigo Roguelike!")
-        .withBackgroundColor("black")
-        .withWindowSize(800, 600)
-        .useElectronExecutable("npx electron")
+//     def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
+//       IndigoOptions.defaults
+//         .withTitle("Indigo Roguelike!")
+//         .withBackgroundColor("black")
+//         .withWindowSize(800, 600)
+//         .useElectronExecutable("npx electron")
 
-    def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
-      IndigoGenerators("demo")
-        .listAssets("Assets")
-        .generateConfig("Config")
+//     def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
+//       IndigoGenerators("demo")
+//         .listAssets("Assets")
+//         .generateConfig("Config")
 
-    def moduleDeps =
-      Seq(
-        build.`roguelike-starterkit`.js
-      )
+//     def moduleDeps =
+//       Seq(
+//         build.`roguelike-starterkit`.js
+//       )

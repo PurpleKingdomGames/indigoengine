@@ -1,5 +1,6 @@
 package indigoplugin
 
+// TODO: Convert to enum
 sealed trait ElectronInstall {
 
   def executable: String =
@@ -20,6 +21,9 @@ sealed trait ElectronInstall {
 
 }
 object ElectronInstall {
+
+  given CanEqual[ElectronInstall, ElectronInstall] = CanEqual.derived
+
   case object Global                              extends ElectronInstall
   final case class Version(version: String)       extends ElectronInstall
   case object Latest                              extends ElectronInstall

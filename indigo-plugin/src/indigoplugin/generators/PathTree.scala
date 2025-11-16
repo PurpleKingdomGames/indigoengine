@@ -23,6 +23,8 @@ sealed trait PathTree {
 
 object PathTree {
 
+  given CanEqual[PathTree, PathTree] = CanEqual.derived
+
   def empty: PathTree =
     PathTree.Root(Nil)
 
@@ -97,6 +99,8 @@ object PathTree {
 
   def combineAll(pathTrees: List[PathTree]): PathTree =
     pathTrees.foldLeft(empty)(_ |+| _)
+
+  given CanEqual[os.RelPath, os.RelPath] = CanEqual.derived
 
   def pathToPathTree(remaining: os.RelPath, original: os.RelPath): Option[PathTree] = {
     val result =

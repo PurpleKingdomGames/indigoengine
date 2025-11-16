@@ -15,8 +15,6 @@ import scala.annotation.nowarn
 
 object IndigoBuild {
 
-  private val workspaceDir = Utils.findWorkspace
-
   @nowarn("msg=interpolator")
   def build(
       scriptPathBase: Path,

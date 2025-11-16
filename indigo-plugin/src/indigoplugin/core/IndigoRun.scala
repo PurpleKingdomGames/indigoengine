@@ -35,7 +35,7 @@ object IndigoRun {
     // Write support js script
     val supportFile = outputDir / "scripts" / "indigo-support.js"
     val support     = SupportScriptTemplate.template()
-    os.remove(supportFile)
+    os.remove(supportFile): Unit
     os.write(supportFile, support)
 
     println(s"Starting '${indigoOptions.metadata.title}'")
@@ -44,59 +44,59 @@ object IndigoRun {
       case x if x.contains("windows") =>
         indigoOptions.electron.electronInstall match {
           case ElectronInstall.Global =>
-            IndigoProc.Windows.npmStart(outputDir)
+            IndigoProc.Windows.npmStart(outputDir): Unit
 
           case ElectronInstall.Version(_) =>
             if (!os.exists(outputDir / "node_modules" / "electron")) {
               println(installingNPMDepsMessage)
-              IndigoProc.Windows.npmInstall(outputDir)
+              IndigoProc.Windows.npmInstall(outputDir): Unit
             } else {
               println(usingInstalledNPMDepsMessage)
             }
-            IndigoProc.Windows.npmStart(outputDir)
+            IndigoProc.Windows.npmStart(outputDir): Unit
 
           case ElectronInstall.Latest =>
             if (!os.exists(outputDir / "node_modules" / "electron")) {
               println(installingNPMDepsMessage)
-              IndigoProc.Windows.installLatestElectron(outputDir)
-              IndigoProc.Windows.npmInstall(outputDir)
+              IndigoProc.Windows.installLatestElectron(outputDir): Unit
+              IndigoProc.Windows.npmInstall(outputDir): Unit
             } else {
               println(usingInstalledNPMDepsMessage)
             }
-            IndigoProc.Windows.npmStart(outputDir)
+            IndigoProc.Windows.npmStart(outputDir): Unit
 
           case ElectronInstall.PathToExecutable(_) =>
-            IndigoProc.Windows.npmStart(outputDir)
+            IndigoProc.Windows.npmStart(outputDir): Unit
         }
 
       case _ =>
         indigoOptions.electron.electronInstall match {
           case ElectronInstall.Global =>
-            IndigoProc.Nix.npmStart(outputDir)
+            IndigoProc.Nix.npmStart(outputDir): Unit
 
           case ElectronInstall.Version(_) =>
             if (!os.exists(outputDir / "node_modules" / "electron")) {
               println(installingNPMDepsMessage)
-              IndigoProc.Nix.npmInstall(outputDir)
+              IndigoProc.Nix.npmInstall(outputDir): Unit
             } else {
               println(usingInstalledNPMDepsMessage)
             }
-            IndigoProc.Nix.npmStart(outputDir)
+            IndigoProc.Nix.npmStart(outputDir): Unit
 
           case ElectronInstall.Latest =>
             if (!os.exists(outputDir / "node_modules" / "electron")) {
               println(installingNPMDepsMessage)
-              IndigoProc.Nix.installLatestElectron(outputDir)
-              IndigoProc.Nix.npmInstall(outputDir)
+              IndigoProc.Nix.installLatestElectron(outputDir): Unit
+              IndigoProc.Nix.npmInstall(outputDir): Unit
             } else {
               println(usingInstalledNPMDepsMessage)
             }
-            IndigoProc.Nix.npmStart(outputDir)
+            IndigoProc.Nix.npmStart(outputDir): Unit
 
           case ElectronInstall.PathToExecutable(_) =>
-            IndigoProc.Nix.npmStart(outputDir)
+            IndigoProc.Nix.npmStart(outputDir): Unit
         }
-    }
+    }: Unit
 
     ()
   }
