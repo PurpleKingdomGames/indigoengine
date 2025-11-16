@@ -2,6 +2,7 @@ package indigoplugin
 
 import scala.util.matching.Regex
 
+// TODO: Convert to enum
 sealed trait DataType {
 
   def nullable: Boolean
@@ -78,6 +79,8 @@ sealed trait DataType {
 
 }
 object DataType {
+
+  given CanEqual[DataType, DataType] = CanEqual.derived
 
   // Most to least specific: Boolean, Int, Double, String
   final case class BooleanData(value: Boolean, nullable: Boolean) extends DataType {

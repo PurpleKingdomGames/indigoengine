@@ -1,6 +1,6 @@
 package indigoplugin.generators
 
-import io.circe.parser._
+import io.circe.parser.*
 import indigoplugin.datatypes.Aseprite
 import indigoplugin.IndigoGenerators
 

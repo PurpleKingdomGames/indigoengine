@@ -1,7 +1,5 @@
 package indigoplugin
 
-import indigoplugin.utils.Utils
-
 /** Represents you game's assets processing. All assets and details are based around a single asset directory and it's
   * sub-tree.
   *

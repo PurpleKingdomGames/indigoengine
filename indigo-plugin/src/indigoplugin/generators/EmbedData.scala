@@ -5,8 +5,12 @@ import indigoplugin.IndigoGenerators
 
 object EmbedData {
 
+  // TODO: Convert to enum
   sealed trait Mode
   object Mode {
+
+    given CanEqual[Mode, Mode] = CanEqual.derived
+
     final case class AsEnum(extendsFrom: Option[String])               extends Mode
     case object AsMap                                                  extends Mode
     final case class AsCustom(present: List[List[DataType]] => String) extends Mode

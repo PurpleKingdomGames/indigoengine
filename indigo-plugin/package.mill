@@ -1,0 +1,17 @@
+package build.`indigo-plugin`
+
+import build.SharedJVM
+import build.SharedPublish
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+
+object `package` extends SharedJVM, SharedPublish:
+
+  def mvnDeps =
+    Seq(
+      mvn"com.lihaoyi::os-lib:${millbuild.DepVersions.osLibVersion}",
+      mvn"io.circe::circe-core:${millbuild.DepVersions.circeVersion}",
+      mvn"io.circe::circe-parser:${millbuild.DepVersions.circeVersion}"
+    )

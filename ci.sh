@@ -16,10 +16,10 @@ set -e
 # cd ..
 
 # SBT Indigo
-echo ">>> SBT-Indigo"
-cd sbt-indigo
-bash build.sh
-cd ..
+# echo ">>> SBT-Indigo"
+# cd sbt-indigo
+# bash build.sh
+# cd ..
 
 # # Indigo
 # echo ">>> Indigo"

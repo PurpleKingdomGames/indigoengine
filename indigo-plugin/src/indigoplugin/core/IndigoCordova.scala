@@ -26,11 +26,11 @@ object IndigoCordova {
     // Write support js script
     val supportFile = outputDir / "www" / "scripts" / "indigo-support.js"
     val support     = SupportScriptTemplate.template()
-    os.remove(supportFile)
+    os.remove(supportFile): Unit
     os.write(supportFile, support)
 
     // This will be replaced by cordova itself.
-    os.remove(outputDir / "www" / "cordova.js")
+    os.remove(outputDir / "www" / "cordova.js"): Unit
 
     ()
   }

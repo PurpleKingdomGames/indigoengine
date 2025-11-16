@@ -1,6 +1,5 @@
 package indigoplugin.generators
 
-import indigoplugin.IndigoOptions
 import scala.util.matching.Regex
 import indigoplugin.IndigoGenerators
 

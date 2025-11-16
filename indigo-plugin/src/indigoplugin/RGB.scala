@@ -32,6 +32,8 @@ final case class RGB(r: Double, g: Double, b: Double) {
 
 object RGB {
 
+  given CanEqual[RGB, RGB] = CanEqual.derived
+
   val Red: RGB       = RGB(1, 0, 0)
   val Green: RGB     = RGB(0, 1, 0)
   val Blue: RGB      = RGB(0, 0, 1)
