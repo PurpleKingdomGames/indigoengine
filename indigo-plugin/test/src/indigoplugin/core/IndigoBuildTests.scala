@@ -4,6 +4,8 @@ import indigoplugin.IndigoAssets
 
 class IndigoBuildTests extends munit.FunSuite {
 
+  given CanEqual[os.RelPath, os.RelPath] = CanEqual.derived
+
   test("Asset filters (default)") {
 
     val toCopy: os.RelPath             = os.RelPath("some/path/foo.txt")

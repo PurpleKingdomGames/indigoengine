@@ -27,7 +27,9 @@ object `package` extends MillBuildRootModule:
   def mvnDeps = Seq(
     mvn"com.lihaoyi::os-lib:$osLibVersion",
     mvn"io.circe::circe-core:$circeVersion",
-    mvn"io.circe::circe-parser:$circeVersion"
+    mvn"io.circe::circe-parser:$circeVersion",
+    mvn"com.goyeau::mill-scalafix_mill1:0.6.0",
+    mvn"org.typelevel::scalac-options:0.1.8"
   )
 
   def generatedSources = Task {

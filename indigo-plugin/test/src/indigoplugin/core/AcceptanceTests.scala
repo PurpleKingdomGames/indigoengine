@@ -8,7 +8,7 @@ import indigoplugin.IndigoAssets
 class AcceptanceTests extends munit.FunSuite {
 
   val workspaceDir    = Utils.findWorkspace
-  val assetsDirectory = workspaceDir / "test-assets"
+  val assetsDirectory = workspaceDir / "indigo-plugin-test-resources" / "test-assets"
 
   val targetBaseDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output"
   val targetDir     = targetBaseDir / assetsDirectory.last
@@ -45,8 +45,6 @@ class AcceptanceTests extends munit.FunSuite {
       .excludeAssets(exclude)
 
   test("List assets to copy") {
-    val baseDirectory = workspaceDir
-
     val actual: List[os.Path] =
       IndigoAssets.filesToCopy(indigoOptions.assets, assetsDirectory)
 
@@ -64,8 +62,6 @@ class AcceptanceTests extends munit.FunSuite {
   }
 
   test("List all asset files as relative paths") {
-    val baseDirectory = workspaceDir
-
     val actual: List[os.RelPath] =
       IndigoAssets.listAssetFiles(indigoOptions.assets, assetsDirectory)
 
@@ -82,8 +78,6 @@ class AcceptanceTests extends munit.FunSuite {
   }
 
   test("List all asset files as relative paths - sub dir") {
-    val baseDirectory = workspaceDir
-
     val actual: List[os.RelPath] =
       IndigoAssets.listAssetFiles(
         indigoOptions.assets,
@@ -102,8 +96,6 @@ class AcceptanceTests extends munit.FunSuite {
   }
 
   test("Copy assets and assert expected output files") {
-    val baseDirectory = workspaceDir
-
     IndigoBuild.copyAssets(indigoOptions.assets, assetsDirectory, targetDir)
 
     // Basics
@@ -125,7 +117,7 @@ class AcceptanceTests extends munit.FunSuite {
 
   test("Build a game using the default template") {
     IndigoBuild.build(
-      scriptPathBase = workspaceDir / "test-files",
+      scriptPathBase = workspaceDir / "indigo-plugin-test-resources" / "test-files",
       options = indigoOptions,
       assetsDirectory = assetsDirectory,
       baseDirectory = targetBaseDir,
@@ -159,7 +151,7 @@ class AcceptanceTests extends munit.FunSuite {
   test("Build a game using a custom template") {
     val custom =
       indigoOptions.useCustomTemplate(
-        IndigoTemplate.Inputs(workspaceDir / "test-custom-template"),
+        IndigoTemplate.Inputs(workspaceDir / "indigo-plugin-test-resources" / "test-custom-template"),
         IndigoTemplate.Outputs(
           os.rel / "game-assets",
           os.rel / "game-scripts"
@@ -167,7 +159,7 @@ class AcceptanceTests extends munit.FunSuite {
       )
 
     IndigoBuild.build(
-      scriptPathBase = workspaceDir / "test-files",
+      scriptPathBase = workspaceDir / "indigo-plugin-test-resources" / "test-files",
       options = custom,
       assetsDirectory = assetsDirectory,
       baseDirectory = targetBaseDir,

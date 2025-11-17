@@ -10,14 +10,16 @@ import indigoplugin.IndigoOptions
 
 class GeneratorAcceptanceTests extends munit.FunSuite {
 
+  given CanEqual[os.Path, os.Path] = CanEqual.derived
+
   val workspaceDir = Utils.findWorkspace
 
-  val assetsDirectory        = workspaceDir / os.RelPath("test-assets")
+  val assetsDirectory        = workspaceDir / os.RelPath("indigo-plugin-test-resources/test-assets")
   val sourceCSV              = assetsDirectory / "data" / "stats.csv"
   val sourceMD               = assetsDirectory / "data" / "stats.md"
   val sourceColours          = assetsDirectory / "data" / "colours.txt"
-  val sourceFontTTF          = workspaceDir / "test-files" / "VCR_OSD_MONO_1.001.ttf"
-  val sourceFontTTFPixelated = workspaceDir / "test-files" / "pixelated.ttf"
+  val sourceFontTTF          = workspaceDir / "indigo-plugin-test-resources" / "test-files" / "VCR_OSD_MONO_1.001.ttf"
+  val sourceFontTTFPixelated = workspaceDir / "indigo-plugin-test-resources" / "test-files" / "pixelated.ttf"
 
   val indigoOptions = IndigoOptions.defaults
 
