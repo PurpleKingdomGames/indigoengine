@@ -1,7 +1,8 @@
 package indigoplugin.generators
 
-import scala.util.matching.Regex
 import indigoplugin.IndigoGenerators
+
+import scala.util.matching.Regex
 
 object ConfigGen {
 

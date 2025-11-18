@@ -1,8 +1,8 @@
 package indigoplugin.generators
 
-import io.circe.parser.*
-import indigoplugin.datatypes.Aseprite
 import indigoplugin.IndigoGenerators
+import indigoplugin.datatypes.Aseprite
+import io.circe.parser.*
 
 object EmbedAseprite {
 

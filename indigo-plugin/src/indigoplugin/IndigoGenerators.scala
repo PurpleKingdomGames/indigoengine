@@ -1,14 +1,15 @@
 package indigoplugin
 
-import indigoplugin.generators.EmbedText
-import java.io.File
-import indigoplugin.generators.EmbedGLSLShaderPair
 import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
-import indigoplugin.generators.EmbedData
 import indigoplugin.generators.EmbedAseprite
+import indigoplugin.generators.EmbedData
+import indigoplugin.generators.EmbedGLSLShaderPair
+import indigoplugin.generators.EmbedText
 import indigoplugin.generators.FontGen
 import indigoplugin.utils.Utils
+
+import java.io.File
 
 /** Assists with setting up source code generators for Indigo projects
   *

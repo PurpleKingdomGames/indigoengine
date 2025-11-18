@@ -1,10 +1,11 @@
 package indigoplugin.generators
 
-import indigoplugin.FontOptions
 import indigoplugin.FontLayout
-import scala.annotation.tailrec
-import java.awt.font.FontRenderContext
+import indigoplugin.FontOptions
 import indigoplugin.IndigoGenerators
+
+import java.awt.font.FontRenderContext
+import scala.annotation.tailrec
 
 /** Provides functionality for generating font images and associated FontInfo instances.
   */

@@ -1,7 +1,7 @@
 package indigoplugin.generators
 
-import indigoplugin.utils.Utils
 import indigoplugin.IndigoGenerators
+import indigoplugin.utils.Utils
 
 object EmbedGLSLShaderPair {
 

@@ -1,12 +1,11 @@
 package indigoplugin.core
 
-import indigoplugin.templates.ElectronTemplates
-
-import os._
-import indigoplugin.templates.SupportScriptTemplate
-import indigoplugin.datatypes.FileToWrite
 import indigoplugin.ElectronInstall
 import indigoplugin.IndigoOptions
+import indigoplugin.datatypes.FileToWrite
+import indigoplugin.templates.ElectronTemplates
+import indigoplugin.templates.SupportScriptTemplate
+import os.*
 
 object IndigoRun {
 
