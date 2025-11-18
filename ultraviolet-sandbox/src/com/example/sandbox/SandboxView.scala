@@ -9,7 +9,7 @@ object SandboxView:
   def updateView(
       model: SandboxGameModel,
       viewModel: SandboxViewModel,
-      mouse: Mouse,
+      mouse: MouseState,
       bl: Context.Services.Bounds
   ): SceneUpdateFragment = {
     mouse.isClickedAt.foreach: pt =>
@@ -82,7 +82,7 @@ object SandboxView:
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
-  def lightingLayer(mouse: Mouse): Batch[SceneNode] =
+  def lightingLayer(mouse: MouseState): Batch[SceneNode] =
     Batch(
       Graphic(
         114,

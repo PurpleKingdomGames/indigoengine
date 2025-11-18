@@ -26,10 +26,10 @@ object SandboxGame
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(NoiseScene.name)
 
-  def scenes(bootData: SandboxBootData): NonEmptyList[
+  def scenes(bootData: SandboxBootData): NonEmptyBatch[
     Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]
   ] =
-    NonEmptyList(
+    NonEmptyBatch(
       OriginalScene,
       ShadersScene,
       NoiseScene

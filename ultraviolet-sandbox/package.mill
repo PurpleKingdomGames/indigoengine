@@ -4,12 +4,15 @@ import mill.*
 import mill.scalalib.*
 import mill.scalajslib.*
 import mill.scalajslib.api.*
+import mill.api.BuildCtx
 
 import build.SharedJS
 
+import indigoplugin.*
+
 object `package` extends Module:
 
-  object js extends SharedJS, PlatformScalaModule:
+  object js extends MillIndigo, SharedJS, PlatformScalaModule:
 
     def moduleDeps = Seq(
       build.ultraviolet.js,
@@ -18,4 +21,20 @@ object `package` extends Module:
       build.`indigo-json-circe`.js
     )
 
-    override def moduleKind = ModuleKind.ESModule
+    def indigoAssets =
+      Task.Source(BuildCtx.workspaceRoot / "ultraviolet-sandbox" / "assets")
+
+    def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
+      IndigoOptions.defaults
+        .withTitle("UV Sandbox")
+        .withWindowSize(550, 400)
+        .withBackgroundColor("black")
+        .excludeAssets {
+          case p if p.endsWith(os.RelPath.rel / ".gitkeep") => true
+          case _                                            => false
+        }
+        .useElectronExecutable("npx electron")
+
+    def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
+      IndigoGenerators.None
+

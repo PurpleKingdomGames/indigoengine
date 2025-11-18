@@ -140,8 +140,6 @@ object Fonts {
   val fontInfo: FontInfo =
     FontInfo(
       fontKey,
-      320,
-      230,
       FontChar(" ", 145, 52, 23, 23)
     ).isCaseInSensitive
       .addChar(FontChar("A", 3, 78, 23, 23))
