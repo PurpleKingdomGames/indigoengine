@@ -14,8 +14,8 @@ object `package` extends Module:
 
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
-    def moduleDeps = Seq(build.indigo.js)
-
-    def mvnDeps = Seq(
-      mvn"io.indigoengine::tyrian::0.14.0"
+    def moduleDeps = Seq(
+      build.indigo.js,
+      build.tyrian.js
     )
+

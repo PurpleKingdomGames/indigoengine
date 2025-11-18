@@ -1,0 +1,21 @@
+package build.`ultraviolet-sandbox`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalajslib.*
+import mill.scalajslib.api.*
+
+import build.SharedJS
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule:
+
+    def moduleDeps = Seq(
+      build.ultraviolet.js,
+      build.indigo.js,
+      build.`indigo-extras`.js,
+      build.`indigo-json-circe`.js
+    )
+
+    override def moduleKind = ModuleKind.ESModule
