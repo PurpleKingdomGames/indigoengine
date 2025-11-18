@@ -1,26 +1,50 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  description = "indigoengine-dev";
 
-  outputs = { nixpkgs, flake-utils, ... }:
+  inputs = {
+    nixpkgs.url = github:nixos/nixpkgs/nixpkgs-unstable;
+    flake-utils.url = github:numtide/flake-utils;
+  };
+
+  outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
-        jdkToUse = pkgs.jdk17;
-        sbtWithJRE = pkgs.sbt.override { jre = jdkToUse; };
-        millWithJRE = pkgs.mill.override { jre = jdkToUse; };
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            (f: p: {
+              mill = p.mill.override { jre = p.jdk17_headless; };
+            })
+          ];
+        };
+        jdk = pkgs.jdk17_headless;
+
+        jvmInputs = with pkgs; [
+          jdk
+          coursier
+          mill
+          electron
+        ];
+        jvmHook = ''
+          JAVA_HOME="${jdk}"
+        '';
+
+        jsInputs = with pkgs; [
+          nodejs
+          yarn
+          nodePackages_latest.http-server
+        ];
+        jsHook = ''
+          yarn install
+        '';
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = [
-            jdkToUse
-            sbtWithJRE
-            millWithJRE
-            pkgs.nodejs
-            pkgs.yarn
-            pkgs.electron
-          ];
+          name = "indigoengine-dev-shell";
+          buildInputs = jvmInputs ++ jsInputs;
+          shellHook = jvmHook + jsHook;
         };
       }
     );
+
 }
