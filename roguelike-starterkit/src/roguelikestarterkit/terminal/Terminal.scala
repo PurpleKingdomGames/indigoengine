@@ -109,8 +109,8 @@ trait Terminal:
       Terminal.toCloneTileData
     )
 
-  /** Export the terminal so that it can be rendered as CloneTiles, and supply a modifier funtion to
-    * alter the relative position, rotation, and scale of the tile.
+  /** Export the terminal so that it can be rendered as CloneTiles, and supply a modifier funtion to alter the relative
+    * position, rotation, and scale of the tile.
     */
   def toCloneTiles(
       idPrefix: CloneId,
@@ -127,9 +127,8 @@ trait Terminal:
       Terminal.toCloneTileDataWithModifier(modifier)
     )
 
-  /** Export the terminal so that it can be rendered as CloneTiles for a defined region of the given
-    * map, and supply a modifier funtion to alter the relative position, rotation, and scale of the
-    * tile.
+  /** Export the terminal so that it can be rendered as CloneTiles for a defined region of the given map, and supply a
+    * modifier funtion to alter the relative position, rotation, and scale of the tile.
     */
   def toCloneTiles(
       idPrefix: CloneId,
@@ -155,13 +154,13 @@ trait Terminal:
     */
   def toBatch(region: Rectangle): Batch[MapTile]
 
-  /** Export terminal as a complete grid of tiles, missing tiles will be given the Tile.Null values
-    * and RGBA.Zero colors.
+  /** Export terminal as a complete grid of tiles, missing tiles will be given the Tile.Null values and RGBA.Zero
+    * colors.
     */
   def toTileBatch: Batch[MapTile]
 
-  /** Export terminal as a complete grid of tiles for a given region, missing tiles will be given
-    * the Tile.Null values and RGBA.Zero colors.
+  /** Export terminal as a complete grid of tiles for a given region, missing tiles will be given the Tile.Null values
+    * and RGBA.Zero colors.
     */
   def toTileBatch(region: Rectangle): Batch[MapTile]
 
@@ -169,8 +168,7 @@ trait Terminal:
     */
   def toPositionedBatch: Batch[(Point, MapTile)]
 
-  /** Export the terminal as a batch of maptiles tupled with with their positions, in a given
-    * region.
+  /** Export the terminal as a batch of maptiles tupled with with their positions, in a given region.
     */
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)]
 
@@ -230,15 +228,12 @@ object Terminal:
           Batch[(Point, MapTile)]
       ) => Batch[CloneTileData]
   ): TerminalClones =
-    val makeId: (RGBA, RGBA) => CloneId = (fg, bg) =>
-      CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
+    val makeId: (RGBA, RGBA) => CloneId = (fg, bg) => CloneId(s"""${idPrefix.toString}_${fg.hashCode}_${bg.hashCode}""")
 
     val combinations: Batch[((CloneId, RGBA, RGBA), Batch[(Point, MapTile)])] =
       Batch.fromMap(
         positionedBatch
-          .groupBy(p =>
-            (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background)
-          )
+          .groupBy(p => (makeId(p._2.foreground, p._2.background), p._2.foreground, p._2.background))
       )
 
     val results =

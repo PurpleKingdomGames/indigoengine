@@ -24,31 +24,30 @@ object TerminalTextArea:
       charSheet: CharSheet,
       fgColor: RGBA,
       bgColor: RGBA
-  ): (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer] = {
-    case (context, textArea) =>
-      val size = textArea.bounds(context).dimensions.unsafeToSize
+  ): (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer] = { case (context, textArea) =>
+    val size = textArea.bounds(context).dimensions.unsafeToSize
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .putLines(
-            Point.zero,
-            Batch.fromList(textArea.text(context).split("\n").toList),
-            fgColor,
-            bgColor
-          )
-          .toCloneTiles(
-            CloneId(s"label_${charSheet.assetName.toString}"),
-            context.parent.coords.toScreenSpace(charSheet.size),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+    val terminal =
+      RogueTerminalEmulator(size)
+        .putLines(
+          Point.zero,
+          Batch.fromList(textArea.text(context).split("\n").toList),
+          fgColor,
+          bgColor
+        )
+        .toCloneTiles(
+          CloneId(s"label_${charSheet.assetName.toString}"),
+          context.parent.coords.toScreenSpace(charSheet.size),
+          charSheet.charCrops
+        ) { case (fg, bg) =>
+          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+        }
 
-      Outcome(Layer.Content(terminal))
+    Outcome(Layer.Content(terminal))
   }
 
-  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a
-    * `TerminalTextArea.Theme`, with bounds based on the text length
+  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a `TerminalTextArea.Theme`, with
+    * bounds based on the text length
     */
   def apply[ReferenceData](text: String, theme: Theme): TextArea[ReferenceData] =
     TextArea(
@@ -61,8 +60,8 @@ object TerminalTextArea:
       (_, t) => findBounds(t)
     )
 
-  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a
-    * `TerminalTextArea.Theme`, with custom bounds
+  /** Creates a TerminalTextArea rendered using the RogueTerminalEmulator based on a `TerminalTextArea.Theme`, with
+    * custom bounds
     */
   def apply[ReferenceData](
       text: UIContext[ReferenceData] => String,

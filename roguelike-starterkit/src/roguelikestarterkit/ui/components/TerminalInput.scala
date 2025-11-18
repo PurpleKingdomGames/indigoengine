@@ -10,8 +10,8 @@ import roguelikestarterkit.ui.*
 
 object TerminalInput:
 
-  /** Creates a TerminalInput rendered using the RogueTerminalEmulator based on a
-    * `TerminalInput.Theme`, where the bounds are the supplied width, height 1, plus border.
+  /** Creates a TerminalInput rendered using the RogueTerminalEmulator based on a `TerminalInput.Theme`, where the
+    * bounds are the supplied width, height 1, plus border.
     */
   def apply[ReferenceData](placeholder: String, width: Int, theme: Theme): Input[ReferenceData] =
     Input[ReferenceData](

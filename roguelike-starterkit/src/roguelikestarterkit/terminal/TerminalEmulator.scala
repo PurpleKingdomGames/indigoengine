@@ -118,8 +118,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
   def toTileBatch: Batch[MapTile] =
     charMap.toBatch(Terminal.EmptyTile)
 
-  /** Returns all MapTiles in a given region, guarantees order, inserts a default where there is a
-    * gap.
+  /** Returns all MapTiles in a given region, guarantees order, inserts a default where there is a gap.
     */
   def toTileBatch(region: Rectangle): Batch[MapTile] =
     charMap.toBatch(region, Terminal.EmptyTile)
@@ -132,14 +131,14 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
   def toBatch(region: Rectangle): Batch[MapTile] =
     charMap.toBatch(region)
 
-  /** Returns all MapTiles with their grid positions, does not guarantee order (but the position is
-    * given), does not fill in gaps.
+  /** Returns all MapTiles with their grid positions, does not guarantee order (but the position is given), does not
+    * fill in gaps.
     */
   def toPositionedBatch: Batch[(Point, MapTile)] =
     charMap.toPositionedBatch
 
-  /** Returns all MapTiles with their grid positions in a given region, does not guarantee order
-    * (but the position is given), does not fill in gaps.
+  /** Returns all MapTiles with their grid positions in a given region, does not guarantee order (but the position is
+    * given), does not fill in gaps.
     */
   def toPositionedBatch(region: Rectangle): Batch[(Point, MapTile)] =
     charMap.toPositionedBatch(region)
@@ -222,9 +221,7 @@ final case class TerminalEmulator(size: Size, charMap: SparseGrid[MapTile]) exte
   def fillLine(line: LineSegment, tile: Tile): TerminalEmulator =
     mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => mt.withChar(tile))
   def fillLine(line: LineSegment, tile: Tile, foreground: RGBA): TerminalEmulator =
-    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) =>
-      MapTile(tile, foreground, mt.background)
-    )
+    mapLine(line.start.toPoint, line.end.toPoint)((_, mt) => MapTile(tile, foreground, mt.background))
   def fillLine(
       line: LineSegment,
       tile: Tile,

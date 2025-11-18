@@ -38,9 +38,7 @@ object ComponentsWindow:
             TerminalTile(Tile.X, RGBA.Red, RGBA.Black)
           )
         ).switchOn // On by default
-          .onSwitch((_, switch) =>
-            Batch(Log(s"Switch is now ${if switch.state.isOn then "on" else "off"}"))
-          )
+          .onSwitch((_, switch) => Batch(Log(s"Switch is now ${if switch.state.isOn then "on" else "off"}")))
       )
       .add(
         TerminalButton(
@@ -92,22 +90,21 @@ object ComponentsWindow:
         }
       )
       .add(
-        Label[Int]("Custom rendered label", (_, t) => Bounds(0, 0, t.length, 1)) {
-          case (ctx, label) =>
-            val size = label.bounds(ctx).dimensions.unsafeToSize
+        Label[Int]("Custom rendered label", (_, t) => Bounds(0, 0, t.length, 1)) { case (ctx, label) =>
+          val size = label.bounds(ctx).dimensions.unsafeToSize
 
-            val terminal =
-              RogueTerminalEmulator(size)
-                .putLine(Point.zero, label.text(ctx), RGBA.Red, RGBA.Zero)
-                .toCloneTiles(
-                  CloneId("label"),
-                  ctx.parent.coords.toScreenSpace(charSheet.size),
-                  charSheet.charCrops
-                ) { case (fg, bg) =>
-                  graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-                }
+          val terminal =
+            RogueTerminalEmulator(size)
+              .putLine(Point.zero, label.text(ctx), RGBA.Red, RGBA.Zero)
+              .toCloneTiles(
+                CloneId("label"),
+                ctx.parent.coords.toScreenSpace(charSheet.size),
+                charSheet.charCrops
+              ) { case (fg, bg) =>
+                graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+              }
 
-            Outcome(Layer.Content(terminal))
+          Outcome(Layer.Content(terminal))
         }
       )
       .add(

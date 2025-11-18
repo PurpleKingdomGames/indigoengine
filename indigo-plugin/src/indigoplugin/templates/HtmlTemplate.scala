@@ -32,7 +32,9 @@ object HtmlTemplate {
       |        height: 100vh;
       |      }
       |      #indigo-container canvas {
-      |        ${if (!showCursor) "cursor: none;" else ""}
+      |        ${
+        if (!showCursor) "cursor: none;" else ""
+      }
       |      }
       |    </style>
       |  </head>

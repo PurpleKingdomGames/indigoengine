@@ -38,8 +38,8 @@ object TerminalLabel:
     Outcome(Layer.Content(terminal))
   }
 
-  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds
-    * based on the text length.
+  /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds based on the text
+    * length.
     */
   def apply[ReferenceData](text: String, theme: Theme): Label[ReferenceData] =
     Label(
@@ -48,8 +48,8 @@ object TerminalLabel:
       (_, t) => findBounds(t)
     )
 
-  /** Creates a Label with dynamic text, rendered using the RogueTerminalEmulator based on a
-    * `Label.Theme`, with bounds based on the text length.
+  /** Creates a Label with dynamic text, rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds
+    * based on the text length.
     */
   def apply[ReferenceData](
       text: UIContext[ReferenceData] => String,
