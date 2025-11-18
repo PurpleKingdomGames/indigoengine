@@ -17,11 +17,8 @@ object `package` extends Module:
       Seq(
         build.`indigo-extras`.js,
         build.`indigo-json-circe`.js,
-        build.`tyrian-indigo-bridge`.js
+        build.`tyrian-indigo-bridge`.js,
+        build.`tyrian-io`.js,
       )
-
-    def mvnDeps = Seq(
-      mvn"io.indigoengine::tyrian-io::0.14.0"
-    )
 
     override def moduleKind = Task(mill.scalajslib.api.ModuleKind.CommonJSModule)
