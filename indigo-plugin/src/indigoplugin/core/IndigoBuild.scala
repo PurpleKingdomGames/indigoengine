@@ -1,16 +1,17 @@
 package indigoplugin.core
 
-import os._
-import indigoplugin.templates.HtmlTemplate
-import indigoplugin.templates.SupportScriptTemplate
-import indigoplugin.datatypes.DirectoryStructure
-import indigoplugin.utils.Utils
-import indigoplugin.IndigoOptions
-import java.nio.file.LinkOption
-import java.nio.file.StandardCopyOption
 import indigoplugin.IndigoAssets
+import indigoplugin.IndigoOptions
 import indigoplugin.IndigoTemplate.Custom
 import indigoplugin.IndigoTemplate.Default
+import indigoplugin.datatypes.DirectoryStructure
+import indigoplugin.templates.HtmlTemplate
+import indigoplugin.templates.SupportScriptTemplate
+import indigoplugin.utils.Utils
+import os.*
+
+import java.nio.file.LinkOption
+import java.nio.file.StandardCopyOption
 import scala.annotation.nowarn
 
 object IndigoBuild {

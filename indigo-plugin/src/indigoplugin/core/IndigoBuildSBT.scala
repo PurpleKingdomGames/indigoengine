@@ -1,7 +1,7 @@
 package indigoplugin.core
 
-import indigoplugin.utils.AsciiLogo
 import indigoplugin.IndigoOptions
+import indigoplugin.utils.AsciiLogo
 
 object IndigoBuildSBT {
 

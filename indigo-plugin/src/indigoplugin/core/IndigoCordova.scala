@@ -1,11 +1,10 @@
 package indigoplugin.core
 
-import indigoplugin.templates.CordovaTemplates
-
-import os._
-import indigoplugin.templates.SupportScriptTemplate
-import indigoplugin.datatypes.FileToWrite
 import indigoplugin.IndigoGameMetadata
+import indigoplugin.datatypes.FileToWrite
+import indigoplugin.templates.CordovaTemplates
+import indigoplugin.templates.SupportScriptTemplate
+import os.*
 
 object IndigoCordova {
 

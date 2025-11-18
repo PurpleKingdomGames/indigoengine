@@ -1,9 +1,10 @@
 package indigoplugin.generators
 
 import indigoplugin.IndigoAssets
-import scala.annotation.tailrec
-import scala.io.AnsiColor._
 import indigoplugin.IndigoGenerators
+
+import scala.annotation.tailrec
+import scala.io.AnsiColor.*
 
 object AssetListing {
 
