@@ -7,8 +7,7 @@ import indigoextras.ui.*
 import roguelikestarterkit.Tile
 import roguelikestarterkit.ui.*
 
-/** Provides simple terminal window chrome with a title, close button, resize button, and vertical
-  * scroll bar.
+/** Provides simple terminal window chrome with a title, close button, resize button, and vertical scroll bar.
   */
 final case class TerminalWindowChrome[ReferenceData](
     parentWindowId: WindowId,

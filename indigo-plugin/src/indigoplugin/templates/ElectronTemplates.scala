@@ -27,11 +27,13 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  ${if (openDevTools) {
-        "mainWindow.webContents.openDevTools()"
-      } else {
-        ""
-      }}
+  ${
+        if (openDevTools) {
+          "mainWindow.webContents.openDevTools()"
+        } else {
+          ""
+        }
+      }
 }
 
 // This method will be called when Electron has finished

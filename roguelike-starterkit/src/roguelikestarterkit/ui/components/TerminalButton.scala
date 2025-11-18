@@ -93,20 +93,18 @@ object TerminalButton:
   private def findBounds(labelLength: Int, hasBorder: Boolean): Bounds =
     if hasBorder then Bounds(0, 0, labelLength + 2, 3) else Bounds(0, 0, labelLength, 1)
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
-    * dynamically calculated bounds
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with dynamically calculated
+    * bounds
     */
   def apply[ReferenceData](
       label: UIContext[ReferenceData] => String,
       theme: Theme,
       calculateBounds: UIContext[ReferenceData] => Bounds
   ): Button[ReferenceData] =
-    val tileLabel = (ctx: UIContext[ReferenceData]) =>
-      TerminalEmulator.stringToTileBatch(label(ctx))
+    val tileLabel = (ctx: UIContext[ReferenceData]) => TerminalEmulator.stringToTileBatch(label(ctx))
     fromTiles(tileLabel, theme, calculateBounds)
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
-    * custom bounds
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with custom bounds
     */
   def apply[ReferenceData](
       label: String,
@@ -115,8 +113,8 @@ object TerminalButton:
   ): Button[ReferenceData] =
     TerminalButton(_ => label, theme, _ => bounds)
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single line of simple text.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a single line of simple text.
     */
   def apply[ReferenceData](
       label: String,
@@ -128,8 +126,8 @@ object TerminalButton:
       findBounds(label.length, theme.hasBorder)
     )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single line of simple text.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a single line of simple text.
     */
   def apply[ReferenceData](
       label: UIContext[ReferenceData] => String,
@@ -141,8 +139,8 @@ object TerminalButton:
       (ctx: UIContext[ReferenceData]) => findBounds(label(ctx).length, theme.hasBorder)
     )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
-    * dynamically calculated bounds, where the label is a row of tiles.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with dynamically calculated
+    * bounds, where the label is a row of tiles.
     */
   def fromTiles[ReferenceData](
       tileLabel: UIContext[ReferenceData] => Batch[Tile],
@@ -180,8 +178,8 @@ object TerminalButton:
         )
       )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with
-    * custom bounds, where the label is a row of tiles.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme`, with custom bounds, where the
+    * label is a row of tiles.
     */
   def fromTiles[ReferenceData](
       label: Batch[Tile],
@@ -190,8 +188,8 @@ object TerminalButton:
   ): Button[ReferenceData] =
     TerminalButton.fromTiles(_ => label, theme, _ => bounds)
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single row of tiles.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a single row of tiles.
     */
   def fromTiles[ReferenceData](
       label: Batch[Tile],
@@ -203,8 +201,8 @@ object TerminalButton:
       findBounds(label.length, theme.hasBorder)
     )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single row of tiles.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a single row of tiles.
     */
   def fromTiles[ReferenceData](
       label: UIContext[ReferenceData] => Batch[Tile],
@@ -216,8 +214,8 @@ object TerminalButton:
       (ctx: UIContext[ReferenceData]) => findBounds(label(ctx).length, theme.hasBorder)
     )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a single Tile.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a single Tile.
     */
   def fromTile[ReferenceData](
       label: Tile,
@@ -229,8 +227,8 @@ object TerminalButton:
       findBounds(1, theme.hasBorder)
     )
 
-  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the
-    * bounds are based on the label size, which is assumed to be a Tile.
+  /** Creates a button rendered using the RogueTerminalEmulator based on a `Button.Theme` where the bounds are based on
+    * the label size, which is assumed to be a Tile.
     */
   def fromTile[ReferenceData](
       label: UIContext[ReferenceData] => Tile,

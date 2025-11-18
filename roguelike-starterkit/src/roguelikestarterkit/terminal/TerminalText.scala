@@ -9,8 +9,7 @@ import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-/** The original Terminal text material, designed for use with `Text` entities. Supports approximate
-  * drop shadows.
+/** The original Terminal text material, designed for use with `Text` entities. Supports approximate drop shadows.
   */
 final case class TerminalText(
     tileMap: AssetName,

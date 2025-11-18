@@ -3,8 +3,7 @@ package roguelikestarterkit.terminal
 import indigo.shared.datatypes.RGBA
 import roguelikestarterkit.Tile
 
-/** Represents the three basic properties of a tile: Character, foreground colour, and background
-  * colour.
+/** Represents the three basic properties of a tile: Character, foreground colour, and background colour.
   */
 final case class MapTile(char: Tile, foreground: RGBA, background: RGBA) derives CanEqual:
   def withChar(newChar: Tile): MapTile =
