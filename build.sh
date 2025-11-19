@@ -4,11 +4,11 @@ set -e
 
 ./mill clean
 ./mill __.compile
+./mill __.checkFormat
+./mill -j2 __.fix --check
 ./mill -j2 __.fastLinkJS
 ./mill -j2 __.fastLinkJSTest
 ./mill __.test
-./mill __.checkFormat
-./mill -j2 __.fix --check
 ./mill __.publishLocal
 
 # # Indigo Plugin + Mill Plugin
