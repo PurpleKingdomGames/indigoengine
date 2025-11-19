@@ -6,6 +6,7 @@ import io.circe.parser.*
 
 object EmbedAseprite {
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def generate(
       moduleName: String,
       fullyQualifiedPackage: String,

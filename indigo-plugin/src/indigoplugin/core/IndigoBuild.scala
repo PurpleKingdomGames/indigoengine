@@ -14,6 +14,7 @@ import java.nio.file.LinkOption
 import java.nio.file.StandardCopyOption
 import scala.annotation.nowarn
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 object IndigoBuild {
 
   @nowarn("msg=interpolator")

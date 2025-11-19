@@ -3,6 +3,7 @@ package indigoplugin.generators
 import indigoplugin.DataType
 import indigoplugin.IndigoGenerators
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 object EmbedData {
 
   // TODO: Convert to enum
@@ -250,6 +251,7 @@ object DataFrame {
   private val standardMessage: String =
     "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys."
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def fromRows(rows: List[List[DataType]]): DataFrame =
     rows match {
       case Nil =>

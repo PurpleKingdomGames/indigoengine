@@ -50,6 +50,7 @@ object AssetListing {
     renderTree(0, toSafeName)(pathTree)
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def convertPathsToTree(paths: List[os.RelPath]): PathTree =
     PathTree
       .combineAll(

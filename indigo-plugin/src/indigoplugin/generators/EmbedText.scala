@@ -2,6 +2,7 @@ package indigoplugin.generators
 
 import indigoplugin.IndigoGenerators
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 object EmbedText {
 
   def generate(

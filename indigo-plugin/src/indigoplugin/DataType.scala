@@ -159,6 +159,7 @@ object DataType {
   def hasOptionalValues(l: List[DataType]): Boolean =
     l.contains(DataType.NullData)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def convertToBestType(l: List[DataType]): List[DataType] =
     // Cases we can manage:
     // - They're all the same! Maybe optional...

@@ -1,12 +1,13 @@
 package indigoplugin
 
+import indigoplugin.IndigoOptions
+import indigoplugin.core.IndigoBuildMill
+import indigoplugin.core.IndigoCordova
+import indigoplugin.core.IndigoRun
 import mill.*
 import mill.scalajslib.ScalaJSModule
 import os.Path
-import indigoplugin.core.IndigoBuildMill
-import indigoplugin.core.IndigoRun
-import indigoplugin.core.IndigoCordova
-import indigoplugin.IndigoOptions
+
 import scala.annotation.nowarn
 
 trait MillIndigo extends ScalaJSModule:

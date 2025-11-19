@@ -3,6 +3,7 @@ package indigoplugin.generators
 import indigoplugin.IndigoGenerators
 import indigoplugin.utils.Utils
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 object EmbedGLSLShaderPair {
 
   private val workspaceDir = Utils.findWorkspace

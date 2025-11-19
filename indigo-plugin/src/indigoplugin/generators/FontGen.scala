@@ -9,6 +9,7 @@ import scala.annotation.tailrec
 
 /** Provides functionality for generating font images and associated FontInfo instances.
   */
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 object FontGen {
   private val CharBatchSize = 2048
 
@@ -390,6 +391,7 @@ object FontAWTHelper {
       fontMetrics.getMaxAscent()
     }
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     def drawFontSheet(
         outFile: File,
         charDetails: scala.collection.immutable.List[CharDetail],

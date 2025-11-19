@@ -52,6 +52,7 @@ object PathTree {
         if (a.contains(f)) a else a ++ List(f)
     }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def combine(a: PathTree, b: PathTree): PathTree =
     (a, b) match {
       case (PathTree.Root(Nil), PathTree.Root(Nil)) =>
