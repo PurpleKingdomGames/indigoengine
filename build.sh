@@ -2,7 +2,7 @@
 
 set -e
 
-./mill clean
+# ./mill clean
 ./mill __.compile
 ./mill __.checkFormat
 ./mill -j2 __.fix --check
