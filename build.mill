@@ -1,3 +1,6 @@
+//| bspScriptIgnore:
+//| - "sbt-indigo"
+
 package build
 
 import mill.*
