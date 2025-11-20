@@ -23,7 +23,6 @@
           jdk
           coursier
           mill
-          electron
         ];
         jvmHook = ''
           JAVA_HOME="${jdk}"
@@ -33,6 +32,7 @@
           nodejs
           yarn
           nodePackages_latest.http-server
+          electron
         ];
         jsHook = ''
           yarn install
