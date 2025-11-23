@@ -1,14 +1,14 @@
 package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 
 import scala.annotation.tailrec
 

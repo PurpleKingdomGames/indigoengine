@@ -1,5 +1,6 @@
 package tyrian.next
 
+import indigoengine.shared.collections.Batch
 import tyrian.Elem
 import tyrian.Html
 import tyrian.ui.UIElement

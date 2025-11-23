@@ -1,7 +1,7 @@
 package indigo.shared.animation.timeline
 
 import indigo.shared.temporal.SignalFunction
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 final case class TimeWindow[A](start: Seconds, end: Seconds, modifier: A => SignalFunction[Seconds, A]):
   lazy val length: Seconds    = end

@@ -12,10 +12,8 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.assets.AssetType
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -29,7 +27,9 @@ import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram

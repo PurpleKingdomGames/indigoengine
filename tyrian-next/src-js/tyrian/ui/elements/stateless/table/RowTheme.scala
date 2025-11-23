@@ -1,6 +1,6 @@
 package tyrian.ui.elements.stateless.table
 
-import tyrian.ui.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 
 final case class RowTheme(
     alternative: Option[RGBA],

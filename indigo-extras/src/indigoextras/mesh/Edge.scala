@@ -1,6 +1,6 @@
 package indigoextras.mesh
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 final case class Edge(vertexA: Int, vertexB: Int):
   def indices: Batch[Int] =

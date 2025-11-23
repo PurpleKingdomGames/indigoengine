@@ -1,7 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigoextras.jobs.SampleJobs.Fishing
 
 sealed trait SampleJobs extends Job

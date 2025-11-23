@@ -16,7 +16,6 @@ import indigo.shared.Startup
 import indigo.shared.animation.*
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.dice.Dice
@@ -30,6 +29,7 @@ import indigo.shared.shader.ShaderProgram
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.UltravioletShader
+import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 

@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Radians
 
 /** Represents the standard allowable transformations of a clone.
   */

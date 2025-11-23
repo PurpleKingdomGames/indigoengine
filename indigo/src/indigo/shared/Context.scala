@@ -3,7 +3,6 @@ package indigo.shared
 import indigo.FontKey
 import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.shared.assets.AssetType
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -12,6 +11,7 @@ import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.time.GameTime
+import indigoengine.shared.collections.Batch
 
 /** The Context is the context in which the current frame will be processed.
   *

@@ -3,7 +3,7 @@ package indigo.shared.animation
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
-import indigo.shared.time.Millis
+import indigoengine.shared.datatypes.Millis
 
 final case class Frame(crop: Rectangle, duration: Millis) derives CanEqual:
   def position: Point = crop.position

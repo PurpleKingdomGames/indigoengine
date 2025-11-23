@@ -1,11 +1,11 @@
 package tyrian.ui.elements.stateless.spacer
 
+import indigoengine.shared.lenses.Lens
 import tyrian.next.GlobalMsg
 import tyrian.ui.UIElement
 import tyrian.ui.datatypes.Extent
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 enum Spacer extends UIElement[Spacer, Unit]:
   case Fixed(width: Option[Extent], height: Option[Extent], classNames: Set[String], id: Option[String])

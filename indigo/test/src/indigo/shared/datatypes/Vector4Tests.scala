@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.Radians
+
 class Vector4Tests extends munit.FunSuite {
 
   test("Basic vector operation.should be able to divide") {

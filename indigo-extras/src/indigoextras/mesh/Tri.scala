@@ -1,6 +1,6 @@
 package indigoextras.mesh
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 final case class Tri(edgeA: Int, edgeB: Int, edgeC: Int) derives CanEqual:
   def indices: Batch[Int] =

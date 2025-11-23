@@ -1,6 +1,6 @@
 package indigo.shared.geometry
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size

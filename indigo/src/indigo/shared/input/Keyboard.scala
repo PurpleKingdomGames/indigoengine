@@ -1,9 +1,9 @@
 package indigo.shared.input
 
 import indigo.KeyCode
-import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec
 import scala.annotation.targetName

@@ -1,8 +1,6 @@
 package indigoextras.effectmaterials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.materials.FillType
@@ -21,6 +19,8 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
 import indigo.shared.shader.library.NoOp
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 import indigoextras.effectmaterials.shaders.RefractionShaders
 
 object Refraction:

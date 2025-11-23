@@ -1,6 +1,6 @@
 package indigo.shared.shader
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.targetName
 

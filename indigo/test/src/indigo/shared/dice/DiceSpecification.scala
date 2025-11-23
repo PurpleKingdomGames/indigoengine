@@ -3,6 +3,7 @@ package indigo.shared.dice
 import org.scalacheck.*
 
 import scala.annotation.nowarn
+import indigoengine.shared.datatypes.Radians
 
 @nowarn("msg=unused")
 class DiceSpecification extends Properties("Dice") {
@@ -36,6 +37,13 @@ class DiceSpecification extends Properties("Dice") {
       val value = Dice.diceSidesN(16, 0).rollRange(from, to)
 
       from <= value && value <= to
+  }
+
+  property("all dice rollAngle values are within the Radians range of TAU / 2*PI") = Prop.forAll(Gen.long) { seed =>
+    val dice  = Dice.fromSeed(seed)
+    val value = dice.rollAngle
+
+    value.toDouble >= 0.0 && value.toDouble <= Radians.TAU.toDouble
   }
 
 }

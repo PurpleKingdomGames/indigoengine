@@ -3,7 +3,7 @@ package indigo.scenes
 import indigo.shared.Context
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 object FakeFrameContext {
 

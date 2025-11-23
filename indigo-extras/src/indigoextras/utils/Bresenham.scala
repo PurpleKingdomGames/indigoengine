@@ -1,7 +1,7 @@
 package indigoextras.utils
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec
 

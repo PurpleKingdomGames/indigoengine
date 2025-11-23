@@ -5,9 +5,9 @@ import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.AnimationRef
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.time.GameTime
+import indigoengine.shared.collections.Batch
 
 final class AnimationsRegister:
 

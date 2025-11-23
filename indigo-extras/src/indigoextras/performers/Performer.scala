@@ -2,9 +2,9 @@ package indigoextras.performers
 
 import indigo.physics.Collider
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneNode
+import indigoengine.shared.collections.Batch
 
 /** Performers represent entities in your scene. Indigo uses performance metaphors (like Lead and Extra) to represent
   * different levels of performer complexity. It’s meant to be fun, but also to suggest how much responsibility each

@@ -1,6 +1,5 @@
 package indigo.shared.events
 
-import indigo.shared.collections.Batch
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.MouseState
@@ -8,7 +7,8 @@ import indigo.shared.input.PenState
 import indigo.shared.input.PointerState
 import indigo.shared.input.TouchState
 import indigo.shared.input.Wheel
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 
 import scala.annotation.nowarn
 

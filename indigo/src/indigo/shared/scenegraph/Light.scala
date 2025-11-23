@@ -1,9 +1,10 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
+import indigoengine.shared.datatypes.Degrees
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
 
 /** Parent type for all lights
   */
@@ -111,10 +112,10 @@ final case class SpotLight(
 object SpotLight {
 
   val default: SpotLight =
-    SpotLight(Point.zero, RGBA.White, RGBA.White, 2, Radians.fromDegrees(45), Radians.zero, Falloff.default)
+    SpotLight(Point.zero, RGBA.White, RGBA.White, 2, Radians.fromDegrees(Degrees(45)), Radians.zero, Falloff.default)
 
   def apply(position: Point, color: RGBA): SpotLight =
-    SpotLight(position, color, RGBA.White, 2, Radians.fromDegrees(45), Radians.zero, Falloff.default)
+    SpotLight(position, color, RGBA.White, 2, Radians.fromDegrees(Degrees(45)), Radians.zero, Falloff.default)
 
 }
 

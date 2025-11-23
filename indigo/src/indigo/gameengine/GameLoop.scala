@@ -6,7 +6,6 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.Context
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.config.GameViewport
 import indigo.shared.dice.Dice
@@ -17,7 +16,8 @@ import indigo.shared.events.InputState
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 
 import scala.annotation.nowarn
 import scala.collection.mutable

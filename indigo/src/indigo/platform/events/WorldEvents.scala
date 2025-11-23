@@ -1,12 +1,10 @@
 package indigo.platform.events
 
-import indigo.shared.collections.Batch
 import indigo.shared.config.ResizePolicy
 import indigo.shared.constants.Key
 import indigo.shared.constants.KeyCode
 import indigo.shared.constants.KeyLocation
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
 import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
@@ -24,6 +22,9 @@ import indigo.shared.events.PointerId
 import indigo.shared.events.PointerType
 import indigo.shared.events.TouchEvent
 import indigo.shared.events.WheelEvent
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Degrees
+import indigoengine.shared.datatypes.Radians
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
@@ -234,9 +235,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary
           )
@@ -299,9 +300,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary
           )
@@ -321,9 +322,9 @@ final class WorldEvents:
           e.height(magnification),
           e.pressure,
           e.tangentialPressure,
-          Radians.fromDegrees(e.tiltX),
-          Radians.fromDegrees(e.tiltY),
-          Radians.fromDegrees(e.twist),
+          Radians.fromDegrees(Degrees(e.tiltX)),
+          Radians.fromDegrees(Degrees(e.tiltY)),
+          Radians.fromDegrees(Degrees(e.twist)),
           pointerType,
           e.isPrimary
         )
@@ -400,9 +401,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary,
             MouseButton.fromOrdinalOpt(button)
@@ -493,9 +494,9 @@ final class WorldEvents:
                 e.height(magnification),
                 e.pressure,
                 e.tangentialPressure,
-                Radians.fromDegrees(e.tiltX),
-                Radians.fromDegrees(e.tiltY),
-                Radians.fromDegrees(e.twist),
+                Radians.fromDegrees(Degrees(e.tiltX)),
+                Radians.fromDegrees(Degrees(e.tiltY)),
+                Radians.fromDegrees(Degrees(e.twist)),
                 pointerType,
                 e.isPrimary,
                 btn
@@ -567,9 +568,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary,
             MouseButton.fromOrdinalOpt(button)
@@ -651,9 +652,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary
           )
@@ -721,9 +722,9 @@ final class WorldEvents:
             e.height(magnification),
             e.pressure,
             e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
+            Radians.fromDegrees(Degrees(e.tiltX)),
+            Radians.fromDegrees(Degrees(e.tiltY)),
+            Radians.fromDegrees(Degrees(e.twist)),
             pointerType,
             e.isPrimary
           )

@@ -4,10 +4,11 @@ import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationAction.*
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 /** Sprites are used to represented key-frame animated screen elements.
   */

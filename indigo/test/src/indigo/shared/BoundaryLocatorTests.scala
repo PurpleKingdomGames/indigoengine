@@ -1,12 +1,12 @@
 package indigo.shared
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
-import indigo.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Stroke
 import indigo.shared.events.GlobalEvent
@@ -126,7 +126,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   import indigo.shared.scenegraph.EntityNode
   import indigo.shared.datatypes.Point
   import indigo.shared.datatypes.Size
-  import indigo.shared.datatypes.Radians
+  import indigoengine.shared.datatypes.Radians
   import indigo.shared.datatypes.Vector2
   import indigo.shared.datatypes.Flip
   import indigo.shared.shader.ShaderData

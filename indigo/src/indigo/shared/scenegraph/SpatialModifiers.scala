@@ -2,8 +2,8 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
+import indigoengine.shared.datatypes.Radians
 
 trait BasicSpatialModifiers[T <: SceneNode] {
   def withPosition(newPosition: Point): T

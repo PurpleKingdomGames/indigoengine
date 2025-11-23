@@ -7,12 +7,9 @@ import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -23,7 +20,10 @@ import indigo.shared.scenegraph.ClipPlayMode
 import indigo.shared.scenegraph.ClipSheet
 import indigo.shared.scenegraph.ClipSheetArrangement
 import indigo.shared.scenegraph.Sprite
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Radians
 
 final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) derives CanEqual:
   def toSpriteAndAnimations(dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =

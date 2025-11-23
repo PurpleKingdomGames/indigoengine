@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
+import indigoengine.shared.datatypes.RGBA
 
 /** Blending instances tell Indigo how to blend the entities onto a layer, and then how to blend the layer onto the
   * layers below it.

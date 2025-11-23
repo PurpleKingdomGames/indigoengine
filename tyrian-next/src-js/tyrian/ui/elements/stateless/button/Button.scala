@@ -1,11 +1,11 @@
 package tyrian.ui.elements.stateless.button
 
+import indigoengine.shared.lenses.Lens
 import tyrian.Style
 import tyrian.next.GlobalMsg
 import tyrian.ui.Theme
 import tyrian.ui.UIElement
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 import scala.annotation.nowarn
 

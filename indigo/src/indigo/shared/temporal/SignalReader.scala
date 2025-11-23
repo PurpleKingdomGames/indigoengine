@@ -1,6 +1,6 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 /** SignalReader is a wrapper around signal that provides an execution environment. As such it generally delegates to
   * Signal.

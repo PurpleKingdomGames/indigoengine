@@ -1,9 +1,9 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec
 

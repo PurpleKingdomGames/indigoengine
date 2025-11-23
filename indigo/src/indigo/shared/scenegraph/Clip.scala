@@ -2,7 +2,6 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -12,7 +11,8 @@ import indigo.shared.shader.ShaderData
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.ToUniformBlock
 import indigo.shared.time.FPS
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 
 final case class Clip[M <: Material](
     size: Size,

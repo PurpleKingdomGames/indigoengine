@@ -1,6 +1,6 @@
 package indigo.shared.constants
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 enum KeyCode(val value: String) derives CanEqual:
   case Backspace          extends KeyCode("Backspace")

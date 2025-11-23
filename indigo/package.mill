@@ -3,7 +3,6 @@ package build.indigo
 import mill.*
 import mill.scalalib.*
 import mill.scalalib.publish.*
-import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
 import build.SharedJVM
@@ -15,6 +14,7 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
+      build.`indigoengine-shared`.js,
       build.ultraviolet.js
     )
 

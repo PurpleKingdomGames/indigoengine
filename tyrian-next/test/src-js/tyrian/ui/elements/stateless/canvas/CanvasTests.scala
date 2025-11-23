@@ -4,7 +4,7 @@ import tyrian.Style
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderWidth
 import tyrian.ui.datatypes.Extent
-import tyrian.ui.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.theme.Theme
 
 class CanvasTests extends munit.FunSuite {

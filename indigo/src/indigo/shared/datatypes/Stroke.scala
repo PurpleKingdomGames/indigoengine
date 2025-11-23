@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.RGBA
+
 final case class Stroke(width: Int, color: RGBA) derives CanEqual:
 
   def withWidth(newWidth: Int): Stroke =

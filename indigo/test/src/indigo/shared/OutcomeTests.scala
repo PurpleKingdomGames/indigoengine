@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 
 import Outcome.*

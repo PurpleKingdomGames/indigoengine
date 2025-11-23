@@ -1,8 +1,8 @@
 package indigo.shared.animation.timeline
 
-import indigo.shared.collections.Batch
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.tailrec
 import scala.annotation.targetName

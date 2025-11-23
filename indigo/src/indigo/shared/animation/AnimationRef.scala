@@ -6,11 +6,11 @@ import indigo.shared.animation.AnimationAction.JumpToFrame
 import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.AnimationAction.Play
 import indigo.shared.animation.AnimationAction.ScrubTo
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
 import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 
 final case class AnimationRef(
     animationKey: AnimationKey,

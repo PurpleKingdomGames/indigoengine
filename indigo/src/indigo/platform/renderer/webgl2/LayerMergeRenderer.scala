@@ -5,9 +5,9 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.shader.ShaderId
+import indigoengine.shared.datatypes.RGBA
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*

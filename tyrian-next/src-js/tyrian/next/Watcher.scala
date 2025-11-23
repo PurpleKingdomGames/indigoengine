@@ -1,6 +1,7 @@
 package tyrian.next
 
 import cats.effect.IO
+import indigoengine.shared.collections.Batch
 import org.scalajs.dom.EventTarget
 import tyrian.Sub
 

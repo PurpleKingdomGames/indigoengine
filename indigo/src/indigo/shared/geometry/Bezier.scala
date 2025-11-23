@@ -1,9 +1,9 @@
 package indigo.shared.geometry
 
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.tailrec
 

@@ -1,7 +1,7 @@
 package indigo.shared.geometry
 
 import indigo.Vector2
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 class BoundingCircleTests extends munit.FunSuite {
 

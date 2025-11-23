@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.Radians
+
 import util.control.Breaks.*
 
 opaque type Matrix4 = Array[Double]

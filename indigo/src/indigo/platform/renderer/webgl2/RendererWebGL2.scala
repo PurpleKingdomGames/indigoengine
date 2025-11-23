@@ -16,11 +16,8 @@ import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetType
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
@@ -30,7 +27,10 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.RawShaderCode
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer

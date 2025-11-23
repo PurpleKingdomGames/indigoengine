@@ -1,6 +1,6 @@
 package indigoextras.datatypes
 
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 /** Represents one of the type of values that changes over time.
   */

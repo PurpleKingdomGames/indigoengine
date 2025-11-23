@@ -1,15 +1,15 @@
 package indigo.shared.materials
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
 
 trait BlendMaterial:
   def toShaderData: ShaderData

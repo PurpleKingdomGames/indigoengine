@@ -1,13 +1,10 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle as C
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Stroke
@@ -23,6 +20,9 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
 
 /** Parent type for all Shapes, which are visible elements draw mathematically that require no textures. Shapes are
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes

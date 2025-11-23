@@ -2,10 +2,10 @@ package tyrian.ui.layout
 
 import tyrian.Style
 import tyrian.ui.datatypes.BackgroundMode
-import tyrian.ui.datatypes.Degrees
+import indigoengine.shared.datatypes.Degrees
 import tyrian.ui.datatypes.Fill
 import tyrian.ui.datatypes.Position
-import tyrian.ui.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 
 class ContainerThemeTests extends munit.FunSuite {
 

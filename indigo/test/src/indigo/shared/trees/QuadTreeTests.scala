@@ -4,7 +4,7 @@ import indigo.BoundingCircle
 import indigo.Circle
 import indigo.LineSegment
 import indigo.Rectangle
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex

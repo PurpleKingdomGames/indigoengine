@@ -1,8 +1,8 @@
 package indigo.scenes
 
 import indigo.shared.IndigoLogger
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 
 import scala.annotation.tailrec
 

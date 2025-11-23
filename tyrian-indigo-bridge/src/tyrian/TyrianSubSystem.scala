@@ -1,13 +1,13 @@
 package tyrian
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.nowarn
 import scala.collection.mutable

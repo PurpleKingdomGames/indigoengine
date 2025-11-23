@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.Radians
+
 class Vector2Tests extends munit.FunSuite {
 
   val imageSize     = Vector2(192, 64)

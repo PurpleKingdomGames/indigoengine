@@ -1,10 +1,7 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
@@ -15,6 +12,9 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
 
 trait Material:
   def toShaderData: ShaderData

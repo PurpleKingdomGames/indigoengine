@@ -1,8 +1,8 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
+import indigoengine.shared.collections.Batch
 
 final case class Circle(position: Point, radius: Int) derives CanEqual:
   lazy val x: Int        = position.x

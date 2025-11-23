@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 /** Layer entries are holders for Layers, that can either be tagged or untagged. If a layer entry is tagged with a
   * `LayerKey`, then if two SceneUpdateFragements are merged together, two entries will the same layerKey will be

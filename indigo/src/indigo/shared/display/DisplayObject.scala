@@ -1,13 +1,13 @@
 package indigo.shared.display
 
 import indigo.platform.assets.AtlasId
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.shader.ShaderId
+import indigoengine.shared.datatypes.Radians
 
 sealed trait DisplayEntity
 

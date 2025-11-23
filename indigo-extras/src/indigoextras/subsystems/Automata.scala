@@ -1,8 +1,6 @@
 package indigoextras.subsystems
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -15,7 +13,9 @@ import indigo.shared.subsystems.SubSystemId
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalReader
 import indigo.shared.time.GameTime
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Seconds
 import indigoextras.subsystems.AutomataEvent.*
 
 import scalajs.js

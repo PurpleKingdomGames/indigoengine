@@ -1,6 +1,6 @@
 package tyrian.ui.datatypes
 
-import tyrian.next.Batch
+import indigoengine.shared.collections.Batch
 import tyrian.ui.datatypes.DataSet.Column
 
 final case class DataSet[DataType](

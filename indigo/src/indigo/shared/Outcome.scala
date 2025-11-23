@@ -1,9 +1,9 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
-import indigo.shared.collections.NonEmptyList
 import indigo.shared.events.GlobalEvent
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.collections.NonEmptyList
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal

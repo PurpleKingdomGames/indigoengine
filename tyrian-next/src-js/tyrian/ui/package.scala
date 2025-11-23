@@ -32,8 +32,8 @@ val BoxShadow: datatypes.BoxShadow.type = datatypes.BoxShadow
 type Dataset[DataType] = datatypes.DataSet[DataType]
 val DataSet: datatypes.DataSet.type = datatypes.DataSet
 
-type Degrees = datatypes.Degrees
-val Degrees: datatypes.Degrees.type = datatypes.Degrees
+type Degrees = indigoengine.shared.datatypes.Degrees
+val Degrees: indigoengine.shared.datatypes.Degrees.type = indigoengine.shared.datatypes.Degrees
 
 type Extent = datatypes.Extent
 val Extent: datatypes.Extent.type = datatypes.Extent
@@ -77,17 +77,17 @@ val Padding: datatypes.Padding.type = datatypes.Padding
 type Position = datatypes.Position
 val Position: datatypes.Position.type = datatypes.Position
 
-type Radians = datatypes.Radians
-val Radians: datatypes.Radians.type = datatypes.Radians
+type Radians = indigoengine.shared.datatypes.Radians
+val Radians: indigoengine.shared.datatypes.Radians.type = indigoengine.shared.datatypes.Radians
 
 type Ratio = datatypes.Ratio
 val Ratio: datatypes.Ratio.type = datatypes.Ratio
 
-type RGB = datatypes.RGB
-val RGB: datatypes.RGB.type = datatypes.RGB
+type RGB = indigoengine.shared.datatypes.RGB
+val RGB: indigoengine.shared.datatypes.RGB.type = indigoengine.shared.datatypes.RGB
 
-type RGBA = datatypes.RGBA
-val RGBA: datatypes.RGBA.type = datatypes.RGBA
+type RGBA = indigoengine.shared.datatypes.RGBA
+val RGBA: indigoengine.shared.datatypes.RGBA.type = indigoengine.shared.datatypes.RGBA
 
 type SpaceAlignment = datatypes.SpaceAlignment
 val SpaceAlignment: datatypes.SpaceAlignment.type = datatypes.SpaceAlignment
@@ -221,5 +221,5 @@ val ThemeOverride: theme.ThemeOverride.type = theme.ThemeOverride
 
 // ---- Utils ----
 
-type Lens = utils.Lens
-val Lens: utils.Lens.type = utils.Lens
+type Lens = indigoengine.shared.lenses.Lens
+val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens

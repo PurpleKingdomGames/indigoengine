@@ -1,6 +1,6 @@
 package indigo.shared.geometry
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 /** Defines a line in terms of y = mx + b
   */

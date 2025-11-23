@@ -4,6 +4,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.ShaderData
+import indigoengine.shared.datatypes.Radians
 
 /** The parent type of all nodes a user might use or create. Defines the fields needed to draw something onto the
   * screen.

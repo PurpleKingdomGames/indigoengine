@@ -1,5 +1,8 @@
 package indigo.shared.time
 
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
+
 import annotation.targetName
 
 /** An instance of `GameTime` is present on every frame, and the values it holds do not change during that frame. This

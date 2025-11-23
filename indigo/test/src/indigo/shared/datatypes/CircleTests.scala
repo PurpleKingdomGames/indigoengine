@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 class CircleTests extends munit.FunSuite {
 

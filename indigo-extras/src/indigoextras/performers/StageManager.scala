@@ -2,7 +2,6 @@ package indigoextras.performers
 
 import indigo.physics.*
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
@@ -13,6 +12,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
+import indigoengine.shared.collections.Batch
 
 final case class StageManager[GameModel, RefData](
     id: SubSystemId,

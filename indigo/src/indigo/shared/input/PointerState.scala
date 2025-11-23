@@ -1,12 +1,12 @@
 package indigo.shared.input
 
 import indigo.MouseButton
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerId
 import indigo.shared.events.PointerType
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 
 import scala.annotation.nowarn
 

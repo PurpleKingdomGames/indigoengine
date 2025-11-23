@@ -1,10 +1,10 @@
 package indigoextras.mesh
 
-import indigo.shared.collections.Batch
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
 import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
 
 final case class Triangle(a: Vertex, b: Vertex, c: Vertex):
   val vertices: Batch[Vertex] = Batch(a, b, c)

@@ -1,6 +1,6 @@
 package indigo.shared.geometry
 
-import indigo.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 
 class VertexTests extends munit.FunSuite {

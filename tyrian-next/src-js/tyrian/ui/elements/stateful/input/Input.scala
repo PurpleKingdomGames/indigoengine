@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateful.input
 
+import indigoengine.shared.lenses.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg
@@ -9,7 +10,6 @@ import tyrian.ui.UIElement
 import tyrian.ui.UIKey
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 final case class Input(
     placeholder: String,

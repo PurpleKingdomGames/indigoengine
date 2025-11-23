@@ -1,10 +1,11 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.ToUniformBlock
 import indigo.shared.shader.UniformBlock
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 /** Represents many identical clones of the same clone blank, differentiated only by their shader data. Intended for use
   * with custom entities in particular.

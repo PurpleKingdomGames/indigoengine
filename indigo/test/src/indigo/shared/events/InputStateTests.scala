@@ -1,7 +1,7 @@
 package indigo.shared.events
 
 import indigo.MouseButton
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle

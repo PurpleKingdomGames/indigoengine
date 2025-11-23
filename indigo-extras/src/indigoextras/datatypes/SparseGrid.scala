@@ -1,11 +1,11 @@
 package indigoextras.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.geometry.LineSegment
+import indigoengine.shared.collections.Batch
 import indigoextras.utils.Bresenham
 
 import scalajs.js

@@ -2,11 +2,11 @@ package indigo.scenes
 
 import indigo.*
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
+import indigoengine.shared.collections.Batch
 
 /** Describes the functions that a valid scene must implement.
   */

@@ -1,7 +1,7 @@
 package indigo.scenes
 
 import indigo.shared.Context
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 /** SceneContext is a Scene specific equivalent of `Context`, and exposes all of the fields and methods of a normal
   * `Context` object. It adds information about the scene currently running.

@@ -1,11 +1,11 @@
 package indigo.shared.input
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.PenEvent
 import indigo.shared.events.PointerId
+import indigoengine.shared.collections.Batch
 
 final case class PenState(instances: Batch[Pen]) extends ButtonInputState with PositionalInputState:
   /** The primary pen instance

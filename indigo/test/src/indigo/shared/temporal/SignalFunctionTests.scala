@@ -1,8 +1,8 @@
 package indigo.shared.temporal
 
-import indigo.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 class SignalFunctionTests extends munit.FunSuite {
 

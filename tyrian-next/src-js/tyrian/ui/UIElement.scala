@@ -1,9 +1,9 @@
 package tyrian.ui
 
+import indigoengine.shared.lenses.Lens
 import tyrian.next.GlobalMsg
 import tyrian.next.Outcome
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 trait UIElement[Component, ComponentTheme]:
 

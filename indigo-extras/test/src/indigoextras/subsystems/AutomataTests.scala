@@ -1,8 +1,8 @@
 package indigoextras.subsystems
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
@@ -13,7 +13,7 @@ import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalReader
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 import scalajs.js
 

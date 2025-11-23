@@ -2,12 +2,12 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.ShaderData
+import indigoengine.shared.datatypes.Radians
 
 final case class BlankEntity(
     size: Size,

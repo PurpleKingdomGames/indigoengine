@@ -1,5 +1,8 @@
 package indigo.shared.time
 
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
+
 opaque type FPS = Int
 
 object FPS:

@@ -1,8 +1,8 @@
 package indigo.shared.input
 
-import indigo.shared.collections.Batch
 import indigo.shared.events.WheelDirection
 import indigo.shared.events.WheelEvent
+import indigoengine.shared.collections.Batch
 
 final class Wheel(val wheelEvents: Batch[WheelEvent.Move]) {
 

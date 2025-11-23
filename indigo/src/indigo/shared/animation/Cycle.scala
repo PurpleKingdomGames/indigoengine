@@ -1,7 +1,7 @@
 package indigo.shared.animation
 
-import indigo.shared.collections.NonEmptyBatch
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Millis
 
 final case class Cycle(label: CycleLabel, frames: NonEmptyBatch[Frame], playheadPosition: Int, lastFrameAdvance: Millis)
     derives CanEqual:
