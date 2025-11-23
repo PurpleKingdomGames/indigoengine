@@ -1,8 +1,12 @@
 package indigo.physics.simulation
 
-import indigo.*
-import indigo.physics.*
+import indigo.physics.Collider
+import indigo.physics.Displacement
+import indigo.physics.Friction
+import indigo.shared.datatypes.Vector2
 import indigo.shared.geometry.LineSegment
+import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
 
 object Solver:
 

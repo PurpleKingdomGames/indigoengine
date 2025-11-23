@@ -1,10 +1,17 @@
 package indigo.physics
 
-import indigo.*
 import indigo.physics.Friction
 import indigo.physics.Mass
 import indigo.physics.Restitution
+import indigo.shared.datatypes.Vector2
+import indigo.shared.events.GlobalEvent
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.BoundingCircle
+import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.ReflectionData
+import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 enum Collider[Tag]:
   def tag: Tag

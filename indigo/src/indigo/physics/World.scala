@@ -1,9 +1,16 @@
 package indigo.physics
 
-import indigo.*
 import indigo.physics.Resistance
 import indigo.physics.simulation.Simulation
-import indigo.syntax.*
+import indigo.shared.Outcome
+import indigo.shared.datatypes.Vector2
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.BoundingCircle
+import indigo.shared.geometry.LineSegment
+import indigo.shared.geometry.Vertex
+import indigo.shared.scenegraph.SceneNode
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 final case class World[Tag](
     colliders: Batch[Collider[Tag]],
@@ -18,12 +25,12 @@ final case class World[Tag](
   def withForces(newForces: Batch[Vector2]): World[Tag] =
     this.copy(forces = newForces)
   def withForces(newForces: Vector2*): World[Tag] =
-    withForces(newForces.toBatch)
+    withForces(Batch.fromSeq(newForces))
 
   def addForces(additionalForces: Batch[Vector2]): World[Tag] =
     this.copy(forces = forces ++ additionalForces)
   def addForces(additionalForces: Vector2*): World[Tag] =
-    addForces(additionalForces.toBatch)
+    addForces(Batch.fromSeq(additionalForces))
 
   def withResistance(newResistance: Resistance): World[Tag] =
     this.copy(resistance = newResistance)
@@ -166,12 +173,12 @@ final case class World[Tag](
   def withColliders(newColliders: Batch[Collider[Tag]]): World[Tag] =
     this.copy(colliders = newColliders)
   def withColliders(newColliders: Collider[Tag]*): World[Tag] =
-    withColliders(newColliders.toBatch)
+    withColliders(Batch.fromSeq(newColliders))
 
   def addColliders(additionalColliders: Batch[Collider[Tag]]): World[Tag] =
     this.copy(colliders = colliders ++ additionalColliders)
   def addColliders(additionalColliders: Collider[Tag]*): World[Tag] =
-    addColliders(additionalColliders.toBatch)
+    addColliders(Batch.fromSeq(additionalColliders))
 
   def present(render: Collider[Tag] => SceneNode): Batch[SceneNode] =
     colliders.map(render)
@@ -201,7 +208,7 @@ final case class World[Tag](
   def update(timeDelta: Seconds)(transient: Batch[Collider[Tag]]): Outcome[World[Tag]] =
     Simulation.updateWorld(this, timeDelta, transient, settings)
   def update(timeDelta: Seconds)(transient: Collider[Tag]*): Outcome[World[Tag]] =
-    Simulation.updateWorld(this, timeDelta, transient.toBatch, settings)
+    Simulation.updateWorld(this, timeDelta, Batch.fromSeq(transient), settings)
 
 object World:
 

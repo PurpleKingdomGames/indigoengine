@@ -1,7 +1,10 @@
 package indigo.physics.simulation
 
-import indigo.*
-import indigo.physics.*
+import indigo.BoundingBox
+import indigo.physics.Collider
+import indigo.physics.SimulationSettings
+import indigo.shared.trees.QuadTree
+import indigoengine.shared.collections.Batch
 
 object Collisions:
 

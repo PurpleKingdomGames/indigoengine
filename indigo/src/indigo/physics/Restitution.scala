@@ -1,6 +1,6 @@
 package indigo.physics
 
-import indigo.Vector2
+import indigo.shared.datatypes.Vector2
 
 import scala.annotation.targetName
 

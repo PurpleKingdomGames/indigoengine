@@ -1,9 +1,12 @@
 package indigo.physics.simulation
 
-import indigo.*
 import indigo.physics.Collider
 import indigo.physics.SimulationSettings
 import indigo.physics.World
+import indigo.shared.Outcome
+import indigo.shared.events.GlobalEvent
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.tailrec
 

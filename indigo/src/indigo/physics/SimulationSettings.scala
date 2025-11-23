@@ -1,6 +1,6 @@
 package indigo.physics
 
-import indigo.BoundingBox
+import indigo.shared.geometry.BoundingBox
 
 /** SimulationSettings are used to tune the Physics simulation so that it is working at the right scale for your use
   * case, minimising expensive comparisons and allowing suitable culling to occur.

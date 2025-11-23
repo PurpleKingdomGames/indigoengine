@@ -1,7 +1,12 @@
 package indigo.physics.simulation
 
-import indigo.*
-import indigo.physics.*
+import indigo.physics.Collider
+import indigo.physics.Mass
+import indigo.physics.Resistance
+import indigo.shared.datatypes.Vector2
+import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 object Move:
 

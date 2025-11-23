@@ -1,7 +1,9 @@
 package indigo.physics
 
-import indigo.*
 import indigo.physics.Mass
+import indigo.shared.datatypes.Vector2
+import indigo.shared.geometry.LineSegment
+import indigo.shared.geometry.Vertex
 
 final case class Displacement(amount: Double, normal: Vector2, contact: LineSegment, massA: Mass, massB: Option[Mass]):
   val displaceBy: Vector2 =
