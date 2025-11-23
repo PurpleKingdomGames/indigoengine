@@ -1,5 +1,7 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderRadius
@@ -8,8 +10,6 @@ import tyrian.ui.datatypes.BorderWidth
 import tyrian.ui.datatypes.BoxShadow
 import tyrian.ui.datatypes.Fill
 import tyrian.ui.datatypes.Opacity
-import tyrian.ui.datatypes.RGB
-import tyrian.ui.datatypes.RGBA
 
 final case class ContainerTheme(
     border: Option[Border],

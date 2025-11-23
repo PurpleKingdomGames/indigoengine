@@ -1,10 +1,13 @@
 package indigo.shared.shader
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.*
 import indigo.shared.geometry.Vertex
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 import scala.compiletime.*

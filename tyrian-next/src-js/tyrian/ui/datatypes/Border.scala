@@ -1,5 +1,6 @@
 package tyrian.ui.datatypes
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 
 final case class Border(
@@ -28,7 +29,7 @@ final case class Border(
 
   def toStyle: Style =
     Style(
-      "border"        -> s"${width.toCSSValue} ${style.toCSSValue} ${color.toHexString("#")}",
+      "border"        -> s"${width.toCSSValue} ${style.toCSSValue} ${color.toHex("#")}",
       "border-radius" -> radius.toCSSValue
     )
 

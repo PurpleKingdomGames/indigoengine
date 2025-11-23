@@ -1,5 +1,6 @@
 package tyrian.ui.datatypes
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 
 final case class BoxShadow(

@@ -1,10 +1,10 @@
 package indigo.shared.geometry
 
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.dice.Dice
+import indigoengine.shared.datatypes.Radians
 
 /** A `Vertex` is another co-ordinate-like type that specifically represents a point on a graph.
   */

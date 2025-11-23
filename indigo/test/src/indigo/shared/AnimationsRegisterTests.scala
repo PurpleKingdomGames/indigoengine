@@ -8,15 +8,15 @@ import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 

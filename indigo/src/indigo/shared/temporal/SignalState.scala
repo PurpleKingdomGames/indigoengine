@@ -1,6 +1,6 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 /** `SignalState` is a type of `Signal` that carries transformable state values throughout it's life.
   */

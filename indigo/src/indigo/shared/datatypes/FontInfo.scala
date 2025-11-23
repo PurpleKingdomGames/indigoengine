@@ -1,7 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.QuickCache
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 final case class FontInfo(
     fontKey: FontKey,

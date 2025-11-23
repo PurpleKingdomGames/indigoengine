@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.Radians
+
 import util.control.Breaks.*
 
 final case class Matrix3(private val mat: Array[Double]) derives CanEqual:

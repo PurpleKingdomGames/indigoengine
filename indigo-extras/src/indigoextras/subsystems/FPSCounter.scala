@@ -6,7 +6,6 @@ import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.events.FrameTick
@@ -21,7 +20,8 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigo.shared.time.FPS
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Seconds
 
 final case class FPSCounter[Model](
     id: SubSystemId,

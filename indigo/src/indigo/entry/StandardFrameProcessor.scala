@@ -3,12 +3,12 @@ package indigo.entry
 import indigo.gameengine.FrameProcessor
 import indigo.shared.Context
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
+import indigoengine.shared.collections.Batch
 
 final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     val subSystemsRegister: SubSystemsRegister[Model],

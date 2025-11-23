@@ -1,9 +1,10 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.Uniform
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 
 sealed trait Fill
 object Fill:

@@ -2,6 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.Dice
 import indigo.shared.geometry.Vertex
+import indigoengine.shared.datatypes.Radians
 
 final case class Point(x: Int, y: Int) derives CanEqual:
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)

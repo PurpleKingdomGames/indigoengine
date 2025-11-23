@@ -7,12 +7,10 @@ import indigo.shared.IndigoLogger
 import indigo.shared.QuickCache
 import indigo.shared.animation.AnimationRef
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector2
@@ -48,6 +46,8 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 import scala.annotation.nowarn
 import scala.annotation.tailrec

@@ -1,6 +1,6 @@
 package indigo.shared.animation.timeline
 
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 
 opaque type TimelineAnimation[A] = Batch[TimeSlot[A]]
 

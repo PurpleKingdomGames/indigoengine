@@ -2,9 +2,6 @@ package indigo.shared.shader
 
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -12,8 +9,11 @@ import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Vector4
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.geometry.Vertex
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 
 import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag

@@ -1,11 +1,11 @@
 package indigo.shared.input
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.FingerId
 import indigo.shared.events.PointerId
 import indigo.shared.events.TouchEvent
+import indigoengine.shared.collections.Batch
 
 final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState {
 

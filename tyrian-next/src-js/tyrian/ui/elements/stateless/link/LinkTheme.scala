@@ -1,7 +1,7 @@
 package tyrian.ui.elements.stateless.link
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
-import tyrian.ui.datatypes.RGBA
 
 final case class LinkTheme(
     unvisited: Option[RGBA]

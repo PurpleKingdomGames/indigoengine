@@ -1,9 +1,9 @@
 package indigo.shared.temporal
 
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Seconds
 
 /** A Signal Function is a combinator that maps `Signal[A] -> Signal[B]`. One way to thing of signal functions is to
   * think of each instance as one section of a transformation pipeline. When you attach the pipeline to a `Signal` you

@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.Point
@@ -20,6 +19,7 @@ import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextLine
+import indigoengine.shared.collections.Batch
 
 final class BoundaryLocator(
     animationsRegister: AnimationsRegister,

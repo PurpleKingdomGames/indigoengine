@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigoengine.shared.datatypes.Radians
+
 class Matrix3Tests extends munit.FunSuite {
 
   test("identity") {

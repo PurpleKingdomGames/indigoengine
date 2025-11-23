@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateless.canvas
 
+import indigoengine.shared.lenses.Lens
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg
 import tyrian.ui.UIElement
@@ -7,7 +8,6 @@ import tyrian.ui.datatypes.Extent
 import tyrian.ui.layout.ContainerTheme
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 final case class Canvas(
     width: Option[Extent],

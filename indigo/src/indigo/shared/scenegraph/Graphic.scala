@@ -3,13 +3,13 @@ package indigo.shared.scenegraph
 import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.shader.ShaderData
+import indigoengine.shared.datatypes.Radians
 
 /** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphic's party trick is
   * it's ability to crop images.

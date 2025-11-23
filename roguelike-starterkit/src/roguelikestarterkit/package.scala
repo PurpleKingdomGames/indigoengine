@@ -1,10 +1,10 @@
 package roguelikestarterkit
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Layer
 import indigo.shared.shader.ShaderProgram
+import indigoengine.shared.collections.Batch
 
 object syntax:
 

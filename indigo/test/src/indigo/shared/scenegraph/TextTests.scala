@@ -4,11 +4,11 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
-import indigo.shared.datatypes.Radians
+import indigoengine.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.Material
 

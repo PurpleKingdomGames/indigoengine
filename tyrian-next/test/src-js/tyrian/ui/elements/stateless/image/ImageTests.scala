@@ -3,7 +3,7 @@ package tyrian.ui.elements.stateless.image
 import tyrian.Style
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderWidth
-import tyrian.ui.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.theme.Theme
 
 class ImageTests extends munit.FunSuite {

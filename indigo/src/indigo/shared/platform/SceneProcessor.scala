@@ -4,9 +4,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayLayer
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
@@ -30,6 +28,8 @@ import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.shader.ShaderData
 import indigo.shared.time.GameTime
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 
 import scala.annotation.tailrec
 import scala.scalajs.js.JSConverters.*

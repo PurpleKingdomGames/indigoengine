@@ -1,10 +1,10 @@
 package tyrian.ui.elements.stateless.table
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.BorderWidth
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderCollapse
-import tyrian.ui.datatypes.RGBA
 
 final case class TableTheme(
     background: Option[RGBA],

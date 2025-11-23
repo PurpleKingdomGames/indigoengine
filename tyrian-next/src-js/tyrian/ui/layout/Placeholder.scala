@@ -1,12 +1,12 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.lenses.Lens
 import tyrian.next.GlobalMsg
 import tyrian.next.Marker
 import tyrian.next.MarkerId
 import tyrian.ui.UIElement
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 final case class Placeholder(
     marker: MarkerId,

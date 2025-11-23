@@ -1,8 +1,8 @@
 package indigoextras.performers
 
-import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.LayerKey
+import indigoengine.shared.collections.Batch
 
 enum PerformerEvent extends GlobalEvent:
   case Add(layerKey: LayerKey, actor: Performer[?])

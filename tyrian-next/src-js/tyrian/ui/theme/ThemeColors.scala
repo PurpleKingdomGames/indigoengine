@@ -1,6 +1,6 @@
 package tyrian.ui.theme
 
-import tyrian.ui.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 
 // TODO: I think these are unused currently.
 final case class ThemeColors(

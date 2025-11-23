@@ -1,12 +1,12 @@
 package indigo.platform.renderer
 
 import indigo.shared.assets.AssetType
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.shader.RawShaderCode
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 trait Renderer:
   def renderingTechnology: RenderingTechnology

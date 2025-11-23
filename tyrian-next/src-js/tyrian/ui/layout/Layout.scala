@@ -1,5 +1,6 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.lenses.Lens
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg
 import tyrian.ui.UIElement
@@ -10,7 +11,6 @@ import tyrian.ui.datatypes.Spacing
 import tyrian.ui.datatypes.Wrapping
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 final case class Layout(
     direction: LayoutDirection,

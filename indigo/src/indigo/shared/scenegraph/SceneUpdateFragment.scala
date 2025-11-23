@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.collections.Batch
 import indigo.shared.materials.BlendMaterial
+import indigoengine.shared.collections.Batch
 
 import annotation.targetName
 

@@ -1,7 +1,7 @@
 package indigo.platform.renderer.shared
 
 import indigo.facades.ColorAttachments
-import indigo.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext.*

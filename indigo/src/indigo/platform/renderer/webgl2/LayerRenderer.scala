@@ -6,7 +6,6 @@ import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
@@ -18,6 +17,7 @@ import indigo.shared.display.DisplayTextLetters
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.shader.ShaderId
+import indigoengine.shared.datatypes.RGBA
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*

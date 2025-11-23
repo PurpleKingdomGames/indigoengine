@@ -1,10 +1,10 @@
 package indigo.shared.trees
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Size
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec
 

@@ -1,10 +1,7 @@
 package indigoextras.effectmaterials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.FillType
 import indigo.shared.materials.Material
@@ -17,6 +14,9 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
 import indigo.shared.shader.library.IndigoUV.VertexEnv
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
 import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
 
 final case class LegacyEffects(

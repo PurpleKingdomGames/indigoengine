@@ -1,6 +1,6 @@
 package indigo.shared.dice
 
-import indigo.shared.collections.NonEmptyList
+import indigoengine.shared.collections.NonEmptyList
 
 import scala.collection.immutable.SortedMap
 

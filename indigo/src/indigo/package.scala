@@ -66,8 +66,8 @@ object syntax:
     def toBatch: Batch[A]                          = Batch.fromOption(values)
     def toOutcome(error: => Throwable): Outcome[A] = Outcome.fromOption(values, error)
 
-  val ==: = shared.collections.Batch.==:
-  val :== = shared.collections.Batch.:==
+  val ==: = indigoengine.shared.collections.Batch.==:
+  val :== = indigoengine.shared.collections.Batch.:==
 
   extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
   extension [A](b: NonEmptyBatch[Outcome[A]]) def sequence: Outcome[NonEmptyBatch[A]] = Outcome.sequenceNonEmptyBatch(b)
@@ -201,11 +201,11 @@ val Startup: shared.Startup.type = shared.Startup
 type GameTime = shared.time.GameTime
 val GameTime: shared.time.GameTime.type = shared.time.GameTime
 
-type Millis = shared.time.Millis
-val Millis: shared.time.Millis.type = shared.time.Millis
+type Millis = indigoengine.shared.datatypes.Millis
+val Millis: indigoengine.shared.datatypes.Millis.type = indigoengine.shared.datatypes.Millis
 
-type Seconds = shared.time.Seconds
-val Seconds: shared.time.Seconds.type = shared.time.Seconds
+type Seconds = indigoengine.shared.datatypes.Seconds
+val Seconds: indigoengine.shared.datatypes.Seconds.type = indigoengine.shared.datatypes.Seconds
 
 type FPS = shared.time.FPS
 val FPS: shared.time.FPS.type = shared.time.FPS
@@ -294,14 +294,14 @@ val KeyCode: shared.constants.KeyCode.type = shared.constants.KeyCode
 type KeyLocation = shared.constants.KeyLocation
 val KeyLocation: shared.constants.KeyLocation.type = shared.constants.KeyLocation
 
-type Batch[A] = shared.collections.Batch[A]
-val Batch: shared.collections.Batch.type = shared.collections.Batch
+type Batch[A] = indigoengine.shared.collections.Batch[A]
+val Batch: indigoengine.shared.collections.Batch.type = indigoengine.shared.collections.Batch
 
-type NonEmptyBatch[A] = shared.collections.NonEmptyBatch[A]
-val NonEmptyBatch: shared.collections.NonEmptyBatch.type = shared.collections.NonEmptyBatch
+type NonEmptyBatch[A] = indigoengine.shared.collections.NonEmptyBatch[A]
+val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoengine.shared.collections.NonEmptyBatch
 
-type NonEmptyList[A] = shared.collections.NonEmptyList[A]
-val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
+type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
+val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
 
 type Signal[A] = shared.temporal.Signal[A]
 val Signal: shared.temporal.Signal.type = shared.temporal.Signal
@@ -551,8 +551,11 @@ val Matrix3: shared.datatypes.Matrix3.type = shared.datatypes.Matrix3
 type Matrix4 = shared.datatypes.Matrix4
 val Matrix4: shared.datatypes.Matrix4.type = shared.datatypes.Matrix4
 
-type Radians = shared.datatypes.Radians
-val Radians: shared.datatypes.Radians.type = shared.datatypes.Radians
+type Degrees = indigoengine.shared.datatypes.Degrees
+val Degrees: indigoengine.shared.datatypes.Degrees.type = indigoengine.shared.datatypes.Degrees
+
+type Radians = indigoengine.shared.datatypes.Radians
+val Radians: indigoengine.shared.datatypes.Radians.type = indigoengine.shared.datatypes.Radians
 
 type BindingKey = shared.datatypes.BindingKey
 val BindingKey: shared.datatypes.BindingKey.type = shared.datatypes.BindingKey
@@ -563,11 +566,11 @@ val Fill: shared.datatypes.Fill.type = shared.datatypes.Fill
 type Stroke = shared.datatypes.Stroke
 val Stroke: shared.datatypes.Stroke.type = shared.datatypes.Stroke
 
-type RGB = shared.datatypes.RGB
-val RGB: shared.datatypes.RGB.type = shared.datatypes.RGB
+type RGB = indigoengine.shared.datatypes.RGB
+val RGB: indigoengine.shared.datatypes.RGB.type = indigoengine.shared.datatypes.RGB
 
-type RGBA = shared.datatypes.RGBA
-val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
+type RGBA = indigoengine.shared.datatypes.RGBA
+val RGBA: indigoengine.shared.datatypes.RGBA.type = indigoengine.shared.datatypes.RGBA
 
 type Flip = shared.datatypes.Flip
 val Flip: shared.datatypes.Flip.type = shared.datatypes.Flip
@@ -834,8 +837,8 @@ val AmbientLight: shared.scenegraph.AmbientLight.type = shared.scenegraph.Ambien
 type Falloff = shared.scenegraph.Falloff
 val Falloff: shared.scenegraph.Falloff.type = shared.scenegraph.Falloff
 
-type Lens[A, B] = shared.utils.Lens[A, B]
-val Lens: shared.utils.Lens.type = shared.utils.Lens
+type Lens[A, B] = indigoengine.shared.lenses.Lens[A, B]
+val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens
 
 // Geometry
 

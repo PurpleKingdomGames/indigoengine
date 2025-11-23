@@ -5,7 +5,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
 import indigo.shared.materials.Material
 import indigo.shared.time.FPS
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 class ClipTests extends munit.FunSuite {
 

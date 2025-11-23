@@ -1,10 +1,10 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 import indigoextras.jobs.SampleJobs.CantHave
 import indigoextras.jobs.SampleJobs.Fishing
 import indigoextras.jobs.SampleJobs.WanderTo

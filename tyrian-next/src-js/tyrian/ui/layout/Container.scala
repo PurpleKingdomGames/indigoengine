@@ -1,5 +1,6 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.lenses.Lens
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg
 import tyrian.ui.Extent
@@ -9,7 +10,6 @@ import tyrian.ui.datatypes.Justify
 import tyrian.ui.datatypes.Padding
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.utils.Lens
 
 final case class Container(
     child: UIElement[?, ?],

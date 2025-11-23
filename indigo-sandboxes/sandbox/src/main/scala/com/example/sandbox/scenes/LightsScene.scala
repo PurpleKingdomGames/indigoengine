@@ -91,10 +91,10 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           SpotLight.default
             .withColor(RGBA.Yellow)
             .moveTo(Point(10))
-            .rotateBy(Radians.fromDegrees(135))
+            .rotateBy(Radians.fromDegrees(Degrees(135)))
             .withSpecular(RGBA(1, 1, 0.3, 2.0))
             .withIntensity(1)
-            .withAngle(Radians.fromDegrees(45))
+            .withAngle(Radians.fromDegrees(Degrees(45)))
             .modifyFalloff(_ => Falloff.smoothLinear.withRange(5, 200)),
           PointLight.default
             .withColor(RGBA.Red)

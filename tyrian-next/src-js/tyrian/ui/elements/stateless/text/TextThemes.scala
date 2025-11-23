@@ -1,9 +1,9 @@
 package tyrian.ui.elements.stateless.text
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.FontWeight
 import tyrian.ui.datatypes.LineHeight
-import tyrian.ui.datatypes.RGBA
 import tyrian.ui.datatypes.TextAlignment
 import tyrian.ui.datatypes.TextDecoration
 import tyrian.ui.datatypes.TextStyle

@@ -4,10 +4,10 @@ import indigo.SubSystemContext
 import indigo.scenes.SceneContext
 import indigo.shared.Context
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneNode
+import indigoengine.shared.collections.Batch
 
 final case class ActorPool[ReferenceData, ActorType](
     actors: Batch[ActorInstance[ReferenceData, ActorType]]

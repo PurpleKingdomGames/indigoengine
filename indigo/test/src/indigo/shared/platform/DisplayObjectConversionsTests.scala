@@ -6,7 +6,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
+import indigoengine.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
@@ -22,7 +22,7 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.shader.Uniform
 import indigo.shared.time.GameTime
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 import scala.scalajs.js.JSConverters.*
 

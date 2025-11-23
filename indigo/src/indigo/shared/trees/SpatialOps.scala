@@ -1,6 +1,5 @@
 package indigo.shared.trees
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -8,6 +7,7 @@ import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
 import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
 
 trait SpatialOps[S]:
 

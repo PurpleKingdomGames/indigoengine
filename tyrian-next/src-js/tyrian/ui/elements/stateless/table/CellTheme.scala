@@ -1,10 +1,10 @@
 package tyrian.ui.elements.stateless.table
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.FontWeight
 import tyrian.ui.datatypes.Padding
-import tyrian.ui.datatypes.RGBA
 
 final case class CellTheme(
     background: Option[RGBA],

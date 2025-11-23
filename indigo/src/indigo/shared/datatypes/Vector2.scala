@@ -1,8 +1,9 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.geometry.Vertex
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 final case class Vector2(x: Double, y: Double) derives CanEqual:
 

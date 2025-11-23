@@ -1,6 +1,6 @@
 package roguelikestarterkit.ui.components
 
-import indigo.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 import roguelikestarterkit.tiles.Tile
 
 final case class TerminalTile(tile: Tile, colors: TerminalTileColors):

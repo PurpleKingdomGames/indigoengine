@@ -1,7 +1,7 @@
 package indigoextras.datatypes
 
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
 
 class TimeVaryingValueTests extends munit.FunSuite {
 

@@ -5,16 +5,16 @@ import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.audio.PlaybackPolicy
 import indigo.shared.audio.Volume
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
 import indigo.shared.events.MouseEvent.Move
 import indigo.shared.events.MouseEvent.Wheel
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
 
 import scala.annotation.nowarn
 

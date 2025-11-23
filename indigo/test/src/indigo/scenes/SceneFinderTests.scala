@@ -1,7 +1,7 @@
 package indigo.scenes
 
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 
 class SceneFinderTests extends munit.FunSuite {
 

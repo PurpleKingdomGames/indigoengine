@@ -1,5 +1,8 @@
 package indigo.shared.time
 
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
+
 class GameTimeTests extends munit.FunSuite {
 
   test("GameTime should be able to calculate the frame duration of the game (set)") {

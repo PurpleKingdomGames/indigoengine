@@ -1,7 +1,7 @@
 package indigo.shared.geometry
 
-import indigo.shared.collections.Batch
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
 class BezierTests extends munit.FunSuite {
 

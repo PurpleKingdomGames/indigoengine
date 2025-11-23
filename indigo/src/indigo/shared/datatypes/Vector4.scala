@@ -1,7 +1,7 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
+import indigoengine.shared.collections.Batch
 
 final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual:
 

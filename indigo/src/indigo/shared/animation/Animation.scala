@@ -1,8 +1,8 @@
 package indigo.shared.animation
 
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
-import indigo.shared.time.Millis
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Millis
 
 final case class Animation(
     animationKey: AnimationKey,

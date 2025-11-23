@@ -3,15 +3,15 @@ package indigo.scenes
 import indigo.shared.Context
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.shared.time.Seconds
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 

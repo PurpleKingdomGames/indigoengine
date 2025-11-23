@@ -1,5 +1,7 @@
 package indigo.shared.time
 
+import indigoengine.shared.datatypes.Millis
+
 class FPSTests extends munit.FunSuite {
 
   test("FPS should be able to calculate the frame duration of the game (ms)") {

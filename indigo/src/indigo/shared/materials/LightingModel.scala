@@ -1,13 +1,13 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
+import indigoengine.shared.collections.Batch
 
 sealed trait LightingModel:
   def enableLighting: LightingModel

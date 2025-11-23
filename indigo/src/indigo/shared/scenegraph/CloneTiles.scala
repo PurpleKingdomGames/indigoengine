@@ -1,8 +1,9 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 /** Represents many clones of the same cloneblank, differentiated by their transform data and which part of the texture
   * it is cropped on.

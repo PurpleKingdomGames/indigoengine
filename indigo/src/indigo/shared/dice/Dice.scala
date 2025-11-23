@@ -1,9 +1,10 @@
 package indigo.shared.dice
 
 import indigo.Batch
-import indigo.shared.collections.NonEmptyList
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
+import indigo.Radians
+import indigoengine.shared.collections.NonEmptyList
+import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.tailrec
 
@@ -32,6 +33,10 @@ trait Dice:
   /** Roll an Int from 1 to the specified number of sides (inclusive), using this dice instance as the seed.
     */
   def roll(sides: Int): Int
+
+  /** Roll a random angle in Radians */
+  def rollAngle: Radians =
+    Radians.TAU * rollDouble
 
   /** Roll a Long from 1 to the number of sides on the dice (inclusive)
     */

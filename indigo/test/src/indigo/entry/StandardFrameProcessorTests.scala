@@ -5,8 +5,8 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.Context
 import indigo.shared.FontRegister
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.RGBA
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.BlendMaterial

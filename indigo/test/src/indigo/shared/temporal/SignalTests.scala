@@ -1,7 +1,7 @@
 package indigo.shared.temporal
 
 import indigo.shared.datatypes.Point
-import indigo.shared.time.Seconds
+import indigoengine.shared.datatypes.Seconds
 
 class SignalTests extends munit.FunSuite {
 

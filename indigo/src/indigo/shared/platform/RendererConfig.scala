@@ -1,7 +1,7 @@
 package indigo.shared.platform
 
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.RGBA
 
 final class RendererConfig(
     val renderingTechnology: RenderingTechnology,

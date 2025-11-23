@@ -2,6 +2,7 @@ package tyrian.next
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
+import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import org.scalajs.dom.window

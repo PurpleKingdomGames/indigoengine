@@ -1,5 +1,8 @@
 package tyrian.ui.datatypes
 
+import indigoengine.shared.datatypes.Degrees
+import indigoengine.shared.datatypes.RGB
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 
 sealed trait Fill

@@ -1,10 +1,10 @@
 package indigo.platform.renderer
 
 import indigo.shared.ImageType
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
 import indigo.shared.scenegraph.LayerKey
+import indigoengine.shared.collections.Batch
 
 /** Configuration for a screen capture
   *
