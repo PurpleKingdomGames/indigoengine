@@ -1,10 +1,10 @@
 package indigo.shared.platform
 
+import indigo.scenegraph.Camera
+import indigo.shaders.ShaderId
 import indigo.shared.display.DisplayLayer
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
-import indigo.shared.scenegraph.Camera
-import indigo.shared.shader.ShaderId
 
 final class ProcessedSceneData(
     val layers: scalajs.js.Array[DisplayLayer],

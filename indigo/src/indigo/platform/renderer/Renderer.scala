@@ -1,10 +1,10 @@
 package indigo.platform.renderer
 
-import indigo.shared.assets.AssetType
-import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.core.assets.AssetType
+import indigo.core.config.RenderingTechnology
+import indigo.core.datatypes.mutable.CheapMatrix4
+import indigo.shaders.RawShaderCode
 import indigo.shared.platform.ProcessedSceneData
-import indigo.shared.shader.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 

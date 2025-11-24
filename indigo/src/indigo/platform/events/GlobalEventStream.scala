@@ -1,19 +1,19 @@
 package indigo.platform.events
 
+import indigo.core.events.AssetEvent
+import indigo.core.events.EnterFullScreen
+import indigo.core.events.ExitFullScreen
+import indigo.core.events.GlobalEvent
+import indigo.core.events.NetworkSendEvent
+import indigo.core.events.PlaySound
+import indigo.core.events.StorageEvent
+import indigo.core.events.ToggleFullScreen
 import indigo.platform.PlatformFullScreen
 import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http
 import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
-import indigo.shared.events.AssetEvent
-import indigo.shared.events.EnterFullScreen
-import indigo.shared.events.ExitFullScreen
-import indigo.shared.events.GlobalEvent
-import indigo.shared.events.NetworkSendEvent
-import indigo.shared.events.PlaySound
-import indigo.shared.events.StorageEvent
-import indigo.shared.events.ToggleFullScreen
 import indigo.shared.networking.HttpRequest
 import indigo.shared.networking.WebSocketEvent
 import indigoengine.shared.collections.Batch

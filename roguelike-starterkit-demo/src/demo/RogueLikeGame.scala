@@ -43,7 +43,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
         .withAssets(Assets.assets.assetSet)
         .withShaders(
           indigoextras.ui.shaders.all ++
-            shaders.all ++ Set(
+            roguelikestarterkit.shaders.all ++ Set(
               TerminalTextScene.customShader(ShaderId("my shader"))
             )
         )

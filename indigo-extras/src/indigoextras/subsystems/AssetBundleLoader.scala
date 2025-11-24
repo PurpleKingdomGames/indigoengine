@@ -1,14 +1,14 @@
 package indigoextras.subsystems
 
-import indigo.shared.Outcome
-import indigo.shared.assets.AssetPath
-import indigo.shared.assets.AssetType
-import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.events.AssetEvent
-import indigo.shared.events.GlobalEvent
-import indigo.shared.events.SubSystemEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.core.Outcome
+import indigo.core.assets.AssetPath
+import indigo.core.assets.AssetType
+import indigo.core.assets.AssetTypePrimitive
+import indigo.core.datatypes.BindingKey
+import indigo.core.events.AssetEvent
+import indigo.core.events.GlobalEvent
+import indigo.core.events.SubSystemEvent
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId

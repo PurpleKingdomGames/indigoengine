@@ -1,9 +1,9 @@
 package indigoextras.mesh
 
-import indigo.shared.geometry.BoundingBox
-import indigo.shared.geometry.BoundingCircle
-import indigo.shared.geometry.LineSegment
-import indigo.shared.geometry.Vertex
+import indigo.core.geometry.BoundingBox
+import indigo.core.geometry.BoundingCircle
+import indigo.core.geometry.LineSegment
+import indigo.core.geometry.Vertex
 import indigoengine.shared.collections.Batch
 
 final case class Triangle(a: Vertex, b: Vertex, c: Vertex):

@@ -1,7 +1,7 @@
 package indigoextras.performers
 
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.LayerKey
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.LayerKey
 import indigoengine.shared.collections.Batch
 
 enum PerformerEvent extends GlobalEvent:

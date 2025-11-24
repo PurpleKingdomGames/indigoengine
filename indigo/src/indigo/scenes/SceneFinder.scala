@@ -1,6 +1,6 @@
 package indigo.scenes
 
-import indigo.shared.IndigoLogger
+import indigo.core.utils.IndigoLogger
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 

@@ -2,13 +2,13 @@ package indigoextras.jobs
 
 import indigo.shared.Context
 import indigoengine.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.dice.Dice
-import indigo.shared.events.FrameTick
+import indigo.core.datatypes.BindingKey
+import indigo.core.dice.Dice
+import indigo.core.events.FrameTick
 import indigo.shared.subsystems
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
-import indigo.shared.time.GameTime
+import indigo.core.time.GameTime
 
 class JobMarketTests extends munit.FunSuite {
 

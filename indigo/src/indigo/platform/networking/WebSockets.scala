@@ -1,8 +1,8 @@
 package indigo.platform.networking
 
+import indigo.core.events.*
+import indigo.core.utils.IndigoLogger
 import indigo.platform.events.GlobalEventStream
-import indigo.shared.IndigoLogger
-import indigo.shared.events.*
 import indigo.shared.networking.WebSocketConfig
 import indigo.shared.networking.WebSocketEvent
 import indigo.shared.networking.WebSocketReadyState

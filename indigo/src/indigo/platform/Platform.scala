@@ -1,5 +1,14 @@
 package indigo.platform
 
+import indigo.core.Outcome
+import indigo.core.assets.AssetName
+import indigo.core.config.GameConfig
+import indigo.core.datatypes.Vector2
+import indigo.core.events.FullScreenEnterError
+import indigo.core.events.FullScreenEntered
+import indigo.core.events.FullScreenExitError
+import indigo.core.events.FullScreenExited
+import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.AtlasId
 import indigo.platform.assets.ImageRef
@@ -11,19 +20,10 @@ import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.renderer.Renderer
 import indigo.platform.renderer.RendererInitialiser
 import indigo.platform.renderer.shared.LoadedTextureAsset
-import indigo.shared.IndigoLogger
-import indigo.shared.Outcome
-import indigo.shared.assets.AssetName
-import indigo.shared.config.GameConfig
-import indigo.shared.datatypes.Vector2
-import indigo.shared.events.FullScreenEnterError
-import indigo.shared.events.FullScreenEntered
-import indigo.shared.events.FullScreenExitError
-import indigo.shared.events.FullScreenExited
+import indigo.shaders.RawShaderCode
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.RendererConfig
 import indigo.shared.platform.TextureRefAndOffset
-import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas

@@ -1,13 +1,13 @@
 package indigo.shared.formats
 
 import indigoengine.shared.datatypes.Radians
-import indigo.shared.animation.*
-import indigo.shared.assets.AssetName
+import indigo.core.animation.*
+import indigo.core.assets.AssetName
 import indigoengine.shared.collections.NonEmptyBatch
-import indigo.shared.datatypes.*
-import indigo.shared.dice.Dice
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.*
+import indigo.core.datatypes.*
+import indigo.core.dice.Dice
+import indigo.scenegraph.materials.Material
+import indigo.scenegraph.*
 import indigoengine.shared.datatypes.Millis
 import indigoengine.shared.datatypes.Seconds
 

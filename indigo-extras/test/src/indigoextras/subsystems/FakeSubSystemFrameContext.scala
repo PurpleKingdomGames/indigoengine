@@ -1,9 +1,9 @@
 package indigoextras.subsystems
 
 import indigo.shared.Context
-import indigo.shared.dice.Dice
+import indigo.core.dice.Dice
 import indigo.shared.subsystems.SubSystemContext
-import indigo.shared.time.GameTime
+import indigo.core.time.GameTime
 import indigoengine.shared.datatypes.Seconds
 
 object FakeSubSystemFrameContext:

@@ -1,9 +1,9 @@
 package indigo.gameengine
 
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.Context
-import indigo.shared.Outcome
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigoengine.shared.collections.Batch
 
 trait FrameProcessor[StartUpData, Model, ViewModel]:

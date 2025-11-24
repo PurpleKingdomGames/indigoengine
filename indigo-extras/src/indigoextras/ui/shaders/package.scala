@@ -1,6 +1,6 @@
 package indigoextras.ui.shaders
 
-import indigo.shared.shader.ShaderProgram
+import indigo.shaders.ShaderProgram
 
 val ui: Set[ShaderProgram] =
   Set(

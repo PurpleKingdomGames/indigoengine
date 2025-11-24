@@ -1,6 +1,6 @@
 package indigoextras.jobs
 
-import indigo.shared.Outcome
+import indigo.core.Outcome
 import indigoengine.shared.collections.Batch
 import indigoextras.jobs.SampleJobs.Fishing
 

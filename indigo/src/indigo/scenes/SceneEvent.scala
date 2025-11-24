@@ -1,6 +1,6 @@
 package indigo.scenes
 
-import indigo.shared.events.GlobalEvent
+import indigo.core.events.GlobalEvent
 import indigoengine.shared.datatypes.Seconds
 
 /** The events used by the scene manager to move between scenes.

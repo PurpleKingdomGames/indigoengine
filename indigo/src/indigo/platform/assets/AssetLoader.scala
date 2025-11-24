@@ -1,12 +1,12 @@
 package indigo.platform.assets
 
+import indigo.core.assets.AssetType
+import indigo.core.datatypes.BindingKey
+import indigo.core.events.AssetEvent
+import indigo.core.utils.IndigoLogger
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
-import indigo.shared.IndigoLogger
-import indigo.shared.assets.AssetType
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.events.AssetEvent
-import indigo.shared.events.IndigoSystemEvent
+import indigo.shared.IndigoSystemEvent
 import org.scalajs.dom
 import org.scalajs.dom.*
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

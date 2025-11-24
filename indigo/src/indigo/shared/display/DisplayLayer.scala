@@ -1,9 +1,9 @@
 package indigo.shared.display
 
-import indigo.shared.scenegraph.Blend
-import indigo.shared.scenegraph.Camera
-import indigo.shared.scenegraph.LayerKey
-import indigo.shared.shader.ShaderId
+import indigo.scenegraph.Blend
+import indigo.scenegraph.Camera
+import indigo.scenegraph.LayerKey
+import indigo.shaders.ShaderId
 import indigoengine.shared.datatypes.RGBA
 
 final case class DisplayLayer(

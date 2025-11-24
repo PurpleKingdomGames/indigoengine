@@ -1,10 +1,10 @@
 package indigoextras.datatypes
 
-import indigo.shared.datatypes.Circle
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
-import indigo.shared.geometry.LineSegment
+import indigo.core.datatypes.Circle
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
+import indigo.core.geometry.LineSegment
 import indigoengine.shared.collections.Batch
 import indigoextras.utils.Bresenham
 

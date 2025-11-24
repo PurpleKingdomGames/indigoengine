@@ -1,6 +1,6 @@
 package indigo.shared.subsystems
 
-import indigo.shared.dice.Dice
+import indigo.core.dice.Dice
 
 opaque type SubSystemId = String
 

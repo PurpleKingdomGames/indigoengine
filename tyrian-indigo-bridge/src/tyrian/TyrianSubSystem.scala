@@ -1,9 +1,9 @@
 package tyrian
 
-import indigo.shared.Outcome
-import indigo.shared.events.FrameTick
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.core.Outcome
+import indigo.core.events.FrameTick
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId

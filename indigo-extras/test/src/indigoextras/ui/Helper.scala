@@ -1,8 +1,8 @@
 package indigoextras.ui
 
-import indigo.shared.Outcome
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.Layer
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.Layer
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.UIContext
 

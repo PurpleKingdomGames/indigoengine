@@ -1,6 +1,6 @@
 package indigo.shared.platform
 
-import indigo.shared.config.RenderingTechnology
+import indigo.core.config.RenderingTechnology
 import indigoengine.shared.datatypes.RGBA
 
 final class RendererConfig(

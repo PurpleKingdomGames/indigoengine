@@ -14,8 +14,7 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigoengine-shared`.js,
-      build.ultraviolet.js
+      build.`indigo-physics`.js
     )
 
     def mvnDeps = Seq(

@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.datatypes.FontChar
+import indigo.core.datatypes.FontChar
 import indigo.shared.formats.Aseprite
 import indigo.shared.formats.TiledMap
 

@@ -1,0 +1,21 @@
+package build.`indigo-shaders`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalajslib.*
+
+import build.SharedJVM
+import build.SharedJS
+import build.SharedPublish
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigoengine-shared`.js,
+      build.`indigo-core`.js,
+      build.ultraviolet.js
+    )
+

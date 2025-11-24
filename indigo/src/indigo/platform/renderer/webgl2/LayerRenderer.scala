@@ -1,12 +1,15 @@
 package indigo.platform.renderer.webgl2
 
+import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.AtlasId
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.scenegraph.CloneBatchData
+import indigo.scenegraph.CloneId
+import indigo.shaders.ShaderId
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayEntity
@@ -14,9 +17,6 @@ import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayTextLetters
-import indigo.shared.scenegraph.CloneBatchData
-import indigo.shared.scenegraph.CloneId
-import indigo.shared.shader.ShaderId
 import indigoengine.shared.datatypes.RGBA
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram

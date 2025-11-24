@@ -1,6 +1,6 @@
 package roguelikestarterkit.ui.window
 
-import indigo.shared.datatypes.BindingKey
+import indigo.core.datatypes.BindingKey
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 import indigoextras.ui.*

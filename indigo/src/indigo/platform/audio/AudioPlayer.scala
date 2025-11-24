@@ -1,13 +1,13 @@
 package indigo.platform.audio
 
+import indigo.core.assets.AssetName
+import indigo.core.audio.PlaybackPolicy
+import indigo.core.audio.Volume
+import indigo.core.datatypes.BindingKey
 import indigo.platform.assets.LoadedAudioAsset
-import indigo.shared.assets.AssetName
-import indigo.shared.audio.PlaybackPolicy
-import indigo.shared.audio.Volume
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.scenegraph.PlaybackPattern
-import indigo.shared.scenegraph.SceneAudio
-import indigo.shared.scenegraph.SceneAudioSource
+import indigo.scenegraph.PlaybackPattern
+import indigo.scenegraph.SceneAudio
+import indigo.scenegraph.SceneAudioSource
 import org.scalajs.dom
 import org.scalajs.dom.AudioBuffer
 import org.scalajs.dom.AudioBufferSourceNode

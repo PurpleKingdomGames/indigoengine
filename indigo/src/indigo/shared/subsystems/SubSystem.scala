@@ -1,8 +1,8 @@
 package indigo.shared.subsystems
 
-import indigo.shared.Outcome
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.SceneUpdateFragment
 
 /** SubSystems are mini Indigo games. They contain similar functions to the full games, and allow you to
   * compartmentalise parts of your game logic. They are strictly separated from the rest of your game, and can only

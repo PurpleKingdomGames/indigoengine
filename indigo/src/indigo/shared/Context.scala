@@ -1,16 +1,17 @@
 package indigo.shared
 
 import indigo.FontKey
+import indigo.core.assets.AssetType
+import indigo.core.config.GameViewport
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
+import indigo.core.dice.Dice
+import indigo.core.events.InputState
+import indigo.core.time.GameTime
 import indigo.platform.renderer.ScreenCaptureConfig
-import indigo.shared.assets.AssetType
-import indigo.shared.config.GameViewport
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
-import indigo.shared.dice.Dice
-import indigo.shared.events.InputState
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph.TextLine
-import indigo.shared.time.GameTime
+import indigo.scenegraph.SceneNode
+import indigo.scenegraph.TextLine
+import indigo.scenegraph.registers.BoundaryLocator
 import indigoengine.shared.collections.Batch
 
 /** The Context is the context in which the current frame will be processed.

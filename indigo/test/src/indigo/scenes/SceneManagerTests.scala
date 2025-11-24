@@ -1,10 +1,10 @@
 package indigo.scenes
 
-import indigo.shared.Outcome
+import indigo.core.Outcome
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
-import indigo.shared.events.FrameTick
-import indigo.shared.events.GlobalEvent
+import indigo.core.events.FrameTick
+import indigo.core.events.GlobalEvent
 import indigoengine.shared.datatypes.Seconds
 
 class SceneManagerTests extends munit.FunSuite {

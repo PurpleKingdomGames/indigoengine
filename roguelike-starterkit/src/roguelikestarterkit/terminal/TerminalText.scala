@@ -1,10 +1,10 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.UniformBlockName
+import indigo.shaders.ShaderPrimitive
+import indigo.shaders.Uniform
+import indigo.shaders.UniformBlock
+import indigo.shaders.UniformBlockName
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn

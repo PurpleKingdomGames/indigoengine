@@ -1,7 +1,7 @@
 package indigoextras.pathfinding
 
 import indigo.*
-import indigo.shared.dice.Dice
+import indigo.core.dice.Dice
 import indigoextras.pathfinding.PathBuilder.DefaultDiagonalCost
 import indigoextras.pathfinding.PathBuilder.DefaultMaxHeuristicFactor
 import indigoextras.pathfinding.PathBuilder.DefaultSideCost

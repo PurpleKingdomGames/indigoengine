@@ -1,18 +1,18 @@
 package indigoextras.subsystems
 
-import indigo.shared.assets.AssetName
+import indigo.core.assets.AssetName
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
-import indigo.shared.datatypes.Point
-import indigo.shared.dice.Dice
-import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.LayerKey
-import indigo.shared.scenegraph.RenderNode
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.temporal.Signal
-import indigo.shared.temporal.SignalReader
+import indigo.core.datatypes.Point
+import indigo.core.dice.Dice
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.materials.Material
+import indigo.scenegraph.Graphic
+import indigo.scenegraph.LayerKey
+import indigo.scenegraph.RenderNode
+import indigo.scenegraph.SceneNode
+import indigo.core.temporal.Signal
+import indigo.core.temporal.SignalReader
 import indigoengine.shared.datatypes.Seconds
 
 import scalajs.js

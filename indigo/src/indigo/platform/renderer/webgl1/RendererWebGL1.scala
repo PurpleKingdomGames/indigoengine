@@ -2,6 +2,14 @@ package indigo.platform.renderer.webgl1
 
 import indigo.AssetName
 import indigo.AssetPath
+import indigo.core.assets.AssetType
+import indigo.core.config.GameViewport
+import indigo.core.config.RenderingTechnology
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
+import indigo.core.datatypes.Vector2
+import indigo.core.datatypes.mutable.CheapMatrix4
+import indigo.core.events.ViewportResize
 import indigo.platform.assets.AtlasId
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
@@ -11,22 +19,14 @@ import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.assets.AssetType
-import indigo.shared.config.GameViewport
-import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
-import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.scenegraph.Camera
+import indigo.shaders.RawShaderCode
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayTextLetters
-import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.platform.RendererConfig
-import indigo.shared.scenegraph.Camera
-import indigo.shared.shader.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 import indigoengine.shared.datatypes.Seconds
@@ -69,7 +69,7 @@ final class RendererWebGL1(
 
   private val gl: WebGLRenderingContext = cNc.context
   private val vertexBuffer: WebGLBuffer = gl.createBuffer()
-  private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shared.shader.library.WebGL1)
+  private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.library.WebGL1)
 
   private val textureLocations: scalajs.js.Array[TextureLookupResult] =
     gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);

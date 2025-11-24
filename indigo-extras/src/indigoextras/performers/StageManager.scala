@@ -1,14 +1,14 @@
 package indigoextras.performers
 
+import indigo.core.Outcome
+import indigo.core.datatypes.Vector2
+import indigo.core.events.FrameTick
+import indigo.core.events.GlobalEvent
 import indigo.physics.*
-import indigo.shared.Outcome
-import indigo.shared.datatypes.Vector2
-import indigo.shared.events.FrameTick
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.Layer
-import indigo.shared.scenegraph.LayerKey
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.scenegraph.Layer
+import indigo.scenegraph.LayerKey
+import indigo.scenegraph.SceneNode
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
