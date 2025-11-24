@@ -11,11 +11,11 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
+import indigo.core.assets.AssetTypePrimitive
 import indigo.platform.renderer.ScreenCaptureConfig
+import indigo.scenegraph.Shape
+import indigo.scenegraph.Shape.Box
 import indigo.scenes.*
-import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.scenegraph.Shape
-import indigo.shared.scenegraph.Shape.Box
 
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 

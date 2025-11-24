@@ -1,8 +1,8 @@
 package indigoextras.effectmaterials.shaders
 
-import indigo.shared.shader.library.IndigoUV.*
-import indigo.shared.shader.library.Lighting
-import indigo.shared.shader.library.TileAndStretch
+import indigo.shaders.library.IndigoUV.*
+import indigo.shaders.library.Lighting
+import indigo.shaders.library.TileAndStretch
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn

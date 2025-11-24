@@ -2,7 +2,7 @@ package indigoextras.mesh
 
 import indigo.Batch
 import indigo.Vertex
-import indigo.shared.geometry.LineSegment
+import indigo.core.geometry.LineSegment
 
 class MeshTests extends munit.FunSuite {
 

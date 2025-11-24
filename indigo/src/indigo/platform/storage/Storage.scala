@@ -1,12 +1,12 @@
 package indigo.platform.storage
 
-import indigo.shared.events.StorageActionType
-import indigo.shared.events.StorageEventError
-import indigo.shared.events.StorageEventError.FeatureNotAvailable
-import indigo.shared.events.StorageEventError.InvalidPermissions
-import indigo.shared.events.StorageEventError.QuotaExceeded
-import indigo.shared.events.StorageEventError.Unspecified
-import indigo.shared.events.StorageKey
+import indigo.core.events.StorageActionType
+import indigo.core.events.StorageEventError
+import indigo.core.events.StorageEventError.FeatureNotAvailable
+import indigo.core.events.StorageEventError.InvalidPermissions
+import indigo.core.events.StorageEventError.QuotaExceeded
+import indigo.core.events.StorageEventError.Unspecified
+import indigo.core.events.StorageKey
 import org.scalajs.dom
 
 import scala.scalajs.js

@@ -1,21 +1,21 @@
 package indigo.gameengine
 
+import indigo.core.Outcome
+import indigo.core.config.GameConfig
+import indigo.core.config.GameViewport
+import indigo.core.dice.Dice
+import indigo.core.events.FrameTick
+import indigo.core.events.InputEvent
+import indigo.core.events.InputState
+import indigo.core.time.GameTime
+import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
 import indigo.platform.renderer.Renderer
-import indigo.shared.BoundaryLocator
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.scenegraph.registers.BoundaryLocator
 import indigo.shared.Context
-import indigo.shared.IndigoLogger
-import indigo.shared.Outcome
-import indigo.shared.config.GameConfig
-import indigo.shared.config.GameViewport
-import indigo.shared.dice.Dice
-import indigo.shared.events.FrameTick
-import indigo.shared.events.IndigoSystemEvent
-import indigo.shared.events.InputEvent
-import indigo.shared.events.InputState
+import indigo.shared.IndigoSystemEvent
 import indigo.shared.platform.SceneProcessor
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.time.GameTime
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 

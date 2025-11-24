@@ -1,11 +1,11 @@
 package indigoextras.performers
 
 import indigo.SubSystemContext
+import indigo.core.Outcome
+import indigo.core.events.FrameTick
+import indigo.core.events.GlobalEvent
 import indigo.physics.Collider
-import indigo.shared.Outcome
-import indigo.shared.events.FrameTick
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneNode
+import indigo.scenegraph.SceneNode
 import indigoengine.shared.collections.Batch
 
 /** A pool of performers that can be updated and rendered.

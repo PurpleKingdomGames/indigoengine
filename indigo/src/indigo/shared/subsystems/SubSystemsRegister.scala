@@ -1,9 +1,9 @@
 package indigo.shared.subsystems
 
-import indigo.shared.IndigoLogger
-import indigo.shared.Outcome
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
+import indigo.core.utils.IndigoLogger
+import indigo.scenegraph.SceneUpdateFragment
 import indigoengine.shared.collections.Batch
 
 import scalajs.js

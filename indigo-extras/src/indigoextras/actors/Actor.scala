@@ -2,7 +2,7 @@ package indigoextras.actors
 
 import indigo.GlobalEvent
 import indigo.Outcome
-import indigo.shared.scenegraph.SceneNode
+import indigo.scenegraph.SceneNode
 import indigoengine.shared.collections.Batch
 
 /** An Actor is a standalone entity that can update and present itself, and communicates with the world by reading

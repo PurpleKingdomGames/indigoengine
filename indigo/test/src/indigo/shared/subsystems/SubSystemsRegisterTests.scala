@@ -1,7 +1,7 @@
 package indigo.shared.subsystems
 
 import indigoengine.shared.collections.Batch
-import indigo.shared.scenegraph.Text
+import indigo.scenegraph.Text
 
 import scala.annotation.nowarn
 

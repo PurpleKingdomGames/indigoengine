@@ -1,11 +1,11 @@
 package indigo.platform.input
 
-import indigo.shared.input.AnalogAxis
-import indigo.shared.input.Gamepad
-import indigo.shared.input.GamepadAnalogControls
-import indigo.shared.input.GamepadButtons
-import indigo.shared.input.GamepadDPad
-import indigo.shared.input.GamepadInputCapture
+import indigo.core.input.AnalogAxis
+import indigo.core.input.Gamepad
+import indigo.core.input.GamepadAnalogControls
+import indigo.core.input.GamepadButtons
+import indigo.core.input.GamepadDPad
+import indigo.core.input.GamepadInputCapture
 import org.scalajs.dom.Gamepad as GamepadJS
 import org.scalajs.dom.window
 

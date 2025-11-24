@@ -1,27 +1,27 @@
 package indigo.shared.platform
 
 import indigo.platform.assets.AtlasId
-import indigo.shared.AnimationsRegister
-import indigo.shared.BoundaryLocator
-import indigo.shared.FontRegister
-import indigo.shared.QuickCache
-import indigo.shared.assets.AssetName
+import indigo.scenegraph.registers.AnimationsRegister
+import indigo.scenegraph.registers.BoundaryLocator
+import indigo.scenegraph.registers.FontRegister
+import indigo.core.utils.QuickCache
+import indigo.core.assets.AssetName
 import indigoengine.shared.collections.Batch
-import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Vector2
+import indigo.core.config.RenderingTechnology
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Vector2
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayTextLetters
-import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.shader.Uniform
-import indigo.shared.time.GameTime
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.materials.Material
+import indigo.scenegraph.Graphic
+import indigo.scenegraph.SceneNode
+import indigo.shaders.Uniform
+import indigo.core.time.GameTime
 import indigoengine.shared.datatypes.Seconds
 
 import scala.scalajs.js.JSConverters.*
@@ -99,7 +99,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("ubo packing") {
 
-    import indigo.shared.shader.ShaderPrimitive._
+    import indigo.shaders.ShaderPrimitive._
 
     val uniforms =
       Batch(
@@ -129,7 +129,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("ubo packing - do not straddle byte boundaries") {
 
-    import indigo.shared.shader.ShaderPrimitive._
+    import indigo.shaders.ShaderPrimitive._
 
     val uniforms =
       Batch(
@@ -153,7 +153,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("ubo packing - arrays") {
 
-    import indigo.shared.shader.ShaderPrimitive._
+    import indigo.shaders.ShaderPrimitive._
 
     val uniforms =
       Batch(
@@ -268,7 +268,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("ubo packing - raw array of floats") {
 
-    import indigo.shared.shader.ShaderPrimitive._
+    import indigo.shaders.ShaderPrimitive._
 
     val uniforms =
       Batch(

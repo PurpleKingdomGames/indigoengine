@@ -1,10 +1,10 @@
 package indigo.platform.assets
 
-import indigo.shared.IndigoLogger
+import indigo.core.assets.AssetName
+import indigo.core.assets.AssetTag
+import indigo.core.datatypes.Point
+import indigo.core.utils.IndigoLogger
 import indigo.shared.PowerOfTwo
-import indigo.shared.assets.AssetName
-import indigo.shared.assets.AssetTag
-import indigo.shared.datatypes.Point
 import org.scalajs.dom
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html

@@ -1,12 +1,12 @@
 package indigoextras.actors
 
 import indigo.SubSystemContext
+import indigo.core.Outcome
+import indigo.core.events.FrameTick
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.SceneNode
 import indigo.scenes.SceneContext
 import indigo.shared.Context
-import indigo.shared.Outcome
-import indigo.shared.events.FrameTick
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneNode
 import indigoengine.shared.collections.Batch
 
 final case class ActorPool[ReferenceData, ActorType](

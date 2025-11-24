@@ -1,12 +1,12 @@
 package indigo.shared.formats
 
-import indigo.shared.assets.AssetName
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.Group
+import indigo.core.assets.AssetName
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
+import indigo.scenegraph.Graphic
+import indigo.scenegraph.Group
+import indigo.scenegraph.materials.Material
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 

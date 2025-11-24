@@ -2,9 +2,9 @@ package indigo
 
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.library
-import indigo.shared.shader.library.IndigoUV.BlendFragmentEnvReference
+import indigo.shaders.UniformBlock
+import indigo.shaders.library
+import indigo.shaders.library.IndigoUV.BlendFragmentEnvReference
 import indigo.shared.subsystems.SubSystemsRegister
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

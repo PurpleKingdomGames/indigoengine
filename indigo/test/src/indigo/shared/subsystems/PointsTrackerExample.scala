@@ -1,12 +1,12 @@
 package indigo.shared.subsystems
 
-import indigo.shared.Outcome
-import indigo.shared.assets.AssetName
-import indigo.shared.datatypes.FontKey
-import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.scenegraph.Text
+import indigo.core.Outcome
+import indigo.core.assets.AssetName
+import indigo.core.datatypes.FontKey
+import indigo.core.events.GlobalEvent
+import indigo.scenegraph.materials.Material
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.scenegraph.Text
 
 final case class PointsTrackerExample(num: Int, startingPoints: Int) extends SubSystem[Int] {
   type EventType      = PointsTrackerEvent

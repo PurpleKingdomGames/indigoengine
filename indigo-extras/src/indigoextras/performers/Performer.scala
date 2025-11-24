@@ -1,9 +1,9 @@
 package indigoextras.performers
 
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
 import indigo.physics.Collider
-import indigo.shared.Outcome
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneNode
+import indigo.scenegraph.SceneNode
 import indigoengine.shared.collections.Batch
 
 /** Performers represent entities in your scene. Indigo uses performance metaphors (like Lead and Extra) to represent

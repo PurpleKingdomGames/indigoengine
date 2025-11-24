@@ -1,11 +1,11 @@
 package indigoextras.subsystems
 
-import indigo.shared.assets.AssetName
-import indigo.shared.assets.AssetPath
-import indigo.shared.assets.AssetType
-import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.events.AssetEvent
+import indigo.core.assets.AssetName
+import indigo.core.assets.AssetPath
+import indigo.core.assets.AssetType
+import indigo.core.assets.AssetTypePrimitive
+import indigo.core.datatypes.BindingKey
+import indigo.core.events.AssetEvent
 
 class AssetBundleLoaderTests extends munit.FunSuite {
 

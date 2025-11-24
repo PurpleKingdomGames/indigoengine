@@ -1,6 +1,6 @@
 package indigoextras.mesh
 
-import indigo.shared.geometry.Vertex
+import indigo.core.geometry.Vertex
 import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec

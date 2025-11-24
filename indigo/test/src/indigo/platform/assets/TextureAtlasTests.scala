@@ -2,9 +2,9 @@ package indigo.platform.assets
 
 import indigo.platform.assets.*
 import indigo.shared.PowerOfTwo
-import indigo.shared.assets.AssetName
-import indigo.shared.assets.AssetTag
-import indigo.shared.datatypes.Point
+import indigo.core.assets.AssetName
+import indigo.core.assets.AssetTag
+import indigo.core.datatypes.Point
 
 class TextureAtlasTests extends munit.FunSuite {
 

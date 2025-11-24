@@ -1,16 +1,16 @@
 package indigo.platform.renderer
 
+import indigo.core.config.RenderingTechnology
+import indigo.core.events.RendererDetails
+import indigo.core.utils.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
-import indigo.shared.IndigoLogger
-import indigo.shared.config.RenderingTechnology
-import indigo.shared.events.RendererDetails
+import indigo.shaders.RawShaderCode
 import indigo.shared.platform.RendererConfig
-import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.WebGLRenderingContext

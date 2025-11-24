@@ -1,9 +1,9 @@
 package roguelikestarterkit
 
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.scenegraph.Layer
-import indigo.shared.shader.ShaderProgram
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.scenegraph.Layer
+import indigo.shaders.ShaderProgram
 import indigoengine.shared.collections.Batch
 
 object syntax:

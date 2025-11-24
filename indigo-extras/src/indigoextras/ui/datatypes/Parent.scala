@@ -1,7 +1,7 @@
 package indigoextras.ui.datatypes
 
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
 
 final case class Parent(bounds: Bounds, additionalOffset: Coords):
 

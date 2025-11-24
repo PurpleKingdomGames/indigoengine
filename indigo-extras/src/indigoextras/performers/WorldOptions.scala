@@ -1,7 +1,7 @@
 package indigoextras.performers
 
+import indigo.core.datatypes.Vector2
 import indigo.physics.*
-import indigo.shared.datatypes.Vector2
 import indigoengine.shared.collections.Batch
 
 /** Represents the options for the physics world.

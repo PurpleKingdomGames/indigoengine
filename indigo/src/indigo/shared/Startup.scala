@@ -1,9 +1,9 @@
 package indigo.shared
 
 import indigo.Batch
-import indigo.shared.animation.Animation
-import indigo.shared.datatypes.FontInfo
-import indigo.shared.shader.ShaderProgram
+import indigo.core.animation.Animation
+import indigo.core.datatypes.FontInfo
+import indigo.shaders.ShaderProgram
 
 /** The Startup data type describes either a successful or failed start up sequence. It can hold a value, as well as new
   * shaders, animations and fonts to be added to Indigo's registers. A new Startup instance is created each time the

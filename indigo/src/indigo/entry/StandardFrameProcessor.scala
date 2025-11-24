@@ -1,11 +1,11 @@
 package indigo.entry
 
+import indigo.core.Outcome
+import indigo.core.events.EventFilters
+import indigo.core.events.GlobalEvent
 import indigo.gameengine.FrameProcessor
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.Context
-import indigo.shared.Outcome
-import indigo.shared.events.EventFilters
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch

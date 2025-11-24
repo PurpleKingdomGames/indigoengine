@@ -1,8 +1,8 @@
 package indigoextras.jobs
 
-import indigo.shared.Outcome
-import indigo.shared.dice.Dice
-import indigo.shared.time.GameTime
+import indigo.core.Outcome
+import indigo.core.dice.Dice
+import indigo.core.time.GameTime
 
 /** Represents a Worker for a given Actor
   */
