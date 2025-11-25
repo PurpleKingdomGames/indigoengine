@@ -5,7 +5,7 @@ import org.scalacheck.*
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
-object PowerOfTwoSpecification extends Properties("PowerOfTwo") {
+class PowerOfTwoSpecification extends Properties("PowerOfTwo") {
 
   val validValues: Seq[Int] =
     PowerOfTwo.all.map(_.value).toSeq

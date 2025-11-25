@@ -28,8 +28,8 @@ trait Shared extends ScalafmtModule, ScalafixModule:
 trait SharedJVM extends Shared, ScalaModule:
   object test extends ScalaTests:
     def mvnDeps = Seq(
-      mvn"org.scalameta::munit::1.2.1",
-      mvn"org.scalacheck::scalacheck::1.18.1",
+      mvn"org.scalameta::munit::${Dependencies.munit}",
+      mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
       mvn"org.typelevel::munit-cats-effect::${Dependencies.munitCatsEffect3}",
       mvn"org.typelevel::discipline-munit::${Dependencies.disciplineMUnit}",
       mvn"org.typelevel::cats-laws::${Dependencies.catsLaws}"
@@ -42,8 +42,8 @@ trait SharedJS extends Shared, ScalaJSModule:
 
   object test extends ScalaJSTests:
     def mvnDeps = Seq(
-      mvn"org.scalameta::munit::1.2.1",
-      mvn"org.scalacheck::scalacheck::1.18.1",
+      mvn"org.scalameta::munit::${Dependencies.munit}",
+      mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
       mvn"org.typelevel::munit-cats-effect::${Dependencies.munitCatsEffect3}",
       mvn"org.typelevel::discipline-munit::${Dependencies.disciplineMUnit}",
       mvn"org.typelevel::cats-laws::${Dependencies.catsLaws}"
@@ -120,3 +120,5 @@ object Dependencies:
   val http4sCirce       = "0.23.30"
   val http4sDom         = "0.2.11"
   val http4sServer      = "0.23.32"
+  val scalacheck        = "1.19.0"
+  val munit             = "1.2.1"

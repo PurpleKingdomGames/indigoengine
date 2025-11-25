@@ -7,7 +7,7 @@ import org.scalacheck.Prop.propBoolean
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
-object QuadTreeSpecification extends Properties("QuadTree") {
+class QuadTreeSpecification extends Properties("QuadTree") {
 
   val gen: Gen[Double] = Gen.choose(1, 100)
 
