@@ -1,4 +1,4 @@
-package indigo.entry
+package indigo.frameprocessors
 
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator

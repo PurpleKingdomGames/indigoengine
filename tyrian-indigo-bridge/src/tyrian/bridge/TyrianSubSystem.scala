@@ -1,4 +1,4 @@
-package tyrian
+package tyrian.bridge
 
 import indigo.core.Outcome
 import indigo.core.events.FrameTick
@@ -8,13 +8,15 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigoengine.shared.collections.Batch
+import tyrian.bridge.IndigoGameId
+import tyrian.bridge.TyrianIndigoBridge
 
 import scala.annotation.nowarn
 import scala.collection.mutable
 
-final case class TyrianSubSystem[F[_], A, Model](
+final case class TyrianSubSystem[F[_], Event, Model](
     indigoGameId: Option[IndigoGameId],
-    bridge: TyrianIndigoBridge[F, A, Model]
+    bridge: TyrianIndigoBridge[F, Event, Model]
 ) extends SubSystem[Model]:
 
   val id: SubSystemId =
@@ -24,13 +26,13 @@ final case class TyrianSubSystem[F[_], A, Model](
   type SubSystemModel = Unit
   type ReferenceData  = Unit
 
-  def send(value: A): TyrianEvent.Send =
+  def send(value: Event): TyrianEvent.Send =
     TyrianEvent.Send(value)
 
   private val eventQueue: mutable.Queue[TyrianEvent.Receive] =
     new mutable.Queue[TyrianEvent.Receive]()
 
-  bridge.eventTarget.addEventListener[TyrianIndigoBridge.BridgeToIndigo[A]](
+  bridge.eventTarget.addEventListener[TyrianIndigoBridge.BridgeToIndigo[Event]](
     TyrianIndigoBridge.BridgeToIndigo.EventName,
     {
       case TyrianIndigoBridge.BridgeToIndigo(id, value) if id == indigoGameId =>
@@ -68,11 +70,11 @@ final case class TyrianSubSystem[F[_], A, Model](
     Outcome(SceneUpdateFragment.empty)
 
   enum TyrianEvent extends GlobalEvent:
-    case Send(value: A)    extends TyrianEvent
-    case Receive(value: A) extends TyrianEvent
+    case Send(value: Event)    extends TyrianEvent
+    case Receive(value: Event) extends TyrianEvent
 
   case object TyrianSubSystemEnqueue extends GlobalEvent
 
 object TyrianSubSystem:
-  def apply[F[_], A, Model](bridge: TyrianIndigoBridge[F, A, Model]): TyrianSubSystem[F, A, Model] =
+  def apply[F[_], Event, Model](bridge: TyrianIndigoBridge[F, Event, Model]): TyrianSubSystem[F, Event, Model] =
     TyrianSubSystem(None, bridge)

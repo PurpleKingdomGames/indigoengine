@@ -33,8 +33,8 @@ object Action:
       case Cmd.Emit(msg)        => Action.Emit(msg)
       case Cmd.Run(task, toMsg) => Action.Run(task, toMsg)
       case Cmd.SideEffect(task) => Action.SideEffect(task)
-      case Cmd.Combine(a, b)    => Action.Many(Batch(fromCmd(a), fromCmd(b)))
-      case Cmd.Batch(cmds)      => Action.Many(Batch.fromList(cmds).map(fromCmd))
+      case Cmd.Combine(a, b)    => Action.internal.Many(Batch(fromCmd(a), fromCmd(b)))
+      case Cmd.Batch(cmds)      => Action.internal.Many(Batch.fromList(cmds).map(fromCmd))
 
   /** Creates an action that immediately emits a message. */
   def emit(msg: GlobalMsg): Action =
@@ -132,17 +132,19 @@ object Action:
     def apply(run: () => GlobalMsg): Run[GlobalMsg] =
       Run(IO(run()), identity)
 
-  /** Treat many actions as one, kept here to support Cmd conversion to Action, but usage is discouraged. */
-  private[next] final case class Many(actions: Batch[Action]) extends Action:
-    def map(f: GlobalMsg => GlobalMsg): Many = this.copy(actions = actions.map(_.map(f)))
-    def ++(other: Many): Many                = Many(actions ++ other.actions)
-    def ::(action: Action): Many             = Many(action :: actions)
-    def +:(action: Action): Many             = Many(action +: actions)
-    def :+(action: Action): Many             = Many(actions :+ action)
+  object internal:
 
-    def toCmd: Cmd[IO, GlobalMsg] =
-      Cmd.Batch(actions.map(_.toCmd).toList)
+    /** Treat many actions as one, kept here to support Cmd conversion to Action, but usage is discouraged. */
+    final case class Many(actions: Batch[Action]) extends Action:
+      def map(f: GlobalMsg => GlobalMsg): Many = this.copy(actions = actions.map(_.map(f)))
+      def ++(other: Many): Many                = Many(actions ++ other.actions)
+      def ::(action: Action): Many             = Many(action :: actions)
+      def +:(action: Action): Many             = Many(action +: actions)
+      def :+(action: Action): Many             = Many(actions :+ action)
 
-  private[next] object Many:
-    def apply(cmds: Action*): Many =
-      Many(Batch.fromSeq(cmds))
+      def toCmd: Cmd[IO, GlobalMsg] =
+        Cmd.Batch(actions.map(_.toCmd).toList)
+
+    object Many:
+      def apply(cmds: Action*): Many =
+        Many(Batch.fromSeq(cmds))

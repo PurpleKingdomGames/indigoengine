@@ -44,24 +44,30 @@ final case class HtmlRoot(
 
 object HtmlRoot:
 
+  def empty: HtmlRoot =
+    apply(HtmlFragment.empty)
+
   /** Creates an HtmlRoot with a custom surround function and an empty fragment. */
   def apply(surround: Batch[Elem[GlobalMsg]] => Html[GlobalMsg]): HtmlRoot =
     HtmlRoot(surround, HtmlFragment.empty)
 
   /** Creates an HtmlRoot that wraps a fragment's markup in a div element. */
   def apply(fragment: HtmlFragment): HtmlRoot =
-    HtmlRoot(
-      childNodes => Html.div(childNodes.toList),
-      fragment
-    )
+    div(fragment)
 
   /** Creates an HtmlRoot by combining a Batch of HtmlFragments and wrapping them in a div */
   def apply(fragments: Batch[HtmlFragment]): HtmlRoot =
-    HtmlRoot(fragments.foldLeft(HtmlFragment.empty)(_ |+| _))
+    div(fragments.foldLeft(HtmlFragment.empty)(_ |+| _))
 
   /** Creates an HtmlRoot by combining a repeating number of HtmlFragments and wrapping them in a div */
   def apply(fragments: HtmlFragment*): HtmlRoot =
     HtmlRoot(Batch.fromSeq(fragments))
+
+  def div(fragment: HtmlFragment): HtmlRoot =
+    HtmlRoot(
+      childNodes => Html.div(childNodes.toList),
+      fragment
+    )
 
   /** Resolves an HtmlRoot into final HTML by replacing all markers with their corresponding inserts. If the Marker
     * contains children, they are prepended to the output.

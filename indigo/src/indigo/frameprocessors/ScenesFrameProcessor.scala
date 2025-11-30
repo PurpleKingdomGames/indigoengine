@@ -1,4 +1,4 @@
-package indigo.entry
+package indigo.frameprocessors
 
 import indigo.core.Outcome
 import indigo.core.events.EventFilters

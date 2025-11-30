@@ -2,7 +2,7 @@ package tyrian.ui
 
 import indigoengine.shared.lenses.Lens
 import tyrian.next.GlobalMsg
-import tyrian.next.Outcome
+import tyrian.next.Result
 import tyrian.ui.theme.ThemeOverride
 
 trait UIElement[Component, ComponentTheme]:
@@ -63,7 +63,7 @@ object UIElement:
     def key: UIKey
     def withKey(value: UIKey): Component
 
-    def update: GlobalMsg => Outcome[Component]
+    def update: GlobalMsg => Result[Component]
 
 /*
 
