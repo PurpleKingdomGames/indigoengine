@@ -1,35 +1,29 @@
 package demo.scenes
 
-import demo.RogueLikeGame
-import demo.models.Model
-import demo.models.ViewModel
+import demo.Constants
+import demo.models.GameModel
 import demo.windows.DemoWindow
-import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigoextras.ui.*
 
-object WindowDemoScene extends Scene[Size, Model, ViewModel]:
+object WindowDemoScene extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("window demo scene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set(
-      WindowManager[Model](
+      WindowManager[GameModel](
         SubSystemId("demo window manager"),
-        RogueLikeGame.magnification
+        Constants.magnification
       )
         .withLayerKey(LayerKey("UI Layer"))
         .register(
@@ -41,8 +35,8 @@ object WindowDemoScene extends Scene[Size, Model, ViewModel]:
 
   def updateModel(
       context: SceneContext[Size],
-      model: Model
-  ): GlobalEvent => Outcome[Model] =
+      model: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     case WindowEvent.Closed(id) =>
       val ids = model.pointerOverWindows.filterNot(_ == id)
 
@@ -51,17 +45,9 @@ object WindowDemoScene extends Scene[Size, Model, ViewModel]:
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

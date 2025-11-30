@@ -1,8 +1,20 @@
 package indigo
 
-import indigo.entry.StandardFrameProcessor
+import indigo.BootResult
+import indigo.GameLauncher
+import indigo.core.Outcome
+import indigo.core.dice.Dice
+import indigo.core.events.EventFilters
+import indigo.core.events.GlobalEvent
+import indigo.core.utils.IndigoLogger
+import indigo.frameprocessors.StandardFrameProcessor
 import indigo.gameengine.GameEngine
+import indigo.platform.assets.AssetCollection
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.Context
+import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
+import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 

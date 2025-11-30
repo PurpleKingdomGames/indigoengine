@@ -1,4 +1,4 @@
-package indigo
+package indigo.next
 
 import indigo.BootResult
 import indigo.GameLauncher
@@ -7,13 +7,13 @@ import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
-import indigo.frameprocessors.ScenesFrameProcessor
 import indigo.gameengine.GameEngine
+import indigo.next.frameprocessors.NextFrameProcessor
+import indigo.next.scenes.Scene
+import indigo.next.scenes.SceneManager
+import indigo.next.scenes.SceneName
 import indigo.platform.assets.AssetCollection
 import indigo.scenegraph.SceneUpdateFragment
-import indigo.scenes.Scene
-import indigo.scenes.SceneManager
-import indigo.scenes.SceneName
 import indigo.shared.Context
 import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
@@ -27,7 +27,7 @@ import scala.concurrent.Future
 /** A trait representing a game with scene management baked in
   *
   * @example
-  *   `object MyGame extends IndigoGame[BootData, StartUpData, Model, ViewModel]`
+  *   `object MyGame extends IndigoGame[BootData, StartUpData, Model, Unit]`
   *
   * @tparam BootData
   *   The class type representing you a successful game boot up
@@ -35,10 +35,10 @@ import scala.concurrent.Future
   *   The class type representing your successful startup data
   * @tparam Model
   *   The class type representing your game's model
-  * @tparam ViewModel
+  * @tparam Unit
   *   The class type representing your game's view model
   */
-trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[StartUpData, Model, ViewModel] {
+trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData, Model, Unit] {
 
   /** A non-empty ordered list of scenes
     *
@@ -47,7 +47,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @return
     *   A list of scenes that ensures at least one scene exists.
     */
-  def scenes(bootData: BootData): NonEmptyBatch[Scene[StartUpData, Model, ViewModel]]
+  def scenes(bootData: BootData): NonEmptyBatch[Scene[StartUpData, Model]]
 
   /** Optional name of the first scene. If None is provided then the first scene is the head of the scenes list.
     *
@@ -98,15 +98,6 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     */
   def initialModel(startupData: StartUpData): Outcome[Model]
 
-  /** Set up of your initial view model state
-    *
-    * @param startupData
-    *   Access to Startup data in case you need it for the view model
-    * @return
-    *   An instance of your game's view model
-    */
-  def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
-
   /** A pure function for updating your game's model in the context of the running frame and the events acting upon it.
     *
     * @param context
@@ -120,26 +111,6 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     */
   def updateModel(context: Context[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  /** A pure function for updating your game's view model in the context of the running frame and the events acting upon
-    * it.
-    *
-    * @param context
-    *   The context the frame should be produced in, including the time, input state, a dice instance, the state of the
-    *   inputs, and a read only reference to your start up data.
-    * @param model
-    *   The latest version of the model to read from.
-    * @param viewModel
-    *   The latest version of the view model to read from.
-    * @return
-    *   A function that maps GlobalEvent's to the next version of your view model, and encapsulates failures or
-    *   resulting events within the Outcome wrapper.
-    */
-  def updateViewModel(
-      context: Context[StartUpData],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel]
-
   /** A pure function for presenting your game. The result is a side effect free declaration of what you intend to be
     * presented to the player next.
     *
@@ -148,22 +119,20 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     *   inputs, and a read only reference to your start up data.
     * @param model
     *   The latest version of the model to read from.
-    * @param viewModel
-    *   The latest version of the view model to read from.
     * @return
     *   A function that produces a description of what to present next, and encapsulates failures or resulting events
     *   within the Outcome wrapper.
     */
-  def present(context: Context[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
+  def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
-  private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, Unit] = {
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
-    val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
+    val sceneManager: SceneManager[StartUpData, Model] = {
       val s = scenes(bootUp.bootData)
 
       initialScene(bootUp.bootData) match {
@@ -175,30 +144,29 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
       }
     }
 
-    val frameProcessor: ScenesFrameProcessor[StartUpData, Model, ViewModel] =
-      new ScenesFrameProcessor(
+    val frameProcessor: NextFrameProcessor[StartUpData, Model] =
+      new NextFrameProcessor(
         subSystemsRegister,
         sceneManager,
         eventFilters,
         updateModel,
-        updateViewModel,
-        present
+        (ctx, m) => present(ctx, m)
       )
 
-    new GameEngine[StartUpData, Model, ViewModel](
+    new GameEngine[StartUpData, Model, Unit](
       bootUp.fonts,
       bootUp.animations,
       bootUp.shaders,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
       (sd: StartUpData) => initialModel(sd),
-      (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),
+      (_: StartUpData) => (_: Model) => Outcome(()),
       frameProcessor,
       subSystemEvents
     )
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model, ViewModel] =
+  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model, Unit] =
     parentElement =>
       boot(flags) match
         case oe @ Outcome.Error(e, _) =>

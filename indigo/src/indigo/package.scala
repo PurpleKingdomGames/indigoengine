@@ -200,690 +200,697 @@ object mutable:
 
 end mutable
 
-val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
+object aliases:
 
-type Startup[SuccessType] = shared.Startup[SuccessType]
-val Startup: shared.Startup.type = shared.Startup
+  val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
-type GameTime = indigo.core.time.GameTime
-val GameTime: indigo.core.time.GameTime.type = indigo.core.time.GameTime
+  type Startup[SuccessType] = shared.Startup[SuccessType]
+  val Startup: shared.Startup.type = shared.Startup
 
-type Millis = indigoengine.shared.datatypes.Millis
-val Millis: indigoengine.shared.datatypes.Millis.type = indigoengine.shared.datatypes.Millis
+  type GameTime = indigo.core.time.GameTime
+  val GameTime: indigo.core.time.GameTime.type = indigo.core.time.GameTime
 
-type Seconds = indigoengine.shared.datatypes.Seconds
-val Seconds: indigoengine.shared.datatypes.Seconds.type = indigoengine.shared.datatypes.Seconds
+  type Millis = indigoengine.shared.datatypes.Millis
+  val Millis: indigoengine.shared.datatypes.Millis.type = indigoengine.shared.datatypes.Millis
 
-type FPS = indigo.core.time.FPS
-val FPS: indigo.core.time.FPS.type = indigo.core.time.FPS
+  type Seconds = indigoengine.shared.datatypes.Seconds
+  val Seconds: indigoengine.shared.datatypes.Seconds.type = indigoengine.shared.datatypes.Seconds
 
-type Dice = indigo.core.dice.Dice
-val Dice: indigo.core.dice.Dice.type = indigo.core.dice.Dice
+  type FPS = indigo.core.time.FPS
+  val FPS: indigo.core.time.FPS.type = indigo.core.time.FPS
 
-type AssetCollection = platform.assets.AssetCollection
+  type Dice = indigo.core.dice.Dice
+  val Dice: indigo.core.dice.Dice.type = indigo.core.dice.Dice
 
-type AssetName = indigo.core.assets.AssetName
-val AssetName: indigo.core.assets.AssetName.type = indigo.core.assets.AssetName
+  type AssetCollection = platform.assets.AssetCollection
 
-type AssetPath = indigo.core.assets.AssetPath
-val AssetPath: indigo.core.assets.AssetPath.type = indigo.core.assets.AssetPath
+  type AssetName = indigo.core.assets.AssetName
+  val AssetName: indigo.core.assets.AssetName.type = indigo.core.assets.AssetName
 
-type AssetTag = indigo.core.assets.AssetTag
-val AssetTag: indigo.core.assets.AssetTag.type = indigo.core.assets.AssetTag
+  type AssetPath = indigo.core.assets.AssetPath
+  val AssetPath: indigo.core.assets.AssetPath.type = indigo.core.assets.AssetPath
 
-type Material = indigo.scenegraph.materials.Material
-val Material: indigo.scenegraph.materials.Material.type = indigo.scenegraph.materials.Material
+  type AssetTag = indigo.core.assets.AssetTag
+  val AssetTag: indigo.core.assets.AssetTag.type = indigo.core.assets.AssetTag
 
-type FillType = indigo.scenegraph.materials.FillType
-val FillType: indigo.scenegraph.materials.FillType.type = indigo.scenegraph.materials.FillType
+  type Material = indigo.scenegraph.materials.Material
+  val Material: indigo.scenegraph.materials.Material.type = indigo.scenegraph.materials.Material
 
-type LightingModel = indigo.scenegraph.materials.LightingModel
-val LightingModel: indigo.scenegraph.materials.LightingModel.type = indigo.scenegraph.materials.LightingModel
+  type FillType = indigo.scenegraph.materials.FillType
+  val FillType: indigo.scenegraph.materials.FillType.type = indigo.scenegraph.materials.FillType
 
-type Texture = indigo.scenegraph.materials.Texture
-val Texture: indigo.scenegraph.materials.Texture.type = indigo.scenegraph.materials.Texture
+  type LightingModel = indigo.scenegraph.materials.LightingModel
+  val LightingModel: indigo.scenegraph.materials.LightingModel.type = indigo.scenegraph.materials.LightingModel
 
-type BlendMaterial = indigo.scenegraph.materials.BlendMaterial
-val BlendMaterial: indigo.scenegraph.materials.BlendMaterial.type = indigo.scenegraph.materials.BlendMaterial
+  type Texture = indigo.scenegraph.materials.Texture
+  val Texture: indigo.scenegraph.materials.Texture.type = indigo.scenegraph.materials.Texture
 
-type ShaderData = indigo.shaders.ShaderData
-val ShaderData: indigo.shaders.ShaderData.type = indigo.shaders.ShaderData
+  type BlendMaterial = indigo.scenegraph.materials.BlendMaterial
+  val BlendMaterial: indigo.scenegraph.materials.BlendMaterial.type = indigo.scenegraph.materials.BlendMaterial
 
-type ShaderProgram = indigo.shaders.ShaderProgram
+  type ShaderData = indigo.shaders.ShaderData
+  val ShaderData: indigo.shaders.ShaderData.type = indigo.shaders.ShaderData
 
-type BlendShader = indigo.shaders.BlendShader
-val BlendShader: indigo.shaders.BlendShader.type = indigo.shaders.BlendShader
+  type ShaderProgram = indigo.shaders.ShaderProgram
 
-type EntityShader = indigo.shaders.EntityShader
-val EntityShader: indigo.shaders.EntityShader.type = indigo.shaders.EntityShader
+  type BlendShader = indigo.shaders.BlendShader
+  val BlendShader: indigo.shaders.BlendShader.type = indigo.shaders.BlendShader
 
-type UltravioletShader = indigo.shaders.UltravioletShader
-val UltravioletShader: indigo.shaders.UltravioletShader.type = indigo.shaders.UltravioletShader
+  type EntityShader = indigo.shaders.EntityShader
+  val EntityShader: indigo.shaders.EntityShader.type = indigo.shaders.EntityShader
 
-type VertexEnv = indigo.shaders.library.IndigoUV.VertexEnv
-val VertexEnv: indigo.shaders.library.IndigoUV.VertexEnv.type =
-  indigo.shaders.library.IndigoUV.VertexEnv
+  type UltravioletShader = indigo.shaders.UltravioletShader
+  val UltravioletShader: indigo.shaders.UltravioletShader.type = indigo.shaders.UltravioletShader
 
-type VertexEnvReference = indigo.shaders.library.IndigoUV.VertexEnvReference
+  type VertexEnv = indigo.shaders.library.IndigoUV.VertexEnv
+  val VertexEnv: indigo.shaders.library.IndigoUV.VertexEnv.type =
+    indigo.shaders.library.IndigoUV.VertexEnv
 
-type FragmentEnv = indigo.shaders.library.IndigoUV.FragmentEnv
-val FragmentEnv: indigo.shaders.library.IndigoUV.FragmentEnv.type =
-  indigo.shaders.library.IndigoUV.FragmentEnv
+  type VertexEnvReference = indigo.shaders.library.IndigoUV.VertexEnvReference
 
-type FragmentEnvReference = indigo.shaders.library.IndigoUV.FragmentEnvReference
+  type FragmentEnv = indigo.shaders.library.IndigoUV.FragmentEnv
+  val FragmentEnv: indigo.shaders.library.IndigoUV.FragmentEnv.type =
+    indigo.shaders.library.IndigoUV.FragmentEnv
 
-type BlendFragmentEnv = indigo.shaders.library.IndigoUV.BlendFragmentEnv
-val BlendFragmentEnv: indigo.shaders.library.IndigoUV.BlendFragmentEnv.type =
-  indigo.shaders.library.IndigoUV.BlendFragmentEnv
+  type FragmentEnvReference = indigo.shaders.library.IndigoUV.FragmentEnvReference
 
-type BlendFragmentEnvReference = indigo.shaders.library.IndigoUV.BlendFragmentEnvReference
+  type BlendFragmentEnv = indigo.shaders.library.IndigoUV.BlendFragmentEnv
+  val BlendFragmentEnv: indigo.shaders.library.IndigoUV.BlendFragmentEnv.type =
+    indigo.shaders.library.IndigoUV.BlendFragmentEnv
 
-type ShaderId = indigo.shaders.ShaderId
-val ShaderId: indigo.shaders.ShaderId.type = indigo.shaders.ShaderId
+  type BlendFragmentEnvReference = indigo.shaders.library.IndigoUV.BlendFragmentEnvReference
 
-type Uniform = indigo.shaders.Uniform
-val Uniform: indigo.shaders.Uniform.type = indigo.shaders.Uniform
+  type ShaderId = indigo.shaders.ShaderId
+  val ShaderId: indigo.shaders.ShaderId.type = indigo.shaders.ShaderId
 
-type ToUniformBlock[A] = indigo.shaders.ToUniformBlock[A]
-val ToUniformBlock: indigo.shaders.ToUniformBlock.type = indigo.shaders.ToUniformBlock
+  type Uniform = indigo.shaders.Uniform
+  val Uniform: indigo.shaders.Uniform.type = indigo.shaders.Uniform
 
-type UniformBlock = indigo.shaders.UniformBlock
-val UniformBlock: indigo.shaders.UniformBlock.type = indigo.shaders.UniformBlock
+  type ToUniformBlock[A] = indigo.shaders.ToUniformBlock[A]
+  val ToUniformBlock: indigo.shaders.ToUniformBlock.type = indigo.shaders.ToUniformBlock
 
-val StandardShaders: indigo.shaders.StandardShaders.type = indigo.shaders.StandardShaders
+  type UniformBlock = indigo.shaders.UniformBlock
+  val UniformBlock: indigo.shaders.UniformBlock.type = indigo.shaders.UniformBlock
 
-type ShaderPrimitive = indigo.shaders.ShaderPrimitive
-val ShaderPrimitive: indigo.shaders.ShaderPrimitive.type = indigo.shaders.ShaderPrimitive
+  val StandardShaders: indigo.shaders.StandardShaders.type = indigo.shaders.StandardShaders
 
-type Outcome[T] = indigo.core.Outcome[T]
-val Outcome: indigo.core.Outcome.type = indigo.core.Outcome
+  type ShaderPrimitive = indigo.shaders.ShaderPrimitive
+  val ShaderPrimitive: indigo.shaders.ShaderPrimitive.type = indigo.shaders.ShaderPrimitive
 
-type Key = indigo.core.constants.Key
-val Key: indigo.core.constants.Key.type = indigo.core.constants.Key
+  type Outcome[T] = indigo.core.Outcome[T]
+  val Outcome: indigo.core.Outcome.type = indigo.core.Outcome
 
-type KeyCode = indigo.core.constants.KeyCode
-val KeyCode: indigo.core.constants.KeyCode.type = indigo.core.constants.KeyCode
+  type Key = indigo.core.constants.Key
+  val Key: indigo.core.constants.Key.type = indigo.core.constants.Key
 
-type KeyLocation = indigo.core.constants.KeyLocation
-val KeyLocation: indigo.core.constants.KeyLocation.type = indigo.core.constants.KeyLocation
+  type KeyCode = indigo.core.constants.KeyCode
+  val KeyCode: indigo.core.constants.KeyCode.type = indigo.core.constants.KeyCode
 
-type Batch[A] = indigoengine.shared.collections.Batch[A]
-val Batch: indigoengine.shared.collections.Batch.type = indigoengine.shared.collections.Batch
+  type KeyLocation = indigo.core.constants.KeyLocation
+  val KeyLocation: indigo.core.constants.KeyLocation.type = indigo.core.constants.KeyLocation
 
-type NonEmptyBatch[A] = indigoengine.shared.collections.NonEmptyBatch[A]
-val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoengine.shared.collections.NonEmptyBatch
+  type Batch[A] = indigoengine.shared.collections.Batch[A]
+  val Batch: indigoengine.shared.collections.Batch.type = indigoengine.shared.collections.Batch
 
-type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
-val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
+  type NonEmptyBatch[A] = indigoengine.shared.collections.NonEmptyBatch[A]
+  val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoengine.shared.collections.NonEmptyBatch
 
-type Signal[A] = indigo.core.temporal.Signal[A]
-val Signal: indigo.core.temporal.Signal.type = indigo.core.temporal.Signal
+  type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
+  val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
 
-type SignalReader[R, A] = indigo.core.temporal.SignalReader[R, A]
-val SignalReader: indigo.core.temporal.SignalReader.type = indigo.core.temporal.SignalReader
+  type Signal[A] = indigo.core.temporal.Signal[A]
+  val Signal: indigo.core.temporal.Signal.type = indigo.core.temporal.Signal
 
-type SignalState[S, A] = indigo.core.temporal.SignalState[S, A]
-val SignalState: indigo.core.temporal.SignalState.type = indigo.core.temporal.SignalState
+  type SignalReader[R, A] = indigo.core.temporal.SignalReader[R, A]
+  val SignalReader: indigo.core.temporal.SignalReader.type = indigo.core.temporal.SignalReader
 
-type SignalFunction[A, B] = indigo.core.temporal.SignalFunction[A, B]
-val SignalFunction: indigo.core.temporal.SignalFunction.type = indigo.core.temporal.SignalFunction
+  type SignalState[S, A] = indigo.core.temporal.SignalState[S, A]
+  val SignalState: indigo.core.temporal.SignalState.type = indigo.core.temporal.SignalState
 
-type SubSystem[Model] = shared.subsystems.SubSystem[Model]
+  type SignalFunction[A, B] = indigo.core.temporal.SignalFunction[A, B]
+  val SignalFunction: indigo.core.temporal.SignalFunction.type = indigo.core.temporal.SignalFunction
 
-type SubSystemId = shared.subsystems.SubSystemId
-val SubSystemId: shared.subsystems.SubSystemId.type = shared.subsystems.SubSystemId
+  type SubSystem[Model] = shared.subsystems.SubSystem[Model]
 
-/** defaultGameConfig Provides a useful default config set up:
-  *   - Game Viewport = 550 x 400
-  *   - FPS = 30
-  *   - Clear color = Black
-  *   - Magnification = 1
-  *   - No advanced settings enabled
-  * @return
-  *   A GameConfig instance
-  */
-val defaultGameConfig: indigo.core.config.GameConfig =
-  indigo.core.config.GameConfig.default
+  type SubSystemId = shared.subsystems.SubSystemId
+  val SubSystemId: shared.subsystems.SubSystemId.type = shared.subsystems.SubSystemId
 
-/** noRender Convenience value, alias for SceneUpdateFragment.empty
-  * @return
-  *   An Empty SceneUpdateFragment
-  */
-val noRender: indigo.scenegraph.SceneUpdateFragment =
-  indigo.scenegraph.SceneUpdateFragment.empty
+  /** defaultGameConfig Provides a useful default config set up:
+    *   - Game Viewport = 550 x 400
+    *   - FPS = 30
+    *   - Clear color = Black
+    *   - Magnification = 1
+    *   - No advanced settings enabled
+    * @return
+    *   A GameConfig instance
+    */
+  val defaultGameConfig: indigo.core.config.GameConfig =
+    indigo.core.config.GameConfig.default
 
-// events
+  /** noRender Convenience value, alias for SceneUpdateFragment.empty
+    * @return
+    *   An Empty SceneUpdateFragment
+    */
+  val noRender: indigo.scenegraph.SceneUpdateFragment =
+    indigo.scenegraph.SceneUpdateFragment.empty
 
-type GlobalEvent    = indigo.core.events.GlobalEvent
-type SubSystemEvent = indigo.core.events.SubSystemEvent
-type ViewEvent      = indigo.core.events.ViewEvent
-type InputEvent     = indigo.core.events.InputEvent
+  // events
 
-type EventFilters = indigo.core.events.EventFilters
-val EventFilters: indigo.core.events.EventFilters.type = indigo.core.events.EventFilters
+  type GlobalEvent    = indigo.core.events.GlobalEvent
+  type SubSystemEvent = indigo.core.events.SubSystemEvent
+  type ViewEvent      = indigo.core.events.ViewEvent
+  type InputEvent     = indigo.core.events.InputEvent
 
-type AccessControl = indigo.core.events.AccessControl
-val AccessControl: indigo.core.events.AccessControl.type = indigo.core.events.AccessControl
+  type EventFilters = indigo.core.events.EventFilters
+  val EventFilters: indigo.core.events.EventFilters.type = indigo.core.events.EventFilters
 
-type RendererDetails = indigo.core.events.RendererDetails
-val RendererDetails: indigo.core.events.RendererDetails.type = indigo.core.events.RendererDetails
+  type AccessControl = indigo.core.events.AccessControl
+  val AccessControl: indigo.core.events.AccessControl.type = indigo.core.events.AccessControl
 
-type ViewportResize = indigo.core.events.ViewportResize
-val ViewportResize: indigo.core.events.ViewportResize.type = indigo.core.events.ViewportResize
+  type RendererDetails = indigo.core.events.RendererDetails
+  val RendererDetails: indigo.core.events.RendererDetails.type = indigo.core.events.RendererDetails
 
-val ToggleFullScreen: indigo.core.events.ToggleFullScreen.type             = indigo.core.events.ToggleFullScreen
-val EnterFullScreen: indigo.core.events.EnterFullScreen.type               = indigo.core.events.EnterFullScreen
-val ExitFullScreen: indigo.core.events.ExitFullScreen.type                 = indigo.core.events.ExitFullScreen
-val FullScreenEntered: indigo.core.events.FullScreenEntered.type           = indigo.core.events.FullScreenEntered
-val FullScreenEnterError: indigo.core.events.FullScreenEnterError.type     = indigo.core.events.FullScreenEnterError
-val FullScreenExited: indigo.core.events.FullScreenExited.type             = indigo.core.events.FullScreenExited
-val FullScreenExitError: indigo.core.events.FullScreenExitError.type       = indigo.core.events.FullScreenExitError
-val ApplicationGainedFocus: indigo.core.events.ApplicationGainedFocus.type = indigo.core.events.ApplicationGainedFocus
-val CanvasGainedFocus: indigo.core.events.CanvasGainedFocus.type           = indigo.core.events.CanvasGainedFocus
-val ApplicationLostFocus: indigo.core.events.ApplicationLostFocus.type     = indigo.core.events.ApplicationLostFocus
-val CanvasLostFocus: indigo.core.events.CanvasLostFocus.type               = indigo.core.events.CanvasLostFocus
+  type ViewportResize = indigo.core.events.ViewportResize
+  val ViewportResize: indigo.core.events.ViewportResize.type = indigo.core.events.ViewportResize
 
-type InputState = indigo.core.events.InputState
-val InputState: indigo.core.events.InputState.type = indigo.core.events.InputState
+  val ToggleFullScreen: indigo.core.events.ToggleFullScreen.type             = indigo.core.events.ToggleFullScreen
+  val EnterFullScreen: indigo.core.events.EnterFullScreen.type               = indigo.core.events.EnterFullScreen
+  val ExitFullScreen: indigo.core.events.ExitFullScreen.type                 = indigo.core.events.ExitFullScreen
+  val FullScreenEntered: indigo.core.events.FullScreenEntered.type           = indigo.core.events.FullScreenEntered
+  val FullScreenEnterError: indigo.core.events.FullScreenEnterError.type     = indigo.core.events.FullScreenEnterError
+  val FullScreenExited: indigo.core.events.FullScreenExited.type             = indigo.core.events.FullScreenExited
+  val FullScreenExitError: indigo.core.events.FullScreenExitError.type       = indigo.core.events.FullScreenExitError
+  val ApplicationGainedFocus: indigo.core.events.ApplicationGainedFocus.type = indigo.core.events.ApplicationGainedFocus
+  val CanvasGainedFocus: indigo.core.events.CanvasGainedFocus.type           = indigo.core.events.CanvasGainedFocus
+  val ApplicationLostFocus: indigo.core.events.ApplicationLostFocus.type     = indigo.core.events.ApplicationLostFocus
+  val CanvasLostFocus: indigo.core.events.CanvasLostFocus.type               = indigo.core.events.CanvasLostFocus
 
-type InputMapping[A] = indigo.core.events.InputMapping[A]
-val InputMapping: indigo.core.events.InputMapping.type = indigo.core.events.InputMapping
+  type InputState = indigo.core.events.InputState
+  val InputState: indigo.core.events.InputState.type = indigo.core.events.InputState
 
-type Combo = indigo.core.events.Combo
-val Combo: indigo.core.events.Combo.type = indigo.core.events.Combo
+  type InputMapping[A] = indigo.core.events.InputMapping[A]
+  val InputMapping: indigo.core.events.InputMapping.type = indigo.core.events.InputMapping
 
-type GamepadInput = indigo.core.events.GamepadInput
-val GamepadInput: indigo.core.events.GamepadInput.type = indigo.core.events.GamepadInput
+  type Combo = indigo.core.events.Combo
+  val Combo: indigo.core.events.Combo.type = indigo.core.events.Combo
 
-type WheelEvent = indigo.core.events.WheelEvent
-val WheelEvent: indigo.core.events.WheelEvent.type = indigo.core.events.WheelEvent
+  type GamepadInput = indigo.core.events.GamepadInput
+  val GamepadInput: indigo.core.events.GamepadInput.type = indigo.core.events.GamepadInput
 
-type MouseState = indigo.core.input.MouseState
-val MouseState: indigo.core.input.MouseState.type = indigo.core.input.MouseState
+  type WheelEvent = indigo.core.events.WheelEvent
+  val WheelEvent: indigo.core.events.WheelEvent.type = indigo.core.events.WheelEvent
 
-type Mouse = indigo.core.input.Mouse
-val Mouse: indigo.core.input.Mouse.type = indigo.core.input.Mouse
+  type MouseState = indigo.core.input.MouseState
+  val MouseState: indigo.core.input.MouseState.type = indigo.core.input.MouseState
 
-type MouseInput = indigo.core.events.MouseInput
-val MouseInput: indigo.core.events.MouseInput.type = indigo.core.events.MouseInput
+  type Mouse = indigo.core.input.Mouse
+  val Mouse: indigo.core.input.Mouse.type = indigo.core.input.Mouse
 
-type MouseEvent = indigo.core.events.MouseEvent
-val MouseEvent: indigo.core.events.MouseEvent.type = indigo.core.events.MouseEvent
+  type MouseInput = indigo.core.events.MouseInput
+  val MouseInput: indigo.core.events.MouseInput.type = indigo.core.events.MouseInput
 
-type MouseButton = indigo.core.events.MouseButton
-val MouseButton: indigo.core.events.MouseButton.type = indigo.core.events.MouseButton
+  type MouseEvent = indigo.core.events.MouseEvent
+  val MouseEvent: indigo.core.events.MouseEvent.type = indigo.core.events.MouseEvent
 
-@deprecated("Use `ScrollDirection` instead", "0.22.0")
-type MouseWheel = indigo.core.events.MouseWheel
-@deprecated("Use `ScrollDirection` instead", "0.22.0")
-val MouseWheel: indigo.core.events.MouseWheel.type = indigo.core.events.MouseWheel
+  type MouseButton = indigo.core.events.MouseButton
+  val MouseButton: indigo.core.events.MouseButton.type = indigo.core.events.MouseButton
 
-type TouchState = indigo.core.input.TouchState
-val TouchState: indigo.core.input.TouchState.type = indigo.core.input.TouchState
+  @deprecated("Use `ScrollDirection` instead", "0.22.0")
+  type MouseWheel = indigo.core.events.MouseWheel
+  @deprecated("Use `ScrollDirection` instead", "0.22.0")
+  val MouseWheel: indigo.core.events.MouseWheel.type = indigo.core.events.MouseWheel
 
-type Finger = indigo.core.input.Finger
-val Finger: indigo.core.input.Finger.type = indigo.core.input.Finger
+  type TouchState = indigo.core.input.TouchState
+  val TouchState: indigo.core.input.TouchState.type = indigo.core.input.TouchState
 
-type TouchEvent = indigo.core.events.TouchEvent
-val TouchEvent: indigo.core.events.TouchEvent.type = indigo.core.events.TouchEvent
+  type Finger = indigo.core.input.Finger
+  val Finger: indigo.core.input.Finger.type = indigo.core.input.Finger
 
-type PenState = indigo.core.input.PenState
-val PenState: indigo.core.input.PenState.type = indigo.core.input.PenState
+  type TouchEvent = indigo.core.events.TouchEvent
+  val TouchEvent: indigo.core.events.TouchEvent.type = indigo.core.events.TouchEvent
 
-type Pen = indigo.core.input.Pen
-val Pen: indigo.core.input.Pen.type = indigo.core.input.Pen
+  type PenState = indigo.core.input.PenState
+  val PenState: indigo.core.input.PenState.type = indigo.core.input.PenState
 
-type PenEvent = indigo.core.events.PenEvent
-val PenEvent: indigo.core.events.PenEvent.type = indigo.core.events.PenEvent
+  type Pen = indigo.core.input.Pen
+  val Pen: indigo.core.input.Pen.type = indigo.core.input.Pen
 
-type Wheel = indigo.core.input.Wheel
-val Wheel: indigo.core.input.Wheel.type = indigo.core.input.Wheel
+  type PenEvent = indigo.core.events.PenEvent
+  val PenEvent: indigo.core.events.PenEvent.type = indigo.core.events.PenEvent
 
-type ScrollDirection = indigo.core.events.WheelDirection
-val ScrollDirection: indigo.core.events.WheelDirection.type = indigo.core.events.WheelDirection
+  type Wheel = indigo.core.input.Wheel
+  val Wheel: indigo.core.input.Wheel.type = indigo.core.input.Wheel
 
-type PointerState = indigo.core.input.PointerState
-val PointerState: indigo.core.input.PointerState.type = indigo.core.input.PointerState
+  type ScrollDirection = indigo.core.events.WheelDirection
+  val ScrollDirection: indigo.core.events.WheelDirection.type = indigo.core.events.WheelDirection
 
-type Pointer = indigo.core.input.Pointer
-val Pointer: indigo.core.input.Pointer.type = indigo.core.input.Pointer
+  type PointerState = indigo.core.input.PointerState
+  val PointerState: indigo.core.input.PointerState.type = indigo.core.input.PointerState
 
-type PointerEvent = indigo.core.events.PointerEvent
-val PointerEvent: indigo.core.events.PointerEvent.type = indigo.core.events.PointerEvent
+  type Pointer = indigo.core.input.Pointer
+  val Pointer: indigo.core.input.Pointer.type = indigo.core.input.Pointer
 
-type Keyboard = indigo.core.input.Keyboard
-val Keyboard: indigo.core.input.Keyboard.type = indigo.core.input.Keyboard
+  type PointerEvent = indigo.core.events.PointerEvent
+  val PointerEvent: indigo.core.events.PointerEvent.type = indigo.core.events.PointerEvent
 
-type KeyboardEvent = indigo.core.events.KeyboardEvent
-val KeyboardEvent: indigo.core.events.KeyboardEvent.type = indigo.core.events.KeyboardEvent
+  type Keyboard = indigo.core.input.Keyboard
+  val Keyboard: indigo.core.input.Keyboard.type = indigo.core.input.Keyboard
 
-type FrameTick = indigo.core.events.FrameTick.type
-val FrameTick: indigo.core.events.FrameTick.type = indigo.core.events.FrameTick
+  type KeyboardEvent = indigo.core.events.KeyboardEvent
+  val KeyboardEvent: indigo.core.events.KeyboardEvent.type = indigo.core.events.KeyboardEvent
 
-type PlaySound = indigo.core.events.PlaySound
-val PlaySound: indigo.core.events.PlaySound.type = indigo.core.events.PlaySound
+  type FrameTick = indigo.core.events.FrameTick.type
+  val FrameTick: indigo.core.events.FrameTick.type = indigo.core.events.FrameTick
 
-type NetworkEvent = indigo.core.events.NetworkEvent
-val NetworkEvent: indigo.core.events.NetworkEvent.type = indigo.core.events.NetworkEvent
+  type PlaySound = indigo.core.events.PlaySound
+  val PlaySound: indigo.core.events.PlaySound.type = indigo.core.events.PlaySound
 
-type NetworkSendEvent    = indigo.core.events.NetworkSendEvent
-type NetworkReceiveEvent = indigo.core.events.NetworkReceiveEvent
+  type NetworkEvent = indigo.core.events.NetworkEvent
+  val NetworkEvent: indigo.core.events.NetworkEvent.type = indigo.core.events.NetworkEvent
 
-type StorageActionType = indigo.core.events.StorageActionType
-val StorageActionType: indigo.core.events.StorageActionType.type = indigo.core.events.StorageActionType
+  type NetworkSendEvent    = indigo.core.events.NetworkSendEvent
+  type NetworkReceiveEvent = indigo.core.events.NetworkReceiveEvent
 
-type StorageKey = indigo.core.events.StorageKey
-val StorageKey: indigo.core.events.StorageKey.type = indigo.core.events.StorageKey
+  type StorageActionType = indigo.core.events.StorageActionType
+  val StorageActionType: indigo.core.events.StorageActionType.type = indigo.core.events.StorageActionType
 
-type StorageEvent = indigo.core.events.StorageEvent
-val StorageEvent: indigo.core.events.StorageEvent.type = indigo.core.events.StorageEvent
+  type StorageKey = indigo.core.events.StorageKey
+  val StorageKey: indigo.core.events.StorageKey.type = indigo.core.events.StorageKey
 
-type StorageEventError = indigo.core.events.StorageEventError
-val StorageEventError: indigo.core.events.StorageEventError.type = indigo.core.events.StorageEventError
+  type StorageEvent = indigo.core.events.StorageEvent
+  val StorageEvent: indigo.core.events.StorageEvent.type = indigo.core.events.StorageEvent
 
-type FetchKeyAt = indigo.core.events.StorageEvent.FetchKeyAt
-val FetchKeyAt: indigo.core.events.StorageEvent.FetchKeyAt.type = indigo.core.events.StorageEvent.FetchKeyAt
+  type StorageEventError = indigo.core.events.StorageEventError
+  val StorageEventError: indigo.core.events.StorageEventError.type = indigo.core.events.StorageEventError
 
-type KeyFoundAt = indigo.core.events.StorageEvent.KeyFoundAt
-val KeyFoundAt: indigo.core.events.StorageEvent.KeyFoundAt.type = indigo.core.events.StorageEvent.KeyFoundAt
+  type FetchKeyAt = indigo.core.events.StorageEvent.FetchKeyAt
+  val FetchKeyAt: indigo.core.events.StorageEvent.FetchKeyAt.type = indigo.core.events.StorageEvent.FetchKeyAt
 
-type FetchKeys = indigo.core.events.StorageEvent.FetchKeys
-val FetchKeys: indigo.core.events.StorageEvent.FetchKeys.type = indigo.core.events.StorageEvent.FetchKeys
+  type KeyFoundAt = indigo.core.events.StorageEvent.KeyFoundAt
+  val KeyFoundAt: indigo.core.events.StorageEvent.KeyFoundAt.type = indigo.core.events.StorageEvent.KeyFoundAt
 
-type KeysFound = indigo.core.events.StorageEvent.KeysFound
-val KeysFound: indigo.core.events.StorageEvent.KeysFound.type = indigo.core.events.StorageEvent.KeysFound
+  type FetchKeys = indigo.core.events.StorageEvent.FetchKeys
+  val FetchKeys: indigo.core.events.StorageEvent.FetchKeys.type = indigo.core.events.StorageEvent.FetchKeys
 
-type Save = indigo.core.events.StorageEvent.Save
-val Save: indigo.core.events.StorageEvent.Save.type = indigo.core.events.StorageEvent.Save
+  type KeysFound = indigo.core.events.StorageEvent.KeysFound
+  val KeysFound: indigo.core.events.StorageEvent.KeysFound.type = indigo.core.events.StorageEvent.KeysFound
 
-type Load = indigo.core.events.StorageEvent.Load
-val Load: indigo.core.events.StorageEvent.Load.type = indigo.core.events.StorageEvent.Load
+  type Save = indigo.core.events.StorageEvent.Save
+  val Save: indigo.core.events.StorageEvent.Save.type = indigo.core.events.StorageEvent.Save
 
-type Delete = indigo.core.events.StorageEvent.Delete
-val Delete: indigo.core.events.StorageEvent.Delete.type = indigo.core.events.StorageEvent.Delete
+  type Load = indigo.core.events.StorageEvent.Load
+  val Load: indigo.core.events.StorageEvent.Load.type = indigo.core.events.StorageEvent.Load
 
-val DeleteAll: indigo.core.events.StorageEvent.DeleteAll.type = indigo.core.events.StorageEvent.DeleteAll
+  type Delete = indigo.core.events.StorageEvent.Delete
+  val Delete: indigo.core.events.StorageEvent.Delete.type = indigo.core.events.StorageEvent.Delete
 
-type Loaded = indigo.core.events.StorageEvent.Loaded
-val Loaded: indigo.core.events.StorageEvent.Loaded.type = indigo.core.events.StorageEvent.Loaded
+  val DeleteAll: indigo.core.events.StorageEvent.DeleteAll.type = indigo.core.events.StorageEvent.DeleteAll
 
-type AssetEvent = indigo.core.events.AssetEvent
-val AssetEvent: indigo.core.events.AssetEvent.type = indigo.core.events.AssetEvent
+  type Loaded = indigo.core.events.StorageEvent.Loaded
+  val Loaded: indigo.core.events.StorageEvent.Loaded.type = indigo.core.events.StorageEvent.Loaded
 
-type LoadAsset = indigo.core.events.AssetEvent.LoadAsset
-val LoadAsset: indigo.core.events.AssetEvent.LoadAsset.type = indigo.core.events.AssetEvent.LoadAsset
+  type AssetEvent = indigo.core.events.AssetEvent
+  val AssetEvent: indigo.core.events.AssetEvent.type = indigo.core.events.AssetEvent
 
-type LoadAssetBatch = indigo.core.events.AssetEvent.LoadAssetBatch
-val LoadAssetBatch: indigo.core.events.AssetEvent.LoadAssetBatch.type = indigo.core.events.AssetEvent.LoadAssetBatch
+  type LoadAsset = indigo.core.events.AssetEvent.LoadAsset
+  val LoadAsset: indigo.core.events.AssetEvent.LoadAsset.type = indigo.core.events.AssetEvent.LoadAsset
 
-type AssetBatchLoaded = indigo.core.events.AssetEvent.AssetBatchLoaded
-val AssetBatchLoaded: indigo.core.events.AssetEvent.AssetBatchLoaded.type =
-  indigo.core.events.AssetEvent.AssetBatchLoaded
+  type LoadAssetBatch = indigo.core.events.AssetEvent.LoadAssetBatch
+  val LoadAssetBatch: indigo.core.events.AssetEvent.LoadAssetBatch.type = indigo.core.events.AssetEvent.LoadAssetBatch
 
-type AssetBatchLoadError = indigo.core.events.AssetEvent.AssetBatchLoadError
-val AssetBatchLoadError: indigo.core.events.AssetEvent.AssetBatchLoadError.type =
-  indigo.core.events.AssetEvent.AssetBatchLoadError
+  type AssetBatchLoaded = indigo.core.events.AssetEvent.AssetBatchLoaded
+  val AssetBatchLoaded: indigo.core.events.AssetEvent.AssetBatchLoaded.type =
+    indigo.core.events.AssetEvent.AssetBatchLoaded
 
-// Data
+  type AssetBatchLoadError = indigo.core.events.AssetEvent.AssetBatchLoadError
+  val AssetBatchLoadError: indigo.core.events.AssetEvent.AssetBatchLoadError.type =
+    indigo.core.events.AssetEvent.AssetBatchLoadError
 
-type FontChar = indigo.core.datatypes.FontChar
-val FontChar: indigo.core.datatypes.FontChar.type = indigo.core.datatypes.FontChar
+  // Data
 
-type FontInfo = indigo.core.datatypes.FontInfo
-val FontInfo: indigo.core.datatypes.FontInfo.type = indigo.core.datatypes.FontInfo
+  type FontChar = indigo.core.datatypes.FontChar
+  val FontChar: indigo.core.datatypes.FontChar.type = indigo.core.datatypes.FontChar
 
-type FontKey = indigo.core.datatypes.FontKey
-val FontKey: indigo.core.datatypes.FontKey.type = indigo.core.datatypes.FontKey
+  type FontInfo = indigo.core.datatypes.FontInfo
+  val FontInfo: indigo.core.datatypes.FontInfo.type = indigo.core.datatypes.FontInfo
 
-type TextAlignment = indigo.core.datatypes.TextAlignment
-val TextAlignment: indigo.core.datatypes.TextAlignment.type = indigo.core.datatypes.TextAlignment
+  type FontKey = indigo.core.datatypes.FontKey
+  val FontKey: indigo.core.datatypes.FontKey.type = indigo.core.datatypes.FontKey
 
-type Rectangle = indigo.core.datatypes.Rectangle
-val Rectangle: indigo.core.datatypes.Rectangle.type = indigo.core.datatypes.Rectangle
+  type TextAlignment = indigo.core.datatypes.TextAlignment
+  val TextAlignment: indigo.core.datatypes.TextAlignment.type = indigo.core.datatypes.TextAlignment
 
-type Circle = indigo.core.datatypes.Circle
-val Circle: indigo.core.datatypes.Circle.type = indigo.core.datatypes.Circle
+  type Rectangle = indigo.core.datatypes.Rectangle
+  val Rectangle: indigo.core.datatypes.Rectangle.type = indigo.core.datatypes.Rectangle
 
-type Point = indigo.core.datatypes.Point
-val Point: indigo.core.datatypes.Point.type = indigo.core.datatypes.Point
+  type Circle = indigo.core.datatypes.Circle
+  val Circle: indigo.core.datatypes.Circle.type = indigo.core.datatypes.Circle
 
-type Size = indigo.core.datatypes.Size
-val Size: indigo.core.datatypes.Size.type = indigo.core.datatypes.Size
+  type Point = indigo.core.datatypes.Point
+  val Point: indigo.core.datatypes.Point.type = indigo.core.datatypes.Point
 
-type Vector2 = indigo.core.datatypes.Vector2
-val Vector2: indigo.core.datatypes.Vector2.type = indigo.core.datatypes.Vector2
+  type Size = indigo.core.datatypes.Size
+  val Size: indigo.core.datatypes.Size.type = indigo.core.datatypes.Size
 
-type Vector3 = indigo.core.datatypes.Vector3
-val Vector3: indigo.core.datatypes.Vector3.type = indigo.core.datatypes.Vector3
+  type Vector2 = indigo.core.datatypes.Vector2
+  val Vector2: indigo.core.datatypes.Vector2.type = indigo.core.datatypes.Vector2
 
-type Vector4 = indigo.core.datatypes.Vector4
-val Vector4: indigo.core.datatypes.Vector4.type = indigo.core.datatypes.Vector4
+  type Vector3 = indigo.core.datatypes.Vector3
+  val Vector3: indigo.core.datatypes.Vector3.type = indigo.core.datatypes.Vector3
 
-type Matrix3 = indigo.core.datatypes.Matrix3
-val Matrix3: indigo.core.datatypes.Matrix3.type = indigo.core.datatypes.Matrix3
+  type Vector4 = indigo.core.datatypes.Vector4
+  val Vector4: indigo.core.datatypes.Vector4.type = indigo.core.datatypes.Vector4
 
-type Matrix4 = indigo.core.datatypes.Matrix4
-val Matrix4: indigo.core.datatypes.Matrix4.type = indigo.core.datatypes.Matrix4
+  type Matrix3 = indigo.core.datatypes.Matrix3
+  val Matrix3: indigo.core.datatypes.Matrix3.type = indigo.core.datatypes.Matrix3
 
-type Degrees = indigoengine.shared.datatypes.Degrees
-val Degrees: indigoengine.shared.datatypes.Degrees.type = indigoengine.shared.datatypes.Degrees
+  type Matrix4 = indigo.core.datatypes.Matrix4
+  val Matrix4: indigo.core.datatypes.Matrix4.type = indigo.core.datatypes.Matrix4
 
-type Radians = indigoengine.shared.datatypes.Radians
-val Radians: indigoengine.shared.datatypes.Radians.type = indigoengine.shared.datatypes.Radians
+  type Degrees = indigoengine.shared.datatypes.Degrees
+  val Degrees: indigoengine.shared.datatypes.Degrees.type = indigoengine.shared.datatypes.Degrees
 
-type BindingKey = indigo.core.datatypes.BindingKey
-val BindingKey: indigo.core.datatypes.BindingKey.type = indigo.core.datatypes.BindingKey
+  type Radians = indigoengine.shared.datatypes.Radians
+  val Radians: indigoengine.shared.datatypes.Radians.type = indigoengine.shared.datatypes.Radians
 
-type Fill = indigo.core.datatypes.Fill
-val Fill: indigo.core.datatypes.Fill.type = indigo.core.datatypes.Fill
+  type BindingKey = indigo.core.datatypes.BindingKey
+  val BindingKey: indigo.core.datatypes.BindingKey.type = indigo.core.datatypes.BindingKey
 
-type Stroke = indigo.core.datatypes.Stroke
-val Stroke: indigo.core.datatypes.Stroke.type = indigo.core.datatypes.Stroke
+  type Fill = indigo.core.datatypes.Fill
+  val Fill: indigo.core.datatypes.Fill.type = indigo.core.datatypes.Fill
 
-type RGB = indigoengine.shared.datatypes.RGB
-val RGB: indigoengine.shared.datatypes.RGB.type = indigoengine.shared.datatypes.RGB
+  type Stroke = indigo.core.datatypes.Stroke
+  val Stroke: indigo.core.datatypes.Stroke.type = indigo.core.datatypes.Stroke
 
-type RGBA = indigoengine.shared.datatypes.RGBA
-val RGBA: indigoengine.shared.datatypes.RGBA.type = indigoengine.shared.datatypes.RGBA
+  type RGB = indigoengine.shared.datatypes.RGB
+  val RGB: indigoengine.shared.datatypes.RGB.type = indigoengine.shared.datatypes.RGB
 
-type Flip = indigo.core.datatypes.Flip
-val Flip: indigo.core.datatypes.Flip.type = indigo.core.datatypes.Flip
+  type RGBA = indigoengine.shared.datatypes.RGBA
+  val RGBA: indigoengine.shared.datatypes.RGBA.type = indigoengine.shared.datatypes.RGBA
 
-// shared
+  type Flip = indigo.core.datatypes.Flip
+  val Flip: indigo.core.datatypes.Flip.type = indigo.core.datatypes.Flip
 
-type AssetType = indigo.core.assets.AssetType
-val AssetType: indigo.core.assets.AssetType.type = indigo.core.assets.AssetType
+  // shared
 
-type ResizePolicy = indigo.core.config.ResizePolicy
-val ResizePolicy: indigo.core.config.ResizePolicy.type = indigo.core.config.ResizePolicy
+  type AssetType = indigo.core.assets.AssetType
+  val AssetType: indigo.core.assets.AssetType.type = indigo.core.assets.AssetType
 
-type GameConfig = indigo.core.config.GameConfig
-val GameConfig: indigo.core.config.GameConfig.type = indigo.core.config.GameConfig
+  type ResizePolicy = indigo.core.config.ResizePolicy
+  val ResizePolicy: indigo.core.config.ResizePolicy.type = indigo.core.config.ResizePolicy
 
-type GameViewport = indigo.core.config.GameViewport
-val GameViewport: indigo.core.config.GameViewport.type = indigo.core.config.GameViewport
+  type GameConfig = indigo.core.config.GameConfig
+  val GameConfig: indigo.core.config.GameConfig.type = indigo.core.config.GameConfig
 
-type AdvancedGameConfig = indigo.core.config.AdvancedGameConfig
-val AdvancedGameConfig: indigo.core.config.AdvancedGameConfig.type = indigo.core.config.AdvancedGameConfig
+  type GameViewport = indigo.core.config.GameViewport
+  val GameViewport: indigo.core.config.GameViewport.type = indigo.core.config.GameViewport
 
-type RenderingTechnology = indigo.core.config.RenderingTechnology
-val RenderingTechnology: indigo.core.config.RenderingTechnology.type = indigo.core.config.RenderingTechnology
+  type AdvancedGameConfig = indigo.core.config.AdvancedGameConfig
+  val AdvancedGameConfig: indigo.core.config.AdvancedGameConfig.type = indigo.core.config.AdvancedGameConfig
 
-val IndigoLogger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
+  type RenderingTechnology = indigo.core.config.RenderingTechnology
+  val RenderingTechnology: indigo.core.config.RenderingTechnology.type = indigo.core.config.RenderingTechnology
 
-type Aseprite = shared.formats.Aseprite
-val Aseprite: shared.formats.Aseprite.type = shared.formats.Aseprite
+  val IndigoLogger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
-type SpriteAndAnimations = shared.formats.SpriteAndAnimations
-val SpriteAndAnimations: shared.formats.SpriteAndAnimations.type = shared.formats.SpriteAndAnimations
+  type Aseprite = shared.formats.Aseprite
+  val Aseprite: shared.formats.Aseprite.type = shared.formats.Aseprite
 
-type TiledMap = shared.formats.TiledMap
-val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
+  type SpriteAndAnimations = shared.formats.SpriteAndAnimations
+  val SpriteAndAnimations: shared.formats.SpriteAndAnimations.type = shared.formats.SpriteAndAnimations
 
-type TiledGridMap[A] = shared.formats.TiledGridMap[A]
-val TiledGridMap: shared.formats.TiledGridMap.type = shared.formats.TiledGridMap
+  type TiledMap = shared.formats.TiledMap
+  val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
 
-type TiledGridLayer[A] = shared.formats.TiledGridLayer[A]
-val TiledGridLayer: shared.formats.TiledGridLayer.type = shared.formats.TiledGridLayer
+  type TiledGridMap[A] = shared.formats.TiledGridMap[A]
+  val TiledGridMap: shared.formats.TiledGridMap.type = shared.formats.TiledGridMap
 
-type TiledGridCell[A] = shared.formats.TiledGridCell[A]
-val TiledGridCell: shared.formats.TiledGridCell.type = shared.formats.TiledGridCell
+  type TiledGridLayer[A] = shared.formats.TiledGridLayer[A]
+  val TiledGridLayer: shared.formats.TiledGridLayer.type = shared.formats.TiledGridLayer
 
-type TileSheet = indigo.shared.formats.TileSheet
-val TileSheet: indigo.shared.formats.TileSheet.type = indigo.shared.formats.TileSheet
+  type TiledGridCell[A] = shared.formats.TiledGridCell[A]
+  val TiledGridCell: shared.formats.TiledGridCell.type = shared.formats.TiledGridCell
 
-type Gamepad = indigo.core.input.Gamepad
-val Gamepad: indigo.core.input.Gamepad.type = indigo.core.input.Gamepad
+  type TileSheet = indigo.shared.formats.TileSheet
+  val TileSheet: indigo.shared.formats.TileSheet.type = indigo.shared.formats.TileSheet
 
-type GamepadDPad = indigo.core.input.GamepadDPad
-val GamepadDPad: indigo.core.input.GamepadDPad.type = indigo.core.input.GamepadDPad
+  type Gamepad = indigo.core.input.Gamepad
+  val Gamepad: indigo.core.input.Gamepad.type = indigo.core.input.Gamepad
 
-type GamepadAnalogControls = indigo.core.input.GamepadAnalogControls
-val GamepadAnalogControls: indigo.core.input.GamepadAnalogControls.type = indigo.core.input.GamepadAnalogControls
+  type GamepadDPad = indigo.core.input.GamepadDPad
+  val GamepadDPad: indigo.core.input.GamepadDPad.type = indigo.core.input.GamepadDPad
 
-type AnalogAxis = indigo.core.input.AnalogAxis
-val AnalogAxis: indigo.core.input.AnalogAxis.type = indigo.core.input.AnalogAxis
+  type GamepadAnalogControls = indigo.core.input.GamepadAnalogControls
+  val GamepadAnalogControls: indigo.core.input.GamepadAnalogControls.type = indigo.core.input.GamepadAnalogControls
 
-type GamepadButtons = indigo.core.input.GamepadButtons
-val GamepadButtons: indigo.core.input.GamepadButtons.type = indigo.core.input.GamepadButtons
+  type AnalogAxis = indigo.core.input.AnalogAxis
+  val AnalogAxis: indigo.core.input.AnalogAxis.type = indigo.core.input.AnalogAxis
 
-type ImageType = shared.ImageType
-val ImageType: shared.ImageType.type = shared.ImageType
+  type GamepadButtons = indigo.core.input.GamepadButtons
+  val GamepadButtons: indigo.core.input.GamepadButtons.type = indigo.core.input.GamepadButtons
 
-type BoundaryLocator = indigo.scenegraph.registers.BoundaryLocator
+  type ImageType = shared.ImageType
+  val ImageType: shared.ImageType.type = shared.ImageType
 
-type Context[StartUpData] = shared.Context[StartUpData]
-val Context: shared.Context.type = shared.Context
+  type BoundaryLocator = indigo.scenegraph.registers.BoundaryLocator
 
-type SubSystemContext[ReferenceData] = shared.subsystems.SubSystemContext[ReferenceData]
-val SubSystemContext: shared.subsystems.SubSystemContext.type = shared.subsystems.SubSystemContext
+  type Context[StartUpData] = shared.Context[StartUpData]
+  val Context: shared.Context.type = shared.Context
 
-//WebSockets
+  type SubSystemContext[ReferenceData] = shared.subsystems.SubSystemContext[ReferenceData]
+  val SubSystemContext: shared.subsystems.SubSystemContext.type = shared.subsystems.SubSystemContext
 
-type WebSocketEvent = shared.networking.WebSocketEvent
-val WebSocketEvent: shared.networking.WebSocketEvent.type = shared.networking.WebSocketEvent
+  // WebSockets
 
-type WebSocketConfig = shared.networking.WebSocketConfig
-val WebSocketConfig: shared.networking.WebSocketConfig.type = shared.networking.WebSocketConfig
+  type WebSocketEvent = shared.networking.WebSocketEvent
+  val WebSocketEvent: shared.networking.WebSocketEvent.type = shared.networking.WebSocketEvent
 
-type WebSocketId = shared.networking.WebSocketId
-val WebSocketId: shared.networking.WebSocketId.type = shared.networking.WebSocketId
+  type WebSocketConfig = shared.networking.WebSocketConfig
+  val WebSocketConfig: shared.networking.WebSocketConfig.type = shared.networking.WebSocketConfig
 
-type WebSocketReadyState = shared.networking.WebSocketReadyState
-val WebSocketReadyState: shared.networking.WebSocketReadyState.type = shared.networking.WebSocketReadyState
+  type WebSocketId = shared.networking.WebSocketId
+  val WebSocketId: shared.networking.WebSocketId.type = shared.networking.WebSocketId
 
-// Http
+  type WebSocketReadyState = shared.networking.WebSocketReadyState
+  val WebSocketReadyState: shared.networking.WebSocketReadyState.type = shared.networking.WebSocketReadyState
 
-val HttpMethod: shared.networking.HttpMethod.type = shared.networking.HttpMethod
+  // Http
 
-type HttpRequest = shared.networking.HttpRequest
-val HttpRequest: shared.networking.HttpRequest.type = shared.networking.HttpRequest
+  val HttpMethod: shared.networking.HttpMethod.type = shared.networking.HttpMethod
 
-type HttpReceiveEvent = shared.networking.HttpReceiveEvent
-val HttpReceiveEvent: shared.networking.HttpReceiveEvent.type = shared.networking.HttpReceiveEvent
+  type HttpRequest = shared.networking.HttpRequest
+  val HttpRequest: shared.networking.HttpRequest.type = shared.networking.HttpRequest
 
-val HttpError: shared.networking.HttpReceiveEvent.HttpError.type = shared.networking.HttpReceiveEvent.HttpError
+  type HttpReceiveEvent = shared.networking.HttpReceiveEvent
+  val HttpReceiveEvent: shared.networking.HttpReceiveEvent.type = shared.networking.HttpReceiveEvent
 
-type HttpResponse = shared.networking.HttpReceiveEvent.HttpResponse
-val HttpResponse: shared.networking.HttpReceiveEvent.HttpResponse.type = shared.networking.HttpReceiveEvent.HttpResponse
+  val HttpError: shared.networking.HttpReceiveEvent.HttpError.type = shared.networking.HttpReceiveEvent.HttpError
 
-// Scene graph
+  type HttpResponse = shared.networking.HttpReceiveEvent.HttpResponse
+  val HttpResponse: shared.networking.HttpReceiveEvent.HttpResponse.type =
+    shared.networking.HttpReceiveEvent.HttpResponse
 
-type SceneUpdateFragment = indigo.scenegraph.SceneUpdateFragment
-val SceneUpdateFragment: indigo.scenegraph.SceneUpdateFragment.type = indigo.scenegraph.SceneUpdateFragment
+  // Scene graph
 
-type Camera = indigo.scenegraph.Camera
-val Camera: indigo.scenegraph.Camera.type = indigo.scenegraph.Camera
+  type SceneUpdateFragment = indigo.scenegraph.SceneUpdateFragment
+  val SceneUpdateFragment: indigo.scenegraph.SceneUpdateFragment.type = indigo.scenegraph.SceneUpdateFragment
 
-type Zoom = indigo.scenegraph.Zoom
-val Zoom: indigo.scenegraph.Zoom.type = indigo.scenegraph.Zoom
+  type Camera = indigo.scenegraph.Camera
+  val Camera: indigo.scenegraph.Camera.type = indigo.scenegraph.Camera
 
-type Layer = indigo.scenegraph.Layer
-val Layer: indigo.scenegraph.Layer.type = indigo.scenegraph.Layer
+  type Zoom = indigo.scenegraph.Zoom
+  val Zoom: indigo.scenegraph.Zoom.type = indigo.scenegraph.Zoom
 
-type LayerEntry = indigo.scenegraph.LayerEntry
-val LayerEntry: indigo.scenegraph.LayerEntry.type = indigo.scenegraph.LayerEntry
+  type Layer = indigo.scenegraph.Layer
+  val Layer: indigo.scenegraph.Layer.type = indigo.scenegraph.Layer
 
-type LayerKey = indigo.scenegraph.LayerKey
-val LayerKey: indigo.scenegraph.LayerKey.type = indigo.scenegraph.LayerKey
+  type LayerEntry = indigo.scenegraph.LayerEntry
+  val LayerEntry: indigo.scenegraph.LayerEntry.type = indigo.scenegraph.LayerEntry
 
-type Blending = indigo.scenegraph.Blending
-val Blending: indigo.scenegraph.Blending.type = indigo.scenegraph.Blending
+  type LayerKey = indigo.scenegraph.LayerKey
+  val LayerKey: indigo.scenegraph.LayerKey.type = indigo.scenegraph.LayerKey
 
-type Blend = indigo.scenegraph.Blend
-val Blend: indigo.scenegraph.Blend.type = indigo.scenegraph.Blend
+  type Blending = indigo.scenegraph.Blending
+  val Blending: indigo.scenegraph.Blending.type = indigo.scenegraph.Blending
 
-type BlendFactor = indigo.scenegraph.BlendFactor
-val BlendFactor: indigo.scenegraph.BlendFactor.type = indigo.scenegraph.BlendFactor
+  type Blend = indigo.scenegraph.Blend
+  val Blend: indigo.scenegraph.Blend.type = indigo.scenegraph.Blend
 
-type SceneNode = indigo.scenegraph.SceneNode
-val SceneNode: indigo.scenegraph.SceneNode.type = indigo.scenegraph.SceneNode
+  type BlendFactor = indigo.scenegraph.BlendFactor
+  val BlendFactor: indigo.scenegraph.BlendFactor.type = indigo.scenegraph.BlendFactor
 
-type EntityNode[T <: indigo.scenegraph.SceneNode]    = indigo.scenegraph.EntityNode[T]
-type DependentNode[T <: indigo.scenegraph.SceneNode] = indigo.scenegraph.DependentNode[T]
-type RenderNode[T <: indigo.scenegraph.SceneNode]    = indigo.scenegraph.RenderNode[T]
+  type SceneNode = indigo.scenegraph.SceneNode
+  val SceneNode: indigo.scenegraph.SceneNode.type = indigo.scenegraph.SceneNode
 
-// Audio
-type SceneAudio = indigo.scenegraph.SceneAudio
-val SceneAudio: indigo.scenegraph.SceneAudio.type = indigo.scenegraph.SceneAudio
+  type EntityNode[T <: indigo.scenegraph.SceneNode]    = indigo.scenegraph.EntityNode[T]
+  type DependentNode[T <: indigo.scenegraph.SceneNode] = indigo.scenegraph.DependentNode[T]
+  type RenderNode[T <: indigo.scenegraph.SceneNode]    = indigo.scenegraph.RenderNode[T]
 
-type PlaybackPolicy = indigo.core.audio.PlaybackPolicy
-val PlaybackPolicy: indigo.core.audio.PlaybackPolicy.type = indigo.core.audio.PlaybackPolicy
+  // Audio
+  type SceneAudio = indigo.scenegraph.SceneAudio
+  val SceneAudio: indigo.scenegraph.SceneAudio.type = indigo.scenegraph.SceneAudio
 
-type Track = indigo.core.audio.Track
-val Track: indigo.core.audio.Track.type = indigo.core.audio.Track
+  type PlaybackPolicy = indigo.core.audio.PlaybackPolicy
+  val PlaybackPolicy: indigo.core.audio.PlaybackPolicy.type = indigo.core.audio.PlaybackPolicy
 
-type Volume = indigo.core.audio.Volume
-val Volume: indigo.core.audio.Volume.type = indigo.core.audio.Volume
+  type Track = indigo.core.audio.Track
+  val Track: indigo.core.audio.Track.type = indigo.core.audio.Track
 
-type PlaybackPattern = indigo.scenegraph.PlaybackPattern
-val PlaybackPattern: indigo.scenegraph.PlaybackPattern.type = indigo.scenegraph.PlaybackPattern
+  type Volume = indigo.core.audio.Volume
+  val Volume: indigo.core.audio.Volume.type = indigo.core.audio.Volume
 
-type SceneAudioSource = indigo.scenegraph.SceneAudioSource
-val SceneAudioSource: indigo.scenegraph.SceneAudioSource.type = indigo.scenegraph.SceneAudioSource
+  type PlaybackPattern = indigo.scenegraph.PlaybackPattern
+  val PlaybackPattern: indigo.scenegraph.PlaybackPattern.type = indigo.scenegraph.PlaybackPattern
 
-// Animation
-type Animation = indigo.core.animation.Animation
-val Animation: indigo.core.animation.Animation.type = indigo.core.animation.Animation
+  type SceneAudioSource = indigo.scenegraph.SceneAudioSource
+  val SceneAudioSource: indigo.scenegraph.SceneAudioSource.type = indigo.scenegraph.SceneAudioSource
 
-type Cycle = indigo.core.animation.Cycle
-val Cycle: indigo.core.animation.Cycle.type = indigo.core.animation.Cycle
+  // Animation
+  type Animation = indigo.core.animation.Animation
+  val Animation: indigo.core.animation.Animation.type = indigo.core.animation.Animation
 
-type CycleLabel = indigo.core.animation.CycleLabel
-val CycleLabel: indigo.core.animation.CycleLabel.type = indigo.core.animation.CycleLabel
+  type Cycle = indigo.core.animation.Cycle
+  val Cycle: indigo.core.animation.Cycle.type = indigo.core.animation.Cycle
 
-type Frame = indigo.core.animation.Frame
-val Frame: indigo.core.animation.Frame.type = indigo.core.animation.Frame
+  type CycleLabel = indigo.core.animation.CycleLabel
+  val CycleLabel: indigo.core.animation.CycleLabel.type = indigo.core.animation.CycleLabel
 
-type AnimationKey = indigo.core.animation.AnimationKey
-val AnimationKey: indigo.core.animation.AnimationKey.type = indigo.core.animation.AnimationKey
+  type Frame = indigo.core.animation.Frame
+  val Frame: indigo.core.animation.Frame.type = indigo.core.animation.Frame
 
-type AnimationAction = indigo.core.animation.AnimationAction
-val AnimationAction: indigo.core.animation.AnimationAction.type = indigo.core.animation.AnimationAction
+  type AnimationKey = indigo.core.animation.AnimationKey
+  val AnimationKey: indigo.core.animation.AnimationKey.type = indigo.core.animation.AnimationKey
 
-// Timeline Animations
-type Timeline[A] = indigo.core.animation.timeline.Timeline[A]
-val Timeline: indigo.core.animation.timeline.Timeline.type = indigo.core.animation.timeline.Timeline
+  type AnimationAction = indigo.core.animation.AnimationAction
+  val AnimationAction: indigo.core.animation.AnimationAction.type = indigo.core.animation.AnimationAction
 
-type TimelineWindow[A] = indigo.core.animation.timeline.TimeWindow[A]
-val TimelineWindow: indigo.core.animation.timeline.TimeWindow.type = indigo.core.animation.timeline.TimeWindow
+  // Timeline Animations
+  type Timeline[A] = indigo.core.animation.timeline.Timeline[A]
+  val Timeline: indigo.core.animation.timeline.Timeline.type = indigo.core.animation.timeline.Timeline
 
-type TimeSlot[A] = indigo.core.animation.timeline.TimeSlot[A]
-val TimeSlot: indigo.core.animation.timeline.TimeSlot.type = indigo.core.animation.timeline.TimeSlot
+  type TimelineWindow[A] = indigo.core.animation.timeline.TimeWindow[A]
+  val TimelineWindow: indigo.core.animation.timeline.TimeWindow.type = indigo.core.animation.timeline.TimeWindow
 
-type TimelineAnimation[A] = indigo.core.animation.timeline.TimelineAnimation[A]
-val TimelineAnimation: indigo.core.animation.timeline.TimelineAnimation.type =
-  indigo.core.animation.timeline.TimelineAnimation
+  type TimeSlot[A] = indigo.core.animation.timeline.TimeSlot[A]
+  val TimeSlot: indigo.core.animation.timeline.TimeSlot.type = indigo.core.animation.timeline.TimeSlot
 
-// Primitives
-type BlankEntity = indigo.scenegraph.BlankEntity
-val BlankEntity: indigo.scenegraph.BlankEntity.type = indigo.scenegraph.BlankEntity
+  type TimelineAnimation[A] = indigo.core.animation.timeline.TimelineAnimation[A]
+  val TimelineAnimation: indigo.core.animation.timeline.TimelineAnimation.type =
+    indigo.core.animation.timeline.TimelineAnimation
 
-type Shape[T <: indigo.scenegraph.Shape[?]] = indigo.scenegraph.Shape[T]
-val Shape: indigo.scenegraph.Shape.type = indigo.scenegraph.Shape
+  // Primitives
+  type BlankEntity = indigo.scenegraph.BlankEntity
+  val BlankEntity: indigo.scenegraph.BlankEntity.type = indigo.scenegraph.BlankEntity
 
-type Sprite[M <: Material] = indigo.scenegraph.Sprite[M]
-val Sprite: indigo.scenegraph.Sprite.type = indigo.scenegraph.Sprite
+  type Shape[T <: indigo.scenegraph.Shape[?]] = indigo.scenegraph.Shape[T]
+  val Shape: indigo.scenegraph.Shape.type = indigo.scenegraph.Shape
 
-type Text[M <: Material] = indigo.scenegraph.Text[M]
-val Text: indigo.scenegraph.Text.type = indigo.scenegraph.Text
+  type Sprite[M <: Material] = indigo.scenegraph.Sprite[M]
+  val Sprite: indigo.scenegraph.Sprite.type = indigo.scenegraph.Sprite
 
-type Graphic[M <: Material] = indigo.scenegraph.Graphic[M]
-val Graphic: indigo.scenegraph.Graphic.type = indigo.scenegraph.Graphic
+  type Text[M <: Material] = indigo.scenegraph.Text[M]
+  val Text: indigo.scenegraph.Text.type = indigo.scenegraph.Text
 
-type Group = indigo.scenegraph.Group
-val Group: indigo.scenegraph.Group.type = indigo.scenegraph.Group
+  type Graphic[M <: Material] = indigo.scenegraph.Graphic[M]
+  val Graphic: indigo.scenegraph.Graphic.type = indigo.scenegraph.Graphic
 
-type Clip[M <: Material] = indigo.scenegraph.Clip[M]
-val Clip: indigo.scenegraph.Clip.type = indigo.scenegraph.Clip
+  type Group = indigo.scenegraph.Group
+  val Group: indigo.scenegraph.Group.type = indigo.scenegraph.Group
 
-type ClipSheet = indigo.scenegraph.ClipSheet
-val ClipSheet: indigo.scenegraph.ClipSheet.type = indigo.scenegraph.ClipSheet
+  type Clip[M <: Material] = indigo.scenegraph.Clip[M]
+  val Clip: indigo.scenegraph.Clip.type = indigo.scenegraph.Clip
 
-type ClipSheetArrangement = indigo.scenegraph.ClipSheetArrangement
-val ClipSheetArrangement: indigo.scenegraph.ClipSheetArrangement.type = indigo.scenegraph.ClipSheetArrangement
+  type ClipSheet = indigo.scenegraph.ClipSheet
+  val ClipSheet: indigo.scenegraph.ClipSheet.type = indigo.scenegraph.ClipSheet
 
-type ClipPlayDirection = indigo.scenegraph.ClipPlayDirection
-val ClipPlayDirection: indigo.scenegraph.ClipPlayDirection.type = indigo.scenegraph.ClipPlayDirection
+  type ClipSheetArrangement = indigo.scenegraph.ClipSheetArrangement
+  val ClipSheetArrangement: indigo.scenegraph.ClipSheetArrangement.type = indigo.scenegraph.ClipSheetArrangement
 
-type ClipPlayMode = indigo.scenegraph.ClipPlayMode
-val ClipPlayMode: indigo.scenegraph.ClipPlayMode.type = indigo.scenegraph.ClipPlayMode
+  type ClipPlayDirection = indigo.scenegraph.ClipPlayDirection
+  val ClipPlayDirection: indigo.scenegraph.ClipPlayDirection.type = indigo.scenegraph.ClipPlayDirection
 
-// Clones
-type Cloneable = indigo.scenegraph.Cloneable
+  type ClipPlayMode = indigo.scenegraph.ClipPlayMode
+  val ClipPlayMode: indigo.scenegraph.ClipPlayMode.type = indigo.scenegraph.ClipPlayMode
 
-type CloneBlank = indigo.scenegraph.CloneBlank
-val CloneBlank: indigo.scenegraph.CloneBlank.type = indigo.scenegraph.CloneBlank
+  // Clones
+  type Cloneable = indigo.scenegraph.Cloneable
 
-type CloneId = indigo.scenegraph.CloneId
-val CloneId: indigo.scenegraph.CloneId.type = indigo.scenegraph.CloneId
+  type CloneBlank = indigo.scenegraph.CloneBlank
+  val CloneBlank: indigo.scenegraph.CloneBlank.type = indigo.scenegraph.CloneBlank
 
-type CloneBatch = indigo.scenegraph.CloneBatch
-val CloneBatch: indigo.scenegraph.CloneBatch.type = indigo.scenegraph.CloneBatch
+  type CloneId = indigo.scenegraph.CloneId
+  val CloneId: indigo.scenegraph.CloneId.type = indigo.scenegraph.CloneId
 
-type CloneBatchData = indigo.scenegraph.CloneBatchData
-val CloneBatchData: indigo.scenegraph.CloneBatchData.type = indigo.scenegraph.CloneBatchData
+  type CloneBatch = indigo.scenegraph.CloneBatch
+  val CloneBatch: indigo.scenegraph.CloneBatch.type = indigo.scenegraph.CloneBatch
 
-type CloneTiles = indigo.scenegraph.CloneTiles
-val CloneTiles: indigo.scenegraph.CloneTiles.type = indigo.scenegraph.CloneTiles
+  type CloneBatchData = indigo.scenegraph.CloneBatchData
+  val CloneBatchData: indigo.scenegraph.CloneBatchData.type = indigo.scenegraph.CloneBatchData
 
-type CloneTileData = indigo.scenegraph.CloneTileData
-val CloneTileData: indigo.scenegraph.CloneTileData.type = indigo.scenegraph.CloneTileData
+  type CloneTiles = indigo.scenegraph.CloneTiles
+  val CloneTiles: indigo.scenegraph.CloneTiles.type = indigo.scenegraph.CloneTiles
 
-type Mutants = indigo.scenegraph.Mutants
-val Mutants: indigo.scenegraph.Mutants.type = indigo.scenegraph.Mutants
+  type CloneTileData = indigo.scenegraph.CloneTileData
+  val CloneTileData: indigo.scenegraph.CloneTileData.type = indigo.scenegraph.CloneTileData
 
-// Lights
-type Light = indigo.scenegraph.Light
+  type Mutants = indigo.scenegraph.Mutants
+  val Mutants: indigo.scenegraph.Mutants.type = indigo.scenegraph.Mutants
 
-type PointLight = indigo.scenegraph.PointLight
-val PointLight: indigo.scenegraph.PointLight.type = indigo.scenegraph.PointLight
+  // Lights
+  type Light = indigo.scenegraph.Light
 
-type SpotLight = indigo.scenegraph.SpotLight
-val SpotLight: indigo.scenegraph.SpotLight.type = indigo.scenegraph.SpotLight
+  type PointLight = indigo.scenegraph.PointLight
+  val PointLight: indigo.scenegraph.PointLight.type = indigo.scenegraph.PointLight
 
-type DirectionLight = indigo.scenegraph.DirectionLight
-val DirectionLight: indigo.scenegraph.DirectionLight.type = indigo.scenegraph.DirectionLight
+  type SpotLight = indigo.scenegraph.SpotLight
+  val SpotLight: indigo.scenegraph.SpotLight.type = indigo.scenegraph.SpotLight
 
-type AmbientLight = indigo.scenegraph.AmbientLight
-val AmbientLight: indigo.scenegraph.AmbientLight.type = indigo.scenegraph.AmbientLight
+  type DirectionLight = indigo.scenegraph.DirectionLight
+  val DirectionLight: indigo.scenegraph.DirectionLight.type = indigo.scenegraph.DirectionLight
 
-type Falloff = indigo.scenegraph.Falloff
-val Falloff: indigo.scenegraph.Falloff.type = indigo.scenegraph.Falloff
+  type AmbientLight = indigo.scenegraph.AmbientLight
+  val AmbientLight: indigo.scenegraph.AmbientLight.type = indigo.scenegraph.AmbientLight
 
-type Lens[A, B] = indigoengine.shared.lenses.Lens[A, B]
-val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens
+  type Falloff = indigo.scenegraph.Falloff
+  val Falloff: indigo.scenegraph.Falloff.type = indigo.scenegraph.Falloff
 
-// Geometry
+  type Lens[A, B] = indigoengine.shared.lenses.Lens[A, B]
+  val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens
 
-type Bezier = indigo.core.geometry.Bezier
-val Bezier: indigo.core.geometry.Bezier.type = indigo.core.geometry.Bezier
+  // Geometry
 
-type BoundingBox = indigo.core.geometry.BoundingBox
-val BoundingBox: indigo.core.geometry.BoundingBox.type = indigo.core.geometry.BoundingBox
+  type Bezier = indigo.core.geometry.Bezier
+  val Bezier: indigo.core.geometry.Bezier.type = indigo.core.geometry.Bezier
 
-type BoundingCircle = indigo.core.geometry.BoundingCircle
-val BoundingCircle: indigo.core.geometry.BoundingCircle.type = indigo.core.geometry.BoundingCircle
+  type BoundingBox = indigo.core.geometry.BoundingBox
+  val BoundingBox: indigo.core.geometry.BoundingBox.type = indigo.core.geometry.BoundingBox
 
-type Line = indigo.core.geometry.Line
-val Line: indigo.core.geometry.Line.type = indigo.core.geometry.Line
+  type BoundingCircle = indigo.core.geometry.BoundingCircle
+  val BoundingCircle: indigo.core.geometry.BoundingCircle.type = indigo.core.geometry.BoundingCircle
 
-type LineSegment = indigo.core.geometry.LineSegment
-val LineSegment: indigo.core.geometry.LineSegment.type = indigo.core.geometry.LineSegment
+  type Line = indigo.core.geometry.Line
+  val Line: indigo.core.geometry.Line.type = indigo.core.geometry.Line
 
-type Polygon = indigo.core.geometry.Polygon
-val Polygon: indigo.core.geometry.Polygon.type = indigo.core.geometry.Polygon
+  type LineSegment = indigo.core.geometry.LineSegment
+  val LineSegment: indigo.core.geometry.LineSegment.type = indigo.core.geometry.LineSegment
 
-type Vertex = indigo.core.geometry.Vertex
-val Vertex: indigo.core.geometry.Vertex.type = indigo.core.geometry.Vertex
+  type Polygon = indigo.core.geometry.Polygon
+  val Polygon: indigo.core.geometry.Polygon.type = indigo.core.geometry.Polygon
 
-// Trees
+  type Vertex = indigo.core.geometry.Vertex
+  val Vertex: indigo.core.geometry.Vertex.type = indigo.core.geometry.Vertex
 
-type SpatialOps[S] = indigo.core.trees.SpatialOps[S]
-val SpatialOps: indigo.core.trees.SpatialOps.type = indigo.core.trees.SpatialOps
+  // Trees
 
-type QuadTree[S, T] = indigo.core.trees.QuadTree[S, T]
-val QuadTree: indigo.core.trees.QuadTree.type = indigo.core.trees.QuadTree
+  type SpatialOps[S] = indigo.core.trees.SpatialOps[S]
+  val SpatialOps: indigo.core.trees.SpatialOps.type = indigo.core.trees.SpatialOps
 
-type QuadTreeValue[S, T] = indigo.core.trees.QuadTreeValue[S, T]
-val QuadTreeValue: indigo.core.trees.QuadTreeValue.type = indigo.core.trees.QuadTreeValue
+  type QuadTree[S, T] = indigo.core.trees.QuadTree[S, T]
+  val QuadTree: indigo.core.trees.QuadTree.type = indigo.core.trees.QuadTree
+
+  type QuadTreeValue[S, T] = indigo.core.trees.QuadTreeValue[S, T]
+  val QuadTreeValue: indigo.core.trees.QuadTreeValue.type = indigo.core.trees.QuadTreeValue
+
+end aliases
+
+export aliases.*

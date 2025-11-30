@@ -1,8 +1,23 @@
 package indigo
 
-import indigo.entry.StandardFrameProcessor
+import indigo.GameLauncher
+import indigo.core.Outcome
+import indigo.core.animation.Animation
+import indigo.core.assets.AssetType
+import indigo.core.config.GameConfig
+import indigo.core.datatypes.FontInfo
+import indigo.core.dice.Dice
+import indigo.core.events.EventFilters
+import indigo.core.events.GlobalEvent
+import indigo.frameprocessors.StandardFrameProcessor
 import indigo.gameengine.GameEngine
+import indigo.platform.assets.AssetCollection
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.shaders.ShaderProgram
+import indigo.shared.Context
+import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
+import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 

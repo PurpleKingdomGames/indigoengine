@@ -1,42 +1,29 @@
 package demo.scenes
 
 import demo.Assets
-import demo.models.Model
-import demo.models.ViewModel
-import indigo.*
-import indigo.scenes.*
+import demo.models.GameModel
+import indigo.next.*
 import roguelikestarterkit.*
 
-object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
+object TerminalEmulatorScene extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("TerminalEmulatorScene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Size], model: Model): GlobalEvent => Outcome[Model] =
+  def updateModel(context: SceneContext[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
 
   // This shouldn't live here really, just keeping it simple for demo purposes.
   val terminal: TerminalEmulator =
@@ -55,8 +42,7 @@ object TerminalEmulatorScene extends Scene[Size, Model, ViewModel]:
 
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val tiles =
       terminal.toCloneTiles(

@@ -1,44 +1,38 @@
 package demo.scenes
 
 import demo.Assets
-import demo.RogueLikeGame
-import demo.models.Model
-import demo.models.ViewModel
+import demo.Constants
+import demo.models.GameModel
 import demo.windows.ColourWindow
-import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigoextras.ui.*
 import roguelikestarterkit.*
 
-object ColourWindowScene extends Scene[Size, Model, ViewModel]:
+object ColourWindowScene extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("colour window scene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set(
-      WindowManager[Model, Unit](
+      WindowManager[GameModel, Unit](
         SubSystemId("window manager"),
-        RogueLikeGame.magnification,
-        Size(Model.defaultCharSheet.charSize),
+        Constants.magnification,
+        Size(GameModel.defaultCharSheet.charSize),
         _ => ()
       )
         .withLayerKey(LayerKey("UI Layer"))
         .register(
           ColourWindow.window(
-            Model.defaultCharSheet
+            GameModel.defaultCharSheet
           )
         )
         .open(ColourWindow.windowId)
@@ -47,8 +41,8 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
 
   def updateModel(
       context: SceneContext[Size],
-      model: Model
-  ): GlobalEvent => Outcome[Model] =
+      model: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
       Outcome(model).addGlobalEvents(WindowEvent.OpenAt(ColourWindow.windowId, Coords(1, 1)))
 
@@ -76,13 +70,6 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   private val text: Text[TerminalMaterial] =
     Text(
       "",
@@ -92,8 +79,7 @@ object ColourWindowScene extends Scene[Size, Model, ViewModel]:
 
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
