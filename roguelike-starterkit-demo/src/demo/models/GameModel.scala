@@ -8,14 +8,14 @@ import indigoextras.ui.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
-final case class Model(
+final case class GameModel(
     pointerOverWindows: Batch[WindowId],
     num: Int,
     components: ComponentGroup[Int],
     button: Button[Unit]
 )
 
-object Model:
+object GameModel:
 
   val defaultCharSheet: CharSheet =
     CharSheet(
@@ -25,8 +25,8 @@ object Model:
       RoguelikeTiles.Size10x10.Fonts.fontKey
     )
 
-  val initial: Model =
-    Model(
+  val initial: GameModel =
+    GameModel(
       Batch.empty,
       0,
       NoTerminalUIComponents.components,

@@ -47,10 +47,10 @@ object Watcher:
         Watcher.Observe(id, observable, toMsg)
 
       case Sub.Combine(a, b) =>
-        Watcher.Many(fromSub(a), fromSub(b))
+        Watcher.internal.Many(fromSub(a), fromSub(b))
 
       case Sub.Batch(watchers) =>
-        Watcher.Many(Batch.fromList(watchers).map(fromSub))
+        Watcher.internal.Many(Batch.fromList(watchers).map(fromSub))
 
   /** Creates a watcher from a Sub. */
   def apply(sub: Sub[IO, GlobalMsg]): Watcher =
@@ -152,17 +152,19 @@ object Watcher:
     ): Watcher =
       Observe(id, observable, toMsg)
 
-  /** Treat many watchers as one */
-  private[next] final case class Many(watchers: Batch[Watcher]) extends Watcher:
-    def map(f: GlobalMsg => GlobalMsg): Many = this.copy(watchers = watchers.map(_.map(f)))
-    def ++(other: Many): Many                = Many(watchers ++ other.watchers)
-    def ::(watcher: Watcher): Many           = Many(watcher :: watchers)
-    def +:(watcher: Watcher): Many           = Many(watcher +: watchers)
-    def :+(watcher: Watcher): Many           = Many(watchers :+ watcher)
+  object internal:
 
-    def toSub: Sub[IO, GlobalMsg] =
-      Sub.Batch(watchers.map(_.toSub).toList)
+    /** Treat many watchers as one */
+    final case class Many(watchers: Batch[Watcher]) extends Watcher:
+      def map(f: GlobalMsg => GlobalMsg): Many = this.copy(watchers = watchers.map(_.map(f)))
+      def ++(other: Many): Many                = Many(watchers ++ other.watchers)
+      def ::(watcher: Watcher): Many           = Many(watcher :: watchers)
+      def +:(watcher: Watcher): Many           = Many(watcher +: watchers)
+      def :+(watcher: Watcher): Many           = Many(watchers :+ watcher)
 
-  private[next] object Many:
-    def apply(watchers: Watcher*): Many =
-      Many(Batch.fromSeq(watchers))
+      def toSub: Sub[IO, GlobalMsg] =
+        Sub.Batch(watchers.map(_.toSub).toList)
+
+    object Many:
+      def apply(watchers: Watcher*): Many =
+        Many(Batch.fromSeq(watchers))

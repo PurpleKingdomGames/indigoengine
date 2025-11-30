@@ -1,53 +1,47 @@
 package demo.scenes
 
-import demo.RogueLikeGame
-import demo.models.Model
-import demo.models.ViewModel
+import demo.Constants
+import demo.models.GameModel
 import demo.windows.ComponentsWindow
 import demo.windows.ComponentsWindow2
 import demo.windows.MenuWindow
-import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigoextras.ui.*
 
-object MultipleWindowsScene extends Scene[Size, Model, ViewModel]:
+object MultipleWindowsScene extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("MultipleWindowsScene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set(
-      WindowManager[Model, Int](
+      WindowManager[GameModel, Int](
         SubSystemId("window manager 2"),
-        RogueLikeGame.magnification,
-        Size(Model.defaultCharSheet.charSize),
+        Constants.magnification,
+        Size(GameModel.defaultCharSheet.charSize),
         _.pointerOverWindows.length
       )
         .register(
           ComponentsWindow.window(
-            Model.defaultCharSheet
+            GameModel.defaultCharSheet
           )
         )
         .register(
           ComponentsWindow2.window(
-            Model.defaultCharSheet
+            GameModel.defaultCharSheet
           )
         )
         .register(
           MenuWindow.window(
-            Model.defaultCharSheet
+            GameModel.defaultCharSheet
           )
         )
         .open(
@@ -60,8 +54,8 @@ object MultipleWindowsScene extends Scene[Size, Model, ViewModel]:
 
   def updateModel(
       context: SceneContext[Size],
-      model: Model
-  ): GlobalEvent => Outcome[Model] =
+      model: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     case WindowEvent.PointerOver(id) =>
       println("Pointer over window: " + id)
       val ids = id :: model.pointerOverWindows.filterNot(_ == id)
@@ -83,17 +77,9 @@ object MultipleWindowsScene extends Scene[Size, Model, ViewModel]:
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty

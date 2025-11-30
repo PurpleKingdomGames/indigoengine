@@ -2,22 +2,17 @@ package demo
 
 import demo.models.*
 import demo.scenes.*
-import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-
-@JSExportTopLevel("IndigoGame")
-object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
-
-  val magnification: Int = 2
+final class RogueLikeGame(tyrianSubSystem: TyrianSubSystem[String, GameModel])
+    extends IndigoNext[Size, Size, GameModel]:
 
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
 
-  def scenes(bootData: Size): NonEmptyBatch[Scene[Size, Model, ViewModel]] =
+  def scenes(bootData: Size): NonEmptyBatch[Scene[Size, GameModel]] =
     NonEmptyBatch(
       NoTerminalUI,
       ColourWindowScene,
@@ -33,10 +28,10 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Size, Model]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Size, GameModel]] =
     Outcome(
       BootResult(
-        Config.config.withMagnification(magnification),
+        Config.config.withMagnification(Constants.magnification).noResize,
         Config.config.viewport.size / 2
       )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
@@ -51,20 +46,18 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
           FPSCounter(
             RoguelikeTiles.Size10x10.Fonts.fontKey,
             Assets.assets.AnikkiSquare10x10
-          ).moveTo(Point(10, 350))
+          ).moveTo(Point(10, 350)),
+          tyrianSubSystem
         )
     )
 
-  def initialModel(startupData: Size): Outcome[Model] =
-    Outcome(Model.initial)
-
-  def initialViewModel(startupData: Size, model: Model): Outcome[ViewModel] =
-    Outcome(ViewModel.initial)
+  def initialModel(startupData: Size): Outcome[GameModel] =
+    Outcome(GameModel.initial)
 
   def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
     Outcome(Startup.Success(bootData))
 
-  def updateModel(context: Context[Size], model: Model): GlobalEvent => Outcome[Model] =
+  def updateModel(context: Context[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopPrevious)
 
@@ -74,6 +67,7 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     case Log(msg) =>
       IndigoLogger.info(msg)
       Outcome(model)
+        .addGlobalEvents(tyrianSubSystem.send(s"IndigoLogger: $msg"))
 
     case SceneEvent.SceneChange(_, _, _) =>
       Outcome(model.copy(pointerOverWindows = Batch.empty))
@@ -81,16 +75,8 @@ object RogueLikeGame extends IndigoGame[Size, Size, Model, ViewModel]:
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: Context[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: Context[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

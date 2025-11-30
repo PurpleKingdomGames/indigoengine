@@ -5,6 +5,8 @@ import example.game.MyAwesomeGame
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
+import tyrian.bridge.IndigoGameId
+import tyrian.bridge.TyrianIndigoBridge
 import tyrian.cmds.Logger
 import tyrian.cmds.Random
 

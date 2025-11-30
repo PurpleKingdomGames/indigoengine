@@ -2,11 +2,10 @@ package demo.scenes
 
 import demo.Assets
 import demo.models.ChangeValue
+import demo.models.GameModel
 import demo.models.Log
-import demo.models.Model
-import demo.models.ViewModel
 import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.syntax.*
 import indigoextras.ui.*
@@ -14,30 +13,26 @@ import indigoextras.ui.syntax.*
 import roguelikestarterkit.RoguelikeTiles
 import roguelikestarterkit.TerminalMaterial
 
-object NoTerminalUI extends Scene[Size, Model, ViewModel]:
+object NoTerminalUI extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("NoTerminalUI scene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
   def updateModel(
       context: SceneContext[Size],
-      model: Model
-  ): GlobalEvent => Outcome[Model] =
+      model: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     case ChangeValue(value) =>
       Outcome(model.copy(num = value))
 
@@ -48,17 +43,9 @@ object NoTerminalUI extends Scene[Size, Model, ViewModel]:
         model.copy(components = cl)
       }
 
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     model.components
       .present(UIContext(context.toContext.forSubSystems.copy(reference = 0), Size(1), 1))

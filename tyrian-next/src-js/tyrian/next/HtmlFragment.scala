@@ -75,7 +75,7 @@ final case class HtmlFragment(markup: Batch[Elem[GlobalMsg]], inserts: Map[Marke
 
   /** Convery this HtmlFragment into an HtmlRoot by surrounding the elements with a `div` tag */
   def toHtmlRoot: HtmlRoot =
-    HtmlRoot(this)
+    HtmlRoot.div(this)
 
 object HtmlFragment:
 

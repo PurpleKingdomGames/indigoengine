@@ -1,7 +1,9 @@
-package tyrian.next
+package indigo.next
 
 import cats.effect.IO
+import cats.effect.kernel.Async
 import cats.effect.unsafe.implicits.global
+import indigo.next.IndigoNext
 import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
@@ -11,12 +13,24 @@ import tyrian.Html
 import tyrian.Location
 import tyrian.Sub
 import tyrian.TyrianApp
-import tyrian.next.extensions.Extension
-import tyrian.next.extensions.ExtensionRegister
+import tyrian.bridge.TyrianIndigoBridge
+import tyrian.next.Action
+import tyrian.next.GlobalMsg
+import tyrian.next.HtmlRoot
+import tyrian.next.Result
+import tyrian.next.Watcher
 
+import scala.concurrent.duration.*
 import scala.scalajs.js.annotation.*
 
-trait TyrianNext[Model]:
+trait IndigoApp[AppModel, Game <: IndigoNext[?, ?, ?], GameModel]:
+
+  // TODO: Maybe we need a 'game container detect' function?
+  def gameDivId: String
+
+  def onBridge: String => Option[GlobalMsg]
+
+  def startGame(bridge: TyrianIndigoBridge[IO, String, GameModel]): Game
 
   /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
     * more than sufficient, however the value can be tweaked in your app by overriding this value.
@@ -32,25 +46,21 @@ trait TyrianNext[Model]:
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
     * run at start up, in order to trigger other processes.
     */
-  def init(flags: Map[String, String]): Result[Model]
+  def init(flags: Map[String, String]): Result[AppModel]
 
   /** The update method allows you to modify the model based on incoming messages (events). As well as an updated model,
     * you can also produce actions to run.
     */
-  def update(model: Model): GlobalMsg => Result[Model]
+  def update(model: AppModel): GlobalMsg => Result[AppModel]
 
   /** Used to render your current model into an HTML view.
     */
-  def view(model: Model): HtmlRoot
+  def view(model: AppModel): HtmlRoot
 
   /** Watchers are typically processes that run for a period of time and emit discrete events based on some world event,
     * e.g. a mouse moving might emit it's coordinates.
     */
-  def watchers(model: Model): Batch[Watcher]
-
-  /** Extensions are mini-TyrianNext apps that are mechnically combined with your main application in the background.
-    */
-  def extensions: Set[Extension]
+  def watchers(model: AppModel): Batch[Watcher]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -93,14 +103,14 @@ trait TyrianNext[Model]:
 
   private def routeCurrentLocation(router: Location => GlobalMsg): Cmd[IO, GlobalMsg] =
     val task =
-      IO.delay {
+      Async[IO].delay {
         Location.fromJsLocation(window.location)
       }
     Cmd.Run(task, router)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def _init(flags: Map[String, String]): (Model, Cmd[IO, GlobalMsg]) =
-    init(flags) match
+  private def _init(flags: Map[String, String]): (ModelWrapper, Cmd[IO, GlobalMsg]) =
+    val (m, cmd) = init(flags) match
       case Result.Next(state, actions) =>
         (state, Action.internal.Many(actions).toCmd |+| routeCurrentLocation(router))
 
@@ -108,18 +118,50 @@ trait TyrianNext[Model]:
         println(e.reportCrash)
         throw err
 
+    (
+      ModelWrapper(m, None, TyrianIndigoBridge[IO, String, GameModel]()), // TODO: String?
+      cmd |+| routeCurrentLocation(router) |+| Cmd.Emit(IndigoBootMsg.Start)
+    )
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  protected def _update(
-      model: Model
-  ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
+  private def _update(
+      model: ModelWrapper
+  ): GlobalMsg => (ModelWrapper, Cmd[IO, GlobalMsg]) =
+    case IndigoBootMsg.Register(game) =>
+      (model.copy(game = Some(game)), Cmd.None)
+
+    case IndigoBootMsg.Start =>
+      val task: IO[GlobalMsg] =
+        IO.delay {
+          if gameDivsExist(gameDivId) then
+            println("Indigo container divs ready, launching games.")
+            val game: Game =
+              startGame(model.bridge)
+
+            game.launch(gameDivId)
+
+            IndigoBootMsg.Register(game)
+          else
+            println("Indigo container divs not ready, retrying...")
+            IndigoBootMsg.Retry
+        }
+
+      (model, Cmd.Run(task))
+
+    case IndigoBootMsg.Retry =>
+      (model, Cmd.emitAfterDelay(IndigoBootMsg.Start, 0.5.seconds))
+
     case msg =>
-      update(model)(msg) match
+      update(model.app)(msg) match
         case Result.Next(state, actions) =>
-          state -> Action.internal.Many(actions).toCmd
+          model.copy(app = state) -> Action.internal.Many(actions).toCmd
 
         case e @ Result.Error(err, _) =>
           println(e.reportCrash)
           throw err
+
+  private def _view(model: ModelWrapper): Html[GlobalMsg] =
+    view(model.app).toHtml
 
   private def onUrlChange(router: Location => GlobalMsg): Watcher =
     def makeMsg = Option(router(Location.fromJsLocation(window.location)))
@@ -128,57 +170,28 @@ trait TyrianNext[Model]:
       Watcher.fromEvent("popstate", window)(_ => makeMsg)
     )
 
-  private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
+  private def _subscriptions(model: ModelWrapper): Sub[IO, GlobalMsg] =
     Watcher.internal
       .Many(
-        onUrlChange(router) :: watchers(model)
+        onUrlChange(router) :: watchers(model.app)
       )
-      .toSub
+      .toSub |+| model.bridge.subscribe {
+      onBridge
+    }
 
-  private val extensionsRegister: ExtensionRegister =
-    new ExtensionRegister()
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  private def gameDivsExist(id: String): Boolean =
+    document.getElementById(id) != null
 
   def ready(node: Element, flags: Map[String, String]): Unit =
-    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions)).map(_.toCmd)
-
-    val (initModel, initCmds) = _init(flags)
-
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def combinedUpdate(
-        model: Model
-    ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
-      msg =>
-        val (m, as) = _update(model)(msg)
-        val extCmds = extensionsRegister.update(msg).map { actions =>
-          val cmds = actions.map(_.toCmd)
-          if cmds.isEmpty then Cmd.None
-          else
-            val head = cmds.head
-            cmds.tail.foldLeft(head)(_ |+| _)
-        }
-
-        extCmds match {
-          case Outcome.Error(e, _) =>
-            throw e
-
-          case Outcome.Result(eCmds, _) =>
-            m -> (as |+| eCmds)
-        }
-
-    def combinedView(model: Model): Html[GlobalMsg] =
-      view(model).addHtmlFragments(extensionsRegister.view).toHtml
-
-    def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
-      _subscriptions(model) |+| Watcher.Many(extensionsRegister.watchers).toSub
-
     run(
-      TyrianApp.start[IO, Model, GlobalMsg](
+      TyrianApp.start[IO, ModelWrapper, GlobalMsg](
         node,
         router,
-        initModel -> (initCmds |+| Cmd.Batch(extensionsCmds.toList)),
-        combinedUpdate,
-        combinedView,
-        combinedSubscriptions
+        _init(flags),
+        _update,
+        _view,
+        _subscriptions
       )
     )
 
@@ -190,3 +203,13 @@ trait TyrianNext[Model]:
 
       case None =>
         throw new Exception(s"Missing Element! Could not find an element with id '$containerId' on the page.")
+
+  enum IndigoBootMsg extends GlobalMsg:
+    case Start, Retry
+    case Register(game: Game)
+
+  final case class ModelWrapper(
+      app: AppModel,
+      game: Option[Game],
+      bridge: TyrianIndigoBridge[IO, String, GameModel]
+  )

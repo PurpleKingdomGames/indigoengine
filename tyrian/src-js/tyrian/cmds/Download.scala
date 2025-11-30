@@ -8,6 +8,7 @@ import tyrian.Cmd
 import java.util.Base64
 
 object Download:
+
   def fromByteArray[F[_]: Sync](fileName: String, mimeType: String, data: Array[Byte]): Cmd.SideEffect[F, Unit] =
     fromBase64String(fileName, mimeType, Base64.getEncoder().encodeToString(data))
 

@@ -9,9 +9,9 @@ import indigo.shared.subsystems.SubSystem
   * process, so it is recommended that you only load the bare minimum needed to get your game going during the boot
   * phase.
   */
-final case class BootResult[A, Model](
+final case class BootResult[BootData, Model](
     gameConfig: GameConfig,
-    bootData: A,
+    bootData: BootData,
     animations: Set[Animation],
     assets: Set[AssetType],
     fonts: Set[FontInfo],
@@ -19,55 +19,55 @@ final case class BootResult[A, Model](
     shaders: Set[ShaderProgram]
 ) derives CanEqual {
 
-  def addAnimations(newAnimations: Set[Animation]): BootResult[A, Model] =
+  def addAnimations(newAnimations: Set[Animation]): BootResult[BootData, Model] =
     this.copy(animations = animations ++ newAnimations)
-  def addAnimations(newAnimations: Animation*): BootResult[A, Model] =
+  def addAnimations(newAnimations: Animation*): BootResult[BootData, Model] =
     addAnimations(newAnimations.toSet)
-  def withAnimations(newAnimations: Set[Animation]): BootResult[A, Model] =
+  def withAnimations(newAnimations: Set[Animation]): BootResult[BootData, Model] =
     this.copy(animations = newAnimations)
-  def withAnimations(newAnimations: Animation*): BootResult[A, Model] =
+  def withAnimations(newAnimations: Animation*): BootResult[BootData, Model] =
     withAnimations(newAnimations.toSet)
 
-  def addAssets(newAssets: Set[AssetType]): BootResult[A, Model] =
+  def addAssets(newAssets: Set[AssetType]): BootResult[BootData, Model] =
     this.copy(assets = assets ++ newAssets)
-  def addAssets(newAssets: AssetType*): BootResult[A, Model] =
+  def addAssets(newAssets: AssetType*): BootResult[BootData, Model] =
     addAssets(newAssets.toSet)
-  def withAssets(newAssets: Set[AssetType]): BootResult[A, Model] =
+  def withAssets(newAssets: Set[AssetType]): BootResult[BootData, Model] =
     this.copy(assets = newAssets)
-  def withAssets(newAssets: AssetType*): BootResult[A, Model] =
+  def withAssets(newAssets: AssetType*): BootResult[BootData, Model] =
     withAssets(newAssets.toSet)
 
-  def addFonts(newFonts: Set[FontInfo]): BootResult[A, Model] =
+  def addFonts(newFonts: Set[FontInfo]): BootResult[BootData, Model] =
     this.copy(fonts = fonts ++ newFonts)
-  def addFonts(newFonts: FontInfo*): BootResult[A, Model] =
+  def addFonts(newFonts: FontInfo*): BootResult[BootData, Model] =
     addFonts(newFonts.toSet)
-  def withFonts(newFonts: Set[FontInfo]): BootResult[A, Model] =
+  def withFonts(newFonts: Set[FontInfo]): BootResult[BootData, Model] =
     this.copy(fonts = newFonts)
-  def withFonts(newFonts: FontInfo*): BootResult[A, Model] =
+  def withFonts(newFonts: FontInfo*): BootResult[BootData, Model] =
     withFonts(newFonts.toSet)
 
-  def addSubSystems(newSubSystems: Set[SubSystem[Model]]): BootResult[A, Model] =
+  def addSubSystems(newSubSystems: Set[SubSystem[Model]]): BootResult[BootData, Model] =
     this.copy(subSystems = subSystems ++ newSubSystems)
-  def addSubSystems(newSubSystems: SubSystem[Model]*): BootResult[A, Model] =
+  def addSubSystems(newSubSystems: SubSystem[Model]*): BootResult[BootData, Model] =
     addSubSystems(newSubSystems.toSet)
-  def withSubSystems(newSubSystems: Set[SubSystem[Model]]): BootResult[A, Model] =
+  def withSubSystems(newSubSystems: Set[SubSystem[Model]]): BootResult[BootData, Model] =
     this.copy(subSystems = newSubSystems)
-  def withSubSystems(newSubSystems: SubSystem[Model]*): BootResult[A, Model] =
+  def withSubSystems(newSubSystems: SubSystem[Model]*): BootResult[BootData, Model] =
     withSubSystems(newSubSystems.toSet)
 
-  def addShaders(newShaders: Set[ShaderProgram]): BootResult[A, Model] =
+  def addShaders(newShaders: Set[ShaderProgram]): BootResult[BootData, Model] =
     this.copy(shaders = shaders ++ newShaders)
-  def addShaders(newShaders: ShaderProgram*): BootResult[A, Model] =
+  def addShaders(newShaders: ShaderProgram*): BootResult[BootData, Model] =
     addShaders(newShaders.toSet)
-  def withShaders(newShaders: Set[ShaderProgram]): BootResult[A, Model] =
+  def withShaders(newShaders: Set[ShaderProgram]): BootResult[BootData, Model] =
     this.copy(shaders = newShaders)
-  def withShaders(newShaders: ShaderProgram*): BootResult[A, Model] =
+  def withShaders(newShaders: ShaderProgram*): BootResult[BootData, Model] =
     withShaders(newShaders.toSet)
 
 }
 object BootResult {
-  def apply[A, Model](gameConfig: GameConfig, bootData: A): BootResult[A, Model] =
-    new BootResult[A, Model](gameConfig, bootData, Set(), Set(), Set(), Set(), Set())
+  def apply[BootData, Model](gameConfig: GameConfig, bootData: BootData): BootResult[BootData, Model] =
+    new BootResult[BootData, Model](gameConfig, bootData, Set(), Set(), Set(), Set(), Set())
 
   def noData[Model](gameConfig: GameConfig): BootResult[Unit, Model] =
     apply(gameConfig, ())

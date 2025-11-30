@@ -3,7 +3,7 @@ package example.game
 import cats.effect.IO
 import indigo.*
 import indigo.scenes.*
-import tyrian.TyrianSubSystem
+import tyrian.bridge.TyrianSubSystem
 
 final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit], clockwise: Boolean)
     extends IndigoGame[Unit, Unit, Unit, Unit]:

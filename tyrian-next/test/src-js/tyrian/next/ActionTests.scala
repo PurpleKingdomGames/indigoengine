@@ -43,7 +43,7 @@ class ActionTests extends munit.CatsEffectSuite {
 
   test("map - Many") {
     val many =
-      Action.Many(
+      Action.internal.Many(
         Action.Run(IO(10), i => IntMsg(i * 2)),
         Action.Run(IO(10), i => IntMsg(i * 100)),
         Action.Run(IO(10), i => IntMsg(i * 10))
@@ -65,43 +65,43 @@ class ActionTests extends munit.CatsEffectSuite {
 
   test("Many cons") {
     val actual =
-      Action.Emit(IntMsg(10)) :: Action.Many(Action.Emit(IntMsg(20)))
+      Action.Emit(IntMsg(10)) :: Action.internal.Many(Action.Emit(IntMsg(20)))
 
     val expected =
-      Action.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
+      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
 
     assertEquals(actual, expected)
   }
 
   test("Many prepend") {
     val actual =
-      Action.Emit(IntMsg(10)) +: Action.Many(Action.Emit(IntMsg(20)))
+      Action.Emit(IntMsg(10)) +: Action.internal.Many(Action.Emit(IntMsg(20)))
 
     val expected =
-      Action.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
+      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
 
     assertEquals(actual, expected)
   }
 
   test("Many append") {
     val actual =
-      Action.Many(Action.Emit(IntMsg(10))) :+ Action.Emit(IntMsg(20))
+      Action.internal.Many(Action.Emit(IntMsg(10))) :+ Action.Emit(IntMsg(20))
 
     val expected =
-      Action.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
+      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)))
 
     assertEquals(actual, expected)
   }
 
   test("Many concat") {
     val actual =
-      Action.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20))) ++ Action.Many(
+      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20))) ++ Action.internal.Many(
         Action.Emit(IntMsg(30)),
         Action.Emit(IntMsg(40))
       )
 
     val expected =
-      Action.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)), Action.Emit(IntMsg(30)), Action.Emit(IntMsg(40)))
+      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)), Action.Emit(IntMsg(30)), Action.Emit(IntMsg(40)))
 
     assertEquals(actual, expected)
   }

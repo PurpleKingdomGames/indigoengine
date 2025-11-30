@@ -14,7 +14,10 @@ object `package` extends Module:
 
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
-    def moduleDeps = Seq(build.tyrian.js)
+    def moduleDeps = Seq(
+      build.tyrian.js,
+      build.`tyrian-indigo-bridge`.js
+    )
 
     def mvnDeps = Seq(
       mvn"org.typelevel::cats-effect::${Dependencies.catsEffect}"
