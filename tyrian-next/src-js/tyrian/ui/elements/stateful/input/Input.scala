@@ -4,7 +4,7 @@ import indigoengine.shared.lenses.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg
-import tyrian.next.Outcome
+import tyrian.next.Result
 import tyrian.ui
 import tyrian.ui.UIElement
 import tyrian.ui.UIKey
@@ -60,15 +60,15 @@ final case class Input(
   def withThemeOverride(value: ThemeOverride[InputTheme]): Input =
     this.copy(themeOverride = value)
 
-  def update: GlobalMsg => Outcome[Input] =
+  def update: GlobalMsg => Result[Input] =
     case TextInputMsg.Changed(_key, v) if _key == key =>
-      Outcome(this.copy(value = v))
+      Result(this.copy(value = v))
 
     case TextInputMsg.Clear(_key) if _key == key =>
-      Outcome(this.copy(value = ""))
+      Result(this.copy(value = ""))
 
     case _ =>
-      Outcome(this)
+      Result(this)
 
   def view: Theme ?=> Elem[GlobalMsg] =
     Input.toHtml(this)

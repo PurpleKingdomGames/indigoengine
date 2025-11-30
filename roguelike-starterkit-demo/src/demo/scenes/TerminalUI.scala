@@ -1,40 +1,34 @@
 package demo.scenes
 
 import demo.Assets
+import demo.models.GameModel
 import demo.models.Log
-import demo.models.Model
-import demo.models.ViewModel
-import indigo.*
-import indigo.scenes.*
+import indigo.next.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
-object TerminalUI extends Scene[Size, Model, ViewModel]:
+object TerminalUI extends Scene[Size, GameModel]:
 
-  type SceneModel     = Model
-  type SceneViewModel = ViewModel
+  type SceneModel = GameModel
 
   val name: SceneName =
     SceneName("TerminalUI scene")
 
-  val modelLens: Lens[Model, Model] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[ViewModel, ViewModel] =
+  val modelLens: Lens[GameModel, GameModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem[Model]] =
+  val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
   def updateModel(
       context: SceneContext[Size],
-      model: Model
-  ): GlobalEvent => Outcome[Model] =
+      model: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     case Log(message) =>
       println(message)
       Outcome(model)
@@ -48,17 +42,9 @@ object TerminalUI extends Scene[Size, Model, ViewModel]:
         model.copy(button = b)
       }
 
-  def updateViewModel(
-      context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Size],
-      model: Model,
-      viewModel: ViewModel
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val ctx = UIContext(context.toContext, context.frame.globalMagnification)
       .withSnapGrid(TerminalUIComponents.charSheet.size)
