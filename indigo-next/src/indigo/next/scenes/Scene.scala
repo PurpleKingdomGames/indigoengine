@@ -7,7 +7,7 @@ import indigo.scenegraph.Layer
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.lenses.Lens
+import indigoengine.shared.optics.Lens
 
 /** Describes the functions that a valid scene must implement.
   */

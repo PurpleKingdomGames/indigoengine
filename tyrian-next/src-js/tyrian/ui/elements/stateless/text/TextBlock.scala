@@ -1,6 +1,6 @@
 package tyrian.ui.elements.stateless.text
 
-import indigoengine.shared.lenses.Lens
+import indigoengine.shared.optics.Lens
 import tyrian.next.GlobalMsg
 import tyrian.ui.UIElement
 import tyrian.ui.theme.Theme

@@ -1,4 +1,4 @@
-package indigoengine.shared.lenses
+package indigoengine.shared.optics
 
 class LensTests extends munit.FunSuite {
 
@@ -114,6 +114,10 @@ class LensTests extends munit.FunSuite {
 
   test("Lens Laws.must be true, that setting twice and then getting returns the last value (no history)") {
     assertEquals(lens.get(lens.set(lens.set(B(100), 50), 25)), 25)
+  }
+
+  test("compose") {
+    assertEquals(lensD.compose(lensCD.compose(lensAC)).get(sample), "hello")
   }
 
 }

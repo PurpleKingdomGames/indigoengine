@@ -20,9 +20,13 @@ final class TyrianIndigoBridge[F[_]: Async, Event, Model]:
   def publish(indigoGame: IndigoGameId, value: Event): Cmd[F, Nothing] =
     publishToBridge(Option(indigoGame), value)
 
-  def subscribe[B](extract: Event => Option[B])(using CanEqual[B, B]): Sub[F, B] =
+  def subscribe[B](extract: Event => B)(using CanEqual[B, B]): Sub[F, B] =
+    subscribeToBridge(None, e => Option(extract(e)))
+  def subscribe[B](indigoGame: IndigoGameId)(extract: Event => B)(using CanEqual[B, B]): Sub[F, B] =
+    subscribeToBridge(Option(indigoGame), e => Option(extract(e)))
+  def subscribeOpt[B](extract: Event => Option[B])(using CanEqual[B, B]): Sub[F, B] =
     subscribeToBridge(None, extract)
-  def subscribe[B](indigoGame: IndigoGameId)(extract: Event => Option[B])(using CanEqual[B, B]): Sub[F, B] =
+  def subscribeOpt[B](indigoGame: IndigoGameId)(extract: Event => Option[B])(using CanEqual[B, B]): Sub[F, B] =
     subscribeToBridge(Option(indigoGame), extract)
 
   def subSystem: TyrianSubSystem[F, Event, Model] =

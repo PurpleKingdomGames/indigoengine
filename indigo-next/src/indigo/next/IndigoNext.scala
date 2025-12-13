@@ -21,6 +21,9 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
+import tyrian.next.Action
+import tyrian.next.GlobalMsg
+import tyrian.next.Watcher
 
 import scala.concurrent.Future
 
@@ -125,12 +128,33 @@ trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData,
     */
   def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
+  // -- Bridge stuff --
+
+  private val bridge: TyrianIndigoBridge[GlobalEvent, Model] =
+    new TyrianIndigoBridge
+
+  def translate: Iso[GlobalMsg, GlobalEvent]
+
+  /** Send events from Tyrian to Indigo
+    */
+  def send(msg: GlobalMsg): Action =
+    Action(bridge.publish(translate.to(msg)))
+
+  /** Allows Tyrian to watch for messages from Indigo
+    */
+  def watch: Watcher =
+    Watcher(bridge.subscribe(translate.from))
+
+  // -- /Bridge stuff --
+
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, Unit] = {
 
-    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
+    val bridgeSubSystem = bridge.subSystem
+
+    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems ++ Set(bridgeSubSystem)))
 
     val sceneManager: SceneManager[StartUpData, Model] = {
       val s = scenes(bootUp.bootData)

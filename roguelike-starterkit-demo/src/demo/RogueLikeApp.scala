@@ -1,8 +1,6 @@
 package demo
 
-import cats.effect.IO
-import demo.models.GameModel
-import indigo.next.IndigoApp
+import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
 import tyrian.next.*
@@ -10,48 +8,76 @@ import tyrian.next.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object RogueLikeApp extends IndigoApp[AppModel, RogueLikeGame, GameModel]:
+object RogueLikeApp extends TyrianNext[AppModel]:
 
-  // TODO: Is this alright? Better discovery method?
   def gameDivId: String = Constants.gameDivId.value
 
-  def onBridge: String => Option[GlobalMsg] =
-    msg => Some(IndigoReceive(msg))
-
-  // Instead of doing this, ditch model wrapper, make the user hold the reference, and do game.subscribe for a watcher instance?
-  def startGame(bridge: TyrianIndigoBridge[String, GameModel]): RogueLikeGame =
-    RogueLikeGame(bridge.subSystem(Constants.gameDivId))
-
   def router: Location => GlobalMsg =
-    Routing.none(NoOp())
+    Routing.none(AppMsg.NoOp)
 
   def init(flags: Map[String, String]): Result[AppModel] =
     Result(AppModel.init)
+      .addGlobalMsgs(GameMsg.AttemptStart(30)) // TODO: Big number, might want a way to emit after delay.
 
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def update(model: AppModel): GlobalMsg => Result[AppModel] =
-    case IndigoReceive(msg) =>
+    case GameMsg.AttemptStart(remaining) if remaining <= 0 =>
+      Result.raiseError(new Exception("Game div was not found."))
+
+    case GameMsg.AttemptStart(remaining) =>
       Result(model)
-        .addCmds(
-          Logger.consoleLog[IO]("Tyrian received a message from indigo: " + msg)
+        .addActions(
+          Action.run {
+            val elem = document.getElementById(gameDivId)
+
+            // TODO: Maybe we delegate this to Indigo, and lauch does the null check reporting success or failure?
+            if elem != null then
+              model.game.launch(elem)
+              GameMsg.Started
+            else GameMsg.AttemptStart(remaining - 1)
+          }
         )
+        .log("Attempts remaining: " + remaining)
+
+    case GameMsg.Started =>
+      Result(model).log("Game started!")
+
+    case GameMsg.MakeIndigoLog(msg) =>
+      Result(model)
+        .addActions(model.game.send(AppMsg.Log(msg))) // TODO: My event structure needs work..
+
+    case AppMsg.NoOp =>
+      Result(model)
+
+    case AppMsg.Log(msg) =>
+      Result(model).log(msg)
 
     case _ =>
       Result(model)
 
-  // TODO: Implement view.
   def view(model: AppModel): HtmlRoot =
-    HtmlRoot(
-      elements => div(id := gameDivId)(elements.toList).setKey(gameDivId),
-      HtmlFragment.empty
+    HtmlRoot.div(
+      HtmlFragment(
+        div(id := gameDivId)().setKey(gameDivId)
+      )
     )
 
   def watchers(model: AppModel): Batch[Watcher] =
-    Batch.empty
+    Batch(
+      model.game.watch
+    )
 
-final case class IndigoReceive(msg: String) extends GlobalMsg
-final case class NoOp()                     extends GlobalMsg
+enum AppMsg extends GlobalMsg:
+  case NoOp
+  case Log(msg: String)
 
-final case class AppModel()
+enum GameMsg extends GlobalMsg:
+  case AttemptStart(remaining: Int)
+  case Started
+  case MakeIndigoLog(msg: String)
+
+final case class AppModel(game: RogueLikeGame)
 object AppModel:
   val init: AppModel =
-    AppModel()
+    AppModel(RogueLikeGame())

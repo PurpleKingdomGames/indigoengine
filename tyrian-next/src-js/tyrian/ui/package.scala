@@ -221,5 +221,8 @@ val ThemeOverride: theme.ThemeOverride.type = theme.ThemeOverride
 
 // ---- Utils ----
 
-type Lens = indigoengine.shared.lenses.Lens
-val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens
+type Lens[A, B] = indigoengine.shared.optics.Lens[A, B]
+val Lens: indigoengine.shared.optics.Lens.type = indigoengine.shared.optics.Lens
+
+type Iso[A, B] = indigoengine.shared.optics.Iso[A, B]
+val Iso: indigoengine.shared.optics.Iso.type = indigoengine.shared.optics.Iso

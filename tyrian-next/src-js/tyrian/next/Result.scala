@@ -26,6 +26,7 @@ sealed trait Result[+A] derives CanEqual:
 
   def handleError[B >: A](recoverWith: Throwable => Result[B]): Result[B]
 
+  def log(message: String): Result[A]
   def logCrash(reporter: PartialFunction[Throwable, String]): Result[A]
 
   def addActions(newActions: Action*): Result[A]
@@ -41,6 +42,11 @@ sealed trait Result[+A] derives CanEqual:
     addActions(newCmds.toBatch)
   def addCmds(newCmds: Batch[Cmd[IO, GlobalMsg]]): Result[A] =
     addActions(newCmds)
+
+  def addGlobalMsgs(msgs: Batch[GlobalMsg]): Result[A] =
+    addActions(msgs.map(Action.emit))
+  def addGlobalMsgs(msgs: GlobalMsg*): Result[A] =
+    addGlobalMsgs(Batch.fromSeq(msgs))
 
   def createActions(f: A => Batch[Action]): Result[A]
 
@@ -86,6 +92,8 @@ object Result:
     def handleError[B >: A](recoverWith: Throwable => Result[B]): Result[B] =
       this
 
+    def log(message: String): Result[A] =
+      this.addActions(Logger.consoleLog[IO](message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[A] =
       this
 
@@ -169,6 +177,8 @@ object Result:
     def handleError[B >: Nothing](recoverWith: Throwable => Result[B]): Result[B] =
       recoverWith(e)
 
+    def log(message: String): Result[Nothing] =
+      this.addActions(Logger.consoleLog[IO](message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[Nothing] =
       this.copy(crashReporter = reporter)
 
