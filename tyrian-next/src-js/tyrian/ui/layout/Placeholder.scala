@@ -1,6 +1,6 @@
 package tyrian.ui.layout
 
-import indigoengine.shared.lenses.Lens
+import indigoengine.shared.optics.Lens
 import tyrian.next.GlobalMsg
 import tyrian.next.Marker
 import tyrian.next.MarkerId

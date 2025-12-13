@@ -1,9 +1,9 @@
 package demo.scenes
 
 import demo.Assets
+import demo.GameEvent
 import demo.models.ChangeValue
 import demo.models.GameModel
-import demo.models.Log
 import indigo.*
 import indigo.next.*
 import indigo.shared.subsystems.SubSystemContext.*
@@ -122,7 +122,7 @@ object NoTerminalUIComponents:
               )
             )
         )
-          .onSwitch((_, switch) => Batch(Log("Switched to: " + switch.state)))
+          .onSwitch((_, switch) => Batch(GameEvent.Log("Switched to: " + switch.state)))
           .switchOn
       )
       .add(
@@ -165,9 +165,9 @@ object NoTerminalUIComponents:
               )
             )
           )
-          .onClick(Log("Button clicked"))
-          .onPress(Log("Button pressed"))
-          .onRelease(Log("Button released"))
+          .onClick(GameEvent.Log("Button clicked"))
+          .onPress(GameEvent.Log("Button pressed"))
+          .onRelease(GameEvent.Log("Button released"))
       )
       .add(
         ComponentList(Dimensions(200, 150)) { (_: UIContext[Int]) =>
@@ -204,7 +204,7 @@ object NoTerminalUIComponents:
                   )
                     .onSwitch { (_, _) =>
                       Batch(
-                        Log("Selected: " + i),
+                        GameEvent.Log("Selected: " + i),
                         ChangeValue(i)
                       )
                     }

@@ -1,6 +1,6 @@
 package demo.windows
 
-import demo.models.Log
+import demo.GameEvent
 import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.*
@@ -94,13 +94,13 @@ object ComponentsWindow2:
                 "Button " + i,
                 TerminalButton.Theme(charSheet)
               ).onClick(
-                Log("count: " + ctx.reference)
+                GameEvent.Log("count: " + ctx.reference)
               )
             }
               :+ ComponentId("btnX") -> TerminalButton[Int](
                 "test",
                 TerminalButton.Theme(charSheet)
-              ).onClick(Log("test"))
+              ).onClick(GameEvent.Log("test"))
           )
           .add((ctx: UIContext[Int]) =>
             ComponentId("textarea") -> TerminalTextArea[Int](

@@ -1,6 +1,6 @@
 package tyrian.ui
 
-import indigoengine.shared.lenses.Lens
+import indigoengine.shared.optics.Lens
 import tyrian.next.GlobalMsg
 import tyrian.next.Result
 import tyrian.ui.theme.ThemeOverride

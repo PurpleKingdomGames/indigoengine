@@ -1,6 +1,6 @@
 package tyrian.ui.elements.stateful.input
 
-import indigoengine.shared.lenses.Lens
+import indigoengine.shared.optics.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
 import tyrian.next.GlobalMsg

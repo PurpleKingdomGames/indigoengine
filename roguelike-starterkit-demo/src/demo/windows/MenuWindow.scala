@@ -1,6 +1,6 @@
 package demo.windows
 
-import demo.models.Log
+import demo.GameEvent
 import indigo.*
 import indigoextras.ui.*
 import roguelikestarterkit.ui.*
@@ -27,7 +27,7 @@ object MenuWindow:
                 RGBA.Black  -> RGBA.White,
                 hasBorder = false
               )
-            ).onClick(Log("Window 1"), WindowEvent.Open(ComponentsWindow.windowId)),
+            ).onClick(GameEvent.Log("Window 1"), WindowEvent.Open(ComponentsWindow.windowId)),
           ComponentId("btn2") ->
             TerminalButton[Int](
               "Window 2",
@@ -38,7 +38,7 @@ object MenuWindow:
                 RGBA.Black  -> RGBA.Yellow,
                 hasBorder = false
               )
-            ).onClick(Log("Window 2"), WindowEvent.Open(ComponentsWindow2.windowId))
+            ).onClick(GameEvent.Log("Window 2"), WindowEvent.Open(ComponentsWindow2.windowId))
         )
       }
         .withLayout(ComponentLayout.Horizontal(Padding(1, 0, 0, 1)))

@@ -854,8 +854,11 @@ object aliases:
   type Falloff = indigo.scenegraph.Falloff
   val Falloff: indigo.scenegraph.Falloff.type = indigo.scenegraph.Falloff
 
-  type Lens[A, B] = indigoengine.shared.lenses.Lens[A, B]
-  val Lens: indigoengine.shared.lenses.Lens.type = indigoengine.shared.lenses.Lens
+  type Lens[A, B] = indigoengine.shared.optics.Lens[A, B]
+  val Lens: indigoengine.shared.optics.Lens.type = indigoengine.shared.optics.Lens
+
+  type Iso[A, B] = indigoengine.shared.optics.Iso[A, B]
+  val Iso: indigoengine.shared.optics.Iso.type = indigoengine.shared.optics.Iso
 
   // Geometry
 

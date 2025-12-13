@@ -166,13 +166,13 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
 
   def subscriptions(model: Model): Sub[IO, Msg] =
     Sub.Batch(
-      model.bridge.subscribe { case msg =>
+      model.bridge.subscribeOpt { case msg =>
         Some(Msg.IndigoReceive(s"[Any game!] ${msg}"))
       },
-      model.bridge.subscribe(gameId1) { case msg =>
+      model.bridge.subscribeOpt(gameId1) { case msg =>
         Some(Msg.IndigoReceive(s"[${gameId1.toString}] ${msg}"))
       },
-      model.bridge.subscribe(gameId2) { case msg =>
+      model.bridge.subscribeOpt(gameId2) { case msg =>
         Some(Msg.IndigoReceive(s"[${gameId2.toString}] ${msg}"))
       }
     )

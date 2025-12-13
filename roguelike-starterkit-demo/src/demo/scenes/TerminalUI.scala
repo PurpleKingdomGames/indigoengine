@@ -1,8 +1,8 @@
 package demo.scenes
 
 import demo.Assets
+import demo.GameEvent
 import demo.models.GameModel
-import demo.models.Log
 import indigo.next.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
@@ -29,7 +29,7 @@ object TerminalUI extends Scene[Size, GameModel]:
       context: SceneContext[Size],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
-    case Log(message) =>
+    case GameEvent.Log(message) =>
       println(message)
       Outcome(model)
 
@@ -75,6 +75,6 @@ object TerminalUIComponents:
         hasBorder = true
       )
     )
-      .onClick(Log("Button clicked"))
-      .onPress(Log("Button pressed"))
-      .onRelease(Log("Button released"))
+      .onClick(GameEvent.Log("Button clicked"))
+      .onPress(GameEvent.Log("Button pressed"))
+      .onRelease(GameEvent.Log("Button released"))

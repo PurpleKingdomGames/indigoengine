@@ -1,6 +1,6 @@
 package demo.windows
 
-import demo.models.Log
+import demo.GameEvent
 import indigo.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
@@ -38,7 +38,7 @@ object ComponentsWindow:
             TerminalTile(Tile.X, RGBA.Red, RGBA.Black)
           )
         ).switchOn // On by default
-          .onSwitch((_, switch) => Batch(Log(s"Switch is now ${if switch.state.isOn then "on" else "off"}")))
+          .onSwitch((_, switch) => Batch(GameEvent.Log(s"Switch is now ${if switch.state.isOn then "on" else "off"}")))
       )
       .add(
         TerminalButton(

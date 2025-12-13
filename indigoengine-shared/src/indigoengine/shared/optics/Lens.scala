@@ -1,4 +1,4 @@
-package indigoengine.shared.lenses
+package indigoengine.shared.optics
 
 /** Represents a simple-as-they-come lens, primarily for use with scenes in order to extract and replace the parts of,
   * say, a model that the scene wants to operate on.
@@ -10,13 +10,22 @@ trait Lens[A, B]:
   def modify(a: A, f: B => B): A =
     set(a, f(get(a)))
 
-  def >=>[C](next: Lens[B, C]): Lens[A, C] =
-    andThen(next)
+  def >=>[C](that: Lens[B, C]): Lens[A, C] =
+    andThen(that)
 
-  def andThen[C](next: Lens[B, C]): Lens[A, C] =
+  def andThen[C](that: Lens[B, C]): Lens[A, C] =
     Lens(
-      a => next.get(get(a)),
-      (a: A, c: C) => set(a, next.set(get(a), c))
+      a => that.get(get(a)),
+      (a: A, c: C) => set(a, that.set(get(a), c))
+    )
+
+  def <=<[Z](that: Lens[Z, A]): Lens[Z, B] =
+    compose(that)
+
+  def compose[Z](that: Lens[Z, A]): Lens[Z, B] =
+    Lens(
+      get.compose(that.get),
+      (z: Z, b: B) => that.set(z, set(that.get(z), b))
     )
 
 object Lens:

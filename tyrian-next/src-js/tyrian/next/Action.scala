@@ -57,11 +57,11 @@ object Action:
     sideEffect(run)
 
   /** Creates an action that runs a process and emits the result as a message. */
-  def run(process: () => GlobalMsg): Action =
+  def run(process: => GlobalMsg): Action =
     Action.Run(process)
 
   /** Creates an action that runs a process and transforms the result into a message. */
-  def run[A](process: () => A)(toMsg: A => GlobalMsg): Action =
+  def run[A](process: => A)(toMsg: A => GlobalMsg): Action =
     Action.Run(process)(toMsg)
 
   // Smart constructors
@@ -126,11 +126,11 @@ object Action:
       Cmd.Run[IO, A, GlobalMsg](task, toMsg)
 
   private[next] object Run:
-    def apply[A](run: () => A)(toMessage: A => GlobalMsg): Run[A] =
-      Run(IO(run()), toMessage)
+    def apply[A](run: => A)(toMessage: A => GlobalMsg): Run[A] =
+      Run(IO(run), toMessage)
 
-    def apply(run: () => GlobalMsg): Run[GlobalMsg] =
-      Run(IO(run()), identity)
+    def apply(run: => GlobalMsg): Run[GlobalMsg] =
+      Run(IO(run), identity)
 
   object internal:
 
