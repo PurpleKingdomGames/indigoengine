@@ -2,42 +2,37 @@ package tyrian.next
 
 import cats.effect.IO
 
-// Cmds
+object aliases:
 
-val Dom: tyrian.cmds.Dom.type                   = tyrian.cmds.Dom
-val Download: tyrian.cmds.Download.type         = tyrian.cmds.Download
-val File: tyrian.cmds.File.type                 = tyrian.cmds.File
-val FileReader: tyrian.cmds.FileReader.type     = tyrian.cmds.FileReader
-val ImageLoader: tyrian.cmds.ImageLoader.type   = tyrian.cmds.ImageLoader
-val LocalStorage: tyrian.cmds.LocalStorage.type = tyrian.cmds.LocalStorage
-val Logger: tyrian.cmds.Logger.type             = tyrian.cmds.Logger
-val Random: tyrian.cmds.Random.type             = tyrian.cmds.Random
+  export indigoengine.shared.aliases.*
 
-// Bridge
+  // Cmds
 
-type TyrianSubSystem[Event, Model] = tyrian.bridge.TyrianSubSystem[IO, Event, Model]
-val TyrianSubSystem: tyrian.bridge.TyrianSubSystem.type = tyrian.bridge.TyrianSubSystem
+  val Dom: tyrian.cmds.Dom.type                   = tyrian.cmds.Dom
+  val Download: tyrian.cmds.Download.type         = tyrian.cmds.Download
+  val File: tyrian.cmds.File.type                 = tyrian.cmds.File
+  val FileReader: tyrian.cmds.FileReader.type     = tyrian.cmds.FileReader
+  val ImageLoader: tyrian.cmds.ImageLoader.type   = tyrian.cmds.ImageLoader
+  val LocalStorage: tyrian.cmds.LocalStorage.type = tyrian.cmds.LocalStorage
+  val Logger: tyrian.cmds.Logger.type             = tyrian.cmds.Logger
+  val Random: tyrian.cmds.Random.type             = tyrian.cmds.Random
 
-type TyrianIndigoBridge[Event, Model] = tyrian.bridge.TyrianIndigoBridge[IO, Event, Model]
-val TyrianIndigoBridge: tyrian.bridge.TyrianIndigoBridge.type = tyrian.bridge.TyrianIndigoBridge
+  // Bridge
 
-type IndigoGameId = tyrian.bridge.IndigoGameId
-val IndigoGameId: tyrian.bridge.IndigoGameId.type = tyrian.bridge.IndigoGameId
+  type TyrianSubSystem[Event, Model] = tyrian.bridge.TyrianSubSystem[IO, Event, Model]
+  val TyrianSubSystem: tyrian.bridge.TyrianSubSystem.type = tyrian.bridge.TyrianSubSystem
 
-// Collections
+  type TyrianIndigoBridge[Event, Model] = tyrian.bridge.TyrianIndigoBridge[IO, Event, Model]
+  val TyrianIndigoBridge: tyrian.bridge.TyrianIndigoBridge.type = tyrian.bridge.TyrianIndigoBridge
 
-type Batch[A] = indigoengine.shared.collections.Batch[A]
-val Batch: indigoengine.shared.collections.Batch.type = indigoengine.shared.collections.Batch
+  type IndigoGameId = tyrian.bridge.IndigoGameId
+  val IndigoGameId: tyrian.bridge.IndigoGameId.type = tyrian.bridge.IndigoGameId
 
-type NonEmptyBatch[A] = indigoengine.shared.collections.NonEmptyBatch[A]
-val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoengine.shared.collections.NonEmptyBatch
+  // Extensions
 
-type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
-val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
+  type Extension = tyrian.next.extensions.Extension
 
-// Extensions
+  type ExtensionId = tyrian.next.extensions.ExtensionId
+  val ExtensionId: tyrian.next.extensions.ExtensionId.type = tyrian.next.extensions.ExtensionId
 
-type Extension = tyrian.next.extensions.Extension
-
-type ExtensionId = tyrian.next.extensions.ExtensionId
-val ExtensionId: tyrian.next.extensions.ExtensionId.type = tyrian.next.extensions.ExtensionId
+export aliases.*
