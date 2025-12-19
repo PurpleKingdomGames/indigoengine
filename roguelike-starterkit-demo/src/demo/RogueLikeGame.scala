@@ -9,28 +9,13 @@ import tyrian.next.GlobalMsg
 
 final class RogueLikeGame extends IndigoNext[Size, Size, GameModel]:
 
-  def translate: Iso[GlobalMsg, GlobalEvent] =
-    val to: GlobalMsg => GlobalEvent =
-      case AppMsg.NoOp =>
-        GameEvent.NoOp
+  def translateTo: GlobalEvent => Option[GlobalMsg] =
 
-      case AppMsg.Log(msg) =>
-        GameEvent.Log(msg)
+    case ThisIsForTyrian(msg) =>
+      Some(AppMsg.Log(msg))
 
-      case _ =>
-        GameEvent.NoOp
-
-    val from: GlobalEvent => GlobalMsg =
-      case GameEvent.NoOp =>
-        AppMsg.NoOp
-
-      case GameEvent.Log(msg) =>
-        AppMsg.Log(msg)
-
-      case _ =>
-        AppMsg.NoOp
-
-    Iso(to, from)
+    case _ =>
+      None
 
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
@@ -90,7 +75,7 @@ final class RogueLikeGame extends IndigoNext[Size, Size, GameModel]:
     case GameEvent.Log(msg) =>
       IndigoLogger.info(msg)
       Outcome(model)
-      // .addGlobalEvents(tyrianSubSystem.send(s"IndigoLogger: $msg"))
+        .addGlobalEvents(ThisIsForTyrian(s"Indigo says: ${msg.reverse}"))
 
     case GameEvent.NoOp =>
       Outcome(model)
@@ -110,3 +95,5 @@ final class RogueLikeGame extends IndigoNext[Size, Size, GameModel]:
 enum GameEvent extends GlobalEvent:
   case NoOp
   case Log(msg: String)
+
+final case class ThisIsForTyrian(msg: String) extends GlobalEvent
