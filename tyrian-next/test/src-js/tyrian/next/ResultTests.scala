@@ -435,12 +435,12 @@ class ResultTests extends munit.FunSuite {
 
   }
 
-  test("Convert Option[A] to Outcome[A]") {
+  test("Convert Option[A] to Result[A]") {
 
     val e = new Exception("Boom!")
 
     val actual =
-      Option(123).toOutcome(e)
+      Option(123).toResult(e)
 
     val expected =
       Result[Int](123)
@@ -448,12 +448,12 @@ class ResultTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
-  test("Convert Option[A] to Outcome[A] (error case)") {
+  test("Convert Option[A] to Result[A] (error case)") {
 
     val e = new Exception("Boom!")
 
     val actual =
-      Option.empty[Int].toOutcome(e)
+      Option.empty[Int].toResult(e)
 
     val expected =
       Result.Error(e)

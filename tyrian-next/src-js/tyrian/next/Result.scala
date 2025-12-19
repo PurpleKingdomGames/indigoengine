@@ -92,6 +92,7 @@ object Result:
     def handleError[B >: A](recoverWith: Throwable => Result[B]): Result[B] =
       this
 
+    // TODO: Expand to all log types, also add to Outcome in Indigo
     def log(message: String): Result[A] =
       this.addActions(Logger.consoleLog[IO](message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[A] =
