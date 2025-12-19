@@ -4,6 +4,7 @@ import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
 import tyrian.next.*
+import tyrian.next.syntax.*
 
 import scala.scalajs.js.annotation.*
 
@@ -18,7 +19,6 @@ object RogueLikeApp extends TyrianNext[AppModel]:
   def init(flags: Map[String, String]): Result[AppModel] =
     Result(AppModel.init)
       .addGlobalMsgs(GameMsg.AttemptStart(30)) // TODO: Big number, might want a way to emit after delay.
-
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def update(model: AppModel): GlobalMsg => Result[AppModel] =
@@ -45,7 +45,9 @@ object RogueLikeApp extends TyrianNext[AppModel]:
 
     case GameMsg.MakeIndigoLog(msg) =>
       Result(model)
-        .addActions(model.game.send(AppMsg.Log(msg))) // TODO: My event structure needs work..
+        .addActions(
+          model.game.bridge.send(GameEvent.Log(msg))
+        )
 
     case AppMsg.NoOp =>
       Result(model)
@@ -65,7 +67,11 @@ object RogueLikeApp extends TyrianNext[AppModel]:
 
   def watchers(model: AppModel): Batch[Watcher] =
     Batch(
-      model.game.watch
+      model.game.bridge.watch,
+      Watcher.every(
+        5.seconds,
+        t => GameMsg.MakeIndigoLog(s"From Tyrian: ${t.toUTCString()}")
+      )
     )
 
 enum AppMsg extends GlobalMsg:
