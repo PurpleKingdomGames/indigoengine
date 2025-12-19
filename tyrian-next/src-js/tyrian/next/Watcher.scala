@@ -8,6 +8,7 @@ import tyrian.Sub
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
+import indigoengine.shared.datatypes.Millis
 
 /** A watcher describes a resource that an application is interested in.
   *
@@ -58,27 +59,47 @@ object Watcher:
 
   /** Creates a watcher that emits a message immediately. */
   def emit(msg: GlobalMsg): Watcher =
-    timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
+    timeout(Millis.zero, msg, msg.toString)
 
   /** Creates a watcher that emits a message after a specified duration. */
-  def timeout(duration: FiniteDuration, msg: GlobalMsg, id: String): Watcher =
+  def timeout(duration: Millis, msg: GlobalMsg, id: String): Watcher =
     Watcher.fromSub(
-      Sub.timeout[IO, GlobalMsg](duration, msg, id)
+      Sub.timeout[IO, GlobalMsg](FiniteDuration(duration.toLong, TimeUnit.MILLISECONDS), msg, id)
     )
 
   /** Creates a watcher that emits a message after a specified duration. */
-  def timeout(duration: FiniteDuration, msg: GlobalMsg): Watcher =
+  def timeout(duration: Seconds, msg: GlobalMsg, id: String): Watcher =
+    Watcher.fromSub(
+      Sub.timeout[IO, GlobalMsg](FiniteDuration(duration.toMillis.toLong, TimeUnit.MILLISECONDS), msg, id)
+    )
+
+  /** Creates a watcher that emits a message after a specified duration. */
+  def timeout(duration: Millis, msg: GlobalMsg): Watcher =
     timeout(duration, msg, "[tyrian-watcher-timout] " + duration.toString + msg.toString)
 
+  /** Creates a watcher that emits a message after a specified duration. */
+  def timeout(duration: Seconds, msg: GlobalMsg): Watcher =
+    timeout(duration.toMillis, msg, "[tyrian-watcher-timout] " + duration.toMillis.toString + msg.toString)
+
   /** Creates a watcher that repeatedly emits messages at regular intervals. */
-  def every(interval: FiniteDuration, id: String, toMsg: js.Date => GlobalMsg): Watcher =
+  def every(interval: Millis, id: String, toMsg: js.Date => GlobalMsg): Watcher =
     Watcher.fromSub(
-      Sub.every[IO](interval, id).map(toMsg)
+      Sub.every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
     )
 
   /** Creates a watcher that repeatedly emits messages at regular intervals. */
-  def every(interval: FiniteDuration, toMsg: js.Date => GlobalMsg): Watcher =
+  def every(interval: Seconds, id: String, toMsg: js.Date => GlobalMsg): Watcher =
+    Watcher.fromSub(
+      Sub.every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
+    )
+
+  /** Creates a watcher that repeatedly emits messages at regular intervals. */
+  def every(interval: Millis, toMsg: js.Date => GlobalMsg): Watcher =
     every(interval, "[tyrian-watcher-every] " + interval.toString, toMsg)
+
+  /** Creates a watcher that repeatedly emits messages at regular intervals. */
+  def every(interval: Seconds, toMsg: js.Date => GlobalMsg): Watcher =
+    every(interval.toMillis, "[tyrian-watcher-every] " + interval.toMillis.toString, toMsg)
 
   /** Creates a watcher that listens for JavaScript events and emits messages based on them. */
   def fromEvent[A](name: String, target: EventTarget)(extract: A => Option[GlobalMsg]): Watcher =
