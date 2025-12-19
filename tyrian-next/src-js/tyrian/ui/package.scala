@@ -218,11 +218,3 @@ val ThemeFonts: theme.ThemeFonts.type = theme.ThemeFonts
 
 type ThemeOverride = theme.ThemeOverride
 val ThemeOverride: theme.ThemeOverride.type = theme.ThemeOverride
-
-// ---- Utils ----
-
-type Lens[A, B] = indigoengine.shared.optics.Lens[A, B]
-val Lens: indigoengine.shared.optics.Lens.type = indigoengine.shared.optics.Lens
-
-type Iso[A, B] = indigoengine.shared.optics.Iso[A, B]
-val Iso: indigoengine.shared.optics.Iso.type = indigoengine.shared.optics.Iso

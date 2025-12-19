@@ -1,192 +1,5 @@
 package indigo
 
-import indigo.shaders.UniformDataHelpers
-
-import scala.annotation.targetName
-
-object syntax:
-
-  extension (d: Double)
-    def toRadians: Radians = Radians(d)
-    def radians: Radians   = Radians(d)
-    def toSeconds: Seconds = Seconds(d)
-    def second: Seconds    = Seconds(d)
-    def seconds: Seconds   = Seconds(d)
-    def toVolume: Volume   = Volume(d)
-    def volume: Volume     = Volume(d)
-    def toZoom: Zoom       = Zoom(d)
-    def zoom: Zoom         = Zoom(d)
-
-  extension (i: Int)
-    def toFPS: FPS       = FPS(i)
-    def fps: FPS         = FPS(i)
-    def toMillis: Millis = Millis(i)
-    def millis: Millis   = Millis(i)
-
-  extension (l: Long)
-    def toMillis: Millis = Millis(l)
-    def millis: Millis   = Millis(l)
-
-  extension (s: String)
-    def toAnimationKey: AnimationKey = AnimationKey(s)
-    def toAssetName: AssetName       = AssetName(s)
-    def toAssetPath: AssetPath       = AssetPath(s)
-    def toAssetTag: AssetTag         = AssetTag(s)
-    def toBindingKey: BindingKey     = BindingKey(s)
-    def toLayerKey: LayerKey         = LayerKey(s)
-    def toCloneId: CloneId           = CloneId(s)
-    def toCycleLabel: CycleLabel     = CycleLabel(s)
-    def toFontKey: FontKey           = FontKey(s)
-    def toScene: scenes.SceneName    = scenes.SceneName(s)
-    def toShaderId: ShaderId         = ShaderId(s)
-
-  extension (t: (Double, Double)) def toVector2: Vector2 = Vector2(t._1, t._2)
-
-  extension (t: (Double, Double, Double))
-    def toRGB: RGB         = RGB(t._1, t._2, t._3)
-    def toVector3: Vector3 = Vector3(t._1, t._2, t._3)
-
-  extension (t: (Double, Double, Double, Double))
-    def toRGBA: RGBA       = RGBA(t._1, t._2, t._3, t._4)
-    def toVector4: Vector4 = Vector4(t._1, t._2, t._3, t._4)
-
-  extension (t: (Int, Int))
-    def toPoint: Point = Point(t._1, t._2)
-    def toSize: Size   = Size(t._1, t._2)
-
-  extension [A](values: scalajs.js.Array[A]) def toBatch: Batch[A] = Batch.fromJSArray(values)
-  extension [A](values: Array[A]) def toBatch: Batch[A]            = Batch.fromArray(values)
-  extension [A](values: List[A]) def toBatch: Batch[A]             = Batch.fromList(values)
-  extension [A](values: Set[A]) def toBatch: Batch[A]              = Batch.fromSet(values)
-  extension [A](values: Seq[A]) def toBatch: Batch[A]              = Batch.fromSeq(values)
-  extension [A](values: IndexedSeq[A]) def toBatch: Batch[A]       = Batch.fromIndexedSeq(values)
-  extension [A](values: Iterator[A]) def toBatch: Batch[A]         = Batch.fromIterator(values)
-  extension [K, V](values: Map[K, V]) def toBatch: Batch[(K, V)]   = Batch.fromMap(values)
-  extension (values: Range) def toBatch: Batch[Int]                = Batch.fromRange(values)
-
-  extension [A](values: Option[A])
-    def toBatch: Batch[A]                          = Batch.fromOption(values)
-    def toOutcome(error: => Throwable): Outcome[A] = Outcome.fromOption(values, error)
-
-  val ==: = indigoengine.shared.collections.Batch.==:
-  val :== = indigoengine.shared.collections.Batch.:==
-
-  extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
-  extension [A](b: NonEmptyBatch[Outcome[A]]) def sequence: Outcome[NonEmptyBatch[A]] = Outcome.sequenceNonEmptyBatch(b)
-  extension [A](l: List[Outcome[A]]) def sequence: Outcome[List[A]]                   = Outcome.sequenceList(l)
-  extension [A](l: NonEmptyList[Outcome[A]]) def sequence: Outcome[NonEmptyList[A]]   = Outcome.sequenceNonEmptyList(l)
-
-  extension [A](b: Batch[Option[A]]) def sequence: Option[Batch[A]]                 = Batch.sequenceOption(b)
-  extension [A](b: NonEmptyBatch[Option[A]]) def sequence: Option[NonEmptyBatch[A]] = NonEmptyBatch.sequenceOption(b)
-  extension [A](l: List[Option[A]]) def sequence: Option[List[A]]                   = NonEmptyList.sequenceListOption(l)
-  extension [A](l: NonEmptyList[Option[A]]) def sequence: Option[NonEmptyList[A]]   = NonEmptyList.sequenceOption(l)
-
-  extension (s: Size) def toGameViewport: GameViewport = GameViewport(s)
-
-  // GRADIENT_FROM_TO (vec4), GRADIENT_FROM_COLOR (vec4), GRADIENT_TO_COLOR (vec4),
-  extension (fill: Fill)
-    def toUniformData(prefix: String): Batch[(Uniform, ShaderPrimitive)] =
-      UniformDataHelpers.fillToUniformData(fill, prefix)
-
-  // Timeline animations
-  object animations:
-    import indigo.core.animation.timeline.*
-    import indigo.core.temporal.SignalFunction
-    import scala.annotation.targetName
-
-    def timeline[A](animations: TimelineAnimation[A]*): Timeline[A] =
-      Timeline(Batch.fromSeq(animations).flatMap(_.compile.toWindows))
-
-    def layer[A](timeslots: TimeSlot[A]*): TimelineAnimation[A] =
-      TimelineAnimation(Batch.fromSeq(timeslots))
-
-    @targetName("SF_ctxfn_lerp")
-    def lerp: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.lerp(over)
-
-    @targetName("SF_ctxfn_easeIn")
-    def easeIn: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeIn(over)
-
-    @targetName("SF_ctxfn_easeOut")
-    def easeOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeOut(over)
-
-    @targetName("SF_ctxfn_easeInOut")
-    def easeInOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeInOut(over)
-
-    export TimeSlot.start
-    export TimeSlot.startAfter
-    export TimeSlot.pause
-    export TimeSlot.show
-    export TimeSlot.animate
-
-    export SignalFunction.lerp
-    export SignalFunction.easeIn
-    export SignalFunction.easeOut
-    export SignalFunction.easeInOut
-    export SignalFunction.wrap
-    export SignalFunction.clamp
-    export SignalFunction.step
-    export SignalFunction.sin
-    export SignalFunction.cos
-    export SignalFunction.orbit
-    export SignalFunction.pulse
-    export SignalFunction.smoothPulse
-    export SignalFunction.multiply
-  end animations
-
-  object shaders:
-
-    extension (c: RGBA)
-      def toUVVec4: ultraviolet.syntax.vec4 =
-        ultraviolet.syntax.vec4(c.r.toFloat, c.g.toFloat, c.b.toFloat, c.a.toFloat)
-    extension (c: RGB)
-      def toUVVec3: ultraviolet.syntax.vec3 =
-        ultraviolet.syntax.vec3(c.r.toFloat, c.g.toFloat, c.b.toFloat)
-    extension (p: Point)
-      def toUVVec2: ultraviolet.syntax.vec2 =
-        ultraviolet.syntax.vec2(p.x.toFloat, p.y.toFloat)
-    extension (s: Size)
-      def toUVVec2: ultraviolet.syntax.vec2 =
-        ultraviolet.syntax.vec2(s.width.toFloat, s.height.toFloat)
-    extension (v: Vector2)
-      def toUVVec2: ultraviolet.syntax.vec2 =
-        ultraviolet.syntax.vec2(v.x.toFloat, v.y.toFloat)
-    extension (v: Vector3)
-      def toUVVec3: ultraviolet.syntax.vec3 =
-        ultraviolet.syntax.vec3(v.x.toFloat, v.y.toFloat, v.z.toFloat)
-    extension (v: Vector4)
-      def toUVVec4: ultraviolet.syntax.vec4 =
-        ultraviolet.syntax.vec4(v.x.toFloat, v.y.toFloat, v.z.toFloat, v.w.toFloat)
-    extension (r: Rectangle)
-      def toUVVec4: ultraviolet.syntax.vec4 =
-        ultraviolet.syntax.vec4(r.x.toFloat, r.y.toFloat, r.width.toFloat, r.height.toFloat)
-    extension (m: Matrix4)
-      def toUVMat4: ultraviolet.syntax.mat4 =
-        ultraviolet.syntax.mat4(m.toArray.map(_.toFloat))
-    extension (m: Millis) def toUVFloat: Float  = m.toFloat
-    extension (r: Radians) def toUVFloat: Float = r.toFloat
-    extension (s: Seconds)
-      @targetName("ext_Seconds_toUVFloat")
-      def toUVFloat: Float = s.toFloat
-    extension (d: Double)
-      @targetName("ext_Double_toUVFloat")
-      def toUVFloat: Float = d.toFloat
-    extension (i: Int)
-      @targetName("ext_Int_toUVFloat")
-      def toUVFloat: Float = i.toFloat
-    extension (l: Long)
-      @targetName("ext_Long_toUVFloat")
-      def toUVFloat: Float = l.toFloat
-    extension (a: Array[Float])
-      def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
-        ultraviolet.syntax.array(a)
-    extension (a: scalajs.js.Array[Float])
-      def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
-        ultraviolet.syntax.array(a.toArray)
-
-  end shaders
-
-end syntax
-
 object mutable:
 
   type CacheKey = indigo.core.utils.CacheKey
@@ -202,6 +15,8 @@ end mutable
 
 object aliases:
 
+  export indigoengine.shared.aliases.*
+
   val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
   type Startup[SuccessType] = shared.Startup[SuccessType]
@@ -209,12 +24,6 @@ object aliases:
 
   type GameTime = indigo.core.time.GameTime
   val GameTime: indigo.core.time.GameTime.type = indigo.core.time.GameTime
-
-  type Millis = indigoengine.shared.datatypes.Millis
-  val Millis: indigoengine.shared.datatypes.Millis.type = indigoengine.shared.datatypes.Millis
-
-  type Seconds = indigoengine.shared.datatypes.Seconds
-  val Seconds: indigoengine.shared.datatypes.Seconds.type = indigoengine.shared.datatypes.Seconds
 
   type FPS = indigo.core.time.FPS
   val FPS: indigo.core.time.FPS.type = indigo.core.time.FPS
@@ -308,15 +117,6 @@ object aliases:
 
   type KeyLocation = indigo.core.constants.KeyLocation
   val KeyLocation: indigo.core.constants.KeyLocation.type = indigo.core.constants.KeyLocation
-
-  type Batch[A] = indigoengine.shared.collections.Batch[A]
-  val Batch: indigoengine.shared.collections.Batch.type = indigoengine.shared.collections.Batch
-
-  type NonEmptyBatch[A] = indigoengine.shared.collections.NonEmptyBatch[A]
-  val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoengine.shared.collections.NonEmptyBatch
-
-  type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
-  val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
 
   type Signal[A] = indigo.core.temporal.Signal[A]
   val Signal: indigo.core.temporal.Signal.type = indigo.core.temporal.Signal
@@ -567,12 +367,6 @@ object aliases:
   type Matrix4 = indigo.core.datatypes.Matrix4
   val Matrix4: indigo.core.datatypes.Matrix4.type = indigo.core.datatypes.Matrix4
 
-  type Degrees = indigoengine.shared.datatypes.Degrees
-  val Degrees: indigoengine.shared.datatypes.Degrees.type = indigoengine.shared.datatypes.Degrees
-
-  type Radians = indigoengine.shared.datatypes.Radians
-  val Radians: indigoengine.shared.datatypes.Radians.type = indigoengine.shared.datatypes.Radians
-
   type BindingKey = indigo.core.datatypes.BindingKey
   val BindingKey: indigo.core.datatypes.BindingKey.type = indigo.core.datatypes.BindingKey
 
@@ -581,12 +375,6 @@ object aliases:
 
   type Stroke = indigo.core.datatypes.Stroke
   val Stroke: indigo.core.datatypes.Stroke.type = indigo.core.datatypes.Stroke
-
-  type RGB = indigoengine.shared.datatypes.RGB
-  val RGB: indigoengine.shared.datatypes.RGB.type = indigoengine.shared.datatypes.RGB
-
-  type RGBA = indigoengine.shared.datatypes.RGBA
-  val RGBA: indigoengine.shared.datatypes.RGBA.type = indigoengine.shared.datatypes.RGBA
 
   type Flip = indigo.core.datatypes.Flip
   val Flip: indigo.core.datatypes.Flip.type = indigo.core.datatypes.Flip
@@ -853,12 +641,6 @@ object aliases:
 
   type Falloff = indigo.scenegraph.Falloff
   val Falloff: indigo.scenegraph.Falloff.type = indigo.scenegraph.Falloff
-
-  type Lens[A, B] = indigoengine.shared.optics.Lens[A, B]
-  val Lens: indigoengine.shared.optics.Lens.type = indigoengine.shared.optics.Lens
-
-  type Iso[A, B] = indigoengine.shared.optics.Iso[A, B]
-  val Iso: indigoengine.shared.optics.Iso.type = indigoengine.shared.optics.Iso
 
   // Geometry
 

@@ -3,6 +3,7 @@ package indigoengine.shared
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.collections.NonEmptyList
+import indigoengine.shared.datatypes.*
 
 object syntax:
 
@@ -11,19 +12,9 @@ object syntax:
 
   extension [Value](values: Option[Value])
     def toBatch: Batch[Value] = Batch.fromOption(values)
-    // def toOutcome[Event](error: => Throwable): Outcome[Value, Event] = Outcome.fromOption(values, error)
 
-  // extension [Value, Event](b: Batch[Outcome[Value, Event]])
-  //   def sequence: Outcome[Batch[Value], Event] = Outcome.sequenceBatch(b)
-  // extension [Value, Event](l: List[Outcome[Value, Event]])
-  //   def sequence: Outcome[List[Value], Event]                                   = Outcome.sequenceList(l)
   extension [Value](b: Batch[Option[Value]]) def sequence: Option[Batch[Value]] = Batch.sequenceOption(b)
   extension [Value](l: List[Option[Value]]) def sequence: Option[List[Value]]   = Batch.sequenceListOption(l)
-
-  // extension [Value, Event](b: NonEmptyBatch[Outcome[Value, Event]])
-  //   def sequence: Outcome[NonEmptyBatch[Value], Event] = Outcome.sequenceNonEmptyBatch(b)
-  // extension [Value, Event](l: NonEmptyList[Outcome[Value, Event]])
-  //   def sequence: Outcome[NonEmptyList[Value], Event] = Outcome.sequenceNonEmptyList(l)
 
   extension [Value](b: NonEmptyBatch[Option[Value]])
     def sequence: Option[NonEmptyBatch[Value]] = NonEmptyBatch.sequenceOption(b)
@@ -39,3 +30,24 @@ object syntax:
   extension [Value](values: Iterator[Value]) def toBatch: Batch[Value]         = Batch.fromIterator(values)
   extension [K, V](values: Map[K, V]) def toBatch: Batch[(K, V)]               = Batch.fromMap(values)
   extension (values: Range) def toBatch: Batch[Int]                            = Batch.fromRange(values)
+
+  extension (d: Double)
+    def toRadians: Radians = Radians(d)
+    def radians: Radians   = Radians(d)
+    def toSeconds: Seconds = Seconds(d)
+    def second: Seconds    = Seconds(d)
+    def seconds: Seconds   = Seconds(d)
+
+  extension (i: Int)
+    def toMillis: Millis = Millis(i)
+    def millis: Millis   = Millis(i)
+
+  extension (l: Long)
+    def toMillis: Millis = Millis(l)
+    def millis: Millis   = Millis(l)
+
+  extension (t: (Double, Double, Double))
+    def toRGB: RGB         = RGB(t._1, t._2, t._3)
+
+  extension (t: (Double, Double, Double, Double))
+    def toRGBA: RGBA       = RGBA(t._1, t._2, t._3, t._4)
