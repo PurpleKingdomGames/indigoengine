@@ -8,7 +8,7 @@ import tyrian.http.Response
 
 import scala.scalajs.js
 
-enum Msg:
+enum Msg derives CanEqual:
   case NewContent(content: String)
   case Insert
   case Remove

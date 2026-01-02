@@ -4,3 +4,5 @@ package tyrian.next
   * GlobalMsg to participate in the application's update cycle.
   */
 trait GlobalMsg
+object GlobalMsg:
+  given CanEqual[GlobalMsg, GlobalMsg] = CanEqual.derived

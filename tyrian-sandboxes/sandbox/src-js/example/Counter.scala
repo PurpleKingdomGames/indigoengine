@@ -9,7 +9,7 @@ object Counter:
 
   def init: Model = 0
 
-  enum Msg:
+  enum Msg derives CanEqual:
     case Increment, Decrement
 
   def view(model: Model): Html[Msg] =

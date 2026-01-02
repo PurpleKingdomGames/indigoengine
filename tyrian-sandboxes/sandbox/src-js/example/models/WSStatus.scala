@@ -4,7 +4,7 @@ import cats.effect.IO
 import example.Msg
 import tyrian.websocket.WebSocket
 
-enum WSStatus:
+enum WSStatus derives CanEqual:
   case Connecting
   case Connected(ws: WebSocket[IO])
   case ConnectionError(msg: String)

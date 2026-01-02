@@ -8,6 +8,8 @@ import fs2.Stream
 import org.http4s.Header
 import org.http4s.HttpRoutes
 import org.http4s.MediaType
+import org.http4s.Method
+import org.http4s.Uri
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.QueryParamDecoderMatcher
 import org.http4s.headers.`Content-Type`
@@ -22,6 +24,9 @@ object SearchQueryParamMatcher extends QueryParamDecoderMatcher[String]("q")
 object ScrollQueryParamMatcher extends QueryParamDecoderMatcher[Long]("page")
 
 object Routes:
+
+  given CanEqual[Uri.Path, Uri.Path] = CanEqual.derived
+  given CanEqual[Method, Method]     = CanEqual.derived
 
   def routes[F[_]: Async](
       db: CorvidDatabase[F],

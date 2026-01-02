@@ -1,0 +1,3 @@
+package build.`tyrian-sandboxes`
+
+object `package` extends mill.Module
