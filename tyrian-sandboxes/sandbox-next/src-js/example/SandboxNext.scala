@@ -23,3 +23,6 @@ object SandboxNext extends TyrianNext[Model]:
 
   def watchers(model: Model): Batch[Watcher] =
     Batch.empty
+
+  def extensions: Set[Extension] =
+    Set(CounterExtension)

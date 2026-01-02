@@ -31,6 +31,8 @@ final case class CounterManager(counters: List[Counter]):
       MarkerIds.counters,
       div(
         List(
+          hr,
+          h3("Counters"),
           button(onClick(CounterManagerEvent.Remove))(text("remove")),
           button(onClick(CounterManagerEvent.Insert))(text("insert"))
         ) ++

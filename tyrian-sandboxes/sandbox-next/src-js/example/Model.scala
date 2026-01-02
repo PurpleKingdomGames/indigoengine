@@ -35,6 +35,7 @@ final case class Model(
       HtmlFragment(
         div(
           Marker(MarkerIds.textReverse),
+          Marker(MarkerIds.counterExt),
           Marker(MarkerIds.counters)
         )
       ) |+|
