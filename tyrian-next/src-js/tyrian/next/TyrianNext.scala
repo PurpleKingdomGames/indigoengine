@@ -6,7 +6,13 @@ import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import org.scalajs.dom.window
-import tyrian.*
+import tyrian.Cmd
+import tyrian.Html
+import tyrian.Location
+import tyrian.Sub
+import tyrian.TyrianApp
+import tyrian.next.extensions.Extension
+import tyrian.next.extensions.ExtensionRegister
 
 import scala.scalajs.js.annotation.*
 
@@ -41,6 +47,10 @@ trait TyrianNext[Model]:
     * e.g. a mouse moving might emit it's coordinates.
     */
   def watchers(model: Model): Batch[Watcher]
+
+  /** Extensions are mini-TyrianNext apps that are mechnically combined with your main application in the background.
+    */
+  def extensions: Set[Extension]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -111,9 +121,6 @@ trait TyrianNext[Model]:
           println(e.reportCrash)
           throw err
 
-  private def _view(model: Model): Html[GlobalMsg] =
-    view(model).toHtml
-
   private def onUrlChange(router: Location => GlobalMsg): Watcher =
     def makeMsg = Option(router(Location.fromJsLocation(window.location)))
     Watcher.Many(
@@ -128,15 +135,50 @@ trait TyrianNext[Model]:
       )
       .toSub
 
+  private val extensionsRegister: ExtensionRegister =
+    new ExtensionRegister()
+
   def ready(node: Element, flags: Map[String, String]): Unit =
+    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions)).map(_.toCmd)
+
+    val (initModel, initCmds) = _init(flags)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def combinedUpdate(
+        model: Model
+    ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
+      msg =>
+        val (m, as) = _update(model)(msg)
+        val extCmds = extensionsRegister.update(msg).map { actions =>
+          val cmds = actions.map(_.toCmd)
+          if cmds.isEmpty then Cmd.None
+          else
+            val head = cmds.head
+            cmds.tail.foldLeft(head)(_ |+| _)
+        }
+
+        extCmds match {
+          case Outcome.Error(e, _) =>
+            throw e
+
+          case Outcome.Result(eCmds, _) =>
+            m -> (as |+| eCmds)
+        }
+
+    def combinedView(model: Model): Html[GlobalMsg] =
+      view(model).addHtmlFragments(extensionsRegister.view).toHtml
+
+    def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
+      _subscriptions(model) |+| Watcher.Many(extensionsRegister.watchers).toSub
+
     run(
       TyrianApp.start[IO, Model, GlobalMsg](
         node,
         router,
-        _init(flags),
-        _update,
-        _view,
-        _subscriptions
+        initModel -> (initCmds |+| Cmd.Batch(extensionsCmds.toList)),
+        combinedUpdate,
+        combinedView,
+        combinedSubscriptions
       )
     )
 

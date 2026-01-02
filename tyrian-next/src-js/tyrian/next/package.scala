@@ -12,3 +12,9 @@ val NonEmptyBatch: indigoengine.shared.collections.NonEmptyBatch.type = indigoen
 type NonEmptyList[A] = indigoengine.shared.collections.NonEmptyList[A]
 val NonEmptyList: indigoengine.shared.collections.NonEmptyList.type = indigoengine.shared.collections.NonEmptyList
 
+// ---
+
+type Extension = tyrian.next.extensions.Extension
+
+type ExtensionId = tyrian.next.extensions.ExtensionId
+val ExtensionId: tyrian.next.extensions.ExtensionId.type = tyrian.next.extensions.ExtensionId
