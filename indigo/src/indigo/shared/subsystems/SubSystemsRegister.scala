@@ -10,7 +10,7 @@ import scalajs.js
 
 final class SubSystemsRegister[Model] {
 
-  val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
+  val stateMap: js.Dictionary[Object] = js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredSubSystems: js.Array[RegisteredSubSystem[Model]] = js.Array()
