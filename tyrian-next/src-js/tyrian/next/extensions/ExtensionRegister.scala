@@ -11,7 +11,7 @@ import scalajs.js
 
 final class ExtensionRegister {
 
-  val stateMap: js.Dictionary[Object] = js.Dictionary.empty
+  private val stateMap: js.Dictionary[Object] = js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredExtensions: js.Array[RegisteredExtension] = js.Array()
@@ -41,33 +41,28 @@ final class ExtensionRegister {
     }
   }
 
-  def update(
-      globalMsg: GlobalMsg
-  ): Outcome[Batch[Action]] = {
+  def update(globalMsg: GlobalMsg): Outcome[Batch[Action]] =
     val results: Batch[Outcome[Batch[Action]]] =
       Batch.fromJSArray(
         registeredExtensions
-          .map { rss =>
+          .map: rss =>
             val key       = rss.id
             val extension = rss.extension
 
             val model: extension.ExtensionModel = stateMap(key).asInstanceOf[extension.ExtensionModel]
 
-            extension.update(model)(globalMsg) match {
+            extension.update(model)(globalMsg) match
               case Outcome.Error(e, _) =>
                 Outcome.raiseError(e)
 
               case Outcome.Result(state, actions) =>
                 stateMap.update(key, state.asInstanceOf[Object])
                 Outcome(actions)
-            }
-          }
       )
 
     results.foldLeft(Outcome(Batch.empty[Action])) { (acc, next) =>
       acc.flatMap(accActions => next.map(actions => accActions ++ actions))
     }
-  }
 
   def view: HtmlFragment =
     registeredExtensions
@@ -81,14 +76,13 @@ final class ExtensionRegister {
   def watchers: Batch[Watcher] =
     Batch
       .fromJSArray(registeredExtensions)
-      .flatMap { rss =>
+      .flatMap: rss =>
         val key       = rss.id
         val extension = rss.extension
 
         val model: extension.ExtensionModel = stateMap(key).asInstanceOf[extension.ExtensionModel]
 
         extension.watchers(model)
-      }
 
   def size: Int =
     registeredExtensions.length
