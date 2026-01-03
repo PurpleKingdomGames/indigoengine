@@ -11,10 +11,10 @@ object SandboxNext extends TyrianNext[Model]:
   def router: Location => GlobalMsg =
     Routing.externalOnly(AppEvent.NoOp, AppEvent.FollowLink(_))
 
-  def init(flags: Map[String, String]): Outcome[Model] =
-    Outcome(Model.init)
+  def init(flags: Map[String, String]): Result[Model] =
+    Result(Model.init)
 
-  def update(model: Model): GlobalMsg => Outcome[Model] =
+  def update(model: Model): GlobalMsg => Result[Model] =
     case e =>
       model.update(e)
 

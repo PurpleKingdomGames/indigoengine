@@ -1,16 +1,16 @@
 package indigo.next.bridge
 
 import cats.effect.IO
+import indigo.core.events.GlobalEvent
 import org.scalajs.dom.Event as DomEvent
 import org.scalajs.dom.EventTarget
 import tyrian.Cmd
 import tyrian.Sub
+import tyrian.next.GlobalMsg
 import util.Functions
 
 import scala.annotation.nowarn
 import scala.scalajs.js
-import indigo.core.events.GlobalEvent
-import tyrian.next.GlobalMsg
 
 final class TyrianIndigoNextBridge[Model]:
 
@@ -54,16 +54,14 @@ final class TyrianIndigoNextBridge[Model]:
 
 object TyrianIndigoNextBridge:
 
-  final class BridgeToIndigo(val value: GlobalEvent)
-      extends DomEvent(BridgeToIndigo.EventName)
+  final class BridgeToIndigo(val value: GlobalEvent) extends DomEvent(BridgeToIndigo.EventName)
   object BridgeToIndigo:
     val EventName: String = "[SendToIndigo]"
 
     def unapply(e: BridgeToIndigo): Option[GlobalEvent] =
       Some(e.value)
 
-  final class BridgeToTyrian(val value: GlobalMsg)
-      extends DomEvent(BridgeToTyrian.EventName)
+  final class BridgeToTyrian(val value: GlobalMsg) extends DomEvent(BridgeToTyrian.EventName)
   object BridgeToTyrian:
     val EventName: String = "[SendToTyrian]"
 

@@ -5,8 +5,8 @@ import tyrian.next.*
 
 final case class TopNav():
 
-  def update: GlobalMsg => Outcome[TopNav] =
-    case _ => Outcome(this)
+  def update: GlobalMsg => Result[TopNav] =
+    case _ => Result(this)
 
   def view: HtmlFragment =
     HtmlFragment(

@@ -4,7 +4,7 @@ import indigoengine.shared.collections.Batch
 import tyrian.next.Action
 import tyrian.next.GlobalMsg
 import tyrian.next.HtmlFragment
-import tyrian.next.Outcome
+import tyrian.next.Result
 import tyrian.next.Watcher
 
 import scalajs.js
@@ -19,18 +19,18 @@ final class ExtensionRegister {
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def register(newExtensions: Batch[Extension]): Batch[Action] =
     newExtensions.map(initialiseExtension).sequence match {
-      case oe @ Outcome.Error(e, _) =>
+      case oe @ Result.Error(e, _) =>
         println("Error during subsystem setup - Halting.")
         println("Crash report:")
         println(oe.reportCrash)
         throw e
 
-      case Outcome.Result(toBeRegistered, actions) =>
+      case Result.Next(toBeRegistered, actions) =>
         registeredExtensions = registeredExtensions ++ toBeRegistered.toJSArray
         actions
     }
 
-  private def initialiseExtension(extension: Extension): Outcome[RegisteredExtension] = {
+  private def initialiseExtension(extension: Extension): Result[RegisteredExtension] = {
     val key = extension.id.toString
     val res = RegisteredExtension(key, extension)
 
@@ -41,8 +41,8 @@ final class ExtensionRegister {
     }
   }
 
-  def update(globalMsg: GlobalMsg): Outcome[Batch[Action]] =
-    val results: Batch[Outcome[Batch[Action]]] =
+  def update(globalMsg: GlobalMsg): Result[Batch[Action]] =
+    val results: Batch[Result[Batch[Action]]] =
       Batch.fromJSArray(
         registeredExtensions
           .map: rss =>
@@ -52,15 +52,15 @@ final class ExtensionRegister {
             val model: extension.ExtensionModel = stateMap(key).asInstanceOf[extension.ExtensionModel]
 
             extension.update(model)(globalMsg) match
-              case Outcome.Error(e, _) =>
-                Outcome.raiseError(e)
+              case Result.Error(e, _) =>
+                Result.raiseError(e)
 
-              case Outcome.Result(state, actions) =>
+              case Result.Next(state, actions) =>
                 stateMap.update(key, state.asInstanceOf[Object])
-                Outcome(actions)
+                Result(actions)
       )
 
-    results.foldLeft(Outcome(Batch.empty[Action])) { (acc, next) =>
+    results.foldLeft(Result(Batch.empty[Action])) { (acc, next) =>
       acc.flatMap(accActions => next.map(actions => accActions ++ actions))
     }
 

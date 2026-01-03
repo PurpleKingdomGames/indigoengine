@@ -8,6 +8,7 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.GameEngine
+import indigo.next.bridge.TyrianIndigoNextBridge
 import indigo.next.frameprocessors.NextFrameProcessor
 import indigo.next.scenes.Scene
 import indigo.next.scenes.SceneManager
@@ -23,7 +24,6 @@ import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 import tyrian.next.Action
 import tyrian.next.Watcher
-import indigo.next.bridge.TyrianIndigoNextBridge
 
 import scala.concurrent.Future
 
@@ -140,7 +140,7 @@ trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData,
       */
     def send(event: GlobalEvent): Action =
       Action(_bridge.publish(event))
-      
+
       // // println("Send was called with: " + msg)
       // val next = translateFrom(msg)
       // // println("Translated to: " + next)

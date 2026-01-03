@@ -158,10 +158,10 @@ trait TyrianNext[Model]:
         }
 
         extCmds match {
-          case Outcome.Error(e, _) =>
+          case Result.Error(e, _) =>
             throw e
 
-          case Outcome.Result(eCmds, _) =>
+          case Result.Next(eCmds, _) =>
             m -> (as |+| eCmds)
         }
 
@@ -169,7 +169,7 @@ trait TyrianNext[Model]:
       view(model).addHtmlFragments(extensionsRegister.view).toHtml
 
     def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
-      _subscriptions(model) |+| Watcher.Many(extensionsRegister.watchers).toSub
+      _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub
 
     run(
       TyrianApp.start[IO, Model, GlobalMsg](

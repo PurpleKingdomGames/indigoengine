@@ -3,7 +3,7 @@ package tyrian.next.extensions
 import indigoengine.shared.collections.Batch
 import tyrian.next.GlobalMsg
 import tyrian.next.HtmlFragment
-import tyrian.next.Outcome
+import tyrian.next.Result
 import tyrian.next.Watcher
 
 trait Extension:
@@ -12,9 +12,9 @@ trait Extension:
 
   def id: ExtensionId
 
-  def init: Outcome[ExtensionModel]
+  def init: Result[ExtensionModel]
 
-  def update(model: ExtensionModel): GlobalMsg => Outcome[ExtensionModel]
+  def update(model: ExtensionModel): GlobalMsg => Result[ExtensionModel]
 
   def view(model: ExtensionModel): HtmlFragment
 

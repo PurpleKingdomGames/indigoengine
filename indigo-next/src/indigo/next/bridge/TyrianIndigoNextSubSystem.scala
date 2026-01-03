@@ -8,10 +8,10 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigoengine.shared.collections.Batch
+import tyrian.next.GlobalMsg
 
 import scala.annotation.nowarn
 import scala.collection.mutable
-import tyrian.next.GlobalMsg
 
 final case class TyrianIndigoNextSubSystem[Model](
     bridge: TyrianIndigoNextBridge[Model],
@@ -40,7 +40,7 @@ final case class TyrianIndigoNextSubSystem[Model](
   )
 
   def eventFilter: GlobalEvent => Option[EventType] =
-    case e         => Some(e)
+    case e => Some(e)
     // case _         => None
 
   def reference(model: Model): ReferenceData =

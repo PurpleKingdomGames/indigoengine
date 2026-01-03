@@ -2,13 +2,13 @@ package tyrian.next
 
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 import org.scalajs.dom.EventTarget
 import tyrian.Sub
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
-import indigoengine.shared.datatypes.Millis
 
 /** A watcher describes a resource that an application is interested in.
   *

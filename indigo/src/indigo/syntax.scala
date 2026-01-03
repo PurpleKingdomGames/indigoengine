@@ -1,6 +1,7 @@
 package indigo
 
 import indigo.shaders.UniformDataHelpers
+
 import scala.annotation.targetName
 
 object syntax:
@@ -8,14 +9,14 @@ object syntax:
   export indigoengine.shared.syntax.*
 
   extension (d: Double)
-    def toVolume: Volume   = Volume(d)
-    def volume: Volume     = Volume(d)
-    def toZoom: Zoom       = Zoom(d)
-    def zoom: Zoom         = Zoom(d)
+    def toVolume: Volume = Volume(d)
+    def volume: Volume   = Volume(d)
+    def toZoom: Zoom     = Zoom(d)
+    def zoom: Zoom       = Zoom(d)
 
   extension (i: Int)
-    def toFPS: FPS       = FPS(i)
-    def fps: FPS         = FPS(i)
+    def toFPS: FPS = FPS(i)
+    def fps: FPS   = FPS(i)
 
   extension (s: String)
     def toAnimationKey: AnimationKey = AnimationKey(s)
@@ -32,18 +33,15 @@ object syntax:
 
   extension (t: (Double, Double)) def toVector2: Vector2 = Vector2(t._1, t._2)
 
-  extension (t: (Double, Double, Double))
-    def toVector3: Vector3 = Vector3(t._1, t._2, t._3)
+  extension (t: (Double, Double, Double)) def toVector3: Vector3 = Vector3(t._1, t._2, t._3)
 
-  extension (t: (Double, Double, Double, Double))
-    def toVector4: Vector4 = Vector4(t._1, t._2, t._3, t._4)
+  extension (t: (Double, Double, Double, Double)) def toVector4: Vector4 = Vector4(t._1, t._2, t._3, t._4)
 
   extension (t: (Int, Int))
     def toPoint: Point = Point(t._1, t._2)
     def toSize: Size   = Size(t._1, t._2)
 
-  extension [A](values: Option[A])
-    def toOutcome(error: => Throwable): Outcome[A] = Outcome.fromOption(values, error)
+  extension [A](values: Option[A]) def toOutcome(error: => Throwable): Outcome[A] = Outcome.fromOption(values, error)
 
   extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
   extension [A](b: NonEmptyBatch[Outcome[A]]) def sequence: Outcome[NonEmptyBatch[A]] = Outcome.sequenceNonEmptyBatch(b)

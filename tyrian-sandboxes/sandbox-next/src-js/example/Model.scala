@@ -11,12 +11,12 @@ final case class Model(
     counters: CounterManager
 ):
 
-  def update: GlobalMsg => Outcome[Model] =
+  def update: GlobalMsg => Result[Model] =
     case AppEvent.NoOp =>
-      Outcome(this)
+      Result(this)
 
     case AppEvent.FollowLink(href) =>
-      Outcome(this)
+      Result(this)
         .addActions(Nav.loadUrl[IO](href))
 
     case e =>

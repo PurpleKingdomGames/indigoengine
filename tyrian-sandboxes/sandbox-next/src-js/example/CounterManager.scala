@@ -5,26 +5,26 @@ import tyrian.next.*
 
 final case class CounterManager(counters: List[Counter]):
 
-  def update: GlobalMsg => Outcome[CounterManager] =
+  def update: GlobalMsg => Result[CounterManager] =
     case CounterManagerEvent.Modify(index, msg) =>
       val cs = counters.zipWithIndex.map { case (c, i) =>
         if i == index then c.update(msg) else c
       }
 
-      Outcome(this.copy(counters = cs))
+      Result(this.copy(counters = cs))
 
     case CounterManagerEvent.Insert =>
-      Outcome(
+      Result(
         this.copy(
           counters = Counter.initial :: counters
         )
       )
 
     case CounterManagerEvent.Remove =>
-      Outcome(this.copy(counters = counters.drop(1)))
+      Result(this.copy(counters = counters.drop(1)))
 
     case _ =>
-      Outcome(this)
+      Result(this)
 
   def view: HtmlFragment =
     HtmlFragment.insert(

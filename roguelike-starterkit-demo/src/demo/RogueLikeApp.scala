@@ -74,6 +74,9 @@ object RogueLikeApp extends TyrianNext[AppModel]:
       )
     )
 
+  def extensions: Set[Extension] =
+    Set() // TODO
+
 enum AppMsg extends GlobalMsg:
   case NoOp
   case Log(msg: String)

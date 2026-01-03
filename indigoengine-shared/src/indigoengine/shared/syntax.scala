@@ -10,8 +10,7 @@ object syntax:
   def ==: = Batch.==:
   def :== = Batch.:==
 
-  extension [Value](values: Option[Value])
-    def toBatch: Batch[Value] = Batch.fromOption(values)
+  extension [Value](values: Option[Value]) def toBatch: Batch[Value] = Batch.fromOption(values)
 
   extension [Value](b: Batch[Option[Value]]) def sequence: Option[Batch[Value]] = Batch.sequenceOption(b)
   extension [Value](l: List[Option[Value]]) def sequence: Option[List[Value]]   = Batch.sequenceListOption(l)
@@ -46,8 +45,6 @@ object syntax:
     def toMillis: Millis = Millis(l)
     def millis: Millis   = Millis(l)
 
-  extension (t: (Double, Double, Double))
-    def toRGB: RGB         = RGB(t._1, t._2, t._3)
+  extension (t: (Double, Double, Double)) def toRGB: RGB = RGB(t._1, t._2, t._3)
 
-  extension (t: (Double, Double, Double, Double))
-    def toRGBA: RGBA       = RGBA(t._1, t._2, t._3, t._4)
+  extension (t: (Double, Double, Double, Double)) def toRGBA: RGBA = RGBA(t._1, t._2, t._3, t._4)

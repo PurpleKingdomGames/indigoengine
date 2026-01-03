@@ -15,18 +15,18 @@ object CounterExtension extends Extension:
   def id: ExtensionId =
     ExtensionId("counter ext")
 
-  def init: Outcome[ExtensionModel] =
-    Outcome(0)
+  def init: Result[ExtensionModel] =
+    Result(0)
 
-  def update(currentValue: Int): GlobalMsg => Outcome[ExtensionModel] =
+  def update(currentValue: Int): GlobalMsg => Result[ExtensionModel] =
     case CustomEvent.Increment =>
-      Outcome(currentValue + 1)
+      Result(currentValue + 1)
 
     case CustomEvent.Decrement =>
-      Outcome(currentValue - 1)
+      Result(currentValue - 1)
 
     case _ =>
-      Outcome(currentValue)
+      Result(currentValue)
 
   def view(currentValue: Int): HtmlFragment =
     HtmlFragment.insert(
