@@ -1,5 +1,6 @@
 package demo
 
+import indigo.next.Indigo
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
@@ -18,36 +19,13 @@ object RogueLikeApp extends TyrianNext[AppModel]:
 
   def init(flags: Map[String, String]): Result[AppModel] =
     Result(AppModel.init)
-      .addGlobalMsgs(GameMsg.AttemptStart(30)) // TODO: Big number, might want a way to emit after delay.
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def update(model: AppModel): GlobalMsg => Result[AppModel] =
-    case GameMsg.AttemptStart(remaining) if remaining <= 0 =>
-      Result.raiseError(new Exception("Game div was not found."))
-
-    case GameMsg.AttemptStart(remaining) =>
-      Result(model)
-        .addActions(
-          Action.run {
-            val elem = document.getElementById(gameDivId)
-
-            // TODO: Maybe we delegate this to Indigo, and lauch does the null check reporting success or failure?
-            if elem != null then
-              model.game.launch(elem)
-              GameMsg.Started
-            else GameMsg.AttemptStart(remaining - 1)
-          }
-        )
-        .log("Attempts remaining: " + remaining)
-
-    case GameMsg.Started =>
-      Result(model).log("Game started!")
-
     case GameMsg.MakeIndigoLog(msg) =>
-      Result(model)
-        .addActions(
-          model.game.bridge.send(GameEvent.Log(msg))
-        )
+      Result(model) // TODO
+        // .addActions( 
+        //   model.game.bridge.send(GameEvent.Log(msg))
+        // )
 
     case AppMsg.NoOp =>
       Result(model)
@@ -67,7 +45,6 @@ object RogueLikeApp extends TyrianNext[AppModel]:
 
   def watchers(model: AppModel): Batch[Watcher] =
     Batch(
-      model.game.bridge.watch,
       Watcher.every(
         5.seconds,
         t => GameMsg.MakeIndigoLog(s"From Tyrian: ${t.toUTCString()}")
@@ -75,18 +52,24 @@ object RogueLikeApp extends TyrianNext[AppModel]:
     )
 
   def extensions: Set[Extension] =
-    Set() // TODO
+    Set(
+      Indigo(
+        ExtensionId("rogue game"),
+        RogueLikeGame(),
+        () => Option(document.getElementById(gameDivId)),
+        AppMsg.Log("Game start success."),
+        AppMsg.Log("Game start fail.")
+      )
+    )
 
 enum AppMsg extends GlobalMsg:
   case NoOp
   case Log(msg: String)
 
 enum GameMsg extends GlobalMsg:
-  case AttemptStart(remaining: Int)
-  case Started
   case MakeIndigoLog(msg: String)
 
-final case class AppModel(game: RogueLikeGame)
+final case class AppModel()
 object AppModel:
   val init: AppModel =
-    AppModel(RogueLikeGame())
+    AppModel()
