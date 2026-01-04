@@ -1,7 +1,7 @@
 package indigo.next
 
 import indigo.BootResult
-import indigo.GameLauncher
+import indigo.MinimalLauncher
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
@@ -23,6 +23,7 @@ import indigoengine.shared.collections.NonEmptyBatch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 import tyrian.next.Action
+import tyrian.next.GlobalMsg
 import tyrian.next.Watcher
 
 import scala.concurrent.Future
@@ -41,7 +42,7 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData, Model, Unit] {
+trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model, Unit]:
 
   /** A non-empty ordered list of scenes
     *
@@ -159,7 +160,8 @@ trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData,
 
   private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, Unit] = {
 
-    val bridgeSubSystem = bridge._bridge.subSystem(???)
+    val dummy: GlobalEvent => Option[GlobalMsg] = _ => None // TODO: Where does this come from?
+    val bridgeSubSystem                         = bridge._bridge.subSystem(dummy)
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems ++ Set(bridgeSubSystem)))
 
@@ -207,5 +209,3 @@ trait IndigoNext[BootData, StartUpData, Model] extends GameLauncher[StartUpData,
 
         case Outcome.Result(b, evts) =>
           indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
-
-}

@@ -2,8 +2,10 @@ package tyrian.next
 
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Millis
 import tyrian.Cmd
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
 /** An action describes some side-effect that can be performed as a result of a model update or other GlobalMsg being
@@ -41,8 +43,8 @@ object Action:
     fromCmd(Cmd.Emit(msg))
 
   /** Creates an action that emits a message after a specified delay. */
-  def emitAfterDelay(msg: GlobalMsg, delay: FiniteDuration): Action =
-    Action.Run(IO.pure(msg).delayBy(delay), identity)
+  def emitAfterDelay(msg: GlobalMsg, delay: Millis): Action =
+    Action.Run(IO.pure(msg).delayBy(FiniteDuration(delay.toLong, TimeUnit.MILLISECONDS)), identity)
 
   /** Creates an action that runs a side effect without producing a message. */
   def sideEffect(thunk: => Unit): Action =

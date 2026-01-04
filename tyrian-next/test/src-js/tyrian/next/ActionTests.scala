@@ -3,8 +3,6 @@ package tyrian.next
 import cats.effect.IO
 import cats.syntax.all.*
 
-import scala.concurrent.duration.*
-
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 class ActionTests extends munit.CatsEffectSuite {
 
@@ -108,7 +106,7 @@ class ActionTests extends munit.CatsEffectSuite {
 
   test("emitAfterDelay") {
     val action: Action =
-      Action.emitAfterDelay(IntMsg(10), 1.seconds)
+      Action.emitAfterDelay(IntMsg(10), Seconds(1).toMillis)
 
     val actual: IO[IntMsg] =
       action.run.map {

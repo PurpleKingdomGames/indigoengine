@@ -1,17 +1,11 @@
 package indigo
 
-import indigo.gameengine.GameEngine
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 
 import scala.scalajs.js.annotation.*
 
-trait GameLauncher[StartUpData, Model, ViewModel]:
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
-  private var game: GameEngine[StartUpData, Model, ViewModel] = null
-
-  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model, ViewModel]
+trait GameLauncher[StartUpData, Model, ViewModel] extends MinimalLauncher[StartUpData, Model, ViewModel]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private val findElement: String => Element = containerId =>
@@ -20,11 +14,6 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
 
       case None =>
         throw new Exception(s"Missing Element! Could not find an element with id '$containerId' on the page.")
-
-  @JSExport
-  def halt(): Unit =
-    game.kill()
-    ()
 
   @JSExport
   def launch(containerId: String): Unit =
@@ -50,10 +39,6 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
   // Scala API
   def launch(containerId: String, flags: Map[String, String]): Unit =
     game = (findElement andThen ready(flags))(containerId)
-    ()
-
-  def launch(element: Element, flags: Map[String, String]): Unit =
-    game = ready(flags)(element)
     ()
 
   def launch(containerId: String, flags: (String, String)*): Unit =

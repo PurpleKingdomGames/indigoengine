@@ -7,7 +7,7 @@ import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 import tyrian.next.GlobalMsg
 
-final class RogueLikeGame extends IndigoNext[Size, Size, GameModel]:
+final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel]:
 
   def translateTo: GlobalEvent => Option[GlobalMsg] =
 
@@ -54,8 +54,7 @@ final class RogueLikeGame extends IndigoNext[Size, Size, GameModel]:
           FPSCounter(
             RoguelikeTiles.Size10x10.Fonts.fontKey,
             Assets.assets.AnikkiSquare10x10
-          ).moveTo(Point(10, 350)) // ,
-          // tyrianSubSystem
+          ).moveTo(Point(10, 350))
         )
     )
 
