@@ -8,6 +8,7 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.GameEngine
+import indigo.next.bridge.BridgeMsg
 import indigo.next.bridge.TyrianIndigoNextBridge
 import indigo.next.frameprocessors.NextFrameProcessor
 import indigo.next.scenes.Scene
@@ -23,7 +24,6 @@ import indigoengine.shared.collections.NonEmptyBatch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 import tyrian.next.Action
-import tyrian.next.GlobalMsg
 import tyrian.next.Watcher
 
 import scala.concurrent.Future
@@ -42,7 +42,7 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model, Unit]:
+trait IndigoNext[BootData, StartUpData, Model, BridgeData] extends MinimalLauncher[StartUpData, Model, Unit]:
 
   /** A non-empty ordered list of scenes
     *
@@ -134,13 +134,13 @@ trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpDa
     // def translateTo: GlobalEvent => Option[GlobalMsg]
     // def translateFrom: GlobalMsg => Option[GlobalEvent]
 
-    private[next] val _bridge: TyrianIndigoNextBridge[Model] =
+    private[next] val _bridge: TyrianIndigoNextBridge[Model, BridgeData] =
       new TyrianIndigoNextBridge
 
     /** Send events from Tyrian to Indigo
       */
-    def send(event: GlobalEvent): Action =
-      Action(_bridge.publish(event))
+    def send(data: BridgeData): Action =
+      Action(_bridge.send(BridgeMsg.Send(data)))
 
       // // println("Send was called with: " + msg)
       // val next = translateFrom(msg)
@@ -160,8 +160,7 @@ trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpDa
 
   private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, Unit] = {
 
-    val dummy: GlobalEvent => Option[GlobalMsg] = _ => None // TODO: Where does this come from?
-    val bridgeSubSystem                         = bridge._bridge.subSystem(dummy)
+    val bridgeSubSystem = bridge._bridge.subSystem
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems ++ Set(bridgeSubSystem)))
 
