@@ -12,12 +12,12 @@ import tyrian.next.extensions.ExtensionId
 
 final class Indigo(
     extensionId: ExtensionId,
-    game: IndigoNext[?, ?, ?] | GameLauncher[?,?,?],
+    game: IndigoNext[?, ?, ?, ?] | GameLauncher[?, ?, ?],
     find: () => Option[Element],
     onLaunchSuccess: GlobalMsg,
     onLaunchFailure: GlobalMsg
 ) extends Extension:
-  
+
   private val MaxAttempts: Int = 10
 
   type ExtensionModel = Indigo.ExtensionModel
@@ -69,13 +69,13 @@ final class Indigo(
       case _: GameLauncher[?, ?, ?] =>
         Batch.empty
 
-      case g: IndigoNext[?,?,?] =>
+      case g: IndigoNext[?, ?, ?, ?] =>
         Batch(g.bridge.watch)
-    
+
 object Indigo:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  private def launchAction(game: IndigoNext[?, ?, ?] | GameLauncher[?,?,?], find: () => Option[Element]): Action =
+  private def launchAction(game: IndigoNext[?, ?, ?, ?] | GameLauncher[?, ?, ?], find: () => Option[Element]): Action =
     Action.run {
       find() match
         case Some(elem) if elem != null =>
@@ -92,4 +92,4 @@ object Indigo:
     case Started
     case Failed
 
-  final case class ExtensionModel(game: IndigoNext[?, ?, ?] | GameLauncher[?,?,?], attempts: Int)
+  final case class ExtensionModel(game: IndigoNext[?, ?, ?, ?] | GameLauncher[?, ?, ?], attempts: Int)

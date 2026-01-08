@@ -8,14 +8,12 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigoengine.shared.collections.Batch
-import tyrian.next.GlobalMsg
 
 import scala.annotation.nowarn
 import scala.collection.mutable
 
-final case class TyrianIndigoNextSubSystem[Model](
-    bridge: TyrianIndigoNextBridge[Model],
-    toGlobalMsg: GlobalEvent => Option[GlobalMsg]
+final case class TyrianIndigoNextSubSystem[Model, Data](
+    bridge: TyrianIndigoNextBridge[Model, Data]
 ) extends SubSystem[Model]:
 
   val id: SubSystemId =
@@ -28,20 +26,16 @@ final case class TyrianIndigoNextSubSystem[Model](
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
 
-  bridge.eventTarget.addEventListener[TyrianIndigoNextBridge.BridgeToIndigo](
-    TyrianIndigoNextBridge.BridgeToIndigo.EventName,
-    {
-      case TyrianIndigoNextBridge.BridgeToIndigo(value) =>
-        eventQueue.enqueue(value)
-
-      case _ =>
-        ()
+  bridge.eventTarget.addEventListener[bridge.BridgeToIndigo](
+    bridge.BridgeToIndigo.EventName,
+    { case e: bridge.BridgeToIndigo =>
+      eventQueue.enqueue(e.value)
     }
   )
 
   def eventFilter: GlobalEvent => Option[EventType] =
-    case e => Some(e)
-    // case _         => None
+    case e: BridgeEvent.Send[_] => Some(e)
+    case _                      => None
 
   def reference(model: Model): ReferenceData =
     ()
@@ -52,17 +46,14 @@ final case class TyrianIndigoNextSubSystem[Model](
   @nowarn("msg=unused")
   def update(context: SubSystemContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case FrameTick if eventQueue.size > 0 =>
-      // println("Do we enqueue? " + eventQueue.size)
       Outcome(model, Batch.fromSeq(eventQueue.dequeueAll(_ => true)))
 
-    case e =>
-      toGlobalMsg(e) match
-        case None =>
-          Outcome(model)
+    case e: BridgeEvent.Send[Data] @unchecked =>
+      bridge.eventTarget.dispatchEvent(bridge.BridgeToTyrian(BridgeMsg.Receive(e.data)))
+      Outcome(model)
 
-        case Some(msg) =>
-          bridge.eventTarget.dispatchEvent(TyrianIndigoNextBridge.BridgeToTyrian(msg))
-          Outcome(model)
+    case e =>
+      Outcome(model)
 
   def present(context: SubSystemContext[ReferenceData], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

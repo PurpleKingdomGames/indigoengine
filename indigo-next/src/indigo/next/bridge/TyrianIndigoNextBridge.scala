@@ -1,7 +1,6 @@
 package indigo.next.bridge
 
 import cats.effect.IO
-import indigo.core.events.GlobalEvent
 import org.scalajs.dom.Event as DomEvent
 import org.scalajs.dom.EventTarget
 import tyrian.Cmd
@@ -12,28 +11,23 @@ import util.Functions
 import scala.annotation.nowarn
 import scala.scalajs.js
 
-final class TyrianIndigoNextBridge[Model]:
+final class TyrianIndigoNextBridge[Model, Data]:
 
   val eventTarget: EventTarget = new EventTarget()
 
-  def publish(value: GlobalEvent): Cmd[IO, Nothing] =
-    publishToBridge(value)
-
-  def subscribe: Sub[IO, GlobalMsg] =
-    subscribeToBridge
-
-  def subSystem(toGlobalMsg: GlobalEvent => Option[GlobalMsg]): TyrianIndigoNextSubSystem[Model] =
-    TyrianIndigoNextSubSystem(this, toGlobalMsg)
-
   @nowarn("msg=unused")
-  private def publishToBridge(value: GlobalEvent): Cmd[IO, Nothing] =
+  def send(value: BridgeMsg.Send[Data]): Cmd[IO, Nothing] =
     Cmd.SideEffect {
-      eventTarget.dispatchEvent(TyrianIndigoNextBridge.BridgeToIndigo(value))
+      eventTarget.dispatchEvent(
+        BridgeToIndigo(
+          BridgeEvent.Receive[Data](value.data)
+        )
+      )
       ()
     }
 
-  private def subscribeToBridge: Sub[IO, GlobalMsg] =
-    import TyrianIndigoNextBridge.BridgeToTyrian
+  def subscribe: Sub[IO, GlobalMsg] =
+    // import TyrianIndigoNextBridge.BridgeToTyrian
 
     val acquire = (callback: Either[Throwable, BridgeToTyrian] => Unit) =>
       IO {
@@ -52,18 +46,21 @@ final class TyrianIndigoNextBridge[Model]:
       bridgeMsg => Some(bridgeMsg.value)
     )
 
-object TyrianIndigoNextBridge:
+  def subSystem: TyrianIndigoNextSubSystem[Model, Data] =
+    TyrianIndigoNextSubSystem(this)
 
-  final class BridgeToIndigo(val value: GlobalEvent) extends DomEvent(BridgeToIndigo.EventName)
+  /** Wraps our event in a Dom Event so that it can be send over the bridge from Tyrian to Indigo. */
+  final class BridgeToIndigo(val value: BridgeEvent.Receive[Data]) extends DomEvent(BridgeToIndigo.EventName)
   object BridgeToIndigo:
     val EventName: String = "[SendToIndigo]"
 
-    def unapply(e: BridgeToIndigo): Option[GlobalEvent] =
-      Some(e.value)
+    // def unapply[Data](e: BridgeToIndigo): Option[BridgeEvent.[Data]] =
+    //   Some(e.value)
 
-  final class BridgeToTyrian(val value: GlobalMsg) extends DomEvent(BridgeToTyrian.EventName)
+  /** Wraps our event in a Dom Event so that it can be send over the bridge from Indigo to Tyrian. */
+  final class BridgeToTyrian(val value: BridgeMsg.Receive[Data]) extends DomEvent(BridgeToTyrian.EventName)
   object BridgeToTyrian:
     val EventName: String = "[SendToTyrian]"
 
-    def unapply(e: BridgeToTyrian): Option[GlobalMsg] =
-      Some(e.value)
+    // def unapply[Data](e: BridgeToTyrian): Option[BridgeMsg[Data]] =
+    //   Some(e.value)
