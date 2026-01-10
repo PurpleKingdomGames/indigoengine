@@ -1,5 +1,6 @@
 package indigo.next
 
+import org.scalajs.dom.document
 import indigo.GameLauncher
 import indigo.next.bridge.BridgeMsg
 import org.scalajs.dom.Element
@@ -11,18 +12,43 @@ import tyrian.next.Watcher
 import tyrian.next.extensions.Extension
 import tyrian.next.extensions.ExtensionId
 
-final class Indigo(
+final case class Indigo(
     extensionId: ExtensionId,
     game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
     find: () => Option[Element],
-    onLaunchSuccess: GlobalMsg,
-    onLaunchFailure: GlobalMsg
+    onLaunchSuccess: Option[GlobalMsg],
+    onLaunchFailure: Option[GlobalMsg]
 ) extends Extension:
 
   private val MaxAttempts: Int = 10
 
   type ExtensionModel = Indigo.ExtensionModel
 
+  def withExtensionId(value: ExtensionId): Indigo =
+    this.copy(extensionId = value)
+  
+  def withGame(value: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?]): Indigo =
+    this.copy(game = value)
+  
+  def withFind(value: () => Option[Element]): Indigo =
+    this.copy(find = value)
+  def findById(containerId: String): Indigo =
+    withFind(() => Option(document.getElementById(containerId)))
+  
+  def withOnLaunchSuccess(value: Option[GlobalMsg]): Indigo =
+    this.copy(onLaunchSuccess = value)
+  def sendLaunchSuccessMsg(value: GlobalMsg): Indigo =
+    this.copy(onLaunchSuccess = Some(value))
+  def noLaunchSuccessMsg: Indigo =
+    this.copy(onLaunchSuccess = None)
+  
+  def withOnLaunchFailure(value: Option[GlobalMsg]): Indigo =
+    this.copy(onLaunchFailure = value)
+  def sendLaunchFailureMsg(value: GlobalMsg): Indigo =
+    this.copy(onLaunchFailure = Some(value))
+  def noLaunchFailureMsg: Indigo =
+    this.copy(onLaunchFailure = None)
+  
   def id: ExtensionId = extensionId
 
   def init: Result[ExtensionModel] =
@@ -50,14 +76,24 @@ final class Indigo(
         .addActions(Indigo.launchAction(model.game, find))
 
     case Indigo.LaunchMsg.Started =>
-      Result(model)
-        .addActions(Action.emit(onLaunchSuccess))
-        .log("Indigo Extension successfully launched the game.")
+      onLaunchSuccess match
+        case None =>
+          Result(model)
+          
+        case Some(msg) =>
+          Result(model)
+            .addGlobalMsgs(msg)
+            .log("Indigo Extension successfully launched the game.")
 
     case Indigo.LaunchMsg.Failed =>
-      Result(model)
-        .addActions(Action.emit(onLaunchFailure))
-        .log(s"Indigo Extention failed to launch the game after $MaxAttempts attempts.")
+      onLaunchFailure match
+        case None =>
+          Result(model)
+          
+        case Some(msg) =>
+          Result(model)
+            .addGlobalMsgs(msg)
+            .log(s"Indigo Extention failed to launch the game after $MaxAttempts attempts.")
 
     case BridgeMsg.Send(data) =>
       game match
@@ -83,7 +119,48 @@ final class Indigo(
         Batch(g.bridge.watch)
 
 object Indigo:
+  
+  def apply(
+    extensionId: ExtensionId,
+    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+    containerId: String
+  ): Indigo =
+    Indigo(
+      extensionId,
+      game,
+      () => Option(document.getElementById(containerId)),
+      None,
+      None
+    )
+    
+  def apply(
+    extensionId: ExtensionId,
+    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+    find: () => Option[Element]
+  ): Indigo =
+    Indigo(
+      extensionId,
+      game,
+      find,
+      None,
+      None
+    )
 
+  def apply(
+    extensionId: ExtensionId,
+    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+    find: () => Option[Element],
+    onLaunchSuccess: GlobalMsg,
+    onLaunchFailure: GlobalMsg
+  ): Indigo =
+    Indigo(
+      extensionId,
+      game,
+      find,
+      Some(onLaunchSuccess),
+      Some(onLaunchFailure)
+    )
+  
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def launchAction(game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?], find: () => Option[Element]): Action =
     Action.run {
