@@ -1,6 +1,7 @@
 package demo
 
 import indigo.next.Indigo
+import indigo.next.bridge.BridgeMsg
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
@@ -22,10 +23,14 @@ object RogueLikeApp extends TyrianNext[AppModel]:
 
   def update(model: AppModel): GlobalMsg => Result[AppModel] =
     case GameMsg.MakeIndigoLog(msg) =>
-      Result(model) // TODO
-        // .addActions( 
-        //   model.game.bridge.send(GameEvent.Log(msg))
-        // )
+      Result(model)
+        .addGlobalMsgs(
+          BridgeMsg.Send(MsgData.Log(msg))
+        )
+
+    case BridgeMsg.Receive(data) =>
+      Result(model)
+        .log("Tyrian got this from Indigo: " + data)
 
     case AppMsg.NoOp =>
       Result(model)
@@ -51,11 +56,11 @@ object RogueLikeApp extends TyrianNext[AppModel]:
       )
     )
 
-  def extensions: Set[Extension] =
+  def extensions(model: AppModel): Set[Extension] =
     Set(
       Indigo(
         ExtensionId("rogue game"),
-        RogueLikeGame(),
+        model.game,
         () => Option(document.getElementById(gameDivId)),
         AppMsg.Log("Game start success."),
         AppMsg.Log("Game start fail.")
@@ -69,7 +74,7 @@ enum AppMsg extends GlobalMsg:
 enum GameMsg extends GlobalMsg:
   case MakeIndigoLog(msg: String)
 
-final case class AppModel()
+final case class AppModel(game: RogueLikeGame)
 object AppModel:
   val init: AppModel =
-    AppModel()
+    AppModel(RogueLikeGame())

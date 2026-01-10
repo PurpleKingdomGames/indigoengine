@@ -49,8 +49,12 @@ trait TyrianNext[Model]:
   def watchers(model: Model): Batch[Watcher]
 
   /** Extensions are mini-TyrianNext apps that are mechnically combined with your main application in the background.
+    * Extensions are provided the initial model to assist them during start-up.
+    *
+    * @param model
+    *   The initial app model. Only provided once.
     */
-  def extensions: Set[Extension]
+  def extensions(model: Model): Set[Extension]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -139,9 +143,10 @@ trait TyrianNext[Model]:
     new ExtensionRegister()
 
   def ready(node: Element, flags: Map[String, String]): Unit =
-    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions)).map(_.toCmd)
 
     val (initModel, initCmds) = _init(flags)
+
+    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions(initModel))).map(_.toCmd)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def combinedUpdate(
