@@ -12,8 +12,8 @@ import indigoengine.shared.collections.Batch
 import scala.annotation.nowarn
 import scala.collection.mutable
 
-final case class TyrianIndigoNextSubSystem[Model, Data](
-    bridge: TyrianIndigoNextBridge[Model, Data]
+final case class TyrianIndigoNextSubSystem[Model](
+    bridge: TyrianIndigoNextBridge[Model]
 ) extends SubSystem[Model]:
 
   val id: SubSystemId =
@@ -26,16 +26,17 @@ final case class TyrianIndigoNextSubSystem[Model, Data](
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
 
-  bridge.eventTarget.addEventListener[bridge.BridgeToIndigo](
-    bridge.BridgeToIndigo.EventName,
-    { case e: bridge.BridgeToIndigo =>
+  bridge.eventTarget.addEventListener[BridgeToIndigo](
+    BridgeToIndigo.EventName,
+    { case e: BridgeToIndigo =>
       eventQueue.enqueue(e.value)
     }
   )
 
   def eventFilter: GlobalEvent => Option[EventType] =
-    case e: BridgeEvent.Send[_] => Some(e)
-    case _                      => None
+    case e: BridgeEvent.Send => Some(e)
+    case FrameTick           => Some(FrameTick)
+    case _                   => None
 
   def reference(model: Model): ReferenceData =
     ()
@@ -46,10 +47,11 @@ final case class TyrianIndigoNextSubSystem[Model, Data](
   @nowarn("msg=unused")
   def update(context: SubSystemContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case FrameTick if eventQueue.size > 0 =>
-      Outcome(model, Batch.fromSeq(eventQueue.dequeueAll(_ => true)))
+      val evts = eventQueue.dequeueAll(_ => true)
+      Outcome(model, Batch.fromSeq(evts))
 
-    case e: BridgeEvent.Send[Data] @unchecked =>
-      bridge.eventTarget.dispatchEvent(bridge.BridgeToTyrian(BridgeMsg.Receive(e.data)))
+    case e: BridgeEvent.Send =>
+      bridge.eventTarget.dispatchEvent(new BridgeToTyrian(BridgeMsg.Receive(e.data)))
       Outcome(model)
 
     case e =>

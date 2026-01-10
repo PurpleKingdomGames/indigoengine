@@ -8,6 +8,7 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.GameEngine
+import indigo.next.bridge.BridgeData
 import indigo.next.bridge.BridgeMsg
 import indigo.next.bridge.TyrianIndigoNextBridge
 import indigo.next.frameprocessors.NextFrameProcessor
@@ -42,7 +43,7 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait IndigoNext[BootData, StartUpData, Model, BridgeData] extends MinimalLauncher[StartUpData, Model, Unit]:
+trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model, Unit]:
 
   /** A non-empty ordered list of scenes
     *
@@ -131,22 +132,13 @@ trait IndigoNext[BootData, StartUpData, Model, BridgeData] extends MinimalLaunch
 
   object bridge:
 
-    // def translateTo: GlobalEvent => Option[GlobalMsg]
-    // def translateFrom: GlobalMsg => Option[GlobalEvent]
-
-    private[next] val _bridge: TyrianIndigoNextBridge[Model, BridgeData] =
+    private[next] val _bridge: TyrianIndigoNextBridge[Model] =
       new TyrianIndigoNextBridge
 
     /** Send events from Tyrian to Indigo
       */
     def send(data: BridgeData): Action =
       Action(_bridge.send(BridgeMsg.Send(data)))
-
-      // // println("Send was called with: " + msg)
-      // val next = translateFrom(msg)
-      // // println("Translated to: " + next)
-      // // println("bridge: " + bridge)
-      // Action(bridge.publish(next))
 
     /** Allows Tyrian to watch for messages from Indigo
       */

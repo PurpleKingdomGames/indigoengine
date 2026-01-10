@@ -2,6 +2,6 @@ package indigo.next.bridge
 
 import indigo.core.events.GlobalEvent
 
-enum BridgeEvent[Data] extends GlobalEvent:
-  case Send(data: Data)
-  case Receive(data: Data)
+enum BridgeEvent extends GlobalEvent:
+  case Send(data: BridgeData)
+  case Receive(data: BridgeData)

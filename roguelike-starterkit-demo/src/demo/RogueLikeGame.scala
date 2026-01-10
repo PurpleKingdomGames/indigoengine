@@ -3,19 +3,12 @@ package demo
 import demo.models.*
 import demo.scenes.*
 import indigo.next.*
+import indigo.next.bridge.BridgeData
+import indigo.next.bridge.BridgeEvent
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
-import tyrian.next.GlobalMsg
 
-final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel, String]:
-
-  def translateTo: GlobalEvent => Option[GlobalMsg] =
-
-    case ThisIsForTyrian(msg) =>
-      Some(AppMsg.Log(msg))
-
-    case _ =>
-      None
+final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel]:
 
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
@@ -71,12 +64,12 @@ final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel, String]:
     case KeyboardEvent.KeyUp(Key.PAGE_DOWN) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopNext)
 
-    case GameEvent.Log(msg) =>
+    case BridgeEvent.Receive(MsgData.Log(msg)) =>
       IndigoLogger.info(msg)
       Outcome(model)
-        .addGlobalEvents(ThisIsForTyrian(s"Indigo says: ${msg.reverse}"))
+        .addGlobalEvents(BridgeEvent.Send(MsgData.Log(s"Indigo says: ${msg.reverse}")))
 
-    case GameEvent.NoOp =>
+    case BridgeEvent.Receive(data) =>
       Outcome(model)
 
     case SceneEvent.SceneChange(_, _, _) =>
@@ -91,8 +84,9 @@ final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel, String]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
+enum MsgData extends BridgeData:
+  case Log(msg: String)
+
 enum GameEvent extends GlobalEvent:
   case NoOp
   case Log(msg: String)
-
-final case class ThisIsForTyrian(msg: String) extends GlobalEvent
