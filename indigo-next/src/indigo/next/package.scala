@@ -1,7 +1,5 @@
 package indigo.next
 
-import cats.effect.IO
-
 // Indigo
 
 export indigo.aliases.*
@@ -11,14 +9,13 @@ val BootResult: indigo.BootResult.type = indigo.BootResult
 
 // Bridge
 
-type TyrianSubSystem[Event, Model] = tyrian.bridge.TyrianSubSystem[IO, Event, Model]
-val TyrianSubSystem: tyrian.bridge.TyrianSubSystem.type = tyrian.bridge.TyrianSubSystem
+type BridgeData = bridge.BridgeData
 
-type TyrianIndigoBridge[Event, Model] = tyrian.bridge.TyrianIndigoBridge[IO, Event, Model]
-val TyrianIndigoBridge: tyrian.bridge.TyrianIndigoBridge.type = tyrian.bridge.TyrianIndigoBridge
+type BridgeEvent = bridge.BridgeEvent
+val BridgeEvent: bridge.BridgeEvent.type = bridge.BridgeEvent
 
-type IndigoGameId = tyrian.bridge.IndigoGameId
-val IndigoGameId: tyrian.bridge.IndigoGameId.type = tyrian.bridge.IndigoGameId
+type BridgeMsg = bridge.BridgeMsg
+val BridgeMsg: bridge.BridgeMsg.type = bridge.BridgeMsg
 
 // Scenes
 

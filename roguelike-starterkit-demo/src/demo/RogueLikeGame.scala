@@ -3,8 +3,6 @@ package demo
 import demo.models.*
 import demo.scenes.*
 import indigo.next.*
-import indigo.next.bridge.BridgeData
-import indigo.next.bridge.BridgeEvent
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 
@@ -68,9 +66,6 @@ final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel]:
       IndigoLogger.info(msg)
       Outcome(model)
         .addGlobalEvents(BridgeEvent.Send(MsgData.Log(s"Indigo says: ${msg.reverse}")))
-
-    case BridgeEvent.Receive(data) =>
-      Outcome(model)
 
     case SceneEvent.SceneChange(_, _, _) =>
       Outcome(model.copy(pointerOverWindows = Batch.empty))

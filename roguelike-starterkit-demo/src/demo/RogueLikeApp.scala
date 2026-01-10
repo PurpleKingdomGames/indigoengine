@@ -1,7 +1,6 @@
 package demo
 
-import indigo.next.Indigo
-import indigo.next.bridge.BridgeMsg
+import indigo.next.*
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
