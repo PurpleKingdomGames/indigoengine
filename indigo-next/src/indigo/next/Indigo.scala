@@ -1,9 +1,9 @@
 package indigo.next
 
-import org.scalajs.dom.document
 import indigo.GameLauncher
 import indigo.next.bridge.BridgeMsg
 import org.scalajs.dom.Element
+import org.scalajs.dom.document
 import tyrian.next.Action
 import tyrian.next.GlobalMsg
 import tyrian.next.HtmlFragment
@@ -26,29 +26,29 @@ final case class Indigo(
 
   def withExtensionId(value: ExtensionId): Indigo =
     this.copy(extensionId = value)
-  
+
   def withGame(value: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?]): Indigo =
     this.copy(game = value)
-  
+
   def withFind(value: () => Option[Element]): Indigo =
     this.copy(find = value)
   def findById(containerId: String): Indigo =
     withFind(() => Option(document.getElementById(containerId)))
-  
+
   def withOnLaunchSuccess(value: Option[GlobalMsg]): Indigo =
     this.copy(onLaunchSuccess = value)
   def sendLaunchSuccessMsg(value: GlobalMsg): Indigo =
     this.copy(onLaunchSuccess = Some(value))
   def noLaunchSuccessMsg: Indigo =
     this.copy(onLaunchSuccess = None)
-  
+
   def withOnLaunchFailure(value: Option[GlobalMsg]): Indigo =
     this.copy(onLaunchFailure = value)
   def sendLaunchFailureMsg(value: GlobalMsg): Indigo =
     this.copy(onLaunchFailure = Some(value))
   def noLaunchFailureMsg: Indigo =
     this.copy(onLaunchFailure = None)
-  
+
   def id: ExtensionId = extensionId
 
   def init: Result[ExtensionModel] =
@@ -79,7 +79,7 @@ final case class Indigo(
       onLaunchSuccess match
         case None =>
           Result(model)
-          
+
         case Some(msg) =>
           Result(model)
             .addGlobalMsgs(msg)
@@ -89,7 +89,7 @@ final case class Indigo(
       onLaunchFailure match
         case None =>
           Result(model)
-          
+
         case Some(msg) =>
           Result(model)
             .addGlobalMsgs(msg)
@@ -119,11 +119,11 @@ final case class Indigo(
         Batch(g.bridge.watch)
 
 object Indigo:
-  
+
   def apply(
-    extensionId: ExtensionId,
-    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
-    containerId: String
+      extensionId: ExtensionId,
+      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      containerId: String
   ): Indigo =
     Indigo(
       extensionId,
@@ -132,11 +132,11 @@ object Indigo:
       None,
       None
     )
-    
+
   def apply(
-    extensionId: ExtensionId,
-    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
-    find: () => Option[Element]
+      extensionId: ExtensionId,
+      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      find: () => Option[Element]
   ): Indigo =
     Indigo(
       extensionId,
@@ -147,11 +147,11 @@ object Indigo:
     )
 
   def apply(
-    extensionId: ExtensionId,
-    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
-    find: () => Option[Element],
-    onLaunchSuccess: GlobalMsg,
-    onLaunchFailure: GlobalMsg
+      extensionId: ExtensionId,
+      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      find: () => Option[Element],
+      onLaunchSuccess: GlobalMsg,
+      onLaunchFailure: GlobalMsg
   ): Indigo =
     Indigo(
       extensionId,
@@ -160,7 +160,7 @@ object Indigo:
       Some(onLaunchSuccess),
       Some(onLaunchFailure)
     )
-  
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def launchAction(game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?], find: () => Option[Element]): Action =
     Action.run {
