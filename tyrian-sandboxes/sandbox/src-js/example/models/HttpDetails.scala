@@ -1,6 +1,6 @@
 package example.models
 
-import tyrian.http.*
+import tyrian.classic.http.*
 
 final case class HttpDetails(
     method: Method,

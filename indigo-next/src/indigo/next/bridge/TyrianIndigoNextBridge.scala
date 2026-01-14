@@ -3,8 +3,8 @@ package indigo.next.bridge
 import cats.effect.IO
 import org.scalajs.dom.Event as DomEvent
 import org.scalajs.dom.EventTarget
-import tyrian.Cmd
-import tyrian.Sub
+import tyrian.classic.Cmd
+import tyrian.classic.Sub
 import util.Functions
 
 import scala.annotation.nowarn

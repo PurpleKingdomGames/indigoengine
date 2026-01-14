@@ -3,8 +3,8 @@ package example
 import example.models.Page
 import example.models.WSStatus
 import org.scalajs.dom
-import tyrian.cmds.ImageLoader
-import tyrian.http.Response
+import tyrian.classic.cmds.ImageLoader
+import tyrian.classic.http.Response
 
 import scala.scalajs.js
 

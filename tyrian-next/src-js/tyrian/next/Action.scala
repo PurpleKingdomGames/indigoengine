@@ -3,7 +3,7 @@ package tyrian.next
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
-import tyrian.Cmd
+import tyrian.classic.Cmd
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration

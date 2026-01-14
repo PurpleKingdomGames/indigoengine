@@ -5,7 +5,7 @@ import example.models.Fruit
 import example.models.HttpDetails
 import example.models.Page
 import example.models.Time
-import tyrian.websocket.*
+import tyrian.classic.websocket.*
 
 import scala.scalajs.js
 

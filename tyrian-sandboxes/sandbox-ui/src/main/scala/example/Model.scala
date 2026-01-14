@@ -4,6 +4,7 @@ import cats.effect.IO
 import example.components.TopNav
 import example.views.Page
 import tyrian.*
+import tyrian.classic.Nav
 import tyrian.next.*
 import tyrian.ui.*
 

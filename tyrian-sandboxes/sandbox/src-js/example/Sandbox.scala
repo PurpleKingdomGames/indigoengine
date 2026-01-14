@@ -10,10 +10,11 @@ import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
 import tyrian.SVG.*
-import tyrian.cmds.*
-import tyrian.http.*
-import tyrian.syntax.*
-import tyrian.websocket.*
+import tyrian.classic.*
+import tyrian.classic.cmds.*
+import tyrian.classic.http.*
+import tyrian.classic.syntax.*
+import tyrian.classic.websocket.*
 
 import scala.concurrent.duration.*
 import scala.scalajs.js

@@ -8,14 +8,14 @@ object aliases:
 
   // Cmds
 
-  val Dom: tyrian.cmds.Dom.type                   = tyrian.cmds.Dom
-  val Download: tyrian.cmds.Download.type         = tyrian.cmds.Download
-  val File: tyrian.cmds.File.type                 = tyrian.cmds.File
-  val FileReader: tyrian.cmds.FileReader.type     = tyrian.cmds.FileReader
-  val ImageLoader: tyrian.cmds.ImageLoader.type   = tyrian.cmds.ImageLoader
-  val LocalStorage: tyrian.cmds.LocalStorage.type = tyrian.cmds.LocalStorage
-  val Logger: tyrian.cmds.Logger.type             = tyrian.cmds.Logger
-  val Random: tyrian.cmds.Random.type             = tyrian.cmds.Random
+  val Dom: tyrian.classic.cmds.Dom.type                   = tyrian.classic.cmds.Dom
+  val Download: tyrian.classic.cmds.Download.type         = tyrian.classic.cmds.Download
+  val File: tyrian.classic.cmds.File.type                 = tyrian.classic.cmds.File
+  val FileReader: tyrian.classic.cmds.FileReader.type     = tyrian.classic.cmds.FileReader
+  val ImageLoader: tyrian.classic.cmds.ImageLoader.type   = tyrian.classic.cmds.ImageLoader
+  val LocalStorage: tyrian.classic.cmds.LocalStorage.type = tyrian.classic.cmds.LocalStorage
+  val Logger: tyrian.classic.cmds.Logger.type             = tyrian.classic.cmds.Logger
+  val Random: tyrian.classic.cmds.Random.type             = tyrian.classic.cmds.Random
 
   // Bridge
 

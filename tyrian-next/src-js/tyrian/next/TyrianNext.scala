@@ -6,11 +6,11 @@ import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import org.scalajs.dom.window
-import tyrian.Cmd
 import tyrian.Html
 import tyrian.Location
-import tyrian.Sub
-import tyrian.TyrianApp
+import tyrian.classic.Cmd
+import tyrian.classic.Sub
+import tyrian.classic.TyrianApp
 import tyrian.next.extensions.Extension
 import tyrian.next.extensions.ExtensionRegister
 

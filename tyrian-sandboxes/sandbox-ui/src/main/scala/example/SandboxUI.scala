@@ -1,6 +1,7 @@
 package example
 
 import tyrian.*
+import tyrian.classic.Routing
 import tyrian.next.*
 import tyrian.ui.theme.Theme
 

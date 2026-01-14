@@ -3,6 +3,7 @@ package example
 import cats.effect.IO
 import tyrian.*
 import tyrian.Html.*
+import tyrian.classic.Nav
 import tyrian.next.*
 
 final case class Model(

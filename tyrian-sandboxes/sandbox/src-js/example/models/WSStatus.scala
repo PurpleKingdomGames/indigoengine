@@ -2,7 +2,7 @@ package example.models
 
 import cats.effect.IO
 import example.Msg
-import tyrian.websocket.WebSocket
+import tyrian.classic.websocket.WebSocket
 
 enum WSStatus derives CanEqual:
   case Connecting

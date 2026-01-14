@@ -3,9 +3,9 @@ package tyrian.bridge
 import cats.effect.kernel.Async
 import org.scalajs.dom.Event as DomEvent
 import org.scalajs.dom.EventTarget
-import tyrian.Cmd
-import tyrian.Sub
 import tyrian.bridge.TyrianSubSystem
+import tyrian.classic.Cmd
+import tyrian.classic.Sub
 import util.Functions
 
 import scala.annotation.nowarn

@@ -2,8 +2,8 @@ package tyrian.next
 
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
-import tyrian.Cmd
-import tyrian.Sub
+import tyrian.classic.Cmd
+import tyrian.classic.Sub
 
 object syntax:
 

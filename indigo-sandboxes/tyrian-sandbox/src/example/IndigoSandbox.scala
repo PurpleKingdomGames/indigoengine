@@ -7,8 +7,9 @@ import tyrian.*
 import tyrian.Html.*
 import tyrian.bridge.IndigoGameId
 import tyrian.bridge.TyrianIndigoBridge
-import tyrian.cmds.Logger
-import tyrian.cmds.Random
+import tyrian.classic.*
+import tyrian.classic.cmds.Logger
+import tyrian.classic.cmds.Random
 
 import scala.concurrent.duration.*
 import scala.scalajs.js.annotation.*

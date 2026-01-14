@@ -4,6 +4,7 @@ import indigo.next.*
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
+import tyrian.classic.Routing
 import tyrian.next.*
 import tyrian.next.syntax.*
 

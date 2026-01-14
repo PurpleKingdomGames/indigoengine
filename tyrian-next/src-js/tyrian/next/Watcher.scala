@@ -4,7 +4,7 @@ import cats.effect.IO
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 import org.scalajs.dom.EventTarget
-import tyrian.Sub
+import tyrian.classic.Sub
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration

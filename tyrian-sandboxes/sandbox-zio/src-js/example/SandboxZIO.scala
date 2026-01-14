@@ -1,9 +1,12 @@
 package example
 
-import tyrian.*
+import tyrian.CSS
+import tyrian.Html
 import tyrian.Html.*
-import tyrian.cmds.Logger
-import tyrian.cmds.Random
+import tyrian.Location
+import tyrian.classic.*
+import tyrian.classic.cmds.Logger
+import tyrian.classic.cmds.Random
 import zio.*
 import zio.interop.catz.*
 

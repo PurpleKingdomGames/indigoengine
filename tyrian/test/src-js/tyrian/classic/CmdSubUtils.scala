@@ -1,14 +1,12 @@
-package tyrian.next
+package tyrian.classic
 
 import cats.effect.IO
-import tyrian.classic.Cmd
-import tyrian.classic.Sub
 
 import scala.annotation.nowarn
 
-object ActionWatcherUtils:
+object CmdSubUtils:
 
-  extension (a: Action) def run: IO[GlobalMsg] = runCmd(a.toCmd)
+  extension [A](cmd: Cmd[IO, A]) def run: IO[A] = runCmd(cmd)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def runCmd[Msg](cmd: Cmd[IO, Msg]): IO[Msg] =
@@ -22,7 +20,7 @@ object ActionWatcherUtils:
       case _ =>
         throw new Exception("failed, was not a run task")
 
-  extension [A](w: Watcher) def run: (Either[Throwable, A] => Unit) => IO[Unit] = runSub(w.toSub)
+  extension [A](sub: Sub[IO, A]) def run: (Either[Throwable, A] => Unit) => IO[Unit] = runSub(sub)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   @nowarn("msg=unused")
