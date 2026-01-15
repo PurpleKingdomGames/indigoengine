@@ -1,6 +1,6 @@
 package indigo.next.bridge
 
-import tyrian.next.GlobalMsg
+import tyrian.GlobalMsg
 
 enum BridgeMsg extends GlobalMsg:
   case Send(data: BridgeData)

@@ -12,6 +12,7 @@ object `package` extends Module:
 
   object js extends SharedJS, PlatformScalaModule:
 
-    def moduleDeps = Seq(build.`tyrian-io`.js)
+    def moduleDeps = Seq(build.`tyrian`.js)
 
-    override def moduleKind = ModuleKind.ESModule
+    override def moduleKind = ModuleKind.CommonJSModule
+

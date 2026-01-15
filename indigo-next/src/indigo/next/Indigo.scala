@@ -4,13 +4,13 @@ import indigo.GameLauncher
 import indigo.next.bridge.BridgeMsg
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
-import tyrian.next.Action
-import tyrian.next.GlobalMsg
-import tyrian.next.HtmlFragment
-import tyrian.next.Result
-import tyrian.next.Watcher
-import tyrian.next.extensions.Extension
-import tyrian.next.extensions.ExtensionId
+import tyrian.Action
+import tyrian.GlobalMsg
+import tyrian.HtmlFragment
+import tyrian.Result
+import tyrian.Watcher
+import tyrian.extensions.Extension
+import tyrian.extensions.ExtensionId
 
 final case class Indigo(
     extensionId: ExtensionId,
