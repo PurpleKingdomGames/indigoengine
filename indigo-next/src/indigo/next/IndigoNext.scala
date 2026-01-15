@@ -24,8 +24,8 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
-import tyrian.next.Action
-import tyrian.next.Watcher
+import tyrian.Action
+import tyrian.Watcher
 
 import scala.concurrent.Future
 

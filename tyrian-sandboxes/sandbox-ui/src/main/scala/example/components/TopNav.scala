@@ -1,7 +1,7 @@
 package example.components
 
 import example.AppEvent
-import tyrian.next.*
+import tyrian.*
 import tyrian.ui.*
 
 final case class TopNav():

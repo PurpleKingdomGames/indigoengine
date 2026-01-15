@@ -1,6 +1,6 @@
 package example.views
 
-import tyrian.next.*
+import tyrian.*
 import tyrian.ui.*
 
 object Page:

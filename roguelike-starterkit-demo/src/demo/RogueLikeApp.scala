@@ -4,16 +4,14 @@ import indigo.next.*
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
-import tyrian.classic.Routing
-import tyrian.next.*
-import tyrian.next.syntax.*
+import tyrian.syntax.*
 
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
 object RogueLikeApp extends TyrianNext[AppModel]:
 
-  def gameDivId: String = Constants.gameDivId.value
+  def gameDivId: String = Constants.gameDivId
 
   def router: Location => GlobalMsg =
     Routing.none(AppMsg.NoOp)

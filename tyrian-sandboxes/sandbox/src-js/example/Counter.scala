@@ -3,23 +3,26 @@ package example
 import tyrian.*
 import tyrian.Html.*
 
-object Counter:
+final case class Counter(value: Int):
+  def update: CounterEvent => Counter =
+    case CounterEvent.Increment =>
+      this.copy(value = value + 1)
 
-  opaque type Model = Int
+    case CounterEvent.Decrement =>
+      this.copy(value = value - 1)
 
-  def init: Model = 0
-
-  enum Msg derives CanEqual:
-    case Increment, Decrement
-
-  def view(model: Model): Html[Msg] =
+  def view: Html[CounterEvent] =
     div(
-      button(onClick(Msg.Decrement))(text("-")),
-      div(text(model.toString)),
-      button(onClick(Msg.Increment))(text("+"))
+      button(onClick(CounterEvent.Decrement))(text("-")),
+      div(text(value.toString)),
+      button(onClick(CounterEvent.Increment))(text("+"))
     )
 
-  def update(msg: Msg, model: Model): Model =
-    msg match
-      case Msg.Increment => model + 1
-      case Msg.Decrement => model - 1
+object Counter:
+
+  val initial: Counter =
+    Counter(0)
+
+enum CounterEvent extends GlobalMsg:
+  case Increment
+  case Decrement

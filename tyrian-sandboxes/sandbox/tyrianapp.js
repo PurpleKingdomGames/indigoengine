@@ -1,5 +1,3 @@
-import { TyrianApp } from "../out/sandbox/js/fastLinkJS.dest/main.js";
+import { TyrianApp } from "../../out/tyrian-sandboxes/sandbox-next/js/fastLinkJS.dest/main.js";
 
-TyrianApp.launch(document.getElementById("myapp"), {
-  message: "Hello, Tyrian!",
-});
+TyrianApp.launch("myapp");

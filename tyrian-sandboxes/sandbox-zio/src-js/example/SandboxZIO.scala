@@ -1,10 +1,7 @@
 package example
 
-import tyrian.CSS
-import tyrian.Html
-import tyrian.Html.*
-import tyrian.Location
 import tyrian.classic.*
+import tyrian.classic.Html.*
 import tyrian.classic.cmds.Logger
 import tyrian.classic.cmds.Random
 import zio.*
