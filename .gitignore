@@ -32,6 +32,7 @@ credentials.sbt
 .vim
 .dotty-ide-disabled
 *.swp
+.claude/
 
 # Scala
 .metals/
