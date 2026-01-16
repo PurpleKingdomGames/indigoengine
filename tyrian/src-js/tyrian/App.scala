@@ -16,7 +16,7 @@ import tyrian.extensions.ExtensionRegister
 
 import scala.scalajs.js.annotation.*
 
-trait TyrianNext[Model]:
+trait App[Model]:
 
   /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
     * more than sufficient, however the value can be tweaked in your app by overriding this value.
@@ -48,8 +48,8 @@ trait TyrianNext[Model]:
     */
   def watchers(model: Model): Batch[Watcher]
 
-  /** Extensions are mini-TyrianNext apps that are mechnically combined with your main application in the background.
-    * Extensions are provided the initial model to assist them during start-up.
+  /** Extensions are mini-apps that are mechanically combined with your main application in the background. Extensions
+    * are provided the initial model to assist them during start-up.
     *
     * @param model
     *   The initial app model. Only provided once.

@@ -9,7 +9,7 @@ import tyrian.syntax.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object RogueLikeApp extends TyrianNext[AppModel]:
+object RogueLikeApp extends App[AppModel]:
 
   def gameDivId: String = Constants.gameDivId
 
