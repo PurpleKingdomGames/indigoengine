@@ -6,7 +6,7 @@ import tyrian.ui.theme.Theme
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object SandboxUI extends TyrianNext[Model]:
+object SandboxUI extends App[Model]:
 
   given Theme = Theme.default
 
