@@ -6,6 +6,8 @@ import ultraviolet.syntax.*
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
+@nowarn("msg=unset")
+@nowarn("msg=mutated")
 @nowarn("msg=discarded")
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 class GLSLAssignmentTests extends munit.FunSuite {

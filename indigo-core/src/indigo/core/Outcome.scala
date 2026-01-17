@@ -256,8 +256,6 @@ object Outcome:
     Outcome.Error(throwable)
 
   def sequenceBatch[A](l: Batch[Outcome[A]]): Outcome[Batch[A]] =
-    given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
-
     @tailrec
     def rec(remaining: Batch[Outcome[A]], accA: Batch[A], accEvents: Batch[GlobalEvent]): Outcome[Batch[A]] =
       if remaining.isEmpty then Outcome(accA).addGlobalEvents(accEvents)
@@ -275,8 +273,6 @@ object Outcome:
     sequence(l.toBatch).map(bb => NonEmptyBatch.fromBatch(bb).get) // Use of get is safe, we know it is non-empty
 
   def sequenceList[A](l: List[Outcome[A]]): Outcome[List[A]] =
-    given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
-
     @tailrec
     def rec(remaining: List[Outcome[A]], accA: List[A], accEvents: List[GlobalEvent]): Outcome[List[A]] =
       remaining match {

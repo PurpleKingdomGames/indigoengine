@@ -22,6 +22,8 @@ trait BaseBlendShader:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   inline def vertexShader[E](
       inline userVertexFn: Shader[E, Unit],
       reference: E
@@ -106,6 +108,8 @@ trait BaseBlendShader:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   inline def fragmentShader[E](inline userFragmentFn: Shader[E, Unit], reference: E): Shader[UserDefined, Unit] =
     Shader[UserDefined] { env =>
 

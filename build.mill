@@ -13,16 +13,21 @@ import org.typelevel.scalacoptions.*
 import com.goyeau.mill.scalafix.ScalafixModule
 
 trait Shared extends ScalafmtModule, ScalafixModule:
-  def scalaVersion = Task("3.7.3")
+  def scalaVersion = Task("3.8.0")
 
   override def scalacOptions = Task {
-    super.scalacOptions() ++
-      ScalacOptions.tokensForVersion(
-        ScalaVersion.unsafeFromString(scalaVersion()),
-        ScalacOptions.default ++
-          ScalacOptions.fatalWarningOptions ++
-          Seq(ScalacOptions.languageStrictEquality)
-      )
+    val baseOptions = ScalacOptions.tokensForVersion(
+      ScalaVersion.unsafeFromString(scalaVersion()),
+      ScalacOptions.default ++
+        ScalacOptions.fatalWarningOptions ++
+        Seq(ScalacOptions.languageStrictEquality)
+    )
+
+    // Filter out deprecated -Xfatal-warnings (replaced by -Werror in Scala 3.8+)
+    val excluded = Set("-Xfatal-warnings")
+    val filtered = baseOptions.filterNot(excluded.contains)
+
+    super.scalacOptions() ++ filtered ++ Seq("-Werror")
   }
 
 trait SharedJVM extends Shared, ScalaModule:

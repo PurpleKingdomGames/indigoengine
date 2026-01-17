@@ -20,6 +20,8 @@ object WebGL1BaseShaders:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   object vertex:
     inline def shader =
       Shader[WebGL1Env] { env =>

@@ -5,8 +5,6 @@ import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-@nowarn("msg=unused")
-@nowarn("msg=unset")
 object WebGL2Base:
 
   case class IndigoProjectionData(u_projection: mat4)
@@ -36,6 +34,9 @@ object WebGL2Base:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   object vertex:
     inline def shader =
       Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
@@ -379,6 +380,9 @@ object WebGL2Base:
       |""".stripMargin.trim
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   object fragment:
     inline def shader =
       Shader[IndigoDynamicLightingData] { env =>

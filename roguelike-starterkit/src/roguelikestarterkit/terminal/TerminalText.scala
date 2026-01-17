@@ -132,6 +132,8 @@ object TerminalText:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     @nowarn("msg=unused")
+    @nowarn("msg=unset")
+    @nowarn("msg=mutated")
     inline def vert: Shader[VertexEnv, Unit] =
       Shader { env =>
         @out var v_shadowLookupCoord: vec2 = null

@@ -6,6 +6,8 @@ import ultraviolet.syntax.*
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
+@nowarn("msg=unset")
+@nowarn("msg=mutated")
 object WebGL2Merge:
 
   case class IndigoMergeData(u_projection: mat4, u_scale: vec2)

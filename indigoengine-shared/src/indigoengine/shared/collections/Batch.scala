@@ -392,19 +392,15 @@ object Batch:
     lazy val size: Int = batch1.size + batch2.size
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Combine[?], Any] = CanEqual.derived
-      given CanEqual[Wrapped[?], Any] = CanEqual.derived
-      given CanEqual[A, A]            = CanEqual.derived
-
       try
         that match
-
           case c @ Combine(_, _) =>
             compact.values.sameElements(c.compact.values)
 
           case Wrapped(arr) =>
             compact.values.sameElements(arr)
 
+          case _ => false
       catch { case NonFatal(_) => false }
 
   private[shared] final case class Wrapped[A](values: js.Array[A]) extends Batch[A]:
@@ -418,10 +414,6 @@ object Batch:
     lazy val size: Int = values.length
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Combine[?], Any] = CanEqual.derived
-      given CanEqual[Wrapped[?], Any] = CanEqual.derived
-      given CanEqual[A, A]            = CanEqual.derived
-
       try
         that match
           case c @ Combine(_, _) =>
@@ -430,6 +422,7 @@ object Batch:
           case Wrapped(arr) =>
             values.sameElements(arr)
 
+          case _ => false
       catch { case NonFatal(_) => false }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))

@@ -280,8 +280,6 @@ object Result:
 
   /** Converts a Batch of outcomes into an outcome containing a Batch. */
   def sequenceBatch[A](l: Batch[Result[A]]): Result[Batch[A]] =
-    given CanEqual[Result[A], Result[A]] = CanEqual.derived
-
     @tailrec
     def rec(remaining: Batch[Result[A]], accA: Batch[A], accActions: Batch[Action]): Result[Batch[A]] =
       if remaining.isEmpty then Result(accA).addActions(accActions)
@@ -297,8 +295,6 @@ object Result:
 
   /** Converts a list of outcomes into an outcome containing a list. */
   def sequenceList[A](l: List[Result[A]]): Result[List[A]] =
-    given CanEqual[Result[A], Result[A]] = CanEqual.derived
-
     @tailrec
     def rec(remaining: List[Result[A]], accA: List[A], accEvents: List[Action]): Result[List[A]] =
       remaining match {

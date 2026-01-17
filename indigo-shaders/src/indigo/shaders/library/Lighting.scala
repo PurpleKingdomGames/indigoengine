@@ -40,6 +40,8 @@ object Lighting:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   inline def prepare[Env <: LightEnv] =
     Shader[Env] { env =>
 

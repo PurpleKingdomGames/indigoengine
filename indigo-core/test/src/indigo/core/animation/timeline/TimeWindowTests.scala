@@ -1,6 +1,5 @@
 package indigo.core.animation.timeline
 
-import indigoengine.shared.collections.Batch
 import indigo.core.temporal.SignalFunction
 import indigoengine.shared.datatypes.Seconds
 
