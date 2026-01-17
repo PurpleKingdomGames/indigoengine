@@ -14,6 +14,8 @@ This is a monorepo containing Scala libraries and frameworks by Purple Kingdom G
 
 This is a **Mill** build. The `./mill` script in the root is the Mill launcher (version in `.mill-version`).
 
+**Windows:** Use `.\mill.bat` instead of `./mill` for all commands.
+
 ### Essential Commands
 
 ```bash

@@ -4,6 +4,7 @@
 
 # Windows specific
 null/
+/PowerShell*
 
 # Scala-cli specific
 .scala-build
