@@ -9,7 +9,9 @@ import tyrian.ui.*
 
 final case class Model(
     topNav: TopNav,
-    nameInput: Input
+    nameInput: Input,
+    bioTextArea: TextArea,
+    termsCheckbox: Checkbox
 ):
 
   def update: GlobalMsg => Result[Model] =
@@ -24,9 +26,13 @@ final case class Model(
       for {
         tn <- topNav.update(e)
         ni <- nameInput.update(e)
+        bt <- bioTextArea.update(e)
+        tc <- termsCheckbox.update(e)
       } yield this.copy(
         topNav = tn,
-        nameInput = ni
+        nameInput = ni,
+        bioTextArea = bt,
+        termsCheckbox = tc
       )
 
   def view(using Theme): HtmlFragment =
@@ -46,6 +52,24 @@ object Model:
             .solidBorder(BorderWidth.Thin, RGBA.fromHex("#d1d5db"))
             .rounded
             .withPadding(Padding.Small)
+        ),
+      TextArea(UIKey("bio-textarea"))
+        .withPlaceholder("Tell us about yourself...")
+        .withRows(4)
+        .withResize(ResizeMode.Vertical)
+        .overrideTheme(
+          _.withTextColor(RGBA.fromHex("#1f2937"))
+            .withBackgroundColor(RGBA.fromHex("#f9fafb"))
+            .solidBorder(BorderWidth.Thin, RGBA.fromHex("#d1d5db"))
+            .rounded
+            .withPadding(Padding.Small)
+        ),
+      Checkbox(UIKey("terms-checkbox"))
+        .withLabel("I agree to the terms and conditions")
+        .overrideTheme(
+          _.withAccentColor(RGBA.fromHex("#2563eb"))
+            .withLabelColor(RGBA.fromHex("#374151"))
+            .withLabelFontSize(FontSize.Small)
         )
     )
 
@@ -61,6 +85,16 @@ object Model:
               TextBlock("Your name:"),
               m.nameInput,
               TextBlock("Reversed: " + m.nameInput.value.reverse)
+            ),
+            Column(
+              TextBlock("About you:"),
+              m.bioTextArea,
+              TextBlock("Character count: " + m.bioTextArea.value.length.toString)
+            ),
+            Column(
+              m.termsCheckbox,
+              TextBlock(if m.termsCheckbox.isChecked then "Thank you for agreeing!" else "Please accept the terms.")
+                .overrideTheme(_.withTextColor(if m.termsCheckbox.isChecked then RGBA.fromHex("#10b981") else RGBA.fromHex("#ef4444")))
             )
           ).withSpacing(Spacing.Small),
           Row(
