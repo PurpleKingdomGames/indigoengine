@@ -197,6 +197,17 @@ val TextVariant: elements.stateless.text.TextVariant.type = elements.stateless.t
 
 // ---- Stateful elements ----
 
+// Checkbox
+
+type Checkbox = elements.stateful.checkbox.Checkbox
+val Checkbox: elements.stateful.checkbox.Checkbox.type = elements.stateful.checkbox.Checkbox
+
+type CheckboxMsg = elements.stateful.checkbox.CheckboxMsg
+val CheckboxMsg: elements.stateful.checkbox.CheckboxMsg.type = elements.stateful.checkbox.CheckboxMsg
+
+type CheckboxTheme = elements.stateful.checkbox.CheckboxTheme
+val CheckboxTheme: elements.stateful.checkbox.CheckboxTheme.type = elements.stateful.checkbox.CheckboxTheme
+
 // Input
 
 type Input = elements.stateful.input.Input
@@ -204,6 +215,17 @@ val Input: elements.stateful.input.Input.type = elements.stateful.input.Input
 
 type InputTheme = elements.stateful.input.InputTheme
 val InputTheme: elements.stateful.input.InputTheme.type = elements.stateful.input.InputTheme
+
+type TextInputMsg = elements.stateful.input.TextInputMsg
+val TextInputMsg: elements.stateful.input.TextInputMsg.type = elements.stateful.input.TextInputMsg
+
+// TextArea
+
+type ResizeMode = elements.stateful.textarea.ResizeMode
+val ResizeMode: elements.stateful.textarea.ResizeMode.type = elements.stateful.textarea.ResizeMode
+
+type TextArea = elements.stateful.textarea.TextArea
+val TextArea: elements.stateful.textarea.TextArea.type = elements.stateful.textarea.TextArea
 
 // ---- Themes ----
 

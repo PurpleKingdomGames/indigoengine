@@ -1,5 +1,6 @@
 package tyrian.ui.theme
 
+import tyrian.ui.elements.stateful.checkbox.CheckboxTheme
 import tyrian.ui.elements.stateful.input.InputTheme
 import tyrian.ui.elements.stateless.button.ButtonTheme
 import tyrian.ui.elements.stateless.link.LinkTheme
@@ -10,6 +11,7 @@ import tyrian.ui.layout.*
 final case class ElementThemes(
     button: ButtonTheme,
     canvas: ContainerTheme,
+    checkbox: CheckboxTheme,
     container: ContainerTheme,
     image: ContainerTheme,
     input: InputTheme,
@@ -23,6 +25,9 @@ final case class ElementThemes(
 
   def withCanvasTheme(canvas: ContainerTheme): ElementThemes =
     this.copy(canvas = canvas)
+
+  def withCheckboxTheme(checkbox: CheckboxTheme): ElementThemes =
+    this.copy(checkbox = checkbox)
 
   def withContainerTheme(container: ContainerTheme): ElementThemes =
     this.copy(container = container)
@@ -50,6 +55,7 @@ object ElementThemes:
     ElementThemes(
       button = ButtonTheme.default,
       canvas = ContainerTheme.default,
+      checkbox = CheckboxTheme.default,
       container = ContainerTheme.default,
       image = ContainerTheme.default,
       input = InputTheme.default,
