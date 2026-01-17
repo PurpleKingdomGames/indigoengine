@@ -46,6 +46,8 @@ trait BaseEntityShader:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")
+  @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   inline def vertexShader[E](inline userVertexFn: Shader[E, Unit], reference: E): Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
@@ -260,6 +262,7 @@ trait BaseEntityShader:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")
   @nowarn("msg=unset")
+  @nowarn("msg=mutated")
   inline def fragmentShader[E](
     inline userFragmentFn: Shader[E, Unit],
     inline userPrepareFn: Shader[E, Unit],

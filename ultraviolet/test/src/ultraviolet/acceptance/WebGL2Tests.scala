@@ -6,6 +6,8 @@ import ultraviolet.syntax.*
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
+@nowarn("msg=unset")
+@nowarn("msg=mutated")
 class WebGL2Tests extends munit.FunSuite {
 
   test("Can generate the simplest valid WebGL 2.0 fragment shader") {

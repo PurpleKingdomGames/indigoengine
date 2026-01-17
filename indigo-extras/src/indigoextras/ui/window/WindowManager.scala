@@ -1,7 +1,6 @@
 package indigoextras.ui.window
 
 import indigo.*
-import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
 import indigoextras.ui.datatypes.UIState
 

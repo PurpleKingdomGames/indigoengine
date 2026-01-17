@@ -6,6 +6,8 @@ import ultraviolet.syntax.*
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
+@nowarn("msg=unset")
+@nowarn("msg=mutated")
 @nowarn("msg=discarded")
 class GLSLSwitchStatementTests extends munit.FunSuite {
 
