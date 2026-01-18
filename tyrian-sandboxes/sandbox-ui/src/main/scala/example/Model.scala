@@ -94,7 +94,11 @@ object Model:
             Column(
               m.termsCheckbox,
               TextBlock(if m.termsCheckbox.isChecked then "Thank you for agreeing!" else "Please accept the terms.")
-                .overrideTheme(_.withTextColor(if m.termsCheckbox.isChecked then RGBA.fromHex("#10b981") else RGBA.fromHex("#ef4444")))
+                .overrideTheme(
+                  _.withTextColor(
+                    if m.termsCheckbox.isChecked then RGBA.fromHex("#10b981") else RGBA.fromHex("#ef4444")
+                  )
+                )
             )
           ).withSpacing(Spacing.Small),
           Row(

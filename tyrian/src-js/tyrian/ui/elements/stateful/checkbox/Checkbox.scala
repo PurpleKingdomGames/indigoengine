@@ -113,8 +113,7 @@ object Checkbox:
       typ := "checkbox",
       onEvent(
         "change",
-        (e: Tyrian.Event) =>
-          CheckboxMsg.Toggled(c.key, e.target.asInstanceOf[Tyrian.HTMLInputElement].checked)
+        (e: Tyrian.Event) => CheckboxMsg.Toggled(c.key, e.target.asInstanceOf[Tyrian.HTMLInputElement].checked)
       ),
       disabledAttr,
       checkedAttr,
