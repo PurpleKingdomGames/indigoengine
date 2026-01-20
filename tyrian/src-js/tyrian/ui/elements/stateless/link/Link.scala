@@ -98,7 +98,7 @@ object Link:
             EmptyAttribute
 
           case t: Theme.Default =>
-            t.elements.link.toStyles.fold(EmptyAttribute)(style(_))
+            style(t.elements.link.toStyles(theme))
 
       val attributes =
         List(

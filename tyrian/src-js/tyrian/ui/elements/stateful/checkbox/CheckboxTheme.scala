@@ -11,8 +11,8 @@ final case class CheckboxTheme(
     accentColor: Option[RGBA],
     labelSpacing: Spacing,
     labelFontSize: FontSize,
-    labelColor: RGBA,
-    disabledLabelColor: RGBA
+    labelColor: Option[RGBA],
+    disabledLabelColor: Option[RGBA]
 ):
 
   def withSize(value: Spacing): CheckboxTheme =
@@ -22,7 +22,7 @@ final case class CheckboxTheme(
     this.copy(accentColor = Some(value))
 
   def noAccentColor: CheckboxTheme =
-    this.copy(accentColor = scala.None)
+    this.copy(accentColor = None)
 
   def withLabelSpacing(value: Spacing): CheckboxTheme =
     this.copy(labelSpacing = value)
@@ -31,10 +31,16 @@ final case class CheckboxTheme(
     this.copy(labelFontSize = value)
 
   def withLabelColor(value: RGBA): CheckboxTheme =
-    this.copy(labelColor = value)
+    this.copy(labelColor = Some(value))
+
+  def inheritLabelColor: CheckboxTheme =
+    this.copy(labelColor = None)
 
   def withDisabledLabelColor(value: RGBA): CheckboxTheme =
-    this.copy(disabledLabelColor = value)
+    this.copy(disabledLabelColor = Some(value))
+
+  def inheritDisabledLabelColor: CheckboxTheme =
+    this.copy(disabledLabelColor = None)
 
   def toCheckboxStyles(theme: Theme): Style =
     theme match
@@ -61,10 +67,11 @@ final case class CheckboxTheme(
         Style.empty
 
       case t: Theme.Default =>
+        val resolvedColor = labelColor.getOrElse(t.config.colors.text)
         Style(
           "font-family" -> t.config.fonts.body.toCSSValue,
           "font-size"   -> labelFontSize.toCSSValue,
-          "color"       -> labelColor.toCSSValue,
+          "color"       -> resolvedColor.toCSSValue,
           "margin-left" -> labelSpacing.toCSSValue,
           "cursor"      -> "pointer"
         )
@@ -75,10 +82,11 @@ final case class CheckboxTheme(
         Style.empty
 
       case t: Theme.Default =>
+        val resolvedColor = disabledLabelColor.getOrElse(t.config.colors.disabledText)
         Style(
           "font-family" -> t.config.fonts.body.toCSSValue,
           "font-size"   -> labelFontSize.toCSSValue,
-          "color"       -> disabledLabelColor.toCSSValue,
+          "color"       -> resolvedColor.toCSSValue,
           "margin-left" -> labelSpacing.toCSSValue,
           "cursor"      -> "not-allowed"
         )
@@ -88,9 +96,9 @@ object CheckboxTheme:
   val default: CheckboxTheme =
     CheckboxTheme(
       size = Spacing.px(16),
-      accentColor = scala.None,
+      accentColor = None,
       labelSpacing = Spacing.px(8),
       labelFontSize = FontSize.Small,
-      labelColor = RGBA.fromHex("#374151"),
-      disabledLabelColor = RGBA.fromHex("#9ca3af")
+      labelColor = None,
+      disabledLabelColor = None
     )

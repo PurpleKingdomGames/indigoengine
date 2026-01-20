@@ -68,7 +68,7 @@ object Table:
             EmptyAttribute
 
           case t: Theme.Default =>
-            style(t.elements.table.toTableStyles)
+            style(t.elements.table.toTableStyles(theme))
 
       val headerStyleAttribute =
         theme match
@@ -76,9 +76,7 @@ object Table:
             EmptyAttribute
 
           case t: Theme.Default =>
-            t.elements.table.toHeaderStyles match
-              case Some(s) => style(s)
-              case None    => EmptyAttribute
+            style(t.elements.table.toHeaderStyles(theme))
 
       val cellStyleAttribute =
         theme match
@@ -86,9 +84,7 @@ object Table:
             EmptyAttribute
 
           case t: Theme.Default =>
-            t.elements.table.toCellStyles match
-              case Some(s) => style(s)
-              case None    => EmptyAttribute
+            style(t.elements.table.toCellStyles(theme))
 
       val headerRow =
         thead(headerStyleAttribute)(
@@ -106,7 +102,7 @@ object Table:
                   EmptyAttribute
 
                 case t: Theme.Default =>
-                  style(t.elements.table.toRowStyles(index % 2 == 1))
+                  style(t.elements.table.toRowStyles(theme, index % 2 == 1))
 
             tr(rowStyles)(
               row.map { cellData =>

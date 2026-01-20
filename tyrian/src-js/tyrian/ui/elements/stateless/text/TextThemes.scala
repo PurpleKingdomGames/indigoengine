@@ -1,6 +1,5 @@
 package tyrian.ui.elements.stateless.text
 
-import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.FontWeight
 import tyrian.ui.datatypes.LineHeight
@@ -100,7 +99,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.Medium,
       fontWeight = FontWeight.Normal,
-      textColor = RGBA.fromHex("#333333"),
+      textColor = None,
+      textColorFallback = _.text,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Relaxed,
       wrapping = Wrapping.Wrap,
@@ -112,7 +112,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.Medium,
       fontWeight = FontWeight.Normal,
-      textColor = RGBA.fromHex("#333333"),
+      textColor = None,
+      textColorFallback = _.text,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Relaxed,
       wrapping = Wrapping.Wrap,
@@ -124,7 +125,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading1,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Tight,
       wrapping = Wrapping.Wrap,
@@ -136,7 +138,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading2,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Tight,
       wrapping = Wrapping.Wrap,
@@ -148,7 +151,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading3,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Relative(1.3),
       wrapping = Wrapping.Wrap,
@@ -160,7 +164,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading4,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Relative(1.3),
       wrapping = Wrapping.Wrap,
@@ -172,7 +177,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading5,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Normal,
       wrapping = Wrapping.Wrap,
@@ -184,7 +190,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.heading6,
       fontWeight = FontWeight.SemiBold,
-      textColor = RGBA.fromHex("#1a1a1a"),
+      textColor = None,
+      textColorFallback = _.textHeading,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Normal,
       wrapping = Wrapping.Wrap,
@@ -196,7 +203,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.XSmall,
       fontWeight = FontWeight.Normal,
-      textColor = RGBA.fromHex("#666666"),
+      textColor = None,
+      textColorFallback = _.textMuted,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Normal,
       wrapping = Wrapping.Wrap,
@@ -208,7 +216,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.Small,
       fontWeight = FontWeight.Normal,
-      textColor = RGBA.fromHex("#d73a49"),
+      textColor = None,
+      textColorFallback = _.textCode,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Normal,
       wrapping = Wrapping.NoWrap,
@@ -220,7 +229,8 @@ object TextThemes:
     TextTheme(
       fontSize = FontSize.Small,
       fontWeight = FontWeight.Medium,
-      textColor = RGBA.fromHex("#333333"),
+      textColor = None,
+      textColorFallback = _.text,
       alignment = TextAlignment.Left,
       lineHeight = LineHeight.Normal,
       wrapping = Wrapping.NoWrap,

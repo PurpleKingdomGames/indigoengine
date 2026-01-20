@@ -12,17 +12,16 @@ import tyrian.ui.datatypes.Padding
 import tyrian.ui.datatypes.Spacing
 import tyrian.ui.theme.Theme
 
-// TODO: Which fields should be optional? Inherit from main styles.
 final case class InputTheme(
     fontSize: FontSize,
     fontWeight: FontWeight,
-    textColor: RGBA,
-    backgroundColor: RGBA,
+    textColor: Option[RGBA],
+    backgroundColor: Option[RGBA],
     border: Option[Border],
     padding: Padding,
-    disabledBackgroundColor: RGBA,
-    disabledTextColor: RGBA,
-    disabledBorderColor: RGBA
+    disabledBackgroundColor: Option[RGBA],
+    disabledTextColor: Option[RGBA],
+    disabledBorderColor: Option[RGBA]
 ):
 
   def withFontSize(value: FontSize): InputTheme =
@@ -32,10 +31,16 @@ final case class InputTheme(
     this.copy(fontWeight = value)
 
   def withTextColor(value: RGBA): InputTheme =
-    this.copy(textColor = value)
+    this.copy(textColor = Some(value))
+
+  def inheritTextColor: InputTheme =
+    this.copy(textColor = None)
 
   def withBackgroundColor(value: RGBA): InputTheme =
-    this.copy(backgroundColor = value)
+    this.copy(backgroundColor = Some(value))
+
+  def inheritBackgroundColor: InputTheme =
+    this.copy(backgroundColor = None)
 
   def withBorder(border: Border): InputTheme =
     this.copy(border = Some(border))
@@ -77,13 +82,22 @@ final case class InputTheme(
     this.copy(padding = value)
 
   def withDisabledBackgroundColor(value: RGBA): InputTheme =
-    this.copy(disabledBackgroundColor = value)
+    this.copy(disabledBackgroundColor = Some(value))
+
+  def inheritDisabledBackgroundColor: InputTheme =
+    this.copy(disabledBackgroundColor = None)
 
   def withDisabledTextColor(value: RGBA): InputTheme =
-    this.copy(disabledTextColor = value)
+    this.copy(disabledTextColor = Some(value))
+
+  def inheritDisabledTextColor: InputTheme =
+    this.copy(disabledTextColor = None)
 
   def withDisabledBorderColor(value: RGBA): InputTheme =
-    this.copy(disabledBorderColor = value)
+    this.copy(disabledBorderColor = Some(value))
+
+  def inheritDisabledBorderColor: InputTheme =
+    this.copy(disabledBorderColor = None)
 
   def toStyles(theme: Theme): Style =
     theme match
@@ -91,25 +105,36 @@ final case class InputTheme(
         Style.empty
 
       case t: Theme.Default =>
-        val borderStyle = border.map(_.toStyle).getOrElse(Style.empty)
+        val borderStyle  = border.map(_.toStyle).getOrElse(Style.empty)
+        val resolvedText = textColor.getOrElse(t.config.colors.inputText)
+        val resolvedBg   = backgroundColor.getOrElse(t.config.colors.inputBackground)
 
         Style(
           "font-family"      -> t.config.fonts.body.toCSSValue,
           "font-size"        -> fontSize.toCSSValue,
           "font-weight"      -> fontWeight.toCSSValue,
-          "color"            -> textColor.toCSSValue,
-          "background-color" -> backgroundColor.toCSSValue,
+          "color"            -> resolvedText.toCSSValue,
+          "background-color" -> resolvedBg.toCSSValue,
           "box-sizing"       -> "border-box",
           "outline"          -> "none"
         ) |+| borderStyle |+| padding.toStyle
 
   def toDisabledStyles(theme: Theme): Style =
-    toStyles(theme) |+| Style(
-      "color"            -> disabledTextColor.toCSSValue,
-      "background-color" -> disabledBackgroundColor.toCSSValue,
-      "border-color"     -> disabledBorderColor.toCSSValue,
-      "cursor"           -> "not-allowed"
-    )
+    theme match
+      case Theme.None =>
+        toStyles(theme)
+
+      case t: Theme.Default =>
+        val resolvedDisabledText   = disabledTextColor.getOrElse(t.config.colors.disabledText)
+        val resolvedDisabledBg     = disabledBackgroundColor.getOrElse(t.config.colors.disabledBackground)
+        val resolvedDisabledBorder = disabledBorderColor.getOrElse(t.config.colors.borderMuted)
+
+        toStyles(theme) |+| Style(
+          "color"            -> resolvedDisabledText.toCSSValue,
+          "background-color" -> resolvedDisabledBg.toCSSValue,
+          "border-color"     -> resolvedDisabledBorder.toCSSValue,
+          "cursor"           -> "not-allowed"
+        )
 
 object InputTheme:
 
@@ -117,11 +142,11 @@ object InputTheme:
     InputTheme(
       fontSize = FontSize.Small,
       fontWeight = FontWeight.Normal,
-      textColor = RGBA.fromHex("#374151"),
-      backgroundColor = RGBA.White,
+      textColor = None,
+      backgroundColor = None,
       border = None,
       padding = Padding(Spacing.px(8)),
-      disabledBackgroundColor = RGBA.fromHex("#f9fafb"),
-      disabledTextColor = RGBA.fromHex("#9ca3af"),
-      disabledBorderColor = RGBA.fromHex("#e5e7eb")
+      disabledBackgroundColor = None,
+      disabledTextColor = None,
+      disabledBorderColor = None
     )

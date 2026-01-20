@@ -97,7 +97,7 @@ class TextAreaTests extends munit.FunSuite {
       )
 
     val inputTheme = textarea.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
   }
 
   test("Should apply custom background color") {
@@ -106,7 +106,7 @@ class TextAreaTests extends munit.FunSuite {
         .overrideTheme(_.withBackgroundColor(RGBA.Blue))
 
     val inputTheme = textarea.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.backgroundColor, RGBA.Blue)
+    assertEquals(inputTheme.backgroundColor, Some(RGBA.Blue))
   }
 
   test("Should apply custom border color") {
@@ -202,8 +202,8 @@ class TextAreaTests extends munit.FunSuite {
         )
 
     val inputTheme = textarea.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
-    assertEquals(inputTheme.backgroundColor, RGBA.Blue)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
+    assertEquals(inputTheme.backgroundColor, Some(RGBA.Blue))
     assertEquals(inputTheme.border.map(_.radius).get, BorderRadius.Medium)
     assertEquals(inputTheme.padding, Padding.Large)
   }
@@ -228,7 +228,7 @@ class TextAreaTests extends munit.FunSuite {
     assertEquals(textarea.key, testKey)
 
     val inputTheme = textarea.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
   }
 
   test("Should handle class names correctly") {

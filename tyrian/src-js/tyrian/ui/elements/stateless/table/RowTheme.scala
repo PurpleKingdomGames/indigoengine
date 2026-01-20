@@ -21,6 +21,6 @@ object RowTheme:
 
   val default: RowTheme =
     RowTheme(
-      alternative = Some(RGBA.fromHex("#f9f9f9")),
+      alternative = None,
       background = None
     )

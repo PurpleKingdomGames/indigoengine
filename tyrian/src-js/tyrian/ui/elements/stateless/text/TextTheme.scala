@@ -10,11 +10,13 @@ import tyrian.ui.datatypes.TextDecoration
 import tyrian.ui.datatypes.TextStyle
 import tyrian.ui.datatypes.Wrapping
 import tyrian.ui.theme.Theme
+import tyrian.ui.theme.ThemeColors
 
 final case class TextTheme(
     fontSize: FontSize,
     fontWeight: FontWeight,
-    textColor: RGBA,
+    textColor: Option[RGBA],
+    textColorFallback: ThemeColors => RGBA,
     alignment: TextAlignment,
     lineHeight: LineHeight,
     wrapping: Wrapping,
@@ -43,7 +45,13 @@ final case class TextTheme(
     this.copy(fontWeight = value)
 
   def withTextColor(value: RGBA): TextTheme =
-    this.copy(textColor = value)
+    this.copy(textColor = Some(value))
+
+  def inheritTextColor: TextTheme =
+    this.copy(textColor = None)
+
+  def withTextColorFallback(f: ThemeColors => RGBA): TextTheme =
+    this.copy(textColorFallback = f)
 
   def withAlignment(value: TextAlignment): TextTheme =
     this.copy(alignment = value)
@@ -70,11 +78,13 @@ final case class TextTheme(
         Style.empty
 
       case t: Theme.Default =>
+        val resolvedColor = textColor.getOrElse(textColorFallback(t.config.colors))
+
         val baseStyle = Style(
           "font-family" -> t.config.fonts.body.toCSSValue,
           "font-size"   -> fontSize.toCSSValue,
           "font-weight" -> fontWeight.toCSSValue,
-          "color"       -> textColor.toCSSValue,
+          "color"       -> resolvedColor.toCSSValue,
           "text-align"  -> alignment.toCSSValue,
           "line-height" -> lineHeight.toCSSValue,
           "white-space" -> wrapping.toTextCSSValue

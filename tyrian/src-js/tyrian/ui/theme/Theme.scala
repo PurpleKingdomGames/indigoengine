@@ -76,5 +76,5 @@ object Theme:
 
     def toOption: Option[Theme.Default] =
       t match
-        case Theme.None       => scala.None
+        case Theme.None       => Option.empty[Theme.Default]
         case d: Theme.Default => Some(d)

@@ -5,6 +5,7 @@ import tyrian.Style
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.FontWeight
 import tyrian.ui.datatypes.Padding
+import tyrian.ui.theme.Theme
 
 final case class CellTheme(
     background: Option[RGBA],
@@ -39,22 +40,29 @@ final case class CellTheme(
   def defaultTextColor: CellTheme =
     this.copy(textColor = None)
 
-  def toStyle: Option[Style] =
-    val baseStyles =
-      for {
-        fw <- fontWeight // TODO: Inherit from main styles!
-        fs <- fontSize   // TODO: Inherit from main styles!
-      } yield Style(
-        "font-weight" -> fw.toCSSValue,
-        "font-size"   -> fs.toCSSValue
-      )
+  def toStyle(theme: Theme): Style =
+    theme match
+      case Theme.None =>
+        Style.empty
 
-    for {
-      backgroundStyle <- background.map("background-color" -> _.toCSSValue)
-      textColorStyle  <- textColor.map("color" -> _.toCSSValue) // TODO: Inherit from main styles!
-      base            <- baseStyles
-      p               <- padding.map(_.toStyle)
-    } yield base |+| p |+| Style(backgroundStyle, textColorStyle)
+      case t: Theme.Default =>
+        val resolvedFontWeight = fontWeight.getOrElse(FontWeight.Normal)
+        val resolvedFontSize   = fontSize.getOrElse(FontSize.Medium)
+        val resolvedTextColor  = textColor.getOrElse(t.config.colors.text)
+
+        val baseStyle = Style(
+          "font-weight" -> resolvedFontWeight.toCSSValue,
+          "font-size"   -> resolvedFontSize.toCSSValue,
+          "color"       -> resolvedTextColor.toCSSValue
+        )
+
+        val bgStyle = background
+          .map(bg => Style("background-color" -> bg.toCSSValue))
+          .getOrElse(Style.empty)
+
+        val paddingStyle = padding.map(_.toStyle).getOrElse(Style.empty)
+
+        baseStyle |+| bgStyle |+| paddingStyle
 
 object CellTheme:
 
@@ -62,11 +70,11 @@ object CellTheme:
 
     val header: CellTheme =
       CellTheme(
-        background = Some(RGBA.fromHex("#f5f5f5")),
+        background = None,
         fontWeight = Some(FontWeight.Bold),
         fontSize = Some(FontSize.Large),
         padding = None,
-        textColor = Some(RGBA.fromHex("#333333"))
+        textColor = None
       )
 
     val cell: CellTheme =
@@ -75,5 +83,5 @@ object CellTheme:
         fontWeight = Some(FontWeight.Normal),
         fontSize = Some(FontSize.Medium),
         padding = None,
-        textColor = Some(RGBA.fromHex("#333333"))
+        textColor = None
       )

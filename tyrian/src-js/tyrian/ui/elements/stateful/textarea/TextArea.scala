@@ -97,12 +97,12 @@ object TextArea:
       isDisabled = false,
       isReadOnly = false,
       value = "",
-      rows = scala.None,
-      cols = scala.None,
+      rows = None,
+      cols = None,
       resize = ResizeMode.Vertical,
       key,
       Set.empty,
-      id = scala.None,
+      id = None,
       ThemeOverride.NoOverride
     )
 

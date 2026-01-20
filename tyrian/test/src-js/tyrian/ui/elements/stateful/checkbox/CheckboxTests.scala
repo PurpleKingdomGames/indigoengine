@@ -125,7 +125,7 @@ class CheckboxTests extends munit.FunSuite {
       .overrideTheme(_.withLabelColor(RGBA.Red))
 
     val checkboxTheme = checkbox.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.checkbox).get
-    assertEquals(checkboxTheme.labelColor, RGBA.Red)
+    assertEquals(checkboxTheme.labelColor, Some(RGBA.Red))
   }
 
   test("Should apply custom disabled label color") {
@@ -133,7 +133,7 @@ class CheckboxTests extends munit.FunSuite {
       .overrideTheme(_.withDisabledLabelColor(RGBA.fromHex("#cccccc")))
 
     val checkboxTheme = checkbox.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.checkbox).get
-    assertEquals(checkboxTheme.disabledLabelColor, RGBA.fromHex("#cccccc"))
+    assertEquals(checkboxTheme.disabledLabelColor, Some(RGBA.fromHex("#cccccc")))
   }
 
   test("Should stack multiple theme modifications") {
@@ -150,7 +150,7 @@ class CheckboxTests extends munit.FunSuite {
     assertEquals(checkboxTheme.size, Spacing.px(20))
     assertEquals(checkboxTheme.accentColor, Some(RGBA.Green))
     assertEquals(checkboxTheme.labelFontSize, FontSize.Medium)
-    assertEquals(checkboxTheme.labelColor, RGBA.Blue)
+    assertEquals(checkboxTheme.labelColor, Some(RGBA.Blue))
   }
 
   test("Should preserve all checkbox properties when applying theme modifications") {

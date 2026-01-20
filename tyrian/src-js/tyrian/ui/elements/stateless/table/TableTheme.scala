@@ -2,9 +2,9 @@ package tyrian.ui.elements.stateless.table
 
 import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
-import tyrian.ui.BorderWidth
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderCollapse
+import tyrian.ui.theme.Theme
 
 final case class TableTheme(
     background: Option[RGBA],
@@ -39,43 +39,54 @@ final case class TableTheme(
   def modifyCellTheme(f: CellTheme => CellTheme): TableTheme =
     this.copy(cell = f(this.cell))
 
-  def toTableStyles: Style =
-    val baseStyles =
-      for {
-        backgroundStyle <- background.map("background-color" -> _.toCSSValue)
-        borderStyle     <- border.map(_.toStyle)
-      } yield Style(
-        "border-collapse" -> borderCollapse.toCSSValue,
-        "width"           -> "100%",
-        "overflow"        -> "hidden",
-        backgroundStyle
-      ) |+| borderStyle
+  def toTableStyles(theme: Theme): Style =
+    theme match
+      case Theme.None =>
+        Style.empty
 
-    baseStyles.getOrElse(Style.empty)
+      case t: Theme.Default =>
+        val bgStyle = background
+          .orElse(Some(t.config.colors.background))
+          .map(bg => Style("background-color" -> bg.toCSSValue))
+          .getOrElse(Style.empty)
 
-  def toRowStyles(isAlternate: Boolean): Style =
-    if isAlternate then
-      row.alternative
-        .orElse(row.background)
-        .map(bg => Style("background-color" -> bg.toCSSValue))
-        .getOrElse(Style.empty)
-    else
-      row.background
-        .map(bg => Style("background-color" -> bg.toCSSValue))
-        .getOrElse(Style.empty)
+        val borderStyle = border.map(_.toStyle).getOrElse(Style.empty)
 
-  def toHeaderStyles: Option[Style] =
-    header.toStyle
+        Style(
+          "border-collapse" -> borderCollapse.toCSSValue,
+          "width"           -> "100%",
+          "overflow"        -> "hidden"
+        ) |+| bgStyle |+| borderStyle
 
-  def toCellStyles: Option[Style] =
-    cell.toStyle
+  def toRowStyles(theme: Theme, isAlternate: Boolean): Style =
+    theme match
+      case Theme.None =>
+        Style.empty
+
+      case t: Theme.Default =>
+        if isAlternate then
+          row.alternative
+            .orElse(row.background)
+            .orElse(Some(t.config.colors.backgroundAlternate))
+            .map(bg => Style("background-color" -> bg.toCSSValue))
+            .getOrElse(Style.empty)
+        else
+          row.background
+            .map(bg => Style("background-color" -> bg.toCSSValue))
+            .getOrElse(Style.empty)
+
+  def toHeaderStyles(theme: Theme): Style =
+    header.toStyle(theme)
+
+  def toCellStyles(theme: Theme): Style =
+    cell.toStyle(theme)
 
 object TableTheme:
 
   val default: TableTheme =
     TableTheme(
-      background = Some(RGBA.fromHex("#ffffff")),
-      border = Some(Border.solid(BorderWidth.px(1), RGBA.fromHex("#333333")).rounded),
+      background = None,
+      border = None,
       borderCollapse = BorderCollapse.Separate,
       row = RowTheme.default,
       header = CellTheme.Defaults.header,

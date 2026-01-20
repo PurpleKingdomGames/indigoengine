@@ -63,7 +63,7 @@ class InputTests extends munit.FunSuite {
       )
 
     val inputTheme = input.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
   }
 
   test("Should apply custom background color") {
@@ -72,7 +72,7 @@ class InputTests extends munit.FunSuite {
         .overrideTheme(_.withBackgroundColor(RGBA.Blue))
 
     val inputTheme = input.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.backgroundColor, RGBA.Blue)
+    assertEquals(inputTheme.backgroundColor, Some(RGBA.Blue))
   }
 
   test("Should apply custom border color") {
@@ -168,8 +168,8 @@ class InputTests extends munit.FunSuite {
         )
 
     val inputTheme = input.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
-    assertEquals(inputTheme.backgroundColor, RGBA.Blue)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
+    assertEquals(inputTheme.backgroundColor, Some(RGBA.Blue))
     assertEquals(inputTheme.border.map(_.radius).get, BorderRadius.Medium)
     assertEquals(inputTheme.padding, Padding.Large)
   }
@@ -185,8 +185,8 @@ class InputTests extends munit.FunSuite {
         )
 
     val inputTheme = input.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
-    assertEquals(inputTheme.backgroundColor, RGBA.Blue)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
+    assertEquals(inputTheme.backgroundColor, Some(RGBA.Blue))
     assertEquals(inputTheme.border.map(_.radius).get, BorderRadius.Medium)
     assertEquals(inputTheme.padding, Padding.Large)
   }
@@ -205,7 +205,7 @@ class InputTests extends munit.FunSuite {
     assertEquals(input.key, testKey)
 
     val inputTheme = input.applyThemeOverrides(Theme.Default.default).toOption.map(_.elements.input).get
-    assertEquals(inputTheme.textColor, RGBA.Red)
+    assertEquals(inputTheme.textColor, Some(RGBA.Red))
   }
 
   test("Should handle class names correctly") {

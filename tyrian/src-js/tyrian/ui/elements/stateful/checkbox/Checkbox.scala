@@ -38,7 +38,7 @@ final case class Checkbox(
   def withLabel(label: String): Checkbox =
     this.copy(label = Some(label))
   def noLabel: Checkbox =
-    this.copy(label = scala.None)
+    this.copy(label = None)
 
   def withKey(value: UIKey): Checkbox =
     this.copy(key = value)
@@ -77,10 +77,10 @@ object Checkbox:
     Checkbox(
       isChecked = false,
       isDisabled = false,
-      label = scala.None,
+      label = None,
       key,
       Set.empty,
-      id = scala.None,
+      id = None,
       ThemeOverride.NoOverride
     )
 
@@ -123,7 +123,7 @@ object Checkbox:
     )
 
     c.label match
-      case scala.None =>
+      case None =>
         checkboxInput
 
       case Some(labelText) =>
