@@ -1,30 +1,41 @@
 package indigoengine.shared.datatypes
 
+/** Represents a color in RGBA color space.
+  */
 final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqual:
+  /** Add the channels of another color component-wise */
   def +(other: RGBA): RGBA =
     RGBA.combine(this, other)
 
+  /** Copy with a new red component */
   def withRed(newRed: Double): RGBA =
     this.copy(r = newRed)
 
+  /** Copy with a new green component */
   def withGreen(newGreen: Double): RGBA =
     this.copy(g = newGreen)
 
+  /** Copy with a new blue component */
   def withBlue(newBlue: Double): RGBA =
     this.copy(b = newBlue)
 
+  /** Copy with a new alpha component */
   def withAlpha(newAlpha: Double): RGBA =
     this.copy(a = newAlpha)
 
+  /** Alias for `withAlpha` using amount terminology */
   def withAmount(amount: Double): RGBA =
     withAlpha(amount)
 
+  /** Return the color with full opacity */
   def makeOpaque: RGBA =
     this.copy(a = 1d)
 
+  /** Return the color fully transparent */
   def makeTransparent: RGBA =
     this.copy(a = 0d)
 
+  /** Blend with another color by a mix amount in [0,1] */
   def mix(other: RGBA, amount: Double): RGBA = {
     val mix = Math.min(1.0, Math.max(0.0, amount))
     RGBA(
@@ -34,12 +45,12 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
       (a * (1.0 - mix)) + (other.a * mix)
     )
   }
+
+  /** Evenly blend this color with another (mix = 0.5) */
   def mix(other: RGBA): RGBA =
     mix(other, 0.5)
 
-  def toRGB: RGB =
-    RGB(r, g, b)
-
+  /** Convert to an 8-digit hex string (rrggbbaa) without prefix */
   def toHex: String =
     val convert: Double => String = d =>
       val hex = Integer.toHexString((Math.min(1, Math.max(0, d)) * 255).toInt)
@@ -47,14 +58,57 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
 
     convert(r) + convert(g) + convert(b) + convert(a)
 
+  /** Convert to hex with a caller-supplied prefix (e.g. "#" or "0x") */
   def toHex(prefix: String): String =
     prefix + toHex
 
+  /** Drop alpha and return an `RGB` */
+  def toRGB: RGB =
+    RGB(r, g, b)
+
+  /** CSS rgba string using 0-255 channel values */
   def toCSSValue: String =
     s"rgba(${255 * r}, ${255 * g}, ${255 * b}, ${255 * a})"
 
+  /** Convert components to a Float array in RGBA order */
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
+
+  /** Relative luminance (0.0-1.0) for contrast calculations using standard coefficients */
+  def luminance: Double =
+    0.2126 * r + 0.7152 * g + 0.0722 * b
+
+  /** Returns true if this color is considered light (luminance > 0.5) */
+  def isLight: Boolean =
+    luminance > 0.5
+
+  /** Convert to HSL (drops alpha) */
+  def toHSL: HSL =
+    HSL.fromRGBA(this)
+
+  /** Convert to HSLA */
+  def toHSLA: HSLA =
+    HSLA.fromRGBA(this)
+
+  /** Rotate hue by degrees on color wheel (positive = clockwise) */
+  def rotateHue(degrees: Degrees): RGBA =
+    toHSLA.rotateHue(degrees).toRGBA
+
+  /** Lighten by amount (0.0-1.0), increasing lightness in HSL space */
+  def lighten(amount: Double): RGBA =
+    toHSLA.lighten(amount).toRGBA
+
+  /** Darken by amount (0.0-1.0), decreasing lightness in HSL space */
+  def darken(amount: Double): RGBA =
+    toHSLA.darken(amount).toRGBA
+
+  /** Saturate by amount (0.0-1.0), increasing saturation in HSL space */
+  def saturate(amount: Double): RGBA =
+    toHSLA.saturate(amount).toRGBA
+
+  /** Desaturate by amount (0.0-1.0), decreasing saturation in HSL space */
+  def desaturate(amount: Double): RGBA =
+    toHSLA.desaturate(amount).toRGBA
 
 object RGBA:
 
@@ -90,9 +144,19 @@ object RGBA:
   val Thistle: RGBA   = fromHex("#D8BFD8")
   val Tomato: RGBA    = fromHex("#FF6347")
 
+  /** Build an opaque color from red, green, and blue components */
   def apply(r: Double, g: Double, b: Double): RGBA =
     RGBA(r, g, b, 1.0)
 
+  /** Create from HSL values (hue 0-360, saturation 0-1, lightness 0-1) */
+  def fromHSL(h: Double, s: Double, l: Double, a: Double): RGBA =
+    HSLA(h, s, l, a).toRGBA
+
+  /** Create from HSL values with full opacity */
+  def fromHSL(h: Double, s: Double, l: Double): RGBA =
+    HSL(h, s, l).toRGBA
+
+  /** Add two colors component-wise, treating `RGBA.None` as identity */
   def combine(a: RGBA, b: RGBA): RGBA =
     (a, b) match {
       case (RGBA.None, x) =>
@@ -103,6 +167,7 @@ object RGBA:
         RGBA(x.r + y.r, x.g + y.g, x.b + y.b, x.a + y.a)
     }
 
+  /** Parse a hex string in common formats (with/without # or 0x, with or without alpha) */
   def fromHex(hex: String): RGBA =
     hex match {
       case h if h.startsWith("0x") && h.length == 10 =>
@@ -154,12 +219,15 @@ object RGBA:
         RGBA.Black
     }
 
+  /** Create an opaque color from 0-255 integer channel values */
   def fromColorInts(r: Int, g: Int, b: Int): RGBA =
     RGBA((1.0 / 255) * r, (1.0 / 255) * g, (1.0 / 255) * b, 1.0)
 
+  /** Create a color from 0-255 integer channel values including alpha */
   def fromColorInts(r: Int, g: Int, b: Int, a: Int): RGBA =
     RGBA((1.0 / 255) * r, (1.0 / 255) * g, (1.0 / 255) * b, (1.0 / 255) * a)
 
+  /** Parse a hex string; synonym for `fromHex` maintained for compatibility */
   def fromHexString(hex: String): RGBA =
     hex match {
       case h if h.startsWith("0x") && h.length == 10 =>

@@ -1,22 +1,26 @@
 package indigoengine.shared.datatypes
 
-final case class RGB(r: Double, g: Double, b: Double) derives CanEqual {
+/** Represents a color in RGB color space.
+  */
+final case class RGB(r: Double, g: Double, b: Double) derives CanEqual:
 
-  def toColor: java.awt.Color =
-    new java.awt.Color((r * 255).toInt, (g * 255).toInt, (b * 255).toInt)
-
+  /** Add the channels of another color component-wise */
   def +(other: RGB): RGB =
     RGB.combine(this, other)
 
+  /** Copy with a new red component */
   def withRed(newRed: Double): RGB =
     this.copy(r = newRed)
 
+  /** Copy with a new green component */
   def withGreen(newGreen: Double): RGB =
     this.copy(g = newGreen)
 
+  /** Copy with a new blue component */
   def withBlue(newBlue: Double): RGB =
     this.copy(b = newBlue)
 
+  /** Blend with another color by a mix amount in [0,1] */
   def mix(other: RGB, amount: Double): RGB = {
     val mix = Math.min(1.0, Math.max(0.0, amount))
     RGB(
@@ -25,9 +29,12 @@ final case class RGB(r: Double, g: Double, b: Double) derives CanEqual {
       (b * (1.0 - mix)) + (other.b * mix)
     )
   }
+
+  /** Evenly blend this color with another (mix = 0.5) */
   def mix(other: RGB): RGB =
     mix(other, 0.5)
 
+  /** Convert to a 6-digit hex string (rrggbb) without prefix */
   def toHex: String =
     val convert: Double => String = d =>
       val hex = Integer.toHexString((Math.min(1, Math.max(0, d)) * 255).toInt)
@@ -35,18 +42,59 @@ final case class RGB(r: Double, g: Double, b: Double) derives CanEqual {
 
     convert(r) + convert(g) + convert(b)
 
+  /** Convert to hex with a caller-supplied prefix (e.g. "#" or "0x") */
   def toHex(prefix: String): String =
     prefix + toHex
 
+  /** Convert to an opaque `RGBA` */
   def toRGBA: RGBA =
     RGBA(r, g, b, 1.0)
 
+  /** CSS rgb string using 0-255 channel values */
   def toCSSValue: String =
     s"rgba(${255 * r}, ${255 * g}, ${255 * b})"
 
-}
+  /** Convert components to a Float array in RGB order */
+  def toArray: Array[Float] =
+    Array(r.toFloat, g.toFloat, b.toFloat)
 
-object RGB {
+  /** Relative luminance (0.0-1.0) for contrast calculations using standard coefficients */
+  def luminance: Double =
+    0.2126 * r + 0.7152 * g + 0.0722 * b
+
+  /** Returns true if this color is considered light (luminance > 0.5) */
+  def isLight: Boolean =
+    luminance > 0.5
+
+  /** Convert to HSL */
+  def toHSL: HSL =
+    toRGBA.toHSL
+
+  /** Convert to HSLA */
+  def toHSLA: HSLA =
+    toRGBA.toHSLA
+
+  /** Rotate hue by degrees on color wheel (positive = clockwise) */
+  def rotateHue(degrees: Degrees): RGBA =
+    toHSLA.rotateHue(degrees).toRGBA
+
+  /** Lighten by amount (0.0-1.0), increasing lightness in HSL space */
+  def lighten(amount: Double): RGBA =
+    toHSLA.lighten(amount).toRGBA
+
+  /** Darken by amount (0.0-1.0), decreasing lightness in HSL space */
+  def darken(amount: Double): RGBA =
+    toHSLA.darken(amount).toRGBA
+
+  /** Saturate by amount (0.0-1.0), increasing saturation in HSL space */
+  def saturate(amount: Double): RGBA =
+    toHSLA.saturate(amount).toRGBA
+
+  /** Desaturate by amount (0.0-1.0), decreasing saturation in HSL space */
+  def desaturate(amount: Double): RGBA =
+    toHSLA.desaturate(amount).toRGBA
+
+object RGB:
 
   val Red: RGB       = RGB(1, 0, 0)
   val Green: RGB     = RGB(0, 1, 0)
@@ -77,6 +125,7 @@ object RGB {
   val Normal: RGB = White
   val Zero: RGB   = RGB(0, 0, 0)
 
+  /** Add two colors component-wise, treating `RGB.White` as identity */
   def combine(a: RGB, b: RGB): RGB =
     (a, b) match {
       case (RGB.White, x) =>
@@ -87,6 +136,7 @@ object RGB {
         RGB(x.r + y.r, x.g + y.g, x.b + y.b)
     }
 
+  /** Parse a hex string in common formats (with/without # or 0x) */
   def fromHex(hex: String): RGB =
     hex match {
       case h if h.startsWith("0x") && h.length == 10 =>
@@ -135,7 +185,6 @@ object RGB {
         RGB.White
     }
 
+  /** Create a color from 0-255 integer channel values */
   def fromColorInts(r: Int, g: Int, b: Int): RGB =
     RGB((1.0 / 255) * r, (1.0 / 255) * g, (1.0 / 255) * b)
-
-}
