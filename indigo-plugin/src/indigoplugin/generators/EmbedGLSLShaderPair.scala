@@ -99,11 +99,11 @@ object EmbedGLSLShaderPair {
     """.stripMargin
 
   def extractShaderCode(text: String, tag: String, newName: String): List[ShaderSnippet] =
-    s"""//<indigo-$tag>\n((.|\n|\r)*)//</indigo-$tag>""".r
+    s"""//<indigo-$tag>\r?\n((.|\n|\r)*)//</indigo-$tag>""".r
       .findAllIn(text)
       .toList
       .map(_.toString)
-      .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))
+      .map(_.split("\r?\n").drop(1).dropRight(1).mkString("\n"))
       .map(program => ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, program))
 
   case class ShaderDetails(newName: String, originalName: String, ext: String, shaderCode: String)

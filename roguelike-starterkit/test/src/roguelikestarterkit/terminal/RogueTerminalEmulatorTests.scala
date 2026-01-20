@@ -640,7 +640,7 @@ class RogueTerminalEmulatorTests extends munit.FunSuite {
       |_________?
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

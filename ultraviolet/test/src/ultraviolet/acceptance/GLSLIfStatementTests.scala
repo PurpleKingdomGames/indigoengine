@@ -36,7 +36,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4 red=vec4(1.0,0.0,0.0,1.0);
@@ -72,7 +72,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -101,7 +101,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -145,7 +145,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int p1(in int x){
@@ -195,7 +195,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |void p1(in int x){
@@ -238,7 +238,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float amount=0.0;
@@ -280,7 +280,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float amount=0.0;
@@ -326,7 +326,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4 red=vec4(1.0,0.0,0.0,1.0);
@@ -364,7 +364,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |bool p=true;
@@ -390,7 +390,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -421,7 +421,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 x0=vec2(1.0,2.0);

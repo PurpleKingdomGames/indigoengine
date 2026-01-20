@@ -31,8 +31,8 @@ class BaseBlendShaderTests extends munit.FunSuite {
       |VERTEX=vertex(VERTEX);
       |""".stripMargin.trim
 
-    assert(clue(actual).contains(clue(expected1)))
-    assert(clue(actual).contains(clue(expected2)))
+    assert(clue(actual).contains(clue(expected1.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected2.replace("\r\n", "\n"))))
   }
 
   test("Merge WebGL 2.0 vertex shader template") {
@@ -73,8 +73,8 @@ class BaseBlendShaderTests extends munit.FunSuite {
       |COLOR=fragment(COLOR);
       |""".stripMargin.trim
 
-    assert(clue(actual).contains(clue(expected1)))
-    assert(clue(actual).contains(clue(expected2)))
+    assert(clue(actual).contains(clue(expected1.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected2.replace("\r\n", "\n"))))
   }
 
 }

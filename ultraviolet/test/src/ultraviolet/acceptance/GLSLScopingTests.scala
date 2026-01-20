@@ -27,7 +27,7 @@ class GLSLScopingTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec3 def0(in float r){

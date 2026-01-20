@@ -34,7 +34,7 @@ class sdfTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in vec2 _hsArg){
@@ -65,7 +65,7 @@ class sdfTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg){
@@ -95,7 +95,7 @@ class sdfTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg){
@@ -129,7 +129,7 @@ class sdfTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in vec2 _aArg,in vec2 _bArg){
@@ -162,7 +162,7 @@ class sdfTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg,in float _irArg){
@@ -200,7 +200,7 @@ class sdfTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg){

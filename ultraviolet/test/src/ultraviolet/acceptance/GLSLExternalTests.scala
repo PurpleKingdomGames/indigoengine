@@ -65,7 +65,7 @@ class GLSLExternalTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def0(in float alpha){
@@ -95,7 +95,7 @@ class GLSLExternalTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def0(in float blue,in float alpha){
@@ -132,7 +132,7 @@ class GLSLExternalTests extends munit.FunSuite {
 
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);
@@ -168,7 +168,7 @@ class GLSLExternalTests extends munit.FunSuite {
 
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);
@@ -213,7 +213,7 @@ class GLSLExternalTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int fillType=0;
@@ -276,7 +276,7 @@ class GLSLExternalTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |uniform sampler2D srcChannel;
@@ -326,7 +326,7 @@ class GLSLExternalTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actualNamed,
       s"""
       |vec4 inputColor=vec4(1.0);
@@ -351,7 +351,7 @@ class GLSLExternalTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actualAnon,
       s"""
       |vec4 def0(){

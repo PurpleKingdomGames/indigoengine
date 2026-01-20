@@ -40,7 +40,7 @@ class ShaderToyTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
 
   }
 
@@ -48,19 +48,19 @@ class ShaderToyTests extends munit.FunSuite {
     // Buffer A
     // DebugAST.toAST(Plasma.bufferA)
     // println(Plasma.bufferAShader)
-    assertEquals(Plasma.bufferAShader, Plasma.bufferAExpected)
+    assertNoDiff(Plasma.bufferAShader, Plasma.bufferAExpected)
 
     // Image
     // DebugAST.toAST(Plasma.image)
     // println(Plasma.imageShader)
-    assertEquals(Plasma.imageShader, Plasma.imageExpected)
+    assertNoDiff(Plasma.imageShader, Plasma.imageExpected)
   }
 
   test("Real example: Seascape") {
     // Image
     // DebugAST.toAST(Seascape.image)
     // println(Seascape.imageShader)
-    assertEquals(Seascape.imageShader, Seascape.imageExpected)
+    assertNoDiff(Seascape.imageShader, Seascape.imageExpected)
   }
 
 }

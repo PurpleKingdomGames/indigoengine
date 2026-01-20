@@ -25,7 +25,7 @@ class GLSLCastingTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;

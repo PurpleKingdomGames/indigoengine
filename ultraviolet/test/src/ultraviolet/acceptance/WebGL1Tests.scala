@@ -38,7 +38,7 @@ class WebGL1Tests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Can generate a simple valid WebGL 1.0 vertex shader") {
@@ -145,7 +145,7 @@ class WebGL1Tests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

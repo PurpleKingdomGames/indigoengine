@@ -24,7 +24,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4(10.0,20.0,0.0,1.0);
@@ -49,7 +49,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def0(in float v){
@@ -85,7 +85,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec3 def0(in float r){
@@ -116,7 +116,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec3 def0(in float r){
@@ -150,7 +150,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def0(in float v){
@@ -194,7 +194,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def0(in float v){
@@ -237,7 +237,7 @@ class GLSLLambdaTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def0(in float r){

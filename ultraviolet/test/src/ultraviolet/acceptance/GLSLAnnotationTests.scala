@@ -27,7 +27,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |const vec2 b;
@@ -50,7 +50,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |layout (location = 7) in float a_rotation;
@@ -73,7 +73,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |flat in vec2 a;
@@ -103,7 +103,7 @@ class GLSLAnnotationTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 b;

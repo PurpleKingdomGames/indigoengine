@@ -11,7 +11,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     val actual = fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
+    assertNoDiff(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
   }
 
   test("hexa interpolator") {
@@ -21,7 +21,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     val actual = fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(actual, "vec4(1.0,0.0,1.0,0.0);")
+    assertNoDiff(actual, "vec4(1.0,0.0,1.0,0.0);")
   }
 
   test("rgb interpolator") {
@@ -31,7 +31,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     val actual = fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
+    assertNoDiff(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
   }
 
   test("rgba interpolator") {
@@ -41,6 +41,6 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     val actual = fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(actual, "vec4(1.0,0.0,1.0,0.0);")
+    assertNoDiff(actual, "vec4(1.0,0.0,1.0,0.0);")
   }
 }

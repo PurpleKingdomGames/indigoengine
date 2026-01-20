@@ -52,7 +52,7 @@ class GLSLMatrixTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |mat4 translate2d(in vec2 t){

@@ -20,7 +20,7 @@ class GLSLEnvTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4(UV,0.0,1.0);
@@ -43,7 +43,7 @@ class GLSLEnvTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 a=vec2(1.0,2.0);

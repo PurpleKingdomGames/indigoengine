@@ -25,7 +25,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float[12] x;
@@ -52,7 +52,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 foo=VERTICES[2];
@@ -79,7 +79,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2[16] func(){
@@ -128,7 +128,7 @@ class GLSLArrayTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |const int MAX_VERTICES=16;
@@ -162,7 +162,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |const float foo[3]=float[3](2.5,7.0,1.5);
@@ -184,7 +184,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |const vec2 foo[3]=vec2[3](vec2(2.5),vec2(7.0),vec2(1.5));
@@ -208,7 +208,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int i=0;
@@ -235,7 +235,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int i=0;
@@ -258,7 +258,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |const vec4 foo[1]=vec4[1](vec4(1.0));

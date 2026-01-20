@@ -22,7 +22,7 @@ class noiseTests extends munit.FunSuite {
     // println(DebugAST.toAST(fragment))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def2(in vec2 value){
@@ -111,7 +111,7 @@ class noiseTests extends munit.FunSuite {
     // println(DebugAST.toAST(fragment))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4 def2(in vec4 value){
@@ -185,7 +185,7 @@ class noiseTests extends munit.FunSuite {
     // println(DebugAST.toAST(fragment))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def2(in vec2 value){
@@ -233,7 +233,7 @@ class noiseTests extends munit.FunSuite {
     // println(DebugAST.toAST(fragment))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 def2(in vec2 value){
@@ -294,7 +294,7 @@ class noiseTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec3 def1(in vec2 _ptArg){

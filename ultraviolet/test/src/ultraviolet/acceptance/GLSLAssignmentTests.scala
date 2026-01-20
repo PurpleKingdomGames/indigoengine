@@ -27,7 +27,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |COLOR=vec4(1.0,0.0,0.0,1.0);
@@ -50,7 +50,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -75,7 +75,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -100,7 +100,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -125,7 +125,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -150,7 +150,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -175,7 +175,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -200,7 +200,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -225,7 +225,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -250,7 +250,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -275,7 +275,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;
@@ -300,7 +300,7 @@ class GLSLAssignmentTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int x=1;

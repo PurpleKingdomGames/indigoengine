@@ -21,7 +21,7 @@ class GLSLRawTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float v = 1.0;
@@ -55,7 +55,7 @@ vec4 vertex(vec4 v){
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |//#vertex_start

@@ -36,7 +36,7 @@ class UBODefTests extends munit.FunSuite {
       |};
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("UBODef renders correctly with an array") {
@@ -74,7 +74,7 @@ class UBODefTests extends munit.FunSuite {
       |};
       |""".stripMargin.trim
 
-    assertEquals(actualRender, expectedRender)
+    assertNoDiff(actualRender, expectedRender)
   }
 
 }

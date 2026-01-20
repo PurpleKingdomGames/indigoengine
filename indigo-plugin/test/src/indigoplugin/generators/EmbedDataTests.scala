@@ -61,7 +61,7 @@ class EmbedDataTests extends munit.FunSuite {
       |  case Stan extends GameScores(None, -2.0, true)
       """.stripMargin
 
-    assertEquals(actualEnum.trim, expectedEnum.trim)
+    assertNoDiff(actualEnum.trim, expectedEnum.trim)
 
     val actualEnumWithExtends =
       actual.renderEnum("GameScores", Option("ScoreData"))
@@ -74,7 +74,7 @@ class EmbedDataTests extends munit.FunSuite {
       |  case Stan extends GameScores(None, -2.0, true)
       """.stripMargin
 
-    assertEquals(actualEnumWithExtends.trim, expectedEnumWithExtends.trim)
+    assertNoDiff(actualEnumWithExtends.trim, expectedEnumWithExtends.trim)
 
     val actualMap =
       actual.renderMap("GameScores")
@@ -91,7 +91,7 @@ class EmbedDataTests extends munit.FunSuite {
       |    )
       """.stripMargin
 
-    assertEquals(actualMap.trim, expectedMap.trim)
+    assertNoDiff(actualMap.trim, expectedMap.trim)
 
   }
 

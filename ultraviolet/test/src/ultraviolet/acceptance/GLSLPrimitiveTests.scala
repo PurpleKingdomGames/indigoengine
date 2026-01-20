@@ -23,7 +23,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |bool a=true;
@@ -49,7 +49,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |bvec2 a=bvec2(true,false);
@@ -75,7 +75,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |ivec2 a=ivec2(0,1);
@@ -98,7 +98,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4(1.0,1.0,0.0,1.0);
@@ -130,7 +130,7 @@ class GLSLPrimitiveTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |in vec2 v_texcoord;

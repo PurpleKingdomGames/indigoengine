@@ -32,8 +32,8 @@ class BaseEntityShaderTests extends munit.FunSuite {
       |VERTEX=vertex(VERTEX);
       |""".stripMargin.trim
 
-    assert(clue(actual).contains(clue(expected1)))
-    assert(clue(actual).contains(clue(expected2)))
+    assert(clue(actual).contains(clue(expected1.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected2.replace("\r\n", "\n"))))
   }
 
   test("Base WebGL 2.0 vertex shader (Raw)") {
@@ -69,8 +69,8 @@ vec4 vertex(vec4 v){
       |VERTEX=vertex(VERTEX);
       |""".stripMargin.trim
 
-    assert(clue(actual).contains(clue(expected1)))
-    assert(clue(actual).contains(clue(expected2)))
+    assert(clue(actual.replace("\r\n", "\n")).contains(clue(expected1.replace("\r\n", "\n"))))
+    assert(clue(actual.replace("\r\n", "\n")).contains(clue(expected2.replace("\r\n", "\n"))))
   }
 
   test("Base WebGL 2.0 fragment shader") {
@@ -114,11 +114,11 @@ vec4 vertex(vec4 v){
       |void composite(){}
       |""".stripMargin.trim
 
-    assert(clue(actual).contains(clue(expected1)))
-    assert(clue(actual).contains(clue(expected2)))
-    assert(clue(actual).contains(clue(expected3)))
-    assert(clue(actual).contains(clue(expected4)))
-    assert(clue(actual).contains(clue(expected5)))
+    assert(clue(actual).contains(clue(expected1.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected2.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected3.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected4.replace("\r\n", "\n"))))
+    assert(clue(actual).contains(clue(expected5.replace("\r\n", "\n"))))
   }
 
 }

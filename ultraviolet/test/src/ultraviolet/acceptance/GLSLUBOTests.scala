@@ -30,7 +30,7 @@ class GLSLUBOTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |#version 300 es
@@ -77,7 +77,7 @@ class GLSLUBOTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |#version 300 es

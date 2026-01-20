@@ -184,7 +184,7 @@ class ProceduralShaderTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.code, expectedCode)
+    assertNoDiff(actual.code, expectedCode)
     assertEquals(actual.metadata, expectedMetadata)
 
   }

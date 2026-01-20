@@ -29,7 +29,7 @@ class GLSLNativeTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=1.0;
@@ -57,7 +57,7 @@ class GLSLNativeTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float def0(in vec2 p,in float r){
@@ -85,7 +85,7 @@ class GLSLNativeTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float circleSdf(in vec2 p,in float r){
@@ -113,7 +113,7 @@ class GLSLNativeTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |circleSdf(UV,3.0);

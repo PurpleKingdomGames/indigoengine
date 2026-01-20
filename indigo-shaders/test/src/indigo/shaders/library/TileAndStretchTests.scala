@@ -30,7 +30,7 @@ class TileAndStretchTests extends munit.FunSuite {
 
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);
@@ -66,7 +66,7 @@ class TileAndStretchTests extends munit.FunSuite {
 
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);

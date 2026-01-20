@@ -61,7 +61,7 @@ class LightingTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Lighting light") {
@@ -152,7 +152,7 @@ class LightingTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Lighting composite") {
@@ -170,7 +170,7 @@ class LightingTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

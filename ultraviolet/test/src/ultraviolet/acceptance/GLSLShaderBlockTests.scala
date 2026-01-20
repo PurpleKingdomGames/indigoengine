@@ -35,7 +35,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=UV.y;
@@ -75,7 +75,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
     // DebugAST.toAST(fragment(new CustomShader))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float x=UV.y;
@@ -99,7 +99,7 @@ class GLSLShaderBlockTests extends munit.FunSuite {
     // DebugAST.toAST(fragment(12.0f))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float a_rotation=12.0;

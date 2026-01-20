@@ -37,7 +37,7 @@ class WebGL2Tests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

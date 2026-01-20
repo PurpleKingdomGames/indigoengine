@@ -21,7 +21,7 @@ class EmbedGLSLShaderPairTests extends munit.FunSuite {
       |}
       """.stripMargin
 
-    assertEquals(actual.trim, expected.trim)
+    assertNoDiff(actual.trim, expected.trim)
   }
 
   test("extractShaderCode - vertex") {
@@ -80,7 +80,7 @@ void fragment(){
 
   COLOR = textureColor;
 }
-          """.trim
+          """.trim.replace("\r\n", "\n")
         )
       )
 

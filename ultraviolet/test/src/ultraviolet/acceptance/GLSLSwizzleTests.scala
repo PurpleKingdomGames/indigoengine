@@ -20,7 +20,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual1 =
       fragment1.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual1,
       s"""
       |vec4(1.0,2.0,3.0,4.0).wzyx;
@@ -35,7 +35,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual2 =
       fragment2.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual2,
       s"""
       |vec3(1.0,2.0,3.0).xxy;
@@ -51,7 +51,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual3 =
       fragment3.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual3,
       s"""
       |vec3 fill=vec3(1.0,2.0,3.0);
@@ -69,7 +69,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual1 =
       fragment1.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual1,
       s"""
       |vec4(1.0,2.0,3.0,4.0).abgr;
@@ -84,7 +84,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual2 =
       fragment2.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual2,
       s"""
       |vec3(1.0,2.0,3.0).rrg;
@@ -100,7 +100,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual3 =
       fragment3.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual3,
       s"""
       |vec3 fill=vec3(1.0,2.0,3.0);
@@ -118,7 +118,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |COLOR.xyz;
@@ -149,7 +149,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |mat4 rotationZ(in float angle){
@@ -181,7 +181,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4 foo(){

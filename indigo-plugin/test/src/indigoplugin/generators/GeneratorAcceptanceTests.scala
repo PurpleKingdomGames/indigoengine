@@ -151,7 +151,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |  case Fortitude extends StatsEnum(4, 1, Some(false))
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 
@@ -187,7 +187,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |    )
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 
@@ -218,7 +218,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |  case ChainMail extends Armour(3)
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 
@@ -255,7 +255,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |*/
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 
@@ -290,7 +290,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |    Aseprite(List(AsepriteFrame("Captain Clown Nose 0.aseprite"
           |""".stripMargin
 
-        assert(clue(actual.trim).startsWith(clue(expected.trim)))
+        assert(clue(actual.trim.replace("\r\n", "\n")).startsWith(clue(expected.trim.replace("\r\n", "\n"))))
     }
 
   }
@@ -325,7 +325,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |${Generators.TripleQuotes}
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 
@@ -334,7 +334,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embed("ColoursList", sourceColours) { text =>
-          "val colours: List[String] = " + text.split("\n").map(t => s"""\"$t\"""").mkString("List(", ", ", ")")
+          "val colours: List[String] = " + text.split("\r?\n").map(t => s"""\"$t\"""").mkString("List(", ", ", ")")
         }
         .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
@@ -357,7 +357,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual.trim, expected.trim)
     }
   }
 

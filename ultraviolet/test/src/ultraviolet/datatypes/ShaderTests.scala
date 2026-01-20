@@ -75,7 +75,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |layout (std140) uniform UBO1 {
@@ -112,7 +112,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec2 def0(in vec4 val0){
@@ -146,7 +146,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec2 def0(in vec4 val0){
@@ -189,7 +189,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |float def0(in vec4 val0){
@@ -233,7 +233,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |float def1(in float val0){
@@ -282,7 +282,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |layout (std140) uniform UBO1 {
@@ -338,7 +338,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |layout (std140) uniform UBO1 {
@@ -399,7 +399,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |layout (std140) uniform UBO1 {
@@ -447,7 +447,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader(modifyVertex))
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec4 def0(in vec4 vtx){
@@ -479,7 +479,7 @@ class ShaderTests extends munit.FunSuite {
         }
       }.toGLSL[WebGL2](false).toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec4 def0(in vec4 input){
@@ -507,7 +507,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(actualCode)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec4 def0(in vec4 vtx){
@@ -535,7 +535,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(Foo.shader(modifyVertex))
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |vec4 def0(in vec4 vtx){
@@ -575,7 +575,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(Foo.shader(modifyColor))
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |float def1(in vec2 p,in float r){
@@ -624,7 +624,7 @@ class ShaderTests extends munit.FunSuite {
     // DebugAST.toAST(shader)
     // println(actualCode)
 
-    assertEquals(
+    assertNoDiff(
       actualCode,
       s"""
       |float foo(){

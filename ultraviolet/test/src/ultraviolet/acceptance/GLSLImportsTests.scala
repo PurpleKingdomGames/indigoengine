@@ -29,7 +29,7 @@ class GLSLImportsTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int def0(in int i){

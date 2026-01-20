@@ -56,7 +56,7 @@ class AssetListingTests extends munit.FunSuite {
 
       """.trim
 
-    assertEquals(actual.trim, expected.trim)
+    assertNoDiff(actual.trim, expected.trim)
 
   }
 
@@ -151,7 +151,7 @@ class AssetListingTests extends munit.FunSuite {
       )
       """.trim
 
-    assertEquals(actual.trim, expected.trim)
+    assertNoDiff(actual.trim, expected.trim)
 
   }
 

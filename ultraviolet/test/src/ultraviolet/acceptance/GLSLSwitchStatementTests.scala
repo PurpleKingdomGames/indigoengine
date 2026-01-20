@@ -38,7 +38,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int flag=2;
@@ -101,7 +101,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int flag=2;
@@ -188,7 +188,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int p1(in int flag){
@@ -266,7 +266,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     // println(ShaderMacros.toAST(fragment))
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int def0(in int flag){
@@ -338,7 +338,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |int foo=0;

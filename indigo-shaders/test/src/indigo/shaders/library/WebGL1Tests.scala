@@ -49,7 +49,7 @@ class WebGL1Tests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Base WebGL 1.0 fragment shader") {
@@ -67,7 +67,7 @@ class WebGL1Tests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

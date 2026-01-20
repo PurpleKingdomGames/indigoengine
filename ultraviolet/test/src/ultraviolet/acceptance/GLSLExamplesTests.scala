@@ -27,7 +27,7 @@ class GLSLExamplesTests extends munit.FunSuite {
     val actual =
       shader.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec4 calculateColour(in vec2 uv,in float sdf){
@@ -60,7 +60,7 @@ class GLSLExamplesTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float circleSdf(in vec2 p,in float r){
@@ -115,7 +115,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(
+    assertNoDiff(
       actual,
       expected
     )

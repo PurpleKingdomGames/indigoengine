@@ -119,7 +119,7 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     // println(webgl1)
 
-    assertEquals(
+    assertNoDiff(
       webgl1,
       s"""
       |varying vec2 v_texcoord;
@@ -139,7 +139,7 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     // println(webgl2)
 
-    assertEquals(
+    assertNoDiff(
       webgl2,
       s"""
       |in vec2 v_texcoord;
@@ -169,7 +169,7 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual.mkString("\n"),
       s"""
       |-(x/y)

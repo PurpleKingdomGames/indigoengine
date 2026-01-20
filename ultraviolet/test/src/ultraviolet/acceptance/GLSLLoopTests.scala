@@ -27,7 +27,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float i=0.0;
@@ -58,7 +58,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float i=0.0;
@@ -92,7 +92,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
          |int steps=10;
@@ -130,7 +130,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
          |int steps=10;
@@ -172,7 +172,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
          |int steps=10;
@@ -210,7 +210,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float i=0.0;
@@ -242,7 +242,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |float i=0.0;
@@ -274,7 +274,7 @@ class GLSLLoopTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
     // println(actual)
 
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 v[3]=vec2[3](vec2(1.0),vec2(2.0),vec2(3.0));
