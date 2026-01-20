@@ -204,11 +204,11 @@ object Falloff {
       this.copy(far = Some(newFar))
 
     def noFarLimit: None =
-      this.copy(far = scala.None)
+      this.copy(far = Option.empty)
   }
   object None {
     def default: None =
-      None(0, scala.None)
+      None(0, Option.empty)
 
     def apply(far: Int): None =
       None(0, Option(far))
@@ -280,11 +280,11 @@ object Falloff {
       this.copy(far = Some(newFar))
 
     def noFarLimit: Linear =
-      this.copy(far = scala.None)
+      this.copy(far = Option.empty)
   }
   object Linear {
     def default: Linear =
-      Linear(0, scala.None)
+      Linear(0, Option.empty)
 
     def apply(far: Int): Linear =
       Linear(0, Option(far))
@@ -310,11 +310,11 @@ object Falloff {
       this.copy(far = Some(newFar))
 
     def noFarLimit: Quadratic =
-      this.copy(far = scala.None)
+      this.copy(far = Option.empty)
   }
   object Quadratic {
     def default: Quadratic =
-      Quadratic(0, scala.None)
+      Quadratic(0, Option.empty)
 
     def apply(far: Int): Quadratic =
       Quadratic(0, Option(far))
