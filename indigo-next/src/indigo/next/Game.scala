@@ -43,7 +43,7 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait IndigoNext[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model, Unit]:
+trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model, Unit]:
 
   /** A non-empty ordered list of scenes
     *

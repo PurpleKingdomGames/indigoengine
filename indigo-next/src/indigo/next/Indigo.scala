@@ -14,7 +14,7 @@ import tyrian.extensions.ExtensionId
 
 final case class Indigo(
     extensionId: ExtensionId,
-    game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+    game: Game[?, ?, ?] | GameLauncher[?, ?, ?],
     find: () => Option[Element],
     onLaunchSuccess: Option[GlobalMsg],
     onLaunchFailure: Option[GlobalMsg]
@@ -27,7 +27,7 @@ final case class Indigo(
   def withExtensionId(value: ExtensionId): Indigo =
     this.copy(extensionId = value)
 
-  def withGame(value: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?]): Indigo =
+  def withGame(value: Game[?, ?, ?] | GameLauncher[?, ?, ?]): Indigo =
     this.copy(game = value)
 
   def withFind(value: () => Option[Element]): Indigo =
@@ -100,7 +100,7 @@ final case class Indigo(
         case _: GameLauncher[?, ?, ?] =>
           Result(model)
 
-        case g: IndigoNext[?, ?, ?] =>
+        case g: Game[?, ?, ?] =>
           Result(model)
             .addActions(g.bridge.send(data))
 
@@ -115,14 +115,14 @@ final case class Indigo(
       case _: GameLauncher[?, ?, ?] =>
         Batch.empty
 
-      case g: IndigoNext[?, ?, ?] =>
+      case g: Game[?, ?, ?] =>
         Batch(g.bridge.watch)
 
 object Indigo:
 
   def apply(
       extensionId: ExtensionId,
-      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      game: Game[?, ?, ?] | GameLauncher[?, ?, ?],
       containerId: String
   ): Indigo =
     Indigo(
@@ -135,7 +135,7 @@ object Indigo:
 
   def apply(
       extensionId: ExtensionId,
-      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      game: Game[?, ?, ?] | GameLauncher[?, ?, ?],
       find: () => Option[Element]
   ): Indigo =
     Indigo(
@@ -148,7 +148,7 @@ object Indigo:
 
   def apply(
       extensionId: ExtensionId,
-      game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?],
+      game: Game[?, ?, ?] | GameLauncher[?, ?, ?],
       find: () => Option[Element],
       onLaunchSuccess: GlobalMsg,
       onLaunchFailure: GlobalMsg
@@ -162,7 +162,7 @@ object Indigo:
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  private def launchAction(game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?], find: () => Option[Element]): Action =
+  private def launchAction(game: Game[?, ?, ?] | GameLauncher[?, ?, ?], find: () => Option[Element]): Action =
     Action.run {
       find() match
         case Some(elem) if elem != null =>
@@ -179,4 +179,4 @@ object Indigo:
     case Started
     case Failed
 
-  final case class ExtensionModel(game: IndigoNext[?, ?, ?] | GameLauncher[?, ?, ?], attempts: Int)
+  final case class ExtensionModel(game: Game[?, ?, ?] | GameLauncher[?, ?, ?], attempts: Int)
