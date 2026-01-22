@@ -9,8 +9,8 @@ This is a **Mill-based monorepo** containing Scala libraries and frameworks by P
 - **Ultraviolet**: Scala 3 to GLSL transpiler (50+ files)
 - **Roguelike Starter Kit**: ASCII art roguelike rendering for Indigo (50+ files)
 
-**Languages**: Scala 3.8.0, targeting both JVM and JavaScript (via Scala.js 1.20.2)  
-**Build Tool**: Mill 1.1.0-RC4 (launcher script: `./mill` on Unix, `.\mill.bat` on Windows)  
+**Languages**: Scala 3 (version defined in `build.mill`), targeting both JVM and JavaScript via Scala.js  
+**Build Tool**: Mill (version defined in `.mill-version`, launcher script: `./mill` on Unix, `.\mill.bat` on Windows)  
 **Testing**: MUnit framework  
 **Java Version**: Java 11+ required (CI uses Java 11; Java 17 also works)
 
@@ -94,7 +94,7 @@ On Windows, use `.\mill.bat` instead of `./mill` for all commands. The PowerShel
 
 ### Formatting and Linting
 
-- **Scalafmt**: Version 3.8.5, configured in `.scalafmt.conf`
+- **Scalafmt**: Configured in `.scalafmt.conf`
   - Dialect: `scala3`
   - Max column: 120
   - Always run before committing: `./mill __.reformat`
@@ -106,7 +106,7 @@ On Windows, use `.\mill.bat` instead of `./mill` for all commands. The PowerShel
 
 ### Strict Compilation
 
-- **Scala 3.8.0** with strict equality enabled
+- **Scala 3** with strict equality enabled
 - Compiler treats warnings as errors (`-Werror`)
 - Uses typelevel scalacoptions for consistent, strict compilation flags
 
@@ -158,7 +158,7 @@ tyrian-io, tyrian-zio, tyrian-htmx
 - **`indigo-sandboxes/`, `tyrian-sandboxes/`**: Testing and development playgrounds
 - **`indigo-plugin/`, `mill-indigo/`, `sbt-indigo/`**: Build plugins for game projects
 - **`.indigo-version`**: Version file (e.g., `0.22.1-SNAPSHOT`)
-- **`.mill-version`**: Mill version (e.g., `1.1.0-RC4`)
+- **`.mill-version`**: Mill version file
 
 ### Configuration Files
 
