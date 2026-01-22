@@ -85,7 +85,8 @@ object Html extends HtmlTags with HtmlAttributes with AttributeSyntax with HtmlE
       ) ++ attributes*
     )
 
-  def text(plainText: String): Text = Text(plainText)
+  def text(plainText: String): Text   = Text(plainText)
+  def text(plainTexts: String*): Text = Text(plainTexts.toSeq.mkString)
 
   // Custom attribute syntax
 

@@ -88,72 +88,20 @@ object SandboxZIO extends TyrianZIOApp[Msg, Model]:
         div(myStyle)(text(model.field.reverse))
       ),
       div(
-        p("Html Entities"),
+        p("nbsp example"),
         table(
-          tr(
-            td(_lt_),
-            td("<"),
-            td("(less than)")
-          ),
-          tr(
-            td(_gt_),
-            td(">"),
-            td("(greater than)")
-          ),
-          tr(
-            td(_amp_),
-            td("&"),
-            td("(ampersand)")
-          ),
-          tr(
-            td(_quot_),
-            td("\""),
-            td("(double quote)")
-          ),
-          tr(
-            td(_apos_),
-            td("'"),
-            td("(apostrophe / single quote)")
-          ),
           tr(
             td(_nbsp_),
             td("␣"),
             td("(non-breaking space)")
-          ),
-          tr(
-            td(_copy_),
-            td("©"),
-            td("(copyright)")
-          ),
-          tr(
-            td(_reg_),
-            td("®"),
-            td("(registered trademark)")
-          ),
-          tr(
-            td(_trade_),
-            td("™"),
-            td("(trademark)")
-          ),
-          tr(
-            td(_cent_),
-            td("¢"),
-            td("(cent)")
-          ),
-          tr(
-            td(_pound_),
-            td("£"),
-            td("(pound)")
-          ),
-          tr(
-            td(_yen_),
-            td("¥"),
-            td("(yen)")
-          ),
-          tr(
-            td(_euro_),
-            td("€"),
-            td("(euro)")
+          )
+        ),
+        span(
+          List(
+            text(
+              s"This${_nbsp_}sentence${_nbsp_}has${_nbsp_}non-breaking${_nbsp_}spaces."
+            ),
+            text("And", s"${_nbsp_}", "Another")
           )
         )
       ),
