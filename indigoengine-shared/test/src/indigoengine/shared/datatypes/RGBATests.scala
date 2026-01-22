@@ -140,19 +140,19 @@ class RGBATests extends munit.FunSuite {
 
   test("fromHSL creates correct colors") {
     // Red from HSL
-    val red = RGBA.fromHSL(0, 1.0, 0.5)
+    val red = RGBA.fromHSL(HSL(0, 1.0, 0.5))
     assertEqualsDouble(red.r, 1.0, 0.01)
     assertEqualsDouble(red.g, 0.0, 0.01)
     assertEqualsDouble(red.b, 0.0, 0.01)
 
     // Green from HSL
-    val green = RGBA.fromHSL(120, 1.0, 0.5)
+    val green = RGBA.fromHSL(HSL(120, 1.0, 0.5))
     assertEqualsDouble(green.r, 0.0, 0.01)
     assertEqualsDouble(green.g, 1.0, 0.01)
     assertEqualsDouble(green.b, 0.0, 0.01)
 
     // Blue from HSL
-    val blue = RGBA.fromHSL(240, 1.0, 0.5)
+    val blue = RGBA.fromHSL(HSL(240, 1.0, 0.5))
     assertEqualsDouble(blue.r, 0.0, 0.01)
     assertEqualsDouble(blue.g, 0.0, 0.01)
     assertEqualsDouble(blue.b, 1.0, 0.01)
@@ -162,7 +162,7 @@ class RGBATests extends munit.FunSuite {
     val colors = List(RGBA.Red, RGBA.Green, RGBA.Blue, RGBA.Cyan, RGBA.Magenta, RGBA.Yellow, RGBA.Orange)
     colors.foreach { original =>
       val hsl       = original.toHSL
-      val roundTrip = RGBA.fromHSL(hsl.h, hsl.s, hsl.l, original.a)
+      val roundTrip = RGBA.fromHSL(hsl, original.a)
       assertEqualsDouble(roundTrip.r, original.r, 0.01)
       assertEqualsDouble(roundTrip.g, original.g, 0.01)
       assertEqualsDouble(roundTrip.b, original.b, 0.01)
@@ -221,7 +221,7 @@ class RGBATests extends munit.FunSuite {
 
   test("saturate increases saturation") {
     // Start with a desaturated color
-    val muted     = RGBA.fromHSL(0, 0.5, 0.5) // Red at 50% saturation
+    val muted     = RGBA.fromHSL(HSL(0, 0.5, 0.5)) // Red at 50% saturation
     val saturated = muted.saturate(0.3)
     val hsl       = saturated.toHSL
     assertEqualsDouble(hsl.s, 0.8, 0.01)
