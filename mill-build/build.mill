@@ -7,6 +7,9 @@ import mill.meta.MillBuildRootModule
 import mill.api.BuildCtx
 
 object `package` extends MillBuildRootModule:
+
+  // Must be the same Scala version as the one Mill uses,
+  // for the Mill api libs to be available.
   def scalaVersion = "3.8.0"
 
   def indigoPluginSources = Task.Sources(
