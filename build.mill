@@ -13,7 +13,9 @@ import org.typelevel.scalacoptions.*
 import com.goyeau.mill.scalafix.ScalafixModule
 
 trait Shared extends ScalafmtModule, ScalafixModule:
-  def scalaVersion = Task("3.8.0")
+
+  // May need to be compatible with the Mill Scala version in mill-build/build.mill
+  def scalaVersion = Task("3.8.1")
 
   override def scalacOptions = Task {
     val baseOptions = ScalacOptions.tokensForVersion(
