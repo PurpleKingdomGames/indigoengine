@@ -90,6 +90,14 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
   def toHSLA: HSLA =
     HSLA.fromRGBA(this)
 
+  /** Convert to HSV (drops alpha) */
+  def toHSV: HSV =
+    HSV.fromRGBA(this)
+
+  /** Convert to HSVA */
+  def toHSVA: HSVA =
+    HSVA.fromRGBA(this)
+
   /** Rotate hue by degrees on color wheel (positive = clockwise) */
   def rotateHue(degrees: Degrees): RGBA =
     toHSLA.rotateHue(degrees).toRGBA
@@ -149,12 +157,28 @@ object RGBA:
     RGBA(r, g, b, 1.0)
 
   /** Create from HSL values (hue 0-360, saturation 0-1, lightness 0-1) */
-  def fromHSL(h: Double, s: Double, l: Double, a: Double): RGBA =
-    HSLA(h, s, l, a).toRGBA
+  def fromHSLA(hsla: HSLA): RGBA =
+    hsla.toRGBA
 
   /** Create from HSL values with full opacity */
-  def fromHSL(h: Double, s: Double, l: Double): RGBA =
-    HSL(h, s, l).toRGBA
+  def fromHSL(hsl: HSL): RGBA =
+    hsl.toRGBA
+
+  /** Create from HSL values with given opacity */
+  def fromHSL(hsl: HSL, opacity: Double): RGBA =
+    hsl.toRGBA(opacity)
+
+  /** Create from HSV values (hue 0-360, saturation 0-1, value 0-1) */
+  def fromHSV(hsva: HSVA): RGBA =
+    hsva.toRGBA
+
+  /** Create from HSV values with full opacity */
+  def fromHSV(hsv: HSV): RGBA =
+    hsv.toRGBA
+
+  /** Create from HSV values with given opacity */
+  def fromHSV(hsv: HSV, opacity: Double): RGBA =
+    hsv.toRGBA(opacity)
 
   /** Add two colors component-wise, treating `RGBA.None` as identity */
   def combine(a: RGBA, b: RGBA): RGBA =

@@ -44,9 +44,17 @@ final case class HSL(h: Double, s: Double, l: Double) derives CanEqual:
   def toRGBA: RGBA =
     toHSLA.toRGBA
 
+  /** Convert to RGBA color with given opacity */
+  def toRGBA(opacity: Double): RGBA =
+    toHSLA(opacity).toRGBA
+
   /** Convert to HSLA with full opacity */
   def toHSLA: HSLA =
     HSLA(h, s, l, 1.0)
+
+  /** Convert to HSLA with given opacity */
+  def toHSLA(opacity: Double): HSLA =
+    HSLA(h, s, l, opacity)
 
   /** CSS hsl string */
   def toCSSValue: String =

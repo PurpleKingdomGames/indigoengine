@@ -74,6 +74,14 @@ final case class RGB(r: Double, g: Double, b: Double) derives CanEqual:
   def toHSLA: HSLA =
     toRGBA.toHSLA
 
+  /** Convert to HSV */
+  def toHSV: HSV =
+    HSV.fromRGB(this)
+
+  /** Convert to HSVA */
+  def toHSVA: HSVA =
+    HSVA.fromRGB(this)
+
   /** Rotate hue by degrees on color wheel (positive = clockwise) */
   def rotateHue(degrees: Degrees): RGBA =
     toHSLA.rotateHue(degrees).toRGBA
