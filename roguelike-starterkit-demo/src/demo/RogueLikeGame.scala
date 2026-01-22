@@ -6,7 +6,7 @@ import indigo.next.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 
-final class RogueLikeGame() extends IndigoNext[Size, Size, GameModel]:
+final class RogueLikeGame() extends Game[Size, Size, GameModel]:
 
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
