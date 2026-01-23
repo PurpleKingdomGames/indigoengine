@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.api.renderer
 
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
