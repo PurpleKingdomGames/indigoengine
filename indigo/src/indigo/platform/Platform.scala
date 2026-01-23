@@ -10,20 +10,20 @@ import indigo.core.events.FullScreenExitError
 import indigo.core.events.FullScreenExited
 import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
-import indigo.platform.assets.AtlasId
+import indigo.platform.api.AtlasId
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.events.WorldEvents
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.platform.renderer.Renderer
+import indigo.platform.api.renderer.Renderer
 import indigo.platform.renderer.RendererInitialiser
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
-import indigo.shared.platform.AssetMapping
-import indigo.shared.platform.RendererConfig
-import indigo.shared.platform.TextureRefAndOffset
+import indigo.platform.api.AssetMapping
+import indigo.platform.api.TextureRefAndOffset
+import indigo.platform.api.renderer.RendererConfig
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas
@@ -37,7 +37,7 @@ class Platform(
     parentElement: Element,
     gameConfig: GameConfig,
     globalEventStream: GlobalEventStream
-) extends PlatformFullScreen {
+) extends indigo.platform.api.PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)

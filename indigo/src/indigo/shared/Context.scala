@@ -8,7 +8,7 @@ import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.InputState
 import indigo.core.time.GameTime
-import indigo.platform.renderer.ScreenCaptureConfig
+import indigo.platform.api.renderer.ScreenCaptureConfig
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.TextLine
 import indigo.scenegraph.registers.BoundaryLocator

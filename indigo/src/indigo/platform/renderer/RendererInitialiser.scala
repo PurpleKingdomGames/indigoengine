@@ -10,7 +10,8 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shaders.RawShaderCode
-import indigo.shared.platform.RendererConfig
+import indigo.platform.api.renderer.Renderer
+import indigo.platform.api.renderer.RendererConfig
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.WebGLRenderingContext

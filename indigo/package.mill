@@ -14,10 +14,11 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-physics`.js
+      build.`indigo-physics`.js,
+      build.`indigo-platform-api`.js,
+      build.`indigo-js-platform`.js
     )
 
     def mvnDeps = Seq(
-      mvn"org.scala-js::scala-js-macrotask-executor::1.1.1",
-      mvn"org.scala-js::scalajs-dom::2.8.0"
+      mvn"org.scala-js::scala-js-macrotask-executor::1.1.1"
     )
