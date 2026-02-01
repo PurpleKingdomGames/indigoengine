@@ -3,6 +3,7 @@ package indigo.frameprocessors
 import indigo.core.Outcome
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
+import indigo.frameprocessors.StandardFrameProcessorFunctions
 import indigo.gameengine.FrameProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.SceneManager
@@ -11,48 +12,37 @@ import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 
-final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
+final class GameFrameProcessor[StartUpData, Model](
     val subSystemsRegister: SubSystemsRegister[Model],
-    val sceneManager: SceneManager[StartUpData, Model, ViewModel],
+    val sceneManager: SceneManager[StartUpData, Model],
     val eventFilters: EventFilters,
     val modelUpdate: (Context[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    val viewModelUpdate: (Context[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    val viewUpdate: (Context[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
-) extends FrameProcessor[StartUpData, Model, ViewModel]
-    with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
+    val _viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment]
+) extends FrameProcessor[StartUpData, Model]
+    with StandardFrameProcessorFunctions[StartUpData, Model, Unit]:
+
+  def viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment] =
+    (ctx, m) => _viewUpdate(ctx, m)
 
   def run(
       model: => Model,
-      viewModel: => ViewModel,
       globalEvents: Batch[GlobalEvent],
       context: => Context[StartUpData]
-  ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
+  ): Outcome[(Model, SceneUpdateFragment)] = {
 
-    val processSceneViewModel: (Model, ViewModel) => Outcome[ViewModel] = (m, vm) =>
-      globalEvents
-        .map(sceneManager.eventFilters.viewModelFilter)
-        .collect { case Some(e) => e }
-        .foldLeft(Outcome(vm)) { (acc, e) =>
-          acc.flatMap { next =>
-            sceneManager.updateViewModel(context, m, next)(e)
-          }
-        }
-
-    val processSceneView: (Model, ViewModel) => Outcome[SceneUpdateFragment] = (m, vm) =>
+    val processSceneView: Model => Outcome[SceneUpdateFragment] = m =>
       Outcome.merge(
-        processView(context, m, vm),
-        sceneManager.updateView(context, m, vm)
+        processView(context, m),
+        sceneManager.updateView(context, m)
       )(_ |+| _)
 
     Outcome.join(
       for {
-        m   <- processModel(context, model, globalEvents)
-        sm  <- processSceneModel(context, m, globalEvents)
-        vm  <- processViewModel(context, sm, viewModel, globalEvents)
-        svm <- processSceneViewModel(sm, vm)
-        e   <- processSubSystems(context, m, globalEvents).eventsAsOutcome
-        v   <- processSceneView(sm, svm)
-      } yield Outcome((sm, svm, v), e)
+        m  <- processModel(context, model, globalEvents)
+        sm <- processSceneModel(context, m, globalEvents)
+        e  <- processSubSystems(context, m, globalEvents).eventsAsOutcome
+        v  <- processSceneView(sm)
+      } yield Outcome((sm, v), e)
     )
   }
 

@@ -8,7 +8,6 @@ object SandboxView:
 
   def updateView(
       model: SandboxGameModel,
-      viewModel: SandboxViewModel,
       mouse: MouseState,
       bl: Context.Services.Bounds
   ): SceneUpdateFragment = {
@@ -18,12 +17,12 @@ object SandboxView:
     SceneUpdateFragment.empty
       .addLayer(
         Layer(
-          gameLayer(model, viewModel) ++ uiLayer(bl)
+          gameLayer(model, model.viewModel) ++ uiLayer(bl)
         )
         // .withBlend(Blend.Alpha)
       )
       .addLayer(
-        if (viewModel.useLightingLayer)
+        if (model.viewModel.useLightingLayer)
           Layer(lightingLayer(mouse))
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else

@@ -18,10 +18,9 @@ final case class PathFindingModel(
 object PathFindingModel:
   val empty: PathFindingModel = PathFindingModel()
 
-object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = PathFindingModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = PathFindingModel
 
   val increase: Int        = 30
   val gridSize: Int        = 10
@@ -32,9 +31,6 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
 
   def modelLens: Lens[SandboxGameModel, SceneModel] =
     Lens(_.pathfinding, (m, pm) => m.copy(pathfinding = pm))
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
-    Lens.keepOriginal
 
   def name: SceneName =
     SceneName("pathfinding")
@@ -61,17 +57,9 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
 
     case _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SceneModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SceneModel,
-      viewModel: SandboxViewModel
+      model: SceneModel
   ): Outcome[SceneUpdateFragment] =
 
     // in practice we should not have to compute the path every frame

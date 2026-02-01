@@ -3,7 +3,7 @@ package demo.scenes
 import demo.Assets
 import demo.GameEvent
 import demo.models.GameModel
-import indigo.next.*
+import indigo.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 import roguelikestarterkit.*

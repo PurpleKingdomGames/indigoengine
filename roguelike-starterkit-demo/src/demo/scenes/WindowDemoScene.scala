@@ -3,7 +3,7 @@ package demo.scenes
 import demo.Constants
 import demo.models.GameModel
 import demo.windows.DemoWindow
-import indigo.next.*
+import indigo.*
 import indigoextras.ui.*
 
 object WindowDemoScene extends Scene[Size, GameModel]:

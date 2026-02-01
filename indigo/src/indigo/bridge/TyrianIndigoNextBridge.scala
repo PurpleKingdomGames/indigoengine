@@ -1,4 +1,4 @@
-package indigo.next.bridge
+package indigo.bridge
 
 import cats.effect.IO
 import org.scalajs.dom.Event as DomEvent

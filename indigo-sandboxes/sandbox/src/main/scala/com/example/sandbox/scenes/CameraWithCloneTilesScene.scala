@@ -3,23 +3,18 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 
-object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel = Unit
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, Unit] =
-    Lens.unit
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
     Lens.unit
 
   def name: SceneName =
@@ -33,13 +28,6 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
 
   val graphic = Graphic(64, 64, SandboxAssets.cratesMaterial.withLighting(LightingModel.Unlit))
 
@@ -57,8 +45,7 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: Unit,
-      viewModel: Unit
+      model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

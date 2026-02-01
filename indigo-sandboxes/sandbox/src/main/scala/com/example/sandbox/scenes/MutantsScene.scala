@@ -4,24 +4,19 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 
-object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
-    Lens.keepLatest
 
   def name: SceneName =
     SceneName("mutants")
@@ -34,14 +29,6 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    case _ =>
-      Outcome(viewModel)
 
   val cloneId    = CloneId("mutant")
   val cloneBlank = CloneBlank(cloneId, Archetype())
@@ -84,8 +71,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

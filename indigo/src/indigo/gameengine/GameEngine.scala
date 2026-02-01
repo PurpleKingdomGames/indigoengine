@@ -36,14 +36,13 @@ import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 import scala.compiletime.uninitialized
 import scala.concurrent.Future
 
-final class GameEngine[StartUpData, GameModel, ViewModel](
+final class GameEngine[StartUpData, GameModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
     shaders: Set[ShaderProgram],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
-    initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
-    frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+    frameProccessor: FrameProcessor[StartUpData, GameModel],
     initialisationEvents: Batch[GlobalEvent]
 ) {
   val stepsToLoad = 4
@@ -73,7 +72,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameLoop: Double => Double => Unit = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
+  var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -106,7 +105,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       bootEvents: Batch[GlobalEvent]
-  ): GameEngine[StartUpData, GameModel, ViewModel] = {
+  ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
@@ -216,16 +215,11 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
             if (firstRun) initialModel(startUpSuccessData)
             else Outcome(gameLoopInstance.gameModelState)
 
-          def viewModelToUse(startUpSuccessData: => StartUpData, m: GameModel): Outcome[GameModel => ViewModel] =
-            if (firstRun) initialViewModel(startUpSuccessData)(m).map(vm => (_: GameModel) => vm)
-            else Outcome((_: GameModel) => gameLoopInstance.viewModelState)
-
           val loop: Outcome[Double => Double => Unit] =
             for {
               rendererAndAssetMapping <- platform.initialise(firstRun, shaderRegister.toSet, accumulatedAssetCollection)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
               m                       <- modelToUse(startUpSuccessData)
-              vm                      <- viewModelToUse(startUpSuccessData, m)
               initialisedGameLoop <- GameEngine.initialiseGameLoop(
                 parentElement,
                 this,
@@ -233,7 +227,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 sceneProcessor,
                 gameConfig,
                 m,
-                vm,
                 frameProccessor,
                 !firstRun, // If this isn't the first run, start with it frame locked.
                 renderer
@@ -381,25 +374,23 @@ object GameEngine {
 
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
       parentElement: Element,
-      gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
+      gameEngine: GameEngine[StartUpData, GameModel],
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,
       initialModel: GameModel,
-      initialViewModel: GameModel => ViewModel,
-      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+      frameProccessor: FrameProcessor[StartUpData, GameModel],
       startFrameLocked: Boolean,
       renderer: => Renderer
-  ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
+  ): Outcome[GameLoop[StartUpData, GameModel]] =
     Outcome(
-      new GameLoop[StartUpData, GameModel, ViewModel](
+      new GameLoop[StartUpData, GameModel](
         gameEngine.rebuildGameLoop(parentElement, false),
         boundaryLocator,
         sceneProcessor,
         gameEngine,
         gameConfig,
         initialModel,
-        initialViewModel(initialModel),
         frameProccessor,
         startFrameLocked,
         renderer

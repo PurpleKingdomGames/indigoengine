@@ -4,26 +4,16 @@ import com.example.sandbox.scenes.*
 import example.TestFont
 import indigo.*
 import indigo.json.Json
-import indigo.scenes.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
 import indigoextras.subsystems.FPSCounter
 
-import scala.scalajs.js.annotation.*
-
-@JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
-
-  val magnificationLevel: Int = 2
-  val gameWidth: Int          = 228
-  val gameHeight: Int         = 128
-  val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
-  val viewportHeight: Int     = gameHeight * magnificationLevel // 256
+final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(WindowsScene.name)
 
-  def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
+  def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
     NonEmptyBatch(
       OriginalScene,
       ShapesScene,
@@ -72,7 +62,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           GameViewport(w.toInt, h.toInt)
 
         case _ =>
-          GameViewport(viewportWidth, viewportHeight)
+          GameViewport(SandboxGame.viewportWidth, SandboxGame.viewportHeight)
       }
 
     Outcome(
@@ -80,8 +70,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         GameConfig(
           viewport = gameViewport,
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
-          magnification = magnificationLevel
-        ),
+          magnification = SandboxGame.magnificationLevel
+        ).noResize,
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(
         SandboxAssets.assets ++
@@ -121,7 +111,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     println(bootData.message)
 
     val screenCenter: Point =
-      bootData.gameViewport.giveDimensions(magnificationLevel).center
+      bootData.gameViewport.giveDimensions(SandboxGame.magnificationLevel).center
 
     def makeStartupData(
         aseprite: Aseprite,
@@ -158,82 +148,15 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
     Outcome(SandboxModel.initialModel(startupData))
 
-  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] =
-    Outcome(
-      SandboxViewModel(
-        Point.zero,
-        true,
-        CaptureScreenScene.ViewModel(None, None, Point.zero)
-      )
-    )
-
   def updateModel(
       context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModel.updateModel(model)
-
-  def updateViewModel(
-      context: Context[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] = {
-    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
-      Outcome(viewModel.copy(useLightingLayer = false))
-
-    case FrameTick =>
-      val updateOffset: Point =
-        context.frame.input.gamepad.dpad match {
-          case GamepadDPad(true, _, _, _) =>
-            viewModel.offset + Point(0, -1)
-
-          case GamepadDPad(_, true, _, _) =>
-            viewModel.offset + Point(0, 1)
-
-          case GamepadDPad(_, _, true, _) =>
-            viewModel.offset + Point(-1, 0)
-
-          case GamepadDPad(_, _, _, true) =>
-            viewModel.offset + Point(1, 0)
-
-          case _ =>
-            viewModel.offset
-        }
-
-      Outcome(viewModel.copy(offset = updateOffset))
-
-    case FullScreenEntered =>
-      println("Entered full screen mode")
-      Outcome(viewModel)
-
-    case FullScreenExited =>
-      println("Exited full screen mode")
-      Outcome(viewModel)
-
-    case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.LoopNext)
-
-    case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.LoopPrevious)
-
-    case KeyboardEvent.KeyDown(Key.HOME) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.First)
-
-    case KeyboardEvent.KeyDown(Key.END) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.Last)
-
-    case _ =>
-      Outcome(viewModel)
-  }
+    SandboxModel.updateModel(context, model)
 
   def present(
       context: Context[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
@@ -246,6 +169,14 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
             .withMagnification(1)
       )
     )
+
+object SandboxGame:
+
+  val magnificationLevel: Int = 2
+  val gameWidth: Int          = 228
+  val gameHeight: Int         = 128
+  val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
+  val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
 final case class Dude(
     aseprite: Aseprite,

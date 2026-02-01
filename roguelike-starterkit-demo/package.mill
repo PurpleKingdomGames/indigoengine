@@ -36,5 +36,5 @@ object `package` extends Module:
     def moduleDeps =
       Seq(
         build.`roguelike-starterkit`.js,
-        build.`indigo-next`.js
+        build.`indigo`.js
       )

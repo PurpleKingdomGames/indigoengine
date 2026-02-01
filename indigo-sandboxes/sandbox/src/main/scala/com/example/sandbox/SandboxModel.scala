@@ -2,6 +2,7 @@ package com.example.sandbox
 
 import com.example.sandbox.scenes.ActorPhysicsSceneModel
 import com.example.sandbox.scenes.ActorSceneModel
+import com.example.sandbox.scenes.CaptureScreenScene
 import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
@@ -35,7 +36,8 @@ final case class SandboxGameModel(
     actorScene: ActorSceneModel,
     actorPhysicsScene: ActorPhysicsSceneModel,
     performerSceneModel: PerformerSceneModel,
-    performerPhysicsSceneModel: PerformerPhysicsSceneModel
+    performerPhysicsSceneModel: PerformerPhysicsSceneModel,
+    viewModel: SandboxViewModel
 )
 
 object SandboxModel {
@@ -72,7 +74,12 @@ object SandboxModel {
       ActorSceneModel.initial,
       ActorPhysicsSceneModel.initial,
       PerformerSceneModel.initial,
-      PerformerPhysicsSceneModel.initial
+      PerformerPhysicsSceneModel.initial,
+      SandboxViewModel(
+        Point.zero,
+        true,
+        CaptureScreenScene.ViewModel(None, None, Point.zero)
+      )
     )
 
   val customButton: Button[Int] =
@@ -340,11 +347,10 @@ object SandboxModel {
           .onDrag(Log("Dragging!"))
       )
 
-  def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
-    case rd @ RendererDetails(_, _, _) =>
-      println(rd)
-      Outcome(state)
-
+  def updateModel(
+      context: Context[SandboxStartupData],
+      state: SandboxGameModel
+  ): GlobalEvent => Outcome[SandboxGameModel] = {
     case FrameTick =>
       state.saveLoadPhase match {
         case SaveLoadPhases.NotStarted =>
@@ -443,8 +449,66 @@ object SandboxModel {
       println("Keys found: " + found)
       Outcome(state)
 
+    case e =>
+      updateViewModel(context, state.viewModel)(e).map: updated =>
+        state.copy(viewModel = updated)
+
+  }
+
+  private def updateViewModel(
+      context: Context[SandboxStartupData],
+      viewModel: SandboxViewModel
+  ): GlobalEvent => Outcome[SandboxViewModel] = {
+    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
+      Outcome(viewModel.copy(useLightingLayer = false))
+
+    case FrameTick =>
+      val updateOffset: Point =
+        context.frame.input.gamepad.dpad match {
+          case GamepadDPad(true, _, _, _) =>
+            viewModel.offset + Point(0, -1)
+
+          case GamepadDPad(_, true, _, _) =>
+            viewModel.offset + Point(0, 1)
+
+          case GamepadDPad(_, _, true, _) =>
+            viewModel.offset + Point(-1, 0)
+
+          case GamepadDPad(_, _, _, true) =>
+            viewModel.offset + Point(1, 0)
+
+          case _ =>
+            viewModel.offset
+        }
+
+      Outcome(viewModel.copy(offset = updateOffset))
+
+    case FullScreenEntered =>
+      println("Entered full screen mode")
+      Outcome(viewModel)
+
+    case FullScreenExited =>
+      println("Exited full screen mode")
+      Outcome(viewModel)
+
+    case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.LoopNext)
+
+    case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.LoopPrevious)
+
+    case KeyboardEvent.KeyDown(Key.HOME) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.First)
+
+    case KeyboardEvent.KeyDown(Key.END) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Last)
+
     case _ =>
-      Outcome(state)
+      Outcome(viewModel)
   }
 
 }

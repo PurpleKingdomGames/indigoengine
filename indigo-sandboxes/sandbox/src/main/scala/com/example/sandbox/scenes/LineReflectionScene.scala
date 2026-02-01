@@ -4,24 +4,19 @@ import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 
-object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = Radians
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = Radians
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, Radians] =
     Lens(_.rotation, (m, r) => m.copy(rotation = r))
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
-    Lens.keepOriginal
 
   def name: SceneName =
     SceneName("LineReflectionScene")
@@ -42,13 +37,6 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
     case _ =>
       Outcome(rotation)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      rotation: Radians,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   val vertexCirce =
     Shape.Circle(
       Point(0),
@@ -68,8 +56,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
 
   def present(
       context: SceneContext[SandboxStartupData],
-      rotation: Radians,
-      viewModel: SandboxViewModel
+      rotation: Radians
   ): Outcome[SceneUpdateFragment] =
 
     def makeVertex(offset: Double, radius: Double): Vertex =

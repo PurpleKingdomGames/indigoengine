@@ -1,6 +1,6 @@
 package demo
 
-import indigo.next.*
+import indigo.*
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
@@ -54,10 +54,11 @@ object RogueLikeApp extends App[AppModel]:
       )
     )
 
-  def extensions(model: AppModel): Set[Extension] =
+  def extensions(flags: Map[String, String], model: AppModel): Set[Extension] =
     Set(
       Indigo(
         ExtensionId("rogue game"),
+        flags,
         model.game,
         () => Option(document.getElementById(gameDivId)),
         AppMsg.Log("Game start success."),

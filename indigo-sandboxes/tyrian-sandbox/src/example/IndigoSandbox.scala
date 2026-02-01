@@ -97,19 +97,27 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
             val game1 =
               MyAwesomeGame(model.bridge.subSystem(gameId1), true)
 
+            val element1 = document.getElementById(gameDivId1)
+
             game1.launch(
-              gameDivId1,
-              "width"  -> "200",
-              "height" -> "200"
+              element1,
+              Map(
+                "width"  -> "200",
+                "height" -> "200"
+              )
             )
 
             val game2 =
               MyAwesomeGame(model.bridge.subSystem(gameId2), false)
 
+            val element2 = document.getElementById(gameDivId2)
+
             game2.launch(
-              gameDivId2,
-              "width"  -> "200",
-              "height" -> "200"
+              element2,
+              Map(
+                "width"  -> "200",
+                "height" -> "200"
+              )
             )
 
             Msg.RegisterGames(game1, game2)

@@ -5,25 +5,20 @@ import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import example.TestFont
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 
-object SfxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object SfxScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   val name: SceneName =
     SceneName("SfxScene scene")
 
   val modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -51,17 +46,9 @@ object SfxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewM
         model.copy(sfxComponents = cl)
       }
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     model.sfxComponents
       .present(UIContext(context.toContext, context.frame.globalMagnification))

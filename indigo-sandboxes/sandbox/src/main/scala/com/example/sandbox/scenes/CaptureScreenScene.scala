@@ -9,7 +9,6 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.core.assets.AssetTypePrimitive
 import indigo.platform.renderer.ScreenCaptureConfig
@@ -17,10 +16,9 @@ import indigo.scenegraph.Shape
 import indigo.scenegraph.Shape.Box
 import indigo.scenes.*
 
-object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = ViewModel
+  type SceneModel = SandboxGameModel
 
   val uiKey        = LayerKey("ui")
   val defaultKey   = LayerKey("default")
@@ -31,13 +29,11 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, ViewModel] =
-    Lens(
-      _.captureScreenScene,
-      (m, vm) => m.copy(captureScreenScene = vm)
-    )
+    Lens.keepLatest
+    // Lens(
+    //   _.viewModel.captureScreenScene,
+    //   (m, c) => m.copy(viewModel = m.viewModel.copy(captureScreenScene = c))
+    // )
 
   def name: SceneName =
     SceneName("captureScreen")
@@ -48,13 +44,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def updateModel(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
-  ): GlobalEvent => Outcome[SandboxGameModel] = _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: ViewModel
-  ): GlobalEvent => Outcome[ViewModel] = {
+  ): GlobalEvent => Outcome[SandboxGameModel] =
     case PointerEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
       val screenshots: Set[AssetType] =
         // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
@@ -80,23 +70,34 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       // Output each image data URL to the console
       screenshots.foreach(a => IndigoLogger.info(a.asInstanceOf[AssetType.Image].path.toString()))
 
-      Outcome(viewModel)
+      Outcome(model)
         .addGlobalEvents(
           AssetEvent.LoadAssetBatch(screenshots, BindingKey("captureScreen"), true)
         )
+
     case AssetEvent.AssetBatchLoaded(key, assets, loaded) if key == BindingKey("captureScreen") && loaded =>
-      (assets.headOption, assets.drop(1).headOption) match {
+      (assets.headOption, assets.drop(1).headOption) match
         case (Some(image1: AssetTypePrimitive), Some(image2: AssetTypePrimitive)) =>
-          Outcome(viewModel.copy(screenshot1 = Some(image1.name), screenshot2 = Some(image2.name)))
-        case _ => Outcome(viewModel)
-      }
-    case _ => Outcome(viewModel)
-  }
+          Outcome(
+            model.copy(
+              viewModel = model.viewModel.copy(
+                captureScreenScene = model.viewModel.captureScreenScene.copy(
+                  screenshot1 = Some(image1.name),
+                  screenshot2 = Some(image2.name)
+                )
+              )
+            )
+          )
+
+        case _ =>
+          Outcome(model)
+
+    case _ =>
+      Outcome(model)
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: ViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     val screenshotScale = 0.3
     val viewPort        = context.startUpData.gameViewport.size / SandboxGame.magnificationLevel
@@ -113,7 +114,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
           Batch(
             Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
             Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
-          ) ++ ((viewModel.screenshot1, viewModel.screenshot2) match {
+          ) ++ ((model.viewModel.captureScreenScene.screenshot1, model.viewModel.captureScreenScene.screenshot2) match {
             case (Some(image1), Some(image2)) =>
               Batch(
                 Graphic(
@@ -140,7 +141,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
             case _ => Batch.empty
           })
         ),
-        defaultKey -> Layer(gameLayer(model, viewModel))
+        defaultKey -> Layer(gameLayer(model, model.viewModel.captureScreenScene))
       )
     )
 

@@ -3,19 +3,15 @@ package example
 import indigo.*
 import indigo.scenes.*
 
-object LoadScene extends Scene[Unit, Model, Unit]:
+object LoadScene extends Scene[Unit, Model]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel = Unit
 
   val name: SceneName =
     SceneName("load")
 
   val modelLens: Lens[Model, Unit] =
     Lens.unit
-
-  val viewModelLens: Lens[Unit, Unit] =
-    Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
@@ -34,17 +30,9 @@ object LoadScene extends Scene[Unit, Model, Unit]:
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
+      model: Unit
   ): Outcome[SceneUpdateFragment] =
     val tb =
       Text(

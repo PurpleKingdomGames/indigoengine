@@ -4,7 +4,7 @@ import demo.Assets
 import demo.Constants
 import demo.models.GameModel
 import demo.windows.ColourWindow
-import indigo.next.*
+import indigo.*
 import indigoextras.ui.*
 import roguelikestarterkit.*
 

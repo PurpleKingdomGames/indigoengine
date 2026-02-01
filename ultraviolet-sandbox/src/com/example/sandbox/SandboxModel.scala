@@ -8,16 +8,17 @@ object SandboxModel {
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),
       SaveLoadPhases.NotStarted,
-      None
+      None,
+      SandboxViewModel(
+        Point.zero,
+        true
+      )
     )
 
   def updateModel(
+      context: Context[SandboxStartupData],
       state: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] = {
-    case rd @ RendererDetails(_, _, _) =>
-      println(rd)
-      Outcome(state)
-
     case FrameTick =>
       state.saveLoadPhase match {
         case SaveLoadPhases.NotStarted =>
@@ -102,8 +103,59 @@ object SandboxModel {
     case Loaded(_, loadedData) =>
       Outcome(state.copy(data = loadedData))
 
+    case e =>
+      updateViewModel(context, state.viewModel)(e).map { updated =>
+        state.copy(viewModel = updated)
+      }
+
+  }
+
+  private def updateViewModel(
+      context: Context[SandboxStartupData],
+      viewModel: SandboxViewModel
+  ): GlobalEvent => Outcome[SandboxViewModel] = {
+    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
+      Outcome(viewModel.copy(useLightingLayer = false))
+
+    case FrameTick =>
+      val updateOffset: Point =
+        context.frame.input.gamepad.dpad match {
+          case GamepadDPad(true, _, _, _) =>
+            viewModel.offset + Point(0, -1)
+
+          case GamepadDPad(_, true, _, _) =>
+            viewModel.offset + Point(0, 1)
+
+          case GamepadDPad(_, _, true, _) =>
+            viewModel.offset + Point(-1, 0)
+
+          case GamepadDPad(_, _, _, true) =>
+            viewModel.offset + Point(1, 0)
+
+          case _ =>
+            viewModel.offset
+        }
+
+      Outcome(viewModel.copy(offset = updateOffset))
+
+    case FullScreenEntered =>
+      println("Entered full screen mode")
+      Outcome(viewModel)
+
+    case FullScreenExited =>
+      println("Exited full screen mode")
+      Outcome(viewModel)
+
+    case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Next)
+
+    case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Previous)
+
     case _ =>
-      Outcome(state)
+      Outcome(viewModel)
   }
 
 }
@@ -111,7 +163,8 @@ object SandboxModel {
 final case class SandboxGameModel(
     dude: DudeModel,
     saveLoadPhase: SaveLoadPhases,
-    data: Option[String]
+    data: Option[String],
+    viewModel: SandboxViewModel
 )
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {

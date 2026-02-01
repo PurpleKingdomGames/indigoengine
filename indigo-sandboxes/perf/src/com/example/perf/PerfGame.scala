@@ -4,42 +4,32 @@ import indigo.*
 import indigo.json.Json
 import indigoextras.subsystems.FPSCounter
 
-import scala.scalajs.js.annotation.*
-
-@JSExportTopLevel("IndigoGame")
-object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
-
-  val viewportWidth: Int      = 800
-  val viewportHeight: Int     = 600
-  val magnificationLevel: Int = 1
+final class PerfGame extends Game[Unit, Dude, DudeModel] {
 
   val eventFilters: EventFilters =
-    EventFilters(
-      {
-        case e: FrameTick =>
-          Some(e)
+    EventFilters {
+      case e: FrameTick =>
+        Some(e)
 
-        case e: KeyboardEvent.KeyDown =>
-          Some(e)
+      case e: KeyboardEvent.KeyDown =>
+        Some(e)
 
-        case e: KeyboardEvent.KeyUp =>
-          Some(e)
+      case e: KeyboardEvent.KeyUp =>
+        Some(e)
 
-        case _ =>
-          None
-      },
-      _ => None
-    )
+      case _ =>
+        None
+    }
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit, DudeModel]] =
     Outcome {
       BootResult
         .noData(
           GameConfig(
-            viewport = GameViewport(viewportWidth, viewportHeight),
+            viewport = GameViewport(PerfGame.viewportWidth, PerfGame.viewportHeight),
             frameRateLimit = None,
             clearColor = RGBA(0.4, 0.2, 0.5, 1),
-            magnification = magnificationLevel,
+            magnification = PerfGame.magnificationLevel,
             resizePolicy = ResizePolicy.NoResize,
             transparentBackground = false,
             advanced = AdvancedGameConfig.default
@@ -47,7 +37,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
               .withBatchSize(512)
               .withAutoLoadStandardShaders(false)
               .withContextMenu
-          )
+          ).noResize
         )
         .withAssets(PerfAssets.assets)
         .withFonts(Fonts.fontInfo)
@@ -63,11 +53,14 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         )
     }
 
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Dude, DudeModel]] =
+    NonEmptyBatch(Scene.empty)
+
+  def initialScene(bootData: Unit): Option[SceneName] =
+    None
+
   def initialModel(startupData: Dude): Outcome[DudeModel] =
     Outcome(PerfModel.initialModel(startupData))
-
-  def initialViewModel(startupData: Dude, model: DudeModel): Outcome[Unit] =
-    Outcome(())
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Dude]] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[Dude] =
@@ -78,8 +71,8 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
             spriteAndAnimations.sprite
               .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
               .moveTo(
-                viewportWidth / 2 / magnificationLevel,
-                viewportHeight / 2 / magnificationLevel
+                PerfGame.viewportWidth / 2 / PerfGame.magnificationLevel,
+                PerfGame.viewportHeight / 2 / PerfGame.magnificationLevel
               ) // Also place him in the middle of the screen initially
           )
         )
@@ -97,12 +90,15 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
   def updateModel(context: Context[Dude], model: DudeModel): GlobalEvent => Outcome[DudeModel] =
     PerfModel.updateModel(model)
 
-  def updateViewModel(context: Context[Dude], model: DudeModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
-  def present(context: Context[Dude], model: DudeModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: Context[Dude], model: DudeModel): Outcome[SceneUpdateFragment] =
     Outcome(PerfView.updateView(model))
 
 }
+
+object PerfGame:
+
+  val viewportWidth: Int      = 800
+  val viewportHeight: Int     = 600
+  val magnificationLevel: Int = 1
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite[?])

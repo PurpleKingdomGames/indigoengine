@@ -22,23 +22,20 @@ import indigoengine.shared.datatypes.Millis
 import scala.annotation.nowarn
 import scala.collection.mutable
 
-final class GameLoop[StartUpData, GameModel, ViewModel](
+final class GameLoop[StartUpData, GameModel](
     rebuildGameLoop: AssetCollection => Unit,
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
-    gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
+    gameEngine: GameEngine[StartUpData, GameModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
-    initialViewModel: ViewModel,
-    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+    frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
     renderer: => Renderer
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _gameModelState: GameModel = initialModel
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var _viewModelState: ViewModel = initialViewModel
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _runningTimeReference: Double = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -59,7 +56,6 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     Context.Services(boundaryLocator, _randomInstance, renderer.captureScreen)
 
   def gameModelState: GameModel    = _gameModelState
-  def viewModelState: ViewModel    = _viewModelState
   def runningTimeReference: Double = _runningTimeReference
   def lock(): Unit                 = _frameLocked = true
   def unlock(): Unit               = _frameLocked = false
@@ -137,10 +133,9 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
       )
 
     // Run the frame processor
-    val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
+    val processedFrame: Outcome[(GameModel, SceneUpdateFragment)] =
       frameProcessor.run(
         _gameModelState,
-        _viewModelState,
         events,
         context
       )
@@ -153,9 +148,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
           IndigoLogger.error(oe.reportCrash)
           throw e
 
-        case Outcome.Result((gameModel, viewModel, sceneUpdateFragment), globalEvents) =>
+        case Outcome.Result((gameModel, sceneUpdateFragment), globalEvents) =>
           _gameModelState = gameModel
-          _viewModelState = viewModel
 
           globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
