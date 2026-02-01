@@ -11,7 +11,7 @@ import indigoextras.actors.*
 
 object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = ActorPhysicsSceneModel
+  type SceneModel = ActorPhysicsSceneModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive

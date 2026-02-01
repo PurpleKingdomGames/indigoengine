@@ -30,10 +30,6 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepLatest
-    // Lens(
-    //   _.viewModel.captureScreenScene,
-    //   (m, c) => m.copy(viewModel = m.viewModel.copy(captureScreenScene = c))
-    // )
 
   def name: SceneName =
     SceneName("captureScreen")
@@ -80,11 +76,9 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
         case (Some(image1: AssetTypePrimitive), Some(image2: AssetTypePrimitive)) =>
           Outcome(
             model.copy(
-              viewModel = model.viewModel.copy(
-                captureScreenScene = model.viewModel.captureScreenScene.copy(
-                  screenshot1 = Some(image1.name),
-                  screenshot2 = Some(image2.name)
-                )
+              captureScreenScene = model.captureScreenScene.copy(
+                screenshot1 = Some(image1.name),
+                screenshot2 = Some(image2.name)
               )
             )
           )
@@ -114,7 +108,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
           Batch(
             Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
             Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
-          ) ++ ((model.viewModel.captureScreenScene.screenshot1, model.viewModel.captureScreenScene.screenshot2) match {
+          ) ++ ((model.captureScreenScene.screenshot1, model.captureScreenScene.screenshot2) match {
             case (Some(image1), Some(image2)) =>
               Batch(
                 Graphic(
@@ -141,11 +135,11 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
             case _ => Batch.empty
           })
         ),
-        defaultKey -> Layer(gameLayer(model, model.viewModel.captureScreenScene))
+        defaultKey -> Layer(gameLayer(model, model.captureScreenScene))
       )
     )
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: ViewModel): Batch[SceneNode] =
+  def gameLayer(currentState: SandboxGameModel, model: Model): Batch[SceneNode] =
     Batch(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -175,7 +169,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
       },
       currentState.dude.dude.sprite
         .moveBy(8, 10)
-        .moveBy(viewModel.offset)
+        .moveBy(model.offset)
         .modifyMaterial(
           _.withAlpha(1)
             .withTint(RGBA.Green.withAmount(0.25))
@@ -187,7 +181,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
-  final case class ViewModel(
+  final case class Model(
       screenshot1: Option[AssetName],
       screenshot2: Option[AssetName],
       offset: Point

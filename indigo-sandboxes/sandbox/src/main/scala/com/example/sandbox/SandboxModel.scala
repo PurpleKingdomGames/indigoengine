@@ -37,7 +37,8 @@ final case class SandboxGameModel(
     actorPhysicsScene: ActorPhysicsSceneModel,
     performerSceneModel: PerformerSceneModel,
     performerPhysicsSceneModel: PerformerPhysicsSceneModel,
-    viewModel: SandboxViewModel
+    viewModel: SandboxViewModel,
+    captureScreenScene: CaptureScreenScene.Model
 )
 
 object SandboxModel {
@@ -77,9 +78,9 @@ object SandboxModel {
       PerformerPhysicsSceneModel.initial,
       SandboxViewModel(
         Point.zero,
-        true,
-        CaptureScreenScene.ViewModel(None, None, Point.zero)
-      )
+        true
+      ),
+      CaptureScreenScene.Model(None, None, Point.zero)
     )
 
   val customButton: Button[Int] =

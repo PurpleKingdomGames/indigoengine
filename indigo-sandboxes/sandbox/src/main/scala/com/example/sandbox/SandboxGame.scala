@@ -187,8 +187,7 @@ final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point, gameViewport: GameViewport)
 final case class SandboxViewModel(
     offset: Point,
-    useLightingLayer: Boolean,
-    captureScreenScene: CaptureScreenScene.ViewModel
+    useLightingLayer: Boolean
 )
 
 final case class Log(message: String) extends GlobalEvent
