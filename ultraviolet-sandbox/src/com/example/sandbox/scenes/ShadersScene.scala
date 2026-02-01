@@ -2,23 +2,18 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.scenes.*
 
-object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel] {
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepOriginal
 
   def name: SceneName =
@@ -33,17 +28,9 @@ object ShadersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

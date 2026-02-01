@@ -2,7 +2,7 @@ package demo
 
 import demo.models.*
 import demo.scenes.*
-import indigo.next.*
+import indigo.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 

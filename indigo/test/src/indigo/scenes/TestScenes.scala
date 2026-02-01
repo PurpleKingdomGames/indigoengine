@@ -17,20 +17,13 @@ object TestScenes {
 }
 
 final case class TestGameModel(sceneA: TestSceneModelA, sceneB: TestSceneModelB)
-final case class TestViewModel(sceneA: TestSceneViewModelA, sceneB: TestSceneViewModelB)
 
-final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel, TestViewModel] {
+final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel] {
   type SceneModel     = TestSceneModelA
-  type SceneViewModel = TestSceneViewModelA
 
   val name: SceneName = SceneName(id)
 
   val modelLens: Lens[TestGameModel, TestSceneModelA] =
-    Lens(
-      m => m.sceneA,
-      (m, mm) => m.copy(sceneA = mm)
-    )
-  val viewModelLens: Lens[TestViewModel, TestSceneViewModelA] =
     Lens(
       m => m.sceneA,
       (m, mm) => m.copy(sceneA = mm)
@@ -44,18 +37,9 @@ final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel, TestV
     case e               => Some(e)
   }
 
-  private val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
-    case TestSceneEvent1 => None
-    case TestSceneEvent2 => Some(TestSceneEvent2)
-    case TestSceneEvent3 => None
-    case TestSceneEvent4 => None
-    case e               => Some(e)
-  }
-
   val eventFilters: EventFilters =
     EventFilters(
-      modelEventFilter,
-      viewModelEventFilter
+      modelEventFilter
     )
 
   val subSystems: Set[SubSystem[TestGameModel]] = Set()
@@ -65,37 +49,21 @@ final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel, TestV
       // println(s"A - before: ${sceneModel.count}, after: ${sceneModel.count + 1}")
       Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateViewModel(
-      context: SceneContext[Unit],
-      sceneModel: TestSceneModelA,
-      sceneViewModel: TestSceneViewModelA
-  ): GlobalEvent => Outcome[TestSceneViewModelA] =
-    _ => Outcome(TestSceneViewModelA())
-
   def present(
       context: SceneContext[Unit],
-      sceneModel: TestSceneModelA,
-      sceneViewModel: TestSceneViewModelA
+      sceneModel: TestSceneModelA
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 
 final case class TestSceneModelA(count: Int)
-final case class TestSceneViewModelA()
 
-final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel, TestViewModel] {
+final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel] {
   type SceneModel     = TestSceneModelB
-  type SceneViewModel = TestSceneViewModelB
 
   val name: SceneName = SceneName(id)
 
   val modelLens: Lens[TestGameModel, TestSceneModelB] =
-    Lens(
-      m => m.sceneB,
-      (m, mm) => m.copy(sceneB = mm)
-    )
-
-  val viewModelLens: Lens[TestViewModel, TestSceneViewModelB] =
     Lens(
       m => m.sceneB,
       (m, mm) => m.copy(sceneB = mm)
@@ -109,18 +77,9 @@ final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel, TestV
     case e               => Some(e)
   }
 
-  private val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
-    case TestSceneEvent1 => Some(TestSceneEvent1)
-    case TestSceneEvent2 => None
-    case TestSceneEvent3 => None
-    case TestSceneEvent4 => Some(TestSceneEvent4)
-    case e               => Some(e)
-  }
-
   val eventFilters: EventFilters =
     EventFilters(
-      modelEventFilter,
-      viewModelEventFilter
+      modelEventFilter
     )
 
   val subSystems: Set[SubSystem[TestGameModel]] = Set()
@@ -130,23 +89,14 @@ final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel, TestV
       // println(s"B - before: ${sceneModel.count}, after: ${sceneModel.count + 10}")
       Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateViewModel(
-      context: SceneContext[Unit],
-      sceneModel: TestSceneModelB,
-      sceneViewModel: TestSceneViewModelB
-  ): GlobalEvent => Outcome[TestSceneViewModelB] =
-    _ => Outcome(TestSceneViewModelB())
-
   def present(
       context: SceneContext[Unit],
-      sceneModel: TestSceneModelB,
-      sceneViewModel: TestSceneViewModelB
+      sceneModel: TestSceneModelB
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 
 final case class TestSceneModelB(count: Int)
-final case class TestSceneViewModelB()
 
 case object TestSceneEvent1 extends GlobalEvent
 case object TestSceneEvent2 extends GlobalEvent

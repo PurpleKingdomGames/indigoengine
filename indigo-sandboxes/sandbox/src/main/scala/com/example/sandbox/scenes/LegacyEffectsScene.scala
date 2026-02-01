@@ -3,7 +3,6 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigoextras.effectmaterials.Border
@@ -11,18 +10,14 @@ import indigoextras.effectmaterials.Glow
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Thickness
 
-object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel] {
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepOriginal
 
   def name: SceneName =
@@ -37,21 +32,13 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   val graphic: Graphic[LegacyEffects] =
     Graphic(Rectangle(0, 0, 40, 40), SandboxAssets.junctionBoxEffectsMaterial)
       .withRef(20, 20)
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] = {
     val viewCenter: Point = context.startUpData.viewportCenter + Point(0, -25)
 

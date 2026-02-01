@@ -4,25 +4,20 @@ import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 
-object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
   val spawnCount: Int = 600
 
-  type SceneModel     = ConfettiModel
-  type SceneViewModel = Unit
+  type SceneModel = ConfettiModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, ConfettiModel] =
     Lens(_.confetti, (m, c) => m.copy(confetti = c))
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("confetti")
@@ -51,13 +46,6 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: ConfettiModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   val cloneId: CloneId = CloneId("dots")
 
   val cloneBlanks: Batch[CloneBlank] =
@@ -85,8 +73,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: ConfettiModel,
-      viewModel: Unit
+      model: ConfettiModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

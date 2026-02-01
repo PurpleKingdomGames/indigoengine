@@ -3,16 +3,14 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.performers.*
 
-object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = PerformerSceneModel
-  type SceneViewModel = Unit
+  type SceneModel = PerformerSceneModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
@@ -22,9 +20,6 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
       model => model.performerSceneModel,
       (model, sceneModel) => model.copy(performerSceneModel = sceneModel)
     )
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("performer scene")
@@ -79,17 +74,9 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: PerformerSceneModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: PerformerSceneModel,
-      viewModel: Unit
+      model: PerformerSceneModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

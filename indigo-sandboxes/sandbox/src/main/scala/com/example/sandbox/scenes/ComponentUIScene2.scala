@@ -5,25 +5,20 @@ import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 
-object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   val name: SceneName =
     SceneName("ComponentUI scene 2")
 
   val modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -54,18 +49,9 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, San
         b <- model.button.update(ctx.moveParentTo(10, 10))(e)
       } yield model.copy(button = b, scrollPane = s)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    case _ =>
-      Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
 
     val ctx =
