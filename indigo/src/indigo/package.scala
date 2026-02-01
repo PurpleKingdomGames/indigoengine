@@ -673,6 +673,39 @@ object aliases:
   type QuadTreeValue[S, T] = indigo.core.trees.QuadTreeValue[S, T]
   val QuadTreeValue: indigo.core.trees.QuadTreeValue.type = indigo.core.trees.QuadTreeValue
 
+  // type BootResult[BootData, Model] = indigo.BootResult[BootData, Model]
+  // val BootResult: indigo.BootResult.type = indigo.BootResult
+
+  // Bridge
+
+  type BridgeData = bridge.BridgeData
+
+  type BridgeEvent = bridge.BridgeEvent
+  val BridgeEvent: bridge.BridgeEvent.type = bridge.BridgeEvent
+
+  type BridgeMsg = bridge.BridgeMsg
+  val BridgeMsg: bridge.BridgeMsg.type = bridge.BridgeMsg
+
+  // Scenes
+
+  type Scene[StartUpData, GameModel] = indigo.scenes.Scene[StartUpData, GameModel]
+  val Scene: indigo.scenes.Scene.type = indigo.scenes.Scene
+
+  type SceneName = indigo.scenes.SceneName
+  val SceneName: indigo.scenes.SceneName.type = indigo.scenes.SceneName
+
+  type SceneContext[StartupData] = indigo.scenes.SceneContext[StartupData]
+  val SceneContext: indigo.scenes.SceneContext.type = indigo.scenes.SceneContext
+
+  type SceneEvent = indigo.scenes.SceneEvent
+  val SceneEvent: indigo.scenes.SceneEvent.type = indigo.scenes.SceneEvent
+
+  type SceneFinder = indigo.scenes.SceneFinder
+  val SceneFinder: indigo.scenes.SceneFinder.type = indigo.scenes.SceneFinder
+
+  type SceneManager[StartUpData, GameModel] = indigo.scenes.SceneManager[StartUpData, GameModel]
+  val SceneManager: indigo.scenes.SceneManager.type = indigo.scenes.SceneManager
+
 end aliases
 
 export aliases.*

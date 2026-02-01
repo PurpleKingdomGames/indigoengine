@@ -1,35 +1,24 @@
 package indigo.core.events
 
-/** EventFilter's control which events will be processed by your model or view model. You can think of event filters
-  * like a firewall for events, that only permit the wanted events into the model and view model update functions to
-  * avoid conflicts, duplicate, and needless work.
+/** EventFilter's control which events will be processed by your model. You can think of event filters like a firewall
+  * for events, that only permit the wanted events into the model and view model update functions to avoid conflicts,
+  * duplicate, and needless work.
   *
   * Events are filtered by mapping from a specific event to an optional event.
   *
   * Although the name says "filter", the action is really filter and map, since there is no requirement to maintain the
   * original event as the resultant event. For example, you could map `FrameTick` to `CustomEvents.Update` if it make
   * more sense in your domain model.
-  *
-  * @param modelFilter
-  *   The filter map for the events going into model update
-  * @param viewModelFilter
-  *   The filter map for the events going into view model update
   */
 final case class EventFilters(
-    modelFilter: GlobalEvent => Option[GlobalEvent],
-    viewModelFilter: GlobalEvent => Option[GlobalEvent]
-) derives CanEqual {
+    modelFilter: GlobalEvent => Option[GlobalEvent]
+) derives CanEqual:
 
   /** Modify the existing model event filter.
     */
   def withModelFilter(filter: GlobalEvent => Option[GlobalEvent]): EventFilters =
     this.copy(modelFilter = filter)
 
-  /** Modify the existing view model event filter.
-    */
-  def withViewModelFilter(filter: GlobalEvent => Option[GlobalEvent]): EventFilters =
-    this.copy(viewModelFilter = filter)
-}
 object EventFilters {
   private def fromAccessControl(ac: AccessControl): GlobalEvent => Option[GlobalEvent] = {
     case FrameTick              => Option.when(ac.allowFrameTick)(FrameTick)
@@ -51,50 +40,33 @@ object EventFilters {
     *
     * @param model
     *   An AccessControl instance defining what type of events can reach the model update function.
-    * @param viewModel
-    *   An AccessControl instance defining what type of events can reach the view model update function.
     */
-  def withAccessControl(model: AccessControl, viewModel: AccessControl): EventFilters =
-    EventFilters(fromAccessControl(model), fromAccessControl(viewModel))
+  def withAccessControl(model: AccessControl): EventFilters =
+    EventFilters(fromAccessControl(model))
 
   /** Allow all events to model and view model. This is likely not the desired effect since your game will hear about
     * events intended for things like subsystems, and do unnecessary processing.
     */
   val AllowAll: EventFilters =
-    EventFilters(
-      (e: GlobalEvent) => Some(e),
-      (e: GlobalEvent) => Some(e)
-    )
+    EventFilters((e: GlobalEvent) => Some(e))
 
   /** Block all events to model and view model. This is likely not the effect you want since your game will not hear
     * about any events at all. However, one use case is a game with scenes where no global processing is required.
     */
   val BlockAll: EventFilters =
-    EventFilters(
-      { case _: GlobalEvent => None },
-      { case _: GlobalEvent => None }
-    )
+    EventFilters { case _: GlobalEvent => None }
 
   /** Model and view model receive all events _apart_ from messages intended for subsystems. Inefficient, but easy to
     * develop against since you can listen for anything anywhere.
     */
   val Permissive: EventFilters =
-    EventFilters(
-      {
-        case _: SubSystemEvent =>
-          None
+    EventFilters {
+      case _: SubSystemEvent =>
+        None
 
-        case e =>
-          Some(e)
-      },
-      {
-        case _: SubSystemEvent =>
-          None
-
-        case e =>
-          Some(e)
-      }
-    )
+      case e =>
+        Some(e)
+    }
 
   /** The model receives all events that are not subsystem and view specific events. The view model only receives view
     * events and the frametick.
@@ -103,49 +75,28 @@ object EventFilters {
     * particularly since custom events are not handed off to the view model.
     */
   val Restricted: EventFilters =
-    EventFilters(
-      {
-        case _: SubSystemEvent =>
-          None
+    EventFilters {
+      case _: SubSystemEvent =>
+        None
 
-        case _: ViewEvent =>
-          None
+      case _: ViewEvent =>
+        None
 
-        case e =>
-          Some(e)
-      },
-      {
-        case e: ViewEvent =>
-          Some(e)
-
-        case FrameTick =>
-          Some(FrameTick)
-
-        case _ =>
-          None
-      }
-    )
+      case e =>
+        Some(e)
+    }
 
   /** Block all events to model and view model. Useful for games that only require a frame tick to update and, for
     * example, process input via input mapping rather than events.
     */
   val FrameTickOnly: EventFilters =
-    EventFilters(
-      {
-        case FrameTick =>
-          Some(FrameTick)
+    EventFilters {
+      case FrameTick =>
+        Some(FrameTick)
 
-        case _ =>
-          None
-      },
-      {
-        case FrameTick =>
-          Some(FrameTick)
-
-        case _ =>
-          None
-      }
-    )
+      case _ =>
+        None
+    }
 
 }
 

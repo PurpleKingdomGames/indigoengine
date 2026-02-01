@@ -4,24 +4,19 @@ import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import example.TestFont
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 
-object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   val name: SceneName =
     SceneName("WindowsScene")
 
   val modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -82,17 +77,9 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

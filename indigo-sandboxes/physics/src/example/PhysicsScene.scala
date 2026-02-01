@@ -2,21 +2,16 @@ package example
 
 import indigo.*
 import indigo.physics.*
-import indigo.scenes.*
 
-trait PhysicsScene extends Scene[Unit, Model, Unit]:
+trait PhysicsScene extends Scene[Unit, Model]:
 
   def world(dice: Dice): World[MyTag]
 
-  type SceneModel     = World[MyTag]
-  type SceneViewModel = Unit
+  type SceneModel = World[MyTag]
 
   val name: SceneName
 
   val modelLens: Lens[Model, World[MyTag]]
-
-  val viewModelLens: Lens[Unit, Unit] =
-    Lens.keepLatest
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
@@ -34,16 +29,8 @@ trait PhysicsScene extends Scene[Unit, Model, Unit]:
     case _ =>
       Outcome(world)
 
-  def updateViewModel(
-      context: SceneContext[Unit],
-      world: World[MyTag],
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Unit],
-      world: World[MyTag],
-      viewModel: Unit
+      world: World[MyTag]
   ): Outcome[SceneUpdateFragment] =
     View.present(world)

@@ -2,7 +2,7 @@ package demo.scenes
 
 import demo.Assets
 import demo.models.GameModel
-import indigo.next.*
+import indigo.*
 import roguelikestarterkit.*
 
 object LightingScene extends Scene[Size, GameModel]:

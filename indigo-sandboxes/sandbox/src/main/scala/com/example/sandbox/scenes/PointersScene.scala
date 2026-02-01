@@ -4,7 +4,6 @@ import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import org.scalajs.dom
@@ -12,23 +11,19 @@ import org.scalajs.dom
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
-object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
   // disabling default browser touch actions
   val style = dom.document.createElement("style")
   style.innerHTML = "canvas { touch-action: none }"
   dom.document.head.appendChild(style)
 
-  type SceneModel     = PointersModel
-  type SceneViewModel = Unit
+  type SceneModel = PointersModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, PointersModel] =
     Lens(_.pointers, (m, p) => m.copy(pointers = p))
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("pointers")
@@ -54,21 +49,13 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
     case _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: PointersModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
   val globalMagnificationLevel = 2
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: PointersModel,
-      viewModel: Unit
+      model: PointersModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
