@@ -10,7 +10,7 @@ object `package` extends MillBuildRootModule:
 
   // Must be the same Scala version as the one Mill uses,
   // for the Mill api libs to be available.
-  def scalaVersion = "3.8.0"
+  def scalaVersion = "3.8.1"
 
   def indigoPluginSources = Task.Sources(
     BuildCtx.workspaceRoot / "indigo-plugin" / "src"
