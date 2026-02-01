@@ -319,7 +319,7 @@ object Game:
         )
           .withShaders(
             shader,
-            SceneBlendShader.shader
+            ShaderToy.SceneBlendShader.shader
           )
           .withAssets(assets ++ channelAssets)
       )
@@ -367,7 +367,7 @@ object Game:
                 model.channel3
               )
             )
-          ).withBlendMaterial(SceneBlendShader.material)
+          ).withBlendMaterial(ShaderToy.SceneBlendShader.material)
         )
       )
 
