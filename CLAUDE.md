@@ -16,6 +16,8 @@ This is a **Mill** build. The `./mill` script in the root is the Mill launcher (
 
 **Windows:** Use `.\mill.bat` instead of `./mill` for all commands.
 
+**Windows (Claude Code):** Run Mill via PowerShell: `powershell.exe -Command "& { .\mill.bat <target> }"`
+
 ### ⚠️ Target Specific Modules - Avoid Wasting Time
 
 **IMPORTANT:** This is a large monorepo with many modules. **Always target compilation and builds to the specific modules you're working on** rather than using general commands like `__.compile`.
