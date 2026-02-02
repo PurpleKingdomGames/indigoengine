@@ -6,7 +6,7 @@ import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-final class ShaderGame() extends Game.ShaderToy:
+final class ShaderGame() extends Game.ShaderPlayground:
 
   val config: GameConfig          = GameConfig.default.withFrameRateLimit(FPS.`60`).noResize
   val assets: Set[AssetType]      = SeascapeShader.assets
