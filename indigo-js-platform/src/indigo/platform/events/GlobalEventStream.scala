@@ -8,14 +8,14 @@ import indigo.core.events.NetworkSendEvent
 import indigo.core.events.PlaySound
 import indigo.core.events.StorageEvent
 import indigo.core.events.ToggleFullScreen
+import indigo.core.networking.HttpRequest
+import indigo.core.networking.WebSocketEvent
 import indigo.platform.api.PlatformFullScreen
 import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http
 import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
-import indigo.core.networking.HttpRequest
-import indigo.core.networking.WebSocketEvent
 import indigoengine.shared.collections.Batch
 
 import scala.collection.mutable

@@ -12,9 +12,11 @@ import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.events.ViewportResize
 import indigo.core.utils.QuickCache
 import indigo.facades.WebGL2RenderingContext
+import indigo.platform.api.renderer.ProcessedSceneData
+import indigo.platform.api.renderer.RendererConfig
+import indigo.platform.api.renderer.ScreenCaptureConfig
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
-import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -25,8 +27,6 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.scenegraph.Blend
 import indigo.scenegraph.BlendFactor
 import indigo.shaders.RawShaderCode
-import indigo.shared.platform.ProcessedSceneData
-import indigo.shared.platform.RendererConfig
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Radians

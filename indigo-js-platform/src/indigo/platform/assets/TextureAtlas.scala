@@ -3,9 +3,9 @@ package indigo.platform.assets
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetTag
 import indigo.core.datatypes.Point
+import indigo.core.datatypes.PowerOfTwo
 import indigo.core.utils.IndigoLogger
 import indigo.platform.api.AtlasId
-import indigo.core.datatypes.PowerOfTwo
 import org.scalajs.dom
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html

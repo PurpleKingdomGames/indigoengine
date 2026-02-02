@@ -3,12 +3,13 @@ package indigo.platform.renderer
 import indigo.core.assets.AssetType
 import indigo.core.config.RenderingTechnology
 import indigo.core.datatypes.mutable.CheapMatrix4
+import indigo.platform.api.renderer.ProcessedSceneData
+import indigo.platform.api.renderer.ScreenCaptureConfig
 import indigo.shaders.RawShaderCode
-import indigo.shared.platform.ProcessedSceneData
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
-trait Renderer:
+trait Renderer extends indigo.platform.api.renderer.Renderer:
   def renderingTechnology: RenderingTechnology
   def screenWidth: Int
   def screenHeight: Int

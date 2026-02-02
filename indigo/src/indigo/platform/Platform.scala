@@ -9,21 +9,21 @@ import indigo.core.events.FullScreenEntered
 import indigo.core.events.FullScreenExitError
 import indigo.core.events.FullScreenExited
 import indigo.core.utils.IndigoLogger
-import indigo.platform.assets.AssetCollection
+import indigo.platform.api.AssetMapping
 import indigo.platform.api.AtlasId
+import indigo.platform.api.TextureRefAndOffset
+import indigo.platform.api.renderer.Renderer
+import indigo.platform.api.renderer.RendererConfig
+import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.events.WorldEvents
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.platform.api.renderer.Renderer
 import indigo.platform.renderer.RendererInitialiser
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
-import indigo.platform.api.AssetMapping
-import indigo.platform.api.TextureRefAndOffset
-import indigo.platform.api.renderer.RendererConfig
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas
@@ -195,10 +195,4 @@ class Platform(
       case Failure(_) =>
         globalEventStream.pushGlobalEvent(FullScreenExitError)
     }
-}
-
-trait PlatformFullScreen {
-  def toggleFullScreen(): Unit
-  def enterFullScreen(): Unit
-  def exitFullScreen(): Unit
 }

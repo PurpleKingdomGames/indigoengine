@@ -2,11 +2,11 @@ package indigo.platform.renderer.webgl2
 
 import indigo.StandardShaders
 import indigo.facades.WebGL2RenderingContext
+import indigo.platform.api.display.DisplayObjectUniformData
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shaders.ShaderId
-import indigo.shared.display.DisplayObjectUniformData
 import indigoengine.shared.datatypes.RGBA
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram

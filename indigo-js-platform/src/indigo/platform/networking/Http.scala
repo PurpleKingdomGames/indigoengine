@@ -1,9 +1,9 @@
 package indigo.platform.networking
 
-import indigo.platform.events.GlobalEventStream
 import indigo.core.networking.HttpReceiveEvent.HttpError
 import indigo.core.networking.HttpReceiveEvent.HttpResponse
 import indigo.core.networking.HttpRequest
+import indigo.platform.events.GlobalEventStream
 import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
 

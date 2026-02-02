@@ -14,6 +14,18 @@ import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.core.utils.QuickCache
+import indigo.platform.api.AssetMapping
+import indigo.platform.api.TextureRefAndOffset
+import indigo.platform.api.display.DisplayCloneBatch
+import indigo.platform.api.display.DisplayCloneTiles
+import indigo.platform.api.display.DisplayEntity
+import indigo.platform.api.display.DisplayGroup
+import indigo.platform.api.display.DisplayMutants
+import indigo.platform.api.display.DisplayObject
+import indigo.platform.api.display.DisplayObjectUniformData
+import indigo.platform.api.display.DisplayTextLetters
+import indigo.platform.api.display.SpriteSheetFrame
+import indigo.platform.api.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.scenegraph.CloneBatch
 import indigo.scenegraph.CloneId
 import indigo.scenegraph.CloneTileData
@@ -36,18 +48,6 @@ import indigo.shaders.ShaderData
 import indigo.shaders.ShaderPrimitive
 import indigo.shaders.Uniform
 import indigo.shaders.UniformBlock
-import indigo.platform.api.AssetMapping
-import indigo.platform.api.TextureRefAndOffset
-import indigo.platform.api.display.DisplayCloneBatch
-import indigo.platform.api.display.DisplayCloneTiles
-import indigo.platform.api.display.DisplayEntity
-import indigo.platform.api.display.DisplayGroup
-import indigo.platform.api.display.DisplayMutants
-import indigo.platform.api.display.DisplayObject
-import indigo.platform.api.display.DisplayObjectUniformData
-import indigo.platform.api.display.DisplayTextLetters
-import indigo.platform.api.display.SpriteSheetFrame
-import indigo.platform.api.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 

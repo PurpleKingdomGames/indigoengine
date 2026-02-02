@@ -32,7 +32,7 @@ object Renderer:
     def screenHeight: Int                          = 0
     def orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
-    def init(shaders: Set[RawShaderCode]): Unit                            = ()
+    def init(shaders: Set[RawShaderCode]): Unit                              = ()
     def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
     def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] = Batch(
       Left("No renderer available")

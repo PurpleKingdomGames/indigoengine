@@ -2,6 +2,7 @@ package indigo.shared.display
 
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
+import indigo.platform.api.display.SpriteSheetFrame
 
 class SpriteSheetFrameTests extends munit.FunSuite {
 

@@ -1,13 +1,13 @@
 package indigo.platform.networking
 
 import indigo.core.events.*
-import indigo.core.utils.IndigoLogger
-import indigo.platform.events.GlobalEventStream
 import indigo.core.networking.WebSocketConfig
 import indigo.core.networking.WebSocketEvent
 import indigo.core.networking.WebSocketReadyState
 import indigo.core.networking.WebSocketReadyState.CLOSED
 import indigo.core.networking.WebSocketReadyState.CLOSING
+import indigo.core.utils.IndigoLogger
+import indigo.platform.events.GlobalEventStream
 import org.scalajs.dom
 
 import scala.annotation.nowarn

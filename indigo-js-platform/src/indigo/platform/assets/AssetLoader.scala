@@ -4,9 +4,9 @@ import indigo.core.assets.AssetType
 import indigo.core.datatypes.BindingKey
 import indigo.core.events.AssetEvent
 import indigo.core.utils.IndigoLogger
+import indigo.platform.IndigoSystemEvent
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.IndigoSystemEvent
 import org.scalajs.dom
 import org.scalajs.dom.*
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

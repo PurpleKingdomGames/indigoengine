@@ -4,6 +4,7 @@ import indigo.core.assets.AssetName
 import indigo.core.assets.AssetTag
 import indigo.core.datatypes.Point
 import indigo.core.utils.IndigoLogger
+import indigo.platform.api.AtlasId
 import indigo.shared.PowerOfTwo
 import org.scalajs.dom
 import org.scalajs.dom.ImageData
@@ -92,13 +93,6 @@ final case class TextureAtlas(atlases: scalajs.js.Dictionary[Atlas], legend: sca
   }
 
 }
-
-opaque type AtlasId = String
-object AtlasId:
-  inline def apply(id: String): AtlasId            = id
-  extension (aid: AtlasId) inline def show: String = aid
-  given CanEqual[AtlasId, AtlasId]                 = CanEqual.derived
-  given CanEqual[Option[AtlasId], Option[AtlasId]] = CanEqual.derived
 
 final case class AtlasIndex(id: AtlasId, offset: Point, size: Point) derives CanEqual
 

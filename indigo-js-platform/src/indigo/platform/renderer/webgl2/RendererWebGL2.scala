@@ -1,11 +1,11 @@
 package indigo.platform.renderer.webgl2
 
-import indigo.core.datatypes.Rectangle
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
 import indigo.core.config.GameViewport
 import indigo.core.config.RenderingTechnology
+import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
