@@ -437,9 +437,6 @@ object aliases:
   type GamepadButtons = indigo.core.input.GamepadButtons
   val GamepadButtons: indigo.core.input.GamepadButtons.type = indigo.core.input.GamepadButtons
 
-  // type ImageType = shared.ImageType
-  // val ImageType: shared.ImageType.type = shared.ImageType
-
   type BoundaryLocator = indigo.scenegraph.registers.BoundaryLocator
 
   type Context[StartUpData] = shared.Context[StartUpData]
