@@ -1,6 +1,8 @@
 package indigo.shared.platform
 
-import indigo.platform.assets.AtlasId
+import indigo.platform.api.AssetMapping
+import indigo.platform.api.AtlasId
+import indigo.platform.api.TextureRefAndOffset
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
@@ -10,12 +12,12 @@ import indigoengine.shared.collections.Batch
 import indigo.core.config.RenderingTechnology
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
-import indigo.shared.display.DisplayCloneBatch
-import indigo.shared.display.DisplayCloneTiles
-import indigo.shared.display.DisplayGroup
-import indigo.shared.display.DisplayMutants
-import indigo.shared.display.DisplayObject
-import indigo.shared.display.DisplayTextLetters
+import indigo.platform.api.display.DisplayCloneBatch
+import indigo.platform.api.display.DisplayCloneTiles
+import indigo.platform.api.display.DisplayGroup
+import indigo.platform.api.display.DisplayMutants
+import indigo.platform.api.display.DisplayObject
+import indigo.platform.api.display.DisplayTextLetters
 import indigo.core.events.GlobalEvent
 import indigo.scenegraph.materials.Material
 import indigo.scenegraph.Graphic

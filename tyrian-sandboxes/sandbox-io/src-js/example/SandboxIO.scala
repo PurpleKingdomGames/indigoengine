@@ -20,7 +20,6 @@ import scala.concurrent.duration.*
 import scala.scalajs.js
 import scala.scalajs.js.annotation.*
 import scala.util.Random
-
 @JSExportTopLevel("TyrianApp")
 object SandboxIO extends TyrianIOApp[Msg, Model]:
 

@@ -10,12 +10,13 @@ import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
-import indigo.platform.Platform
+import indigo.platform.JsPlatform
+import indigo.platform.api.AssetMapping
+import indigo.platform.api.renderer.Renderer
 import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.platform.renderer.Renderer
 import indigo.platform.storage.Storage
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -27,7 +28,6 @@ import indigo.shaders.ShaderRegister
 import indigo.shaders.StandardShaders
 import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
-import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.SceneProcessor
 import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
@@ -83,7 +83,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var startUpData: StartUpData = uninitialized
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var platform: Platform = null
+  var platform: JsPlatform = null
 
   def kill(): Unit =
     platform.kill()
@@ -174,7 +174,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val dice = if firstRun then Dice.default else Dice.fromSeed(gameLoopInstance.runningTimeReference.toLong)
 
-      if firstRun then platform = new Platform(parentElement, gameConfig, globalEventStream)
+      if firstRun then platform = new JsPlatform(parentElement, gameConfig, globalEventStream)
 
       initialise(accumulatedAssetCollection)(dice) match {
         case oe @ Outcome.Error(error, _) =>

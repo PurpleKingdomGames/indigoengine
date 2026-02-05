@@ -4,6 +4,11 @@ import indigo.core.config.RenderingTechnology
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
+import indigo.platform.api.AssetMapping
+import indigo.platform.api.display.DisplayLayer
+import indigo.platform.api.display.DisplayObject
+import indigo.platform.api.display.DisplayObjectUniformData
+import indigo.platform.api.renderer.ProcessedSceneData
 import indigo.scenegraph.AmbientLight
 import indigo.scenegraph.Blending
 import indigo.scenegraph.CloneBlank
@@ -25,9 +30,6 @@ import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
 import indigo.shaders.ShaderData
-import indigo.shared.display.DisplayLayer
-import indigo.shared.display.DisplayObject
-import indigo.shared.display.DisplayObjectUniformData
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 
