@@ -7,7 +7,7 @@ class SceneFinderTests extends munit.FunSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel]] =
     NonEmptyBatch(sceneA, sceneB)
 
   val sceneFinder: SceneFinder =
@@ -82,7 +82,7 @@ class SceneFinderTests extends munit.FunSuite {
   }
 
   test("scene finder can move to the first and last scenes") {
-    val moreScenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+    val moreScenes: NonEmptyBatch[Scene[Unit, TestGameModel]] =
       NonEmptyBatch(TestSceneA("a"), TestSceneA("b"), TestSceneA("c"), TestSceneA("d"))
 
     val sf = SceneFinder.fromScenes(moreScenes).jumpToSceneByName(SceneName("c"))

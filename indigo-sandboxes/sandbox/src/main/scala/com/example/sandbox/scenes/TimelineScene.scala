@@ -3,24 +3,19 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigo.syntax.animations.*
 
-object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel = Unit
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, Unit] =
-    Lens.unit
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
     Lens.unit
 
   def name: SceneName =
@@ -34,13 +29,6 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
 
   val crate: Graphic[Material.ImageEffects] =
     Graphic(64, 64, SandboxAssets.cratesMaterial)
@@ -100,8 +88,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: Unit,
-      viewModel: Unit
+      model: Unit
   ): Outcome[SceneUpdateFragment] =
     val dude = context.startUpData.dude.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
 

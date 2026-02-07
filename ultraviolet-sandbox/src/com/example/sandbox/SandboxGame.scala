@@ -4,18 +4,8 @@ import com.example.sandbox.scenes.*
 import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.json.Json
-import indigo.scenes.*
 
-import scala.scalajs.js.annotation.*
-
-@JSExportTopLevel("IndigoGame")
-object SandboxGame
-    extends IndigoGame[
-      SandboxBootData,
-      SandboxStartupData,
-      SandboxGameModel,
-      SandboxViewModel
-    ]:
+object SandboxGame:
 
   val magnificationLevel: Int = 2
   val gameWidth: Int          = 228
@@ -23,11 +13,13 @@ object SandboxGame
   val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
+final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
+
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(NoiseScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[
-    Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]
+    Scene[SandboxStartupData, SandboxGameModel]
   ] =
     NonEmptyBatch(
       OriginalScene,
@@ -46,7 +38,7 @@ object SandboxGame
           GameViewport(w.toInt, h.toInt)
 
         case _ =>
-          GameViewport(viewportWidth, viewportHeight)
+          GameViewport(SandboxGame.viewportWidth, SandboxGame.viewportHeight)
       }
 
     Outcome(
@@ -54,7 +46,7 @@ object SandboxGame
         GameConfig(
           viewport = gameViewport,
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
-          magnification = magnificationLevel
+          magnification = SandboxGame.magnificationLevel
         ).noResize,
         SandboxBootData(
           flags.getOrElse("key", "No entry for 'key'."),
@@ -91,7 +83,7 @@ object SandboxGame
     println(bootData.message)
 
     val screenCenter: Point =
-      bootData.gameViewport.giveDimensions(magnificationLevel).center
+      bootData.gameViewport.giveDimensions(SandboxGame.magnificationLevel).center
 
     def makeStartupData(
         aseprite: Aseprite,
@@ -134,76 +126,15 @@ object SandboxGame
   def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
     Outcome(SandboxModel.initialModel(startupData))
 
-  def initialViewModel(
-      startupData: SandboxStartupData,
-      model: SandboxGameModel
-  ): Outcome[SandboxViewModel] =
-    Outcome(
-      SandboxViewModel(
-        Point.zero,
-        true
-      )
-    )
-
   def updateModel(
       context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModel.updateModel(model)
-
-  def updateViewModel(
-      context: Context[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] = {
-    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
-      Outcome(viewModel.copy(useLightingLayer = false))
-
-    case FrameTick =>
-      val updateOffset: Point =
-        context.frame.input.gamepad.dpad match {
-          case GamepadDPad(true, _, _, _) =>
-            viewModel.offset + Point(0, -1)
-
-          case GamepadDPad(_, true, _, _) =>
-            viewModel.offset + Point(0, 1)
-
-          case GamepadDPad(_, _, true, _) =>
-            viewModel.offset + Point(-1, 0)
-
-          case GamepadDPad(_, _, _, true) =>
-            viewModel.offset + Point(1, 0)
-
-          case _ =>
-            viewModel.offset
-        }
-
-      Outcome(viewModel.copy(offset = updateOffset))
-
-    case FullScreenEntered =>
-      println("Entered full screen mode")
-      Outcome(viewModel)
-
-    case FullScreenExited =>
-      println("Exited full screen mode")
-      Outcome(viewModel)
-
-    case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.Next)
-
-    case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
-      Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.Previous)
-
-    case _ =>
-      Outcome(viewModel)
-  }
+    SandboxModel.updateModel(context, model)
 
   def present(
       context: Context[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty

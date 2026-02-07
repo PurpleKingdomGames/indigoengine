@@ -1,3 +1,3 @@
-package indigo.next.bridge
+package indigo.bridge
 
 trait BridgeData derives CanEqual

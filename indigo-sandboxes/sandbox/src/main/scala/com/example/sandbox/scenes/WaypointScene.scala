@@ -3,7 +3,6 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
@@ -11,18 +10,14 @@ import indigo.syntax.animations.*
 import indigoextras.waypoints.WaypointPath
 import indigoextras.waypoints.WaypointPathPosition
 
-object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel = Unit
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, SceneModel] =
-    Lens.unit
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
     Lens.unit
 
   def name: SceneName =
@@ -36,13 +31,6 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       model: SceneModel
   ): GlobalEvent => Outcome[SceneModel] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SceneModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
 
   def dude(color: RGB): Graphic[Material.ImageEffects] =
     Graphic(32, 32, SandboxAssets.dudeMaterial)
@@ -164,8 +152,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SceneModel,
-      viewModel: Unit
+      model: SceneModel
   ): Outcome[SceneUpdateFragment] =
 
     val waypointGraphics = decagonWaypoints.map: w =>

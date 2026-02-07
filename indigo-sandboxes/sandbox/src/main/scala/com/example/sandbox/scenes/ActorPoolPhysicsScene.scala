@@ -3,17 +3,15 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.physics.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.actors.*
 
-object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = ActorPhysicsSceneModel
-  type SceneViewModel = Unit
+  type SceneModel = ActorPhysicsSceneModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
@@ -23,9 +21,6 @@ object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel,
       model => model.actorPhysicsScene,
       (model, sceneModel) => model.copy(actorPhysicsScene = sceneModel)
     )
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("actor pool physics scene")
@@ -129,17 +124,9 @@ object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel,
           model.copy(actorPool = system)
         }
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: ActorPhysicsSceneModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: ActorPhysicsSceneModel,
-      viewModel: Unit
+      model: ActorPhysicsSceneModel
   ): Outcome[SceneUpdateFragment] =
     model.actorPool.present(context.context, Map.empty).map { zombies =>
       SceneUpdateFragment(

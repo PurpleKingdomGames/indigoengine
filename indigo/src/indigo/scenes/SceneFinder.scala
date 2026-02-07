@@ -101,10 +101,8 @@ final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosit
 object SceneFinder:
   given CanEqual[Option[SceneFinder], Option[SceneFinder]] = CanEqual.derived
 
-  def fromScenes[StartUpData, GameModel, ViewModel](
-      scenesList: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]]
+  def fromScenes[StartUpData, GameModel](
+      scenesList: NonEmptyBatch[Scene[StartUpData, GameModel]]
   ): SceneFinder =
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
     SceneFinder(Batch.empty, a.head, a.tail)
-
-final case class ScenePosition(index: Int, name: SceneName) derives CanEqual

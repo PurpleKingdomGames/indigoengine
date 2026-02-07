@@ -3,16 +3,14 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.actors.*
 
-object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = ActorSceneModel
-  type SceneViewModel = Unit
+  type SceneModel = ActorSceneModel
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
@@ -22,9 +20,6 @@ object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
       model => model.actorScene,
       (model, sceneModel) => model.copy(actorScene = sceneModel)
     )
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("actor pool scene")
@@ -94,17 +89,9 @@ object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
           model.copy(actorSystem = system)
         }
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: ActorSceneModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: ActorSceneModel,
-      viewModel: Unit
+      model: ActorSceneModel
   ): Outcome[SceneUpdateFragment] =
     model.actorSystem.present(context.context, model.target).map { followers =>
       SceneUpdateFragment(

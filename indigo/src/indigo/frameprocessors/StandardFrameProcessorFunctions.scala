@@ -13,8 +13,7 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
   def subSystemsRegister: SubSystemsRegister[Model]
   def eventFilters: EventFilters
   def modelUpdate: (Context[StartUpData], Model) => GlobalEvent => Outcome[Model]
-  def viewModelUpdate: (Context[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel]
-  def viewUpdate: (Context[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
+  def viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment]
 
   def processModel(
       context: Context[StartUpData],
@@ -30,27 +29,11 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
         }
       }
 
-  def processViewModel(
-      context: Context[StartUpData],
-      model: Model,
-      viewModel: ViewModel,
-      globalEvents: Batch[GlobalEvent]
-  ): Outcome[ViewModel] =
-    globalEvents
-      .map(eventFilters.viewModelFilter)
-      .collect { case Some(e) => e }
-      .foldLeft(Outcome(viewModel)) { (acc, e) =>
-        acc.flatMap { next =>
-          viewModelUpdate(context, model, next)(e)
-        }
-      }
-
   def processView(
       context: Context[StartUpData],
-      model: Model,
-      viewModel: ViewModel
+      model: Model
   ): Outcome[SceneUpdateFragment] =
     Outcome.merge(
-      viewUpdate(context, model, viewModel),
+      viewUpdate(context, model),
       subSystemsRegister.present(context.forSubSystems, model)
     )(_ |+| _)

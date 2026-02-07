@@ -13,7 +13,7 @@ class SceneManagerTests extends munit.FunSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel]] =
     NonEmptyBatch(sceneA, sceneB)
 
   val sceneFinder: SceneFinder = SceneFinder.fromScenes(scenes)
@@ -24,35 +24,20 @@ class SceneManagerTests extends munit.FunSuite {
     val events: List[GlobalEvent] =
       List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
 
-    val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val sceneManager1 = new SceneManager[Unit, TestGameModel](scenes, sceneFinder)
     val actual1       = events.map(sceneManager1.eventFilters.modelFilter).collect { case Some(e) => e }
     assertEquals(actual1.length, 1)
     assertEquals(actual1.head, TestSceneEvent1)
 
-    val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
+    val sceneManager2 = new SceneManager[Unit, TestGameModel](scenes, sceneFinder.forward)
     val actual2       = events.map(sceneManager2.eventFilters.modelFilter).collect { case Some(e) => e }
     assertEquals(actual2.length, 2)
     assertEquals(actual2, List(TestSceneEvent2, TestSceneEvent3))
   }
 
-  test("A journey through the SceneManager.Should be able to return a scenes viewModelEventFilter") {
-    val events: List[GlobalEvent] =
-      List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
-
-    val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
-    val actual1       = events.map(sceneManager1.eventFilters.viewModelFilter).collect { case Some(e) => e }
-    assertEquals(actual1.length, 1)
-    assertEquals(actual1.head, TestSceneEvent2)
-
-    val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
-    val actual2       = events.map(sceneManager2.eventFilters.viewModelFilter).collect { case Some(e) => e }
-    assertEquals(actual2.length, 2)
-    assertEquals(actual2, List(TestSceneEvent1, TestSceneEvent4))
-  }
-
   test("A journey through the SceneManager.Should be able to update a model on frametick") {
 
-    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val sceneManager = new SceneManager[Unit, TestGameModel](scenes, sceneFinder)
 
     val events = Batch(FrameTick)
 
@@ -66,7 +51,7 @@ class SceneManagerTests extends munit.FunSuite {
 
   test("A journey through the SceneManager.Should be able to change scenes and update on frametick") {
 
-    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val sceneManager = new SceneManager[Unit, TestGameModel](scenes, sceneFinder)
 
     val events = Batch(SceneEvent.Next, FrameTick)
 
@@ -79,7 +64,7 @@ class SceneManagerTests extends munit.FunSuite {
 
   test("A journey through the SceneManager.should be able to move between scenes and update the model accordingly") {
 
-    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val sceneManager = new SceneManager[Unit, TestGameModel](scenes, sceneFinder)
 
     // A = 2, B = 40
     val events = Batch(
@@ -117,7 +102,7 @@ class SceneManagerTests extends munit.FunSuite {
   private def runModel(
       events: Batch[GlobalEvent],
       model: TestGameModel,
-      sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]
+      sceneManager: SceneManager[Unit, TestGameModel]
   ): Outcome[TestGameModel] =
     events.foldLeft(Outcome(model))((m, e) => m.flatMap(mm => sceneManager.updateModel(context(6), mm)(e)))
 

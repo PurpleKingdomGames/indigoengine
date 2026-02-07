@@ -5,7 +5,6 @@ import demo.GameEvent
 import demo.models.ChangeValue
 import demo.models.GameModel
 import indigo.*
-import indigo.next.*
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.syntax.*
 import indigoextras.ui.*

@@ -4,24 +4,19 @@ import com.example.sandbox.Constants
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 
-object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   val name: SceneName =
     SceneName("ComponentUI scene")
 
   val modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -49,17 +44,9 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
         model.copy(components = cl)
       }
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     model.components
       .present(UIContext.fromContext(context.toContext, model.num, context.frame.globalMagnification))

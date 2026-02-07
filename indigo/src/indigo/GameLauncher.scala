@@ -5,7 +5,7 @@ import org.scalajs.dom.document
 
 import scala.scalajs.js.annotation.*
 
-trait GameLauncher[StartUpData, Model, ViewModel] extends MinimalLauncher[StartUpData, Model, ViewModel]:
+trait GameLauncher[StartUpData, Model] extends MinimalLauncher[StartUpData, Model]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private val findElement: String => Element = containerId =>

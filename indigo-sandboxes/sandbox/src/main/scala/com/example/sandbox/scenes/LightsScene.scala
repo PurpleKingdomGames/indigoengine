@@ -3,22 +3,17 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 
-object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object LightsScene extends Scene[SandboxStartupData, SandboxGameModel] {
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepOriginal
 
   def name: SceneName =
@@ -32,13 +27,6 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
 
   val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 40, 40), LightingAssets.junctionBoxMaterialOn)
@@ -70,8 +58,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     val centerPoint: Point =
       Point(550, 400) / 2 / 2

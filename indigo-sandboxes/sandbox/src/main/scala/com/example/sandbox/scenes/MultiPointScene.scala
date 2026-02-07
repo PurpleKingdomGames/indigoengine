@@ -4,7 +4,6 @@ import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import org.scalajs.dom
@@ -16,23 +15,19 @@ import scala.math.BigDecimal.RoundingMode
 // Each box contains position, button down, state (down/up), and pressure (if applicable)
 
 @nowarn("msg=unused")
-object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel]:
   // disabling default browser touch actions
   val style = dom.document.createElement("style")
   style.innerHTML = "canvas { touch-action: none }"
   dom.document.head.appendChild(style)
 
-  type SceneModel     = InputStateModel
-  type SceneViewModel = Unit
+  type SceneModel = InputStateModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, InputStateModel] =
     Lens(_.inputStates, (m, p) => m.copy(inputStates = p))
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit
 
   def name: SceneName =
     SceneName("multi-input")
@@ -44,22 +39,31 @@ object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
       context: SceneContext[SandboxStartupData],
       model: InputStateModel
   ): GlobalEvent => Outcome[InputStateModel] =
-    case e: PenEvent.Move => Outcome(model.copy(pen = model.pen.copy(pos = e.position, pressure = e.pressure)))
+    case e: PenEvent.Move =>
+      Outcome(model.copy(pen = model.pen.copy(pos = e.position, pressure = e.pressure)))
+
     case e: PenEvent.Down =>
       Outcome(
         model.copy(pen =
           model.pen.copy(pos = e.position, button = e.button, isDown = e.button.isEmpty, pressure = e.pressure)
         )
       )
+
     case e: PenEvent.Up =>
       Outcome(model.copy(pen = model.pen.copy(pos = e.position, button = None, isDown = false, pressure = e.pressure)))
-    case e: MouseEvent.Move => Outcome(model.copy(mouse = model.mouse.copy(pos = e.position)))
+
+    case e: MouseEvent.Move =>
+      Outcome(model.copy(mouse = model.mouse.copy(pos = e.position)))
+
     case e: MouseEvent.Down =>
       Outcome(model.copy(mouse = model.mouse.copy(pos = e.position, button = Some(e.button))))
+
     case e: MouseEvent.Up =>
       Outcome(model.copy(mouse = model.mouse.copy(pos = e.position, button = None)))
+
     case e: TouchEvent.Move =>
       Outcome(model.copy(touch = model.touch.copy(pos = e.position, pressure = e.pressure)))
+
     case e: TouchEvent.Down =>
       Outcome(
         model.copy(
@@ -79,19 +83,17 @@ object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
         )
       )
 
-    case e: PointerEvent.Move => Outcome(model.copy(pointer = model.pointer.copy(pos = e.position)))
+    case e: PointerEvent.Move =>
+      Outcome(model.copy(pointer = model.pointer.copy(pos = e.position)))
+
     case e: PointerEvent.Down =>
       Outcome(model.copy(pointer = model.pointer.copy(pos = e.position, button = e.button, isDown = true)))
+
     case e: PointerEvent.Up =>
       Outcome(model.copy(pointer = model.pointer.copy(pos = e.position, button = None, isDown = false)))
-    case _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: InputStateModel,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
+    case _ =>
+      Outcome(model)
 
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
@@ -99,8 +101,7 @@ object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: InputStateModel,
-      viewModel: Unit
+      model: InputStateModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

@@ -1,4 +1,4 @@
-package indigo.next.bridge
+package indigo.bridge
 
 import tyrian.GlobalMsg
 

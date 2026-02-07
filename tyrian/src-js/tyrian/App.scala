@@ -54,7 +54,7 @@ trait App[Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(model: Model): Set[Extension]
+  def extensions(flags: Map[String, String], model: Model): Set[Extension]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -146,7 +146,7 @@ trait App[Model]:
 
     val (initModel, initCmds) = _init(flags)
 
-    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions(initModel))).map(_.toCmd)
+    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions(flags, initModel))).map(_.toCmd)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def combinedUpdate(

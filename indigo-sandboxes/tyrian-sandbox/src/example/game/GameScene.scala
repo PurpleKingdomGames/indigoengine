@@ -3,18 +3,14 @@ package example.game
 import indigo.*
 import indigo.scenes.*
 
-final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit, Unit]:
+final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit]:
 
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
+  type SceneModel = Unit
 
   val name: SceneName =
     SceneName("game")
 
   val modelLens: Lens[Unit, Unit] =
-    Lens.keepLatest
-
-  val viewModelLens: Lens[Unit, Unit] =
     Lens.keepLatest
 
   val eventFilters: EventFilters =
@@ -29,17 +25,9 @@ final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit, Unit]:
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: SceneContext[Unit],
-      model: Unit,
-      viewModel: Unit
+      model: Unit
   ): Outcome[SceneUpdateFragment] =
     val rotateAmount =
       if clockwise then Radians.fromSeconds(context.frame.time.running * 0.25)

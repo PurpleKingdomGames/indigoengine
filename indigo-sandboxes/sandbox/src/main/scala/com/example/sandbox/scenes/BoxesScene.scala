@@ -2,22 +2,17 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 
-object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepOriginal
 
   def name: SceneName =
@@ -31,13 +26,6 @@ object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
-
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
 
   val boxStroke  = Stroke(1, RGBA.Black)
   val lineStroke = Stroke(1, RGBA.Cyan)
@@ -70,7 +58,6 @@ object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment(Layer(shapes).withMagnification(1)))

@@ -5,7 +5,7 @@ import demo.models.GameModel
 import demo.windows.ComponentsWindow
 import demo.windows.ComponentsWindow2
 import demo.windows.MenuWindow
-import indigo.next.*
+import indigo.*
 import indigoextras.ui.*
 
 object MultipleWindowsScene extends Scene[Size, GameModel]:

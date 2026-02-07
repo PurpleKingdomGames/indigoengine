@@ -2,16 +2,15 @@ package example.game
 
 import cats.effect.IO
 import indigo.*
-import indigo.scenes.*
 import tyrian.bridge.TyrianSubSystem
 
 final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit], clockwise: Boolean)
-    extends IndigoGame[Unit, Unit, Unit, Unit]:
+    extends Game[Unit, Unit, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 
-  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Unit, Unit]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Unit]] =
     NonEmptyBatch(GameScene(clockwise))
 
   val eventFilters: EventFilters =
@@ -40,9 +39,6 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
   def initialModel(startupData: Unit): Outcome[Unit] =
     Outcome(())
 
-  def initialViewModel(startupData: Unit, model: Unit): Outcome[Unit] =
-    Outcome(())
-
   def setup(
       bootData: Unit,
       assetCollection: AssetCollection,
@@ -66,16 +62,8 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
     case _ =>
       Outcome(model)
 
-  def updateViewModel(
-      context: Context[Unit],
-      model: Unit,
-      viewModel: Unit
-  ): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
   def present(
       context: Context[Unit],
-      model: Unit,
-      viewModel: Unit
+      model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

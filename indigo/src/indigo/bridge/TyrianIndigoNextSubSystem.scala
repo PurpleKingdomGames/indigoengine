@@ -1,4 +1,4 @@
-package indigo.next.bridge
+package indigo.bridge
 
 import indigo.core.Outcome
 import indigo.core.events.FrameTick

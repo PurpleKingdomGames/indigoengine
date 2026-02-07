@@ -3,22 +3,17 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 
-object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object CameraScene extends Scene[SandboxStartupData, SandboxGameModel] {
 
-  type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneModel = SandboxGameModel
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
-    Lens.keepOriginal
-
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
     Lens.keepOriginal
 
   def name: SceneName =
@@ -33,13 +28,6 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
-  def updateViewModel(
-      context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
-
   def zoom: Signal[Zoom] =
     Signal.SmoothPulse.map { d =>
       Zoom(0.8 + (d * 0.2))
@@ -50,8 +38,7 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def present(
       context: SceneContext[SandboxStartupData],
-      model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(

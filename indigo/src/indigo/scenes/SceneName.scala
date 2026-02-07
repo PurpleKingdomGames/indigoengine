@@ -1,4 +1,4 @@
-package indigo.next.scenes
+package indigo.scenes
 
 opaque type SceneName = String
 

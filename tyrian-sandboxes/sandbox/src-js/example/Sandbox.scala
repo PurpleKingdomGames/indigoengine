@@ -23,5 +23,5 @@ object Sandbox extends App[Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch.empty
 
-  def extensions(model: Model): Set[Extension] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension] =
     Set(CounterExtension)

@@ -1,14 +1,14 @@
+package com.example.shader
+
 import indigo.*
 import indigo.syntax.shaders.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
-import scala.scalajs.js.annotation.*
 
-@JSExportTopLevel("IndigoGame")
-object ShaderGame extends IndigoShader:
+final class ShaderGame() extends Game.ShaderPlayground:
 
-  val config: GameConfig          = GameConfig.default.withFrameRateLimit(FPS.`60`)
+  val config: GameConfig          = GameConfig.default.withFrameRateLimit(FPS.`60`).noResize
   val assets: Set[AssetType]      = SeascapeShader.assets
   val channel0: Option[AssetPath] = Option(AssetPath("assets/dots.png"))
   val channel1: Option[AssetPath] = None
