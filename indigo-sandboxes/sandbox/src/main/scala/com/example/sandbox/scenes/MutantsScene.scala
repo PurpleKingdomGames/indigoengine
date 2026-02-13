@@ -47,15 +47,17 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   val cloneBlank = CloneBlank(cloneId, Archetype())
 
   // A pretty mutant data set
-  val data: Array[Batch[MutantData]] =
-    0.until(100).toArray.map { i =>
-      val d  = Dice.fromSeed(i)
-      val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
-      val sc = Vector2(0.3d + (d.rollDouble * 3.0d))
-      val a  = 0.1d + (0.8d * d.rollDouble)
+  val data: Batch[Batch[MutantData]] =
+    Batch.fromIndexedSeq(
+      0.until(100).map { i =>
+        val d  = Dice.fromSeed(i)
+        val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
+        val sc = Vector2(0.3d + (d.rollDouble * 3.0d))
+        val a  = 0.1d + (0.8d * d.rollDouble)
 
-      Batch(MutantData(pt, sc, a))
-    }
+        Batch(MutantData(pt, sc, a))
+      }
+    )
 
   // A large mutant data set (60 fps on my machine)
   val dataMax: Array[Batch[MutantData]] =

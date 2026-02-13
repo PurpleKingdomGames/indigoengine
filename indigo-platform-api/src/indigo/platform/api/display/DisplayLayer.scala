@@ -4,17 +4,18 @@ import indigo.scenegraph.Blend
 import indigo.scenegraph.Camera
 import indigo.scenegraph.LayerKey
 import indigo.shaders.ShaderId
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 
 final case class DisplayLayer(
     layerKey: Option[LayerKey],
-    entities: scalajs.js.Array[DisplayEntity],
-    lightsData: scalajs.js.Array[Float],
+    entities: Batch[DisplayEntity],
+    lightsData: Batch[Float],
     bgColor: RGBA,
     magnification: Option[Int],
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,
-    shaderUniformData: scalajs.js.Array[DisplayObjectUniformData],
+    shaderUniformData: Batch[DisplayObjectUniformData],
     camera: Option[Camera]
 ) derives CanEqual

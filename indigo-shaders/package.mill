@@ -19,3 +19,11 @@ object `package` extends Module:
       build.ultraviolet.js
     )
 
+  object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigoengine-shared`.jvm,
+      build.`indigo-core`.jvm,
+      build.ultraviolet.jvm
+    )
+

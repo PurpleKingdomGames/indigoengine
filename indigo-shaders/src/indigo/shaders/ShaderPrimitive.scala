@@ -9,6 +9,7 @@ import indigo.core.datatypes.Vector3
 import indigo.core.datatypes.Vector4
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.geometry.Vertex
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 import indigoengine.shared.datatypes.RGB
 import indigoengine.shared.datatypes.RGBA
@@ -17,44 +18,20 @@ import indigoengine.shared.datatypes.Seconds
 
 import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag
-import scala.scalajs.js.JSConverters.*
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int
-  def toArray: Array[Float]
-  def toJSArray: scala.scalajs.js.Array[Float]
+  def toBatch: Batch[Float]
   def isArray: Boolean
   def hash: String
-
-sealed trait IsShaderValue[T]:
-  def giveLength: Int
-  def toArray: T => Array[Float]
-
-object IsShaderValue:
-  def create[T](length: Int, valueToArray: T => Array[Float]): IsShaderValue[T] =
-    new IsShaderValue[T]:
-      def giveLength: Int            = length
-      def toArray: T => Array[Float] = t => valueToArray(t)
-
-  given IsShaderValue[Float] =
-    create(ShaderPrimitive.float.length, f => Array(f))
-  given IsShaderValue[RGB] =
-    create(ShaderPrimitive.vec3.length, rgb => ShaderPrimitive.vec3.fromRGB(rgb).toArray)
-  given IsShaderValue[RGBA] =
-    create(ShaderPrimitive.vec4.length, rgba => ShaderPrimitive.vec4.fromRGBA(rgba).toArray)
-  given IsShaderValue[Matrix4] =
-    create(ShaderPrimitive.vec4.length, mat => ShaderPrimitive.mat4.fromMatrix4(mat).toArray)
-  given IsShaderValue[CheapMatrix4] =
-    create(ShaderPrimitive.vec4.length, mat => ShaderPrimitive.mat4.fromCheapMatrix4(mat).toArray)
 
 object ShaderPrimitive:
 
   final case class float(value: Float) extends ShaderPrimitive:
-    val length: Int                              = float.length
-    def toArray: Array[Float]                    = Array(value)
-    def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(value)
-    val isArray: Boolean                         = false
-    val hash: String                             = value.toString
+    val length: Int           = float.length
+    def toBatch: Batch[Float] = Batch(value)
+    val isArray: Boolean      = false
+    val hash: String          = value.toString
   object float:
     val length: Int = 1
 
@@ -77,14 +54,13 @@ object ShaderPrimitive:
       float(seconds.toDouble)
 
     given IsShaderValue[float] =
-      IsShaderValue.create[float](length, _.toArray)
+      IsShaderValue.create[float](length, _.toBatch)
 
   final case class vec2(x: Float, y: Float) extends ShaderPrimitive:
-    val length: Int                              = vec2.length
-    def toArray: Array[Float]                    = Array(x, y)
-    def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y)
-    val isArray: Boolean                         = false
-    val hash: String                             = x.toString + y.toString
+    val length: Int           = vec2.length
+    def toBatch: Batch[Float] = Batch(x, y)
+    val isArray: Boolean      = false
+    val hash: String          = x.toString + y.toString
   object vec2:
     val length: Int = 2
 
@@ -103,14 +79,13 @@ object ShaderPrimitive:
     def fromVertex(v: Vertex): vec2   = vec2(v.x, v.y)
 
     given IsShaderValue[vec2] =
-      IsShaderValue.create[vec2](length, _.toArray)
+      IsShaderValue.create[vec2](length, _.toBatch)
 
   final case class vec3(x: Float, y: Float, z: Float) extends ShaderPrimitive:
-    val length: Int                              = vec3.length
-    def toArray: Array[Float]                    = Array(x, y, z, 0.0f)
-    def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y, z, 0.0f)
-    val isArray: Boolean                         = false
-    val hash: String                             = x.toString + y.toString + z.toString
+    val length: Int           = vec3.length
+    def toBatch: Batch[Float] = Batch(x, y, z, 0.0f)
+    val isArray: Boolean      = false
+    val hash: String          = x.toString + y.toString + z.toString
   object vec3:
     val length: Int = 4
 
@@ -127,14 +102,13 @@ object ShaderPrimitive:
     def fromVector3(v: Vector3): vec3 = vec3(v.x, v.y, v.z)
 
     given IsShaderValue[vec3] =
-      IsShaderValue.create[vec3](length, _.toArray)
+      IsShaderValue.create[vec3](length, _.toBatch)
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float) extends ShaderPrimitive:
-    val length: Int                              = vec4.length
-    def toArray: Array[Float]                    = Array(x, y, z, w)
-    def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y, z, w)
-    val isArray: Boolean                         = false
-    val hash: String                             = x.toString + y.toString + z.toString + w.toString
+    val length: Int           = vec4.length
+    def toBatch: Batch[Float] = Batch(x, y, z, w)
+    val isArray: Boolean      = false
+    val hash: String          = x.toString + y.toString + z.toString + w.toString
   object vec4:
     val length: Int = 4
 
@@ -153,29 +127,29 @@ object ShaderPrimitive:
     def fromRectangle(r: Rectangle): vec4 = vec4(r.x.toFloat, r.y.toFloat, r.width.toFloat, r.height.toFloat)
 
     given IsShaderValue[vec4] =
-      IsShaderValue.create[vec4](length, _.toArray)
+      IsShaderValue.create[vec4](length, _.toBatch)
 
-  final case class mat4(mat: Array[Float]) extends ShaderPrimitive:
+  final case class mat4(mat: Batch[Float]) extends ShaderPrimitive:
     val length: Int      = mat4.length
     val isArray: Boolean = false
     val hash: String     = mat.mkString
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def toArray: Array[Float] =
+    def toBatch: Batch[Float] =
       if mat.length == mat4.length then mat
       else throw new Exception("mat4 was not of length 16!")
-    def toJSArray: scala.scalajs.js.Array[Float] = toArray.toJSArray
+
   object mat4:
     val length: Int = 16
 
     def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
-      mat4(matrix.toJSArray.toArray)
+      mat4(matrix.toBatch)
 
     def fromMatrix4(matrix: Matrix4): mat4 =
-      mat4(matrix.toArray.map(_.toFloat))
+      mat4(matrix.toBatch.map(_.toFloat))
 
     given IsShaderValue[mat4] =
-      IsShaderValue.create[mat4](length, _.toArray)
+      IsShaderValue.create[mat4](length, _.toBatch)
 
   /** array data to send to the fragment shader
     *
@@ -192,12 +166,11 @@ object ShaderPrimitive:
     val isArray: Boolean = true
     val hash: String     = size.toString + values.mkString
 
-    def toArray: Array[Float] =
+    def toBatch: Batch[Float] =
       val data =
-        values.unsafeArray
-          .asInstanceOf[Array[T]]
-          .map(p => expandTo4(ev.toArray(p)))
-          .flatten
+        Batch
+          .fromVector(values.toVector)
+          .flatMap(p => expandTo4(ev.toBatch(p)))
 
       val len           = data.length
       val allocatedSize = size * 4
@@ -207,15 +180,13 @@ object ShaderPrimitive:
       else if (len > allocatedSize)
         data.take(allocatedSize)
       else
-        data ++ Array.fill[Float](allocatedSize - data.length)(0)
+        data ++ Batch.fill[Float](allocatedSize - data.length)(0)
 
-    def toJSArray: scala.scalajs.js.Array[Float] = toArray.toJSArray
+    private val empty1: Batch[Float] = Batch[Float](0.0f)
+    private val empty2: Batch[Float] = Batch[Float](0.0f, 0.0f)
+    private val empty3: Batch[Float] = Batch[Float](0.0f, 0.0f, 0.0f)
 
-    private val empty1: Array[Float] = Array[Float](0.0f)
-    private val empty2: Array[Float] = Array[Float](0.0f, 0.0f)
-    private val empty3: Array[Float] = Array[Float](0.0f, 0.0f, 0.0f)
-
-    private def expandTo4(arr: Array[Float]): Array[Float] =
+    private def expandTo4(arr: Batch[Float]): Batch[Float] =
       arr.length match
         case 0 => arr
         case 1 => arr ++ empty3
@@ -239,31 +210,78 @@ object ShaderPrimitive:
     *   The array of Floats to send
     */
   final case class rawArray(arr: Array[Float]) extends ShaderPrimitive:
-    val length: Int                              = arr.length
-    val isArray: Boolean                         = true
-    def toArray: Array[Float]                    = arr
-    def toJSArray: scala.scalajs.js.Array[Float] = toArray.toJSArray
-    val hash: String                             = arr.mkString
+    val length: Int           = arr.length
+    val isArray: Boolean      = true
+    def toBatch: Batch[Float] = Batch.fromVector(arr.toVector)
+    val hash: String          = arr.mkString
   object rawArray:
     def apply(values: Float*): rawArray =
       rawArray(values.toArray[Float])
     def apply(values: List[Float]): rawArray =
       rawArray(values.toArray)
 
-  /** Advanced usage only, a raw array of Float's to send to the fragment shader. Warning: The assumption here is that
+  /** batch data to send to the fragment shader
+    *
+    * @param size
+    *   Size != Length! Size is the memory allocated, the max possible number of entries, e.g. you are sending 3 x vec2
+    *   but the size is 16, meaning the max you _could_ send is 16 x vec2 but no more than that.
+    * @param values
+    *   The values to send
+    * @param ev
+    *   Implicit proof that T is a Shader value (float, vec2, vec3, vec4)
+    */
+  final case class batch[T](size: Int, values: Batch[T])(using ev: IsShaderValue[T]) extends ShaderPrimitive:
+    val length: Int      = values.length * 4
+    val isArray: Boolean = true
+    val hash: String     = size.toString + values.mkString
+
+    def toBatch: Batch[Float] =
+      val data =
+        Batch
+          .fromVector(values.toVector)
+          .flatMap(p => expandTo4(ev.toBatch(p)))
+
+      val len           = data.length
+      val allocatedSize = size * 4
+
+      if (len == allocatedSize)
+        data
+      else if (len > allocatedSize)
+        data.take(allocatedSize)
+      else
+        data ++ Batch.fill[Float](allocatedSize - data.length)(0)
+
+    private val empty1: Batch[Float] = Batch[Float](0.0f)
+    private val empty2: Batch[Float] = Batch[Float](0.0f, 0.0f)
+    private val empty3: Batch[Float] = Batch[Float](0.0f, 0.0f, 0.0f)
+
+    private def expandTo4(arr: Batch[Float]): Batch[Float] =
+      arr.length match
+        case 0 => arr
+        case 1 => arr ++ empty3
+        case 2 => arr ++ empty2
+        case 3 => arr ++ empty1
+        case 4 => arr
+        case _ => arr
+
+  object batch:
+    def apply[T](size: Int)(values: T*)(using ev: IsShaderValue[T]): batch[T] =
+      batch(size, Batch.fromSeq[T](values))(using ev)
+
+  /** Advanced usage only, a raw batch of Float's to send to the fragment shader. Warning: The assumption here is that
     * you know what you're doing i.e. how the packing/unpacking rules work. If you don't, use a normal shader `array`!
     *
     * @param arr
     *   The array of Floats to send
     */
-  final case class rawJSArray(arr: scala.scalajs.js.Array[Float]) extends ShaderPrimitive:
-    val length: Int                              = arr.length
-    val isArray: Boolean                         = true
-    def toArray: Array[Float]                    = arr.toArray
-    def toJSArray: scala.scalajs.js.Array[Float] = arr
-    val hash: String                             = arr.mkString
-  object rawJSArray:
-    def apply(values: Float*): rawJSArray =
-      rawJSArray(values.toJSArray)
-    def apply(values: List[Float]): rawJSArray =
-      rawJSArray(values.toJSArray)
+  final case class rawBatch(arr: Batch[Float]) extends ShaderPrimitive:
+    val length: Int           = arr.length
+    val isArray: Boolean      = true
+    def toBatch: Batch[Float] = arr
+    val hash: String          = arr.mkString
+
+  object rawBatch:
+    def apply(values: Float*): rawBatch =
+      rawBatch(Batch.fromSeq(values))
+    def apply(values: List[Float]): rawBatch =
+      rawBatch(Batch.fromSeq(values))

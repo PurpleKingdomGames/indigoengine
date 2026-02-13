@@ -684,8 +684,8 @@ object Shape:
             UniformBlockName("IndigoShapeData"),
             // ASPECT_RATIO (vec2), STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             Batch(
-              Uniform("Shape_DATA") -> rawJSArray(
-                scalajs.js.Array[Float](
+              Uniform("Shape_DATA") -> rawBatch(
+                Batch[Float](
                   aspect.x.toFloat,
                   aspect.y.toFloat,
                   s.stroke.width.toFloat,
@@ -716,8 +716,8 @@ object Shape:
             UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             Batch(
-              Uniform("Shape_DATA") -> rawJSArray(
-                scalajs.js.Array[Float](
+              Uniform("Shape_DATA") -> rawBatch(
+                Batch[Float](
                   s.stroke.width.toFloat,
                   fillType(s.fill),
                   0.0f,
@@ -758,8 +758,8 @@ object Shape:
             UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), STROKE_COLOR (vec4), START (vec2), END (vec2)
             Batch(
-              Uniform("Shape_DATA") -> rawJSArray(
-                scalajs.js.Array[Float](
+              Uniform("Shape_DATA") -> rawBatch(
+                Batch[Float](
                   s.stroke.width.toFloat,
                   0.0f,
                   0.0f,
@@ -808,8 +808,8 @@ object Shape:
             UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), FILL_TYPE (float), COUNT (float), STROKE_COLOR (vec4)
             Batch(
-              Uniform("Shape_DATA") -> rawJSArray(
-                scalajs.js.Array[Float](
+              Uniform("Shape_DATA") -> rawBatch(
+                Batch[Float](
                   s.stroke.width.toFloat,
                   fillType(s.fill),
                   verts.length.toFloat,
@@ -822,7 +822,7 @@ object Shape:
               )
             ) ++
               UniformDataHelpers.fillToUniformData(s.fill, "SHAPE") ++
-              (Batch(Uniform("VERTICES") -> array[vec2](16, verts.toArray)))
+              (Batch(Uniform("VERTICES") -> batch[vec2](16, verts)))
           )
 
         s.lighting match {

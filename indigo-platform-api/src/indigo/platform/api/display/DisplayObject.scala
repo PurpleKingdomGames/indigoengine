@@ -7,36 +7,37 @@ import indigo.scenegraph.CloneBatchData
 import indigo.scenegraph.CloneId
 import indigo.scenegraph.CloneTileData
 import indigo.shaders.ShaderId
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 
 sealed trait DisplayEntity
 
 final case class DisplayGroup(
     transform: CheapMatrix4,
-    entities: scalajs.js.Array[DisplayEntity]
+    entities: Batch[DisplayEntity]
 ) extends DisplayEntity derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
-    DisplayGroup(CheapMatrix4.identity, scalajs.js.Array())
+    DisplayGroup(CheapMatrix4.identity, Batch())
 
-final case class DisplayTextLetters(letters: scalajs.js.Array[DisplayEntity]) extends DisplayEntity derives CanEqual
+final case class DisplayTextLetters(letters: Batch[DisplayEntity]) extends DisplayEntity derives CanEqual
 object DisplayTextLetters:
   val empty: DisplayTextLetters =
-    DisplayTextLetters(scalajs.js.Array())
+    DisplayTextLetters(Batch())
 
 final case class DisplayCloneBatch(
     id: CloneId,
-    cloneData: scalajs.js.Array[CloneBatchData]
+    cloneData: Batch[CloneBatchData]
 ) extends DisplayEntity derives CanEqual
 
 final case class DisplayCloneTiles(
     id: CloneId,
-    cloneData: scalajs.js.Array[CloneTileData]
+    cloneData: Batch[CloneTileData]
 ) extends DisplayEntity derives CanEqual
 
 final case class DisplayMutants(
     id: CloneId,
-    cloneData: scalajs.js.Array[scalajs.js.Array[DisplayObjectUniformData]]
+    cloneData: Batch[Batch[DisplayObjectUniformData]]
 ) extends DisplayEntity derives CanEqual
 
 final case class DisplayObject(
@@ -69,7 +70,7 @@ final case class DisplayObject(
     atlasWidth: Float,
     atlasHeight: Float,
     shaderId: ShaderId,
-    shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
+    shaderUniformData: Batch[DisplayObjectUniformData]
 ) extends DisplayEntity derives CanEqual
 object DisplayObject:
 
@@ -96,7 +97,7 @@ object DisplayObject:
       textureSize: Vector2,
       atlasSize: Vector2,
       shaderId: ShaderId,
-      shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
+      shaderUniformData: Batch[DisplayObjectUniformData]
   ): DisplayObject =
     DisplayObject(
       x,
@@ -131,5 +132,4 @@ object DisplayObject:
       shaderUniformData
     )
 
-final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: scalajs.js.Array[Float])
-    derives CanEqual
+final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Batch[Float]) derives CanEqual

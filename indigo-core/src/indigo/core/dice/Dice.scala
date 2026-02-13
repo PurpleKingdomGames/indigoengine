@@ -416,19 +416,20 @@ object Dice:
     def nextBoolean(): Boolean =
       nextInt() % 2 == 0
 
-    // Fisher-Yates shuffle for List[A]
+    // Fisher-Yates shuffle for Batch[A]
     // More efficient but less readable than `items.sortBy(_ => nextInt())`
     def shuffle[A](items: Batch[A]): Batch[A] =
-      val array = items.toJSArray
+      val vec = items.toVector
+      val buf = vec.toBuffer
 
-      for (i <- array.indices.reverse) {
+      for (i <- buf.indices.reverse) {
         val j    = nextInt().abs % (i + 1)
-        val temp = array(i)
-        array(i) = array(j)
-        array(j) = temp
+        val temp = buf(i)
+        buf(i) = buf(j)
+        buf(j) = temp
       }
 
-      Batch(array)
+      Batch.fromVector(buf.toVector)
 
     // Generate an alphanumeric string of a given length
     def alphanumeric(limit: Int): String =

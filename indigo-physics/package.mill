@@ -17,3 +17,9 @@ object `package` extends Module:
       build.`indigo-scenegraph`.js
     )
 
+  object jvm extends SharedJVM, PlatformScalaModule: //, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigo-scenegraph`.jvm
+    )
+

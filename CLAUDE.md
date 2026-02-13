@@ -103,20 +103,33 @@ indigoengine-shared (base module)
     ↓
 indigo-core
     ↓
-ultraviolet (jvm & js) ─────────────────┐
-    ↓                                   │
-indigo-shaders                          │
-    ↓                                   │
-indigo-scenegraph                       │
-    ↓                                   │
-indigo-physics                          │
-    ↓                                   │
-indigo ←────────────────────────────────┘
+ultraviolet (jvm & js)
+    ↓
+indigo-shaders
+    ↓
+indigo-scenegraph
+    ↓
+├── indigo-physics
+│       ↓
+│   indigo-platform-api (platform abstraction)
+│       ↓
+│   indigo-js-platform (JS/browser implementation)
+│       ↓
+└──→ indigo ←───────────────────────────────────
     ↓
 indigo-extras
     ↓
 roguelike-starterkit
 ```
+
+### Platform Abstraction
+
+The engine uses a platform abstraction layer to separate platform-agnostic code from platform-specific implementations:
+
+- **indigo-platform-api**: Defines the `Platform` trait and related types (renderer API, display objects, asset mapping). This module is platform-agnostic.
+- **indigo-js-platform**: The JavaScript/browser implementation using Scala.js, WebGL, and DOM APIs. Implements `JsPlatform` which provides animation frames, storage, audio, networking, and WebGL rendering.
+
+This architecture enables future support for alternative platforms (native, server-side, etc.) by implementing the `Platform` trait for different runtimes.
 
 Tyrian has a separate dependency chain:
 ```

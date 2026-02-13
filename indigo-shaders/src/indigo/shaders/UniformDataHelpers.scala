@@ -10,8 +10,8 @@ object UniformDataHelpers:
     fill match
       case Fill.Color(color) =>
         Batch(
-          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawJSArray(
-            scalajs.js.Array(
+          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawBatch(
+            Batch(
               0.0f,
               0.0f,
               0.0f,
@@ -30,8 +30,8 @@ object UniformDataHelpers:
 
       case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
         Batch(
-          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawJSArray(
-            scalajs.js.Array(
+          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawBatch(
+            Batch(
               fromPoint.x.toFloat,
               fromPoint.y.toFloat,
               toPoint.x.toFloat,
@@ -50,8 +50,8 @@ object UniformDataHelpers:
 
       case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
         Batch(
-          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawJSArray(
-            scalajs.js.Array(
+          Uniform(prefix + "_GRADIENT") -> ShaderPrimitive.rawBatch(
+            Batch(
               fromPoint.x.toFloat,
               fromPoint.y.toFloat,
               toPoint.x.toFloat,

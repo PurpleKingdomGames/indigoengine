@@ -5,11 +5,13 @@ import indigo.platform.api.display.DisplayObject
 import indigo.platform.api.display.DisplayObjectUniformData
 import indigo.scenegraph.Camera
 import indigo.shaders.ShaderId
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.KVP
 
 final class ProcessedSceneData(
-    val layers: scalajs.js.Array[DisplayLayer],
-    val cloneBlankDisplayObjects: scalajs.js.Dictionary[DisplayObject],
+    val layers: Batch[DisplayLayer],
+    val cloneBlankDisplayObjects: KVP[DisplayObject],
     val shaderId: ShaderId,
-    val shaderUniformData: scalajs.js.Array[DisplayObjectUniformData],
+    val shaderUniformData: Batch[DisplayObjectUniformData],
     val camera: Option[Camera]
 )

@@ -20,3 +20,12 @@ object `package` extends Module:
       mvn"io.circe::circe-core::0.14.13",
       mvn"io.circe::circe-parser::0.14.13"
     )
+
+  // object jvm extends SharedJVM, PlatformScalaModule: //, SharedPublish:
+
+  //   def moduleDeps = Seq(build.indigo.jvm)
+
+  //   def mvnDeps = Seq(
+  //     mvn"io.circe::circe-core::0.14.13",
+  //     mvn"io.circe::circe-parser::0.14.13"
+  //   )

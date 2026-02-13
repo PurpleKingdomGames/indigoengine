@@ -35,8 +35,8 @@ class ToUniformBlockTests extends munit.FunSuite {
 
     assertEquals(actual.uniformHash, expected.uniformHash)
     assertEquals(
-      actual.uniforms.map(_._2.toArray.map(_.toString).mkString(", ")),
-      expected.uniforms.map(_._2.toArray.map(_.toString).mkString(", "))
+      actual.uniforms.map(_._2.toBatch.map(_.toString).mkString(", ")),
+      expected.uniforms.map(_._2.toBatch.map(_.toString).mkString(", "))
     )
   }
 

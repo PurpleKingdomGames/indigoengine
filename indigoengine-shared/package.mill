@@ -4,8 +4,10 @@ import mill.*
 import mill.scalalib.*
 import mill.scalalib.publish.*
 import build.SharedJS
+import build.SharedJVM
 import build.SharedPublish
 
 object `package` extends Module:
 
   object js extends SharedJS, PlatformScalaModule, SharedPublish
+  object jvm extends SharedJVM, PlatformScalaModule //, SharedPublish

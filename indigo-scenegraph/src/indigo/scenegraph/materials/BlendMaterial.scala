@@ -2,7 +2,7 @@ package indigo.scenegraph.materials
 
 import indigo.core.datatypes.Fill
 import indigo.shaders.ShaderData
-import indigo.shaders.ShaderPrimitive.rawJSArray
+import indigo.shaders.ShaderPrimitive.rawBatch
 import indigo.shaders.StandardShaders
 import indigo.shaders.Uniform
 import indigo.shaders.UniformBlock
@@ -30,7 +30,7 @@ object BlendMaterial {
           UniformBlock(
             UniformBlockName("IndigoLightingBlendData"),
             Batch(
-              Uniform("AMBIENT_LIGHT_COLOR") -> rawJSArray(
+              Uniform("AMBIENT_LIGHT_COLOR") -> rawBatch(
                 ambient.r.toFloat,
                 ambient.g.toFloat,
                 ambient.b.toFloat,
@@ -86,8 +86,8 @@ object BlendMaterial {
             UniformBlockName("IndigoBlendEffectsData"),
             Batch(
               // ALPHA_SATURATION_OVERLAYTYPE_BG (vec4), TINT (vec4)
-              Uniform("BlendEffects_DATA") -> rawJSArray(
-                scalajs.js.Array(
+              Uniform("BlendEffects_DATA") -> rawBatch(
+                Batch(
                   alpha.toFloat,
                   saturation.toFloat,
                   overlayType,

@@ -86,7 +86,7 @@ object ToUniformBlock:
 
     given ShaderTypeOf[ultraviolet.syntax.mat4] with
       def toShaderPrimitive(value: ultraviolet.syntax.mat4): ShaderPrimitive =
-        ShaderPrimitive.mat4(value.mat)
+        ShaderPrimitive.mat4(Batch.fromVector(value.mat.toVector))
 
     given ShaderTypeOf[Int] with
       def toShaderPrimitive(value: Int): ShaderPrimitive =
@@ -160,11 +160,11 @@ object ToUniformBlock:
       def toShaderPrimitive(value: Array[Float]): ShaderPrimitive =
         ShaderPrimitive.rawArray(value)
 
-    import scalajs.js.Array as JSArray
+    // import scalajs.js.Array as JSArray
 
-    given ShaderTypeOf[JSArray[Float]] with
-      def toShaderPrimitive(value: JSArray[Float]): ShaderPrimitive =
-        ShaderPrimitive.rawJSArray(value)
+    // given ShaderTypeOf[JSArray[Float]] with
+    //   def toShaderPrimitive(value: JSArray[Float]): ShaderPrimitive =
+    //     ShaderPrimitive.rawJSArray(value)
 
   final case class UBODef(name: String, fields: List[UBOField]):
     def toUniformBlock: UniformBlock =

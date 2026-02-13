@@ -1,5 +1,8 @@
 package indigo.core.utils
 
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.KVP
+
 import scala.annotation.nowarn
 
 /** QuickCache is a handy way to avoid expensive re-calculation of data. It is a side-effecting arrangement that Indigo
@@ -11,7 +14,7 @@ import scala.annotation.nowarn
   * QuickCache("key")(obj)
   * ```
   */
-final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
+final class QuickCache[A](private val cache: KVP[A]):
 
   def fetch(key: CacheKey): Option[A] =
     cache.get(key.toString)
@@ -22,10 +25,11 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     v
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def fetchOrAdd(key: CacheKey, disabled: Boolean, value: => A): A =
     if (disabled) value
     else
-      try cache(key.toString)
+      try cache.get(key.toString).getOrElse(throw new IndexOutOfBoundsException)
       catch {
         case _: Throwable =>
           add(key, value)
@@ -45,17 +49,18 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     this
   }
 
-  def keys: List[CacheKey] =
-    cache.keys.map(CacheKey(_)).toList
+  def keys: Batch[CacheKey] =
+    cache.keys.map(CacheKey(_))
 
-  def all: List[(CacheKey, A)] =
-    cache.toList.map(p => (CacheKey(p._1), p._2))
+  def all: Batch[(CacheKey, A)] =
+    cache.toBatch.map(p => (CacheKey(p._1), p._2))
 
   def entryExistsFor(key: CacheKey): Boolean =
     cache.keys.exists(_ == key.toString)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def unsafeFetch(key: CacheKey): A =
-    cache(key.toString)
+    cache.get(key.toString).getOrElse(throw new IndexOutOfBoundsException)
 
   def size: Int =
     cache.size
@@ -74,7 +79,7 @@ object QuickCache:
     cache.fetchOrAdd(CacheKey(key), disabled, value)
 
   def empty[A]: QuickCache[A] =
-    new QuickCache[A](scalajs.js.Dictionary.empty[A])
+    new QuickCache[A](KVP.empty[A])
 
 opaque type CacheKey = String
 object CacheKey:

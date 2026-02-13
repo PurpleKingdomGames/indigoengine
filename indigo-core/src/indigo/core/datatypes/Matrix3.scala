@@ -1,5 +1,6 @@
 package indigo.core.datatypes
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 
 import util.control.Breaks.*
@@ -35,11 +36,8 @@ final case class Matrix3(private val mat: Array[Double]) derives CanEqual:
   def flip(horizontal: Boolean, vertical: Boolean): Matrix3 =
     this * Matrix3.flip(horizontal, vertical)
 
-  def toArray: Array[Double] =
-    mat
-
-  def toList: List[Double] =
-    mat.toList
+  def toBatch: Batch[Double] =
+    Batch.fromVector(mat.toVector)
 
   def transform(vector: Vector2): Vector2 =
     Vector2(

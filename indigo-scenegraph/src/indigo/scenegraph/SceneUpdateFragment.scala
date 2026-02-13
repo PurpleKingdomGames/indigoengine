@@ -166,7 +166,7 @@ object SceneUpdateFragment:
 
   @targetName("suf-maybe-layer-entry")
   def apply(maybeLayerEntry: Option[LayerEntry]): SceneUpdateFragment =
-    val layers = maybeLayerEntry.map(Batch.apply).getOrElse(Batch.empty)
+    val layers = maybeLayerEntry.map(l => Batch(l)).getOrElse(Batch.empty)
     SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
   @targetName("suf-maybe-layer")
   def apply(maybeLayer: Option[Layer]): SceneUpdateFragment =

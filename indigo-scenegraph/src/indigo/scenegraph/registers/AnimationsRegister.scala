@@ -8,11 +8,12 @@ import indigo.core.animation.AnimationRef
 import indigo.core.datatypes.BindingKey
 import indigo.core.time.GameTime
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.KVP
 
 final class AnimationsRegister:
 
-  private val animationRegistry: scalajs.js.Dictionary[AnimationRef]   = scalajs.js.Dictionary.empty
-  private val animationStates: scalajs.js.Dictionary[AnimationMemento] = scalajs.js.Dictionary.empty
+  private val animationRegistry: KVP[AnimationRef]   = KVP.empty
+  private val animationStates: KVP[AnimationMemento] = KVP.empty
 
   def kill(): Unit =
     animationRegistry.clear()

@@ -1,5 +1,6 @@
 package indigo.core.datatypes
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 
 import util.control.Breaks.*
@@ -9,6 +10,9 @@ opaque type Matrix4 = Array[Double]
 object Matrix4:
 
   extension (m: Matrix4)
+    def toBatch: Batch[Double] =
+      Batch.fromVector(m.toVector)
+
     def toArray: Array[Double] =
       m
 

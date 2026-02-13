@@ -16,7 +16,7 @@ object `package` extends Module:
     def moduleDeps = Seq(
       build.`indigo-physics`.js,
       build.`indigo-platform-api`.js,
-      build.`indigo-js-platform`.js
+      build.`indigo-platform`.js
     )
 
     def mvnDeps = Seq(

@@ -7,7 +7,7 @@ import indigo.scenegraph.materials.LightingModel.Lit
 import indigo.scenegraph.materials.LightingModel.Unlit
 import indigo.shaders.ShaderData
 import indigo.shaders.ShaderId
-import indigo.shaders.ShaderPrimitive.rawJSArray
+import indigo.shaders.ShaderPrimitive.rawBatch
 import indigo.shaders.StandardShaders
 import indigo.shaders.Uniform
 import indigo.shaders.UniformBlock
@@ -75,10 +75,10 @@ object Material:
           case FillType.Tile         => 2.0
           case FillType.NineSlice(_) => 3.0
 
-      val nineSliceCenter: scalajs.js.Array[Float] =
+      val nineSliceCenter: Batch[Float] =
         fillType match
           case FillType.NineSlice(center) =>
-            scalajs.js.Array(
+            Batch(
               center.x.toFloat,
               center.y.toFloat,
               center.width.toFloat,
@@ -86,15 +86,15 @@ object Material:
             )
 
           case _ =>
-            scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f)
+            Batch(0.0f, 0.0f, 0.0f, 0.0f)
 
       val uniformBlock: UniformBlock =
         UniformBlock(
           UniformBlockName("IndigoBitmapData"),
           Batch(
             Uniform("Bitmap_FILLTYPE") ->
-              rawJSArray(
-                scalajs.js.Array(imageFillType, 0.0f, 0.0f, 0.0f) ++ nineSliceCenter
+              rawBatch(
+                Batch(imageFillType, 0.0f, 0.0f, 0.0f) ++ nineSliceCenter
               )
           )
         )
@@ -192,10 +192,10 @@ object Material:
           case FillType.Tile         => 2.0
           case FillType.NineSlice(_) => 3.0
 
-      val nineSliceCenter: scalajs.js.Array[Float] =
+      val nineSliceCenter: Batch[Float] =
         fillType match
           case FillType.NineSlice(center) =>
-            scalajs.js.Array(
+            Batch(
               center.x.toFloat,
               center.y.toFloat,
               center.width.toFloat,
@@ -203,22 +203,22 @@ object Material:
             )
 
           case _ =>
-            scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f)
+            Batch(0.0f, 0.0f, 0.0f, 0.0f)
 
       // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), NINE_SLICE_CENTER (vec4), TINT (vec4)
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
           UniformBlockName("IndigoImageEffectsData"),
           Batch(
-            Uniform("ImageEffects_DATA") -> rawJSArray(
-              scalajs.js.Array(
+            Uniform("ImageEffects_DATA") -> rawBatch(
+              Batch(
                 alpha.toFloat,
                 saturation.toFloat,
                 overlayType,
                 imageFillType
               ) ++
                 nineSliceCenter ++
-                scalajs.js.Array(
+                Batch(
                   tint.r.toFloat,
                   tint.g.toFloat,
                   tint.b.toFloat,

@@ -3,6 +3,7 @@ package indigo.shaders
 import indigo.core.datatypes.Matrix4
 import indigoengine.shared.datatypes.RGB
 import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.collections.Batch
 
 class ShaderPrimitiveTests extends munit.FunSuite {
 
@@ -11,10 +12,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'float'") {
 
     val actual =
-      array(4, List(float(1), float(2), float(3), float(4))).toArray
+      array(4, List(float(1), float(2), float(3), float(4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0)
+      List[Float](1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -23,10 +24,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'Float'") {
 
     val actual =
-      array(4, List(1.0f, 2.0f, 3.0f, 4.0f)).toArray
+      array(4, List(1.0f, 2.0f, 3.0f, 4.0f)).toBatch.toList
 
     val expected =
-      Array[Float](1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0)
+      List[Float](1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -35,10 +36,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'vec2'") {
 
     val actual =
-      array(4, List(vec2(1), vec2(2), vec2(3), vec2(4))).toArray
+      array(4, List(vec2(1), vec2(2), vec2(3), vec2(4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 0, 0, 2, 2, 0, 0, 3, 3, 0, 0, 4, 4, 0, 0)
+      List[Float](1, 1, 0, 0, 2, 2, 0, 0, 3, 3, 0, 0, 4, 4, 0, 0)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -47,10 +48,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'vec3'") {
 
     val actual =
-      array(4, List(vec3(1), vec3(2), vec3(3), vec3(4))).toArray
+      array(4, List(vec3(1), vec3(2), vec3(3), vec3(4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 1, 0, 2, 2, 2, 0, 3, 3, 3, 0, 4, 4, 4, 0)
+      List[Float](1, 1, 1, 0, 2, 2, 2, 0, 3, 3, 3, 0, 4, 4, 4, 0)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -59,10 +60,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'vec4'") {
 
     val actual =
-      array(4, List(vec4(1), vec4(2), vec4(3), vec4(4))).toArray
+      array(4, List(vec4(1), vec4(2), vec4(3), vec4(4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
+      List[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -71,10 +72,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'RGB'") {
 
     val actual =
-      array(4, List(RGB(1, 1, 1), RGB(2, 2, 2), RGB(3, 3, 3), RGB(4, 4, 4))).toArray
+      array(4, List(RGB(1, 1, 1), RGB(2, 2, 2), RGB(3, 3, 3), RGB(4, 4, 4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 1, 0, 2, 2, 2, 0, 3, 3, 3, 0, 4, 4, 4, 0)
+      List[Float](1, 1, 1, 0, 2, 2, 2, 0, 3, 3, 3, 0, 4, 4, 4, 0)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -83,10 +84,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array of 'RGBA'") {
 
     val actual =
-      array(4, List(RGBA(1, 1, 1, 1), RGBA(2, 2, 2, 2), RGBA(3, 3, 3, 3), RGBA(4, 4, 4, 4))).toArray
+      array(4, List(RGBA(1, 1, 1, 1), RGBA(2, 2, 2, 2), RGBA(3, 3, 3, 3), RGBA(4, 4, 4, 4))).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
+      List[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -97,10 +98,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
     val actual =
       rawArray(
         List[List[Float]](List(1, 1, 1, 1), List(2, 2, 2, 2), List(3, 3, 3, 3), List(4, 4, 4, 4)).flatten
-      ).toArray
+      ).toBatch.toList
 
     val expected =
-      Array[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
+      List[Float](1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -109,10 +110,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
   test("can make an array from 'mat4'") {
 
     val actual =
-      mat4.fromMatrix4(Matrix4.identity).toArray
+      mat4.fromMatrix4(Matrix4.identity).toBatch.toList
 
     val expected =
-      List[List[Float]](List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)).flatten.toArray
+      Batch.fromList(List[List[Float]](List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)).flatten).toList
 
     assertEquals(actual.toList, expected.toList)
 

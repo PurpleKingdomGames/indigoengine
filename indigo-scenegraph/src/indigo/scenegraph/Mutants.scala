@@ -12,7 +12,7 @@ import indigoengine.shared.datatypes.Radians
   */
 final case class Mutants(
     id: CloneId,
-    uniformBlocks: Array[Batch[UniformBlock]]
+    uniformBlocks: Batch[Batch[UniformBlock]]
 ) extends DependentNode[Mutants] derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
@@ -24,7 +24,7 @@ final case class Mutants(
   def withCloneId(newCloneId: CloneId): Mutants =
     this.copy(id = newCloneId)
 
-  def addBlocks(additionalBlocks: Array[Batch[UniformBlock]]): Mutants =
+  def addBlocks(additionalBlocks: Batch[Batch[UniformBlock]]): Mutants =
     this.copy(uniformBlocks = uniformBlocks ++ additionalBlocks)
 
   val eventHandlerEnabled: Boolean                                  = false
@@ -32,20 +32,20 @@ final case class Mutants(
 
 object Mutants:
 
-  def apply[A](id: CloneId, uniformBlocks: Array[Batch[A]])(using toUBO: ToUniformBlock[A]): Mutants =
+  def apply[A](id: CloneId, uniformBlocks: Batch[Batch[A]])(using toUBO: ToUniformBlock[A]): Mutants =
     Mutants(
       id,
       uniformBlocks.map(_.map(toUBO.toUniformBlock))
     )
 
-  def apply(id: CloneId, uniformBlocks: Batch[UniformBlock]): Mutants =
-    Mutants(
-      id,
-      Array(uniformBlocks)
-    )
+  // def apply(id: CloneId, uniformBlocks: Batch[UniformBlock]): Mutants =
+  //   Mutants(
+  //     id,
+  //     Array(uniformBlocks)
+  //   )
 
-  def apply[A](id: CloneId, uniformBlocks: Batch[A])(using toUBO: ToUniformBlock[A]): Mutants =
-    Mutants(
-      id,
-      Array(uniformBlocks.map(toUBO.toUniformBlock))
-    )
+  // def apply[A](id: CloneId, uniformBlocks: Batch[A])(using toUBO: ToUniformBlock[A]): Mutants =
+  //   Mutants(
+  //     id,
+  //     Array(uniformBlocks.map(toUBO.toUniformBlock))
+  //   )

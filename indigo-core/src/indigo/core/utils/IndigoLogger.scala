@@ -10,8 +10,8 @@ object IndigoLogger:
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
-  private val errorLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
-  private val debugLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
+  private val errorLogs: Array[String] = Array[String]()
+  private val debugLogs: Array[String] = Array[String]()
 
   private def formatMessage(level: String, message: String): String =
     s"""[$level] [Indigo] $message"""
@@ -25,7 +25,7 @@ object IndigoLogger:
   @nowarn("msg=unused")
   private val errorOnceString: String => Unit = message =>
     if !errorLogs.contains(message) then
-      errorLogs += message
+      errorLogs :+ message
       println(formatMessage(ERROR, message))
 
   private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
@@ -33,7 +33,7 @@ object IndigoLogger:
   @nowarn("msg=unused")
   private val debugOnceString: String => Unit = message =>
     if !debugLogs.contains(message) then
-      debugLogs += message
+      debugLogs :+ message
       println(formatMessage(DEBUG, message))
 
   def consoleLog(messages: String*): Unit =

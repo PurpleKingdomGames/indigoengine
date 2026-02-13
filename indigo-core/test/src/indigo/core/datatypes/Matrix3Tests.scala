@@ -10,9 +10,9 @@ class Matrix3Tests extends munit.FunSuite {
         (1, 0, 0),
         (0, 1, 0),
         (0, 0, 1)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(Matrix3.identity.toList, expected)
+    assertEquals(Matrix3.identity.toBatch.toList, expected)
 
   }
 
@@ -30,9 +30,9 @@ class Matrix3Tests extends munit.FunSuite {
         (1, 0, 0),
         (0, 1, 0),
         (150, 20, 1)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(matrix.translate(Vector2(140.0, 0)).toList, expected)
+    assertEquals(matrix.translate(Vector2(140.0, 0)).toBatch.toList, expected)
 
   }
 
@@ -43,9 +43,9 @@ class Matrix3Tests extends munit.FunSuite {
         (1, 0, 0),
         (0, 1, 0),
         (0, 2, 1)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(Matrix3.identity.translate(Vector2(0, 2.0)).toList, expected)
+    assertEquals(Matrix3.identity.translate(Vector2(0, 2.0)).toBatch.toList, expected)
 
   }
 
@@ -59,9 +59,9 @@ class Matrix3Tests extends munit.FunSuite {
         (c, s, 0),
         (-s, c, 0),
         (0, 0, 1)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(Matrix3.identity.rotate(Radians.PI).toList, expected)
+    assertEquals(Matrix3.identity.rotate(Radians.PI).toBatch.toList, expected)
   }
 
   test("scale") {
@@ -73,7 +73,7 @@ class Matrix3Tests extends munit.FunSuite {
         (0, 0, 1)
       )
 
-    assertEquals(Matrix3.identity.scale(Vector2(2.0, 3.0)).toList, expected.toList)
+    assertEquals(Matrix3.identity.scale(Vector2(2.0, 3.0)).toBatch.toList, expected.toBatch.toList)
 
   }
 
@@ -91,9 +91,9 @@ class Matrix3Tests extends munit.FunSuite {
         (1, 4, 7),
         (2, 5, 8),
         (3, 6, 9)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(mat.transpose.toList, expected)
+    assertEquals(mat.transpose.toBatch.toList, expected)
   }
 
   test("multiply") {
@@ -121,7 +121,7 @@ class Matrix3Tests extends munit.FunSuite {
     val actual: Matrix3 =
       mat1 * mat2
 
-    assertEquals(actual.toList, expected.toList)
+    assertEquals(actual.toBatch.toList, expected.toBatch.toList)
   }
 
   test("flip") {
@@ -137,9 +137,9 @@ class Matrix3Tests extends munit.FunSuite {
         (-1, -2, 3),
         (-4, -5, 6),
         (-7, -8, 9)
-      ).toList
+      ).toBatch.toList
 
-    assertEquals(mat.flip(true, true).toList, expected)
+    assertEquals(mat.flip(true, true).toBatch.toList, expected)
   }
 
   test("transforming vectors - translation (forwards)") {
