@@ -58,7 +58,9 @@ final case class HSL(h: Double, s: Double, l: Double) derives CanEqual:
 
   /** CSS hsl string */
   def toCSSValue: String =
-    s"hsl($h, ${s * 100}%, ${l * 100}%)"
+    def format(d: Double): String =
+      Math.round(d).toString()
+    s"hsl(${format(h)}, ${format(s * 100)}%, ${format(l * 100)}%)"
 
 object HSL:
 

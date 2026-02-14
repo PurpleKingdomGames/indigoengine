@@ -73,7 +73,9 @@ final case class HSLA(h: Double, s: Double, l: Double, a: Double) derives CanEqu
 
   /** CSS hsla string */
   def toCSSValue: String =
-    s"hsla($h, ${s * 100}%, ${l * 100}%, $a)"
+    def format(d: Double): String =
+      Math.round(d).toString()
+    s"hsla(${format(h)}, ${format(s * 100)}%, ${format(l * 100)}%, ${format(a * 100)}%)"
 
 object HSLA:
 

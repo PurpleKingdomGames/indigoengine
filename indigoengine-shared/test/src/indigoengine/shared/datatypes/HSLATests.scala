@@ -170,8 +170,8 @@ class HSLATests extends munit.FunSuite {
   }
 
   test("toCSSValue formats correctly") {
-    assertEquals(HSLA.Red.toCSSValue, "hsla(0, 100%, 50%, 1)")
-    assertEquals(HSLA(120, 0.5, 0.6, 0.5).toCSSValue, "hsla(120, 50%, 60%, 0.5)")
+    assertEquals(HSLA.Red.toCSSValue, "hsla(0, 100%, 50%, 100%)")
+    assertEquals(HSLA(120, 0.5, 0.6, 0.5).toCSSValue, "hsla(120, 50%, 60%, 50%)")
   }
 
   test("fromRGBA preserves alpha") {
