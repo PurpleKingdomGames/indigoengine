@@ -1,8 +1,8 @@
 package indigo.platform
 
 import indigo.core.events.GlobalEvent
-import indigo.platform.api.Platform
-import indigo.platform.api.PlatformFullScreen
+import indigo.platform.Platform
+import indigo.platform.PlatformFullScreen
 import indigoengine.shared.collections.Batch
 
 /** No-op JVM Platform implementation stub.

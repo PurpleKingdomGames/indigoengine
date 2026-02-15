@@ -1,6 +1,6 @@
 package indigo.next
 
-import indigo.GameLauncher
+import indigo.launchers.GameLauncher
 import indigo.next.bridge.BridgeMsg
 import org.scalajs.dom.Element
 import org.scalajs.dom.document

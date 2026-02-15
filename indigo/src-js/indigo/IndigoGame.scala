@@ -1,14 +1,14 @@
 package indigo
 
 import indigo.BootResult
-import indigo.GameLauncher
+import indigo.launchers.GameLauncher
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.ScenesFrameProcessor
-import indigo.gameengine.GameEngine
+import indigo.platform.gameengine.GameEngine
 import indigo.platform.assets.AssetCollection
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene

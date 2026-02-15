@@ -14,7 +14,6 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigoengine-shared`.js,
       build.`indigo-core`.js,
       build.ultraviolet.js
     )
@@ -22,7 +21,6 @@ object `package` extends Module:
   object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigoengine-shared`.jvm,
       build.`indigo-core`.jvm,
       build.ultraviolet.jvm
     )

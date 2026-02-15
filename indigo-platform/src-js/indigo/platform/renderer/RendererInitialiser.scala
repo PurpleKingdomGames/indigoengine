@@ -4,8 +4,8 @@ import indigo.core.config.RenderingTechnology
 import indigo.core.events.RendererDetails
 import indigo.core.utils.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.api.renderer.Renderer
-import indigo.platform.api.renderer.RendererConfig
+import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.RendererConfig
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset

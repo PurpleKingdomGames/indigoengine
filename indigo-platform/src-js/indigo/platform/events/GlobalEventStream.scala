@@ -10,7 +10,7 @@ import indigo.core.events.StorageEvent
 import indigo.core.events.ToggleFullScreen
 import indigo.core.networking.HttpRequest
 import indigo.core.networking.WebSocketEvent
-import indigo.platform.api.PlatformFullScreen
+import indigo.platform.PlatformFullScreen
 import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http
@@ -61,7 +61,7 @@ final class GlobalEventStream(
         }
       }
 
-      if errors.nonEmpty then errors foreach (e => eventQueue.enqueue(e))
+      if errors.nonEmpty then errors.foreach(e => eventQueue.enqueue(e))
       else
         eventQueue.enqueue(StorageEvent.KeysFound(keys.flatMap {
           _ match {

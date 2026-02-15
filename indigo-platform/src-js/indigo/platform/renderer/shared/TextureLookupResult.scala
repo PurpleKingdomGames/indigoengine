@@ -1,6 +1,6 @@
 package indigo.platform.renderer.shared
 
-import indigo.platform.api.AtlasId
+import indigo.platform.AtlasId
 import org.scalajs.dom.WebGLTexture
 
 final case class TextureLookupResult(name: AtlasId, texture: WebGLTexture) derives CanEqual

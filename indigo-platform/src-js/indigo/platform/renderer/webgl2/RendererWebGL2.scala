@@ -12,10 +12,10 @@ import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.events.ViewportResize
 import indigo.core.utils.QuickCache
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.api.renderer.ProcessedSceneData
-import indigo.platform.api.renderer.Renderer
-import indigo.platform.api.renderer.RendererConfig
-import indigo.platform.api.renderer.ScreenCaptureConfig
+import indigo.platform.renderer.ProcessedSceneData
+import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.RendererConfig
+import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.ContextAndCanvas

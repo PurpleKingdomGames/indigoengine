@@ -1,7 +1,7 @@
 package indigo.platform.renderer.webgl2
 
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.api.display.DisplayObjectUniformData
+import indigo.platform.display.DisplayObjectUniformData
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.WebGLHelper

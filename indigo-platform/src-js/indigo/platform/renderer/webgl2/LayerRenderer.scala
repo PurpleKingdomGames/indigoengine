@@ -2,14 +2,14 @@ package indigo.platform.renderer.webgl2
 
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.api.AtlasId
-import indigo.platform.api.display.DisplayCloneBatch
-import indigo.platform.api.display.DisplayCloneTiles
-import indigo.platform.api.display.DisplayEntity
-import indigo.platform.api.display.DisplayGroup
-import indigo.platform.api.display.DisplayMutants
-import indigo.platform.api.display.DisplayObject
-import indigo.platform.api.display.DisplayTextLetters
+import indigo.platform.AtlasId
+import indigo.platform.display.DisplayCloneBatch
+import indigo.platform.display.DisplayCloneTiles
+import indigo.platform.display.DisplayEntity
+import indigo.platform.display.DisplayGroup
+import indigo.platform.display.DisplayMutants
+import indigo.platform.display.DisplayObject
+import indigo.platform.display.DisplayTextLetters
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.TextureLookupResult

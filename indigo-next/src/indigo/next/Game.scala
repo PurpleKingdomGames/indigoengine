@@ -1,13 +1,13 @@
 package indigo.next
 
 import indigo.BootResult
-import indigo.MinimalLauncher
+import indigo.launchers.MinimalLauncher
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
-import indigo.gameengine.GameEngine
+import indigo.platform.gameengine.GameEngine
 import indigo.next.bridge.BridgeData
 import indigo.next.bridge.BridgeMsg
 import indigo.next.bridge.TyrianIndigoNextBridge
