@@ -7,7 +7,6 @@ digraph "module-deps" {
   "indigo-next.js" ["style"="solid","shape"="box"]
   "indigo-physics" ["style"="solid","shape"="box"]
   "indigo-platform" ["style"="solid","shape"="box"]
-  "indigo-platform-api" ["style"="solid","shape"="box"]
   "indigo-plugin" ["style"="solid","shape"="box"]
   "indigo-sandboxes.perf.js" ["style"="solid","shape"="box"]
   "indigo-sandboxes.physics.js" ["style"="solid","shape"="box"]
@@ -54,11 +53,9 @@ digraph "module-deps" {
   "indigo-next.js" -> "roguelike-starterkit-demo.js"
   "indigo-physics" -> "indigo"
   "indigo-platform" -> "indigo"
-  "indigo-platform-api" -> "indigo"
-  "indigo-platform-api" -> "indigo-platform"
   "indigo-plugin" -> "mill-indigo"
   "indigo-scenegraph" -> "indigo-physics"
-  "indigo-scenegraph" -> "indigo-platform-api"
+  "indigo-scenegraph" -> "indigo-platform"
   "indigo-shaders" -> "indigo-scenegraph"
   "indigoengine-shared" -> "indigo-core"
   "indigoengine-shared" -> "tyrian.js"
