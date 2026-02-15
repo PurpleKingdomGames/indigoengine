@@ -54,6 +54,7 @@ digraph "module-deps" {
   "indigo-next.js" -> "roguelike-starterkit-demo.js"
   "indigo-physics" -> "indigo"
   "indigo-platform" -> "indigo"
+  "indigo-platform-api" -> "indigo"
   "indigo-platform-api" -> "indigo-platform"
   "indigo-plugin" -> "mill-indigo"
   "indigo-scenegraph" -> "indigo-physics"

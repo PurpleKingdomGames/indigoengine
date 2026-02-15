@@ -3,12 +3,14 @@
 //> using scala 3
 //> using toolkit default
 
-/* 
+/*
 Visualises the repos modules.
 Takes the result of running ./mill visualise __.compile and simplifies it.
 
+Remeber, the diagram is compilation order, not dependency order, so sometimes links my look a little unexpected.
+
 Useage: scala-cli run simplify-deps.sc -- module-deps.dot > simplified.dot
-*/
+ */
 
 val dotFile = args(0)
 val path =
@@ -30,15 +32,15 @@ val allNodes = lines.flatMap { line =>
 val nonTestNodes = allNodes.filterNot(_.contains(".test."))
 
 // Categorize by platform suffix
-val jsNodes = nonTestNodes.filter(_.endsWith(".js.compile"))
+val jsNodes  = nonTestNodes.filter(_.endsWith(".js.compile"))
 val jvmNodes = nonTestNodes.filter(_.endsWith(".jvm.compile"))
 val plainNodes = nonTestNodes.filter { n =>
   n.endsWith(".compile") && !n.endsWith(".js.compile") && !n.endsWith(".jvm.compile")
 }
 
 // Find base names present on both js and jvm
-val jsBaseNames = jsNodes.map(_.stripSuffix(".js.compile"))
-val jvmBaseNames = jvmNodes.map(_.stripSuffix(".jvm.compile"))
+val jsBaseNames   = jsNodes.map(_.stripSuffix(".js.compile"))
+val jvmBaseNames  = jvmNodes.map(_.stripSuffix(".jvm.compile"))
 val bothPlatforms = jsBaseNames.intersect(jvmBaseNames)
 
 // Build rename map: original name -> simplified name
@@ -46,12 +48,12 @@ val renameMap: Map[String, String] =
   val jsRenames = jsNodes.map { n =>
     val base = n.stripSuffix(".js.compile")
     if bothPlatforms.contains(base) then n -> base
-    else n -> s"$base.js"
+    else n                                 -> s"$base.js"
   }
   val jvmRenames = jvmNodes.map { n =>
     val base = n.stripSuffix(".jvm.compile")
     if bothPlatforms.contains(base) then n -> base
-    else n -> s"$base.jvm"
+    else n                                 -> s"$base.jvm"
   }
   val plainRenames = plainNodes.map { n =>
     n -> n.stripSuffix(".compile")
@@ -63,7 +65,7 @@ val edges = lines
   .flatMap { line =>
     edgeRegex.findFirstMatchIn(line).map(m => (m.group(1), m.group(2)))
   }
-  .filterNot { (a, b) => a.contains(".test.") || b.contains(".test.") }
+  .filterNot((a, b) => a.contains(".test.") || b.contains(".test."))
   .flatMap { (a, b) =>
     for
       na <- renameMap.get(a)
