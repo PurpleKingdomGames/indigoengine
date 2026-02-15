@@ -1,0 +1,196 @@
+digraph "example1" {
+graph ["rankdir"="LR"]
+"indigoengine-shared.js.compile" ["style"="solid","shape"="box"]
+"indigo-core.js.compile" ["style"="solid","shape"="box"]
+"indigo-shaders.js.compile" ["style"="solid","shape"="box"]
+"ultraviolet.js.compile" ["style"="solid","shape"="box"]
+"indigo-scenegraph.js.compile" ["style"="solid","shape"="box"]
+"indigo-physics.js.compile" ["style"="solid","shape"="box"]
+"indigo-platform-api.js.compile" ["style"="solid","shape"="box"]
+"indigo-platform.js.compile" ["style"="solid","shape"="box"]
+"indigo.js.compile" ["style"="solid","shape"="box"]
+"indigo.js.test.compile" ["style"="solid","shape"="box"]
+"indigoengine-shared.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-core.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-shaders.jvm.compile" ["style"="solid","shape"="box"]
+"ultraviolet.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-scenegraph.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-physics.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-platform-api.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-platform.jvm.compile" ["style"="solid","shape"="box"]
+"indigo.jvm.compile" ["style"="solid","shape"="box"]
+"indigo.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-core.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-core.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-extras.js.compile" ["style"="solid","shape"="box"]
+"indigo-extras.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-extras.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-extras.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-json-circe.js.compile" ["style"="solid","shape"="box"]
+"indigo-json-circe.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-json-circe.jvm.compile" ["style"="solid","shape"="box"]
+"indigo-json-circe.jvm.test.compile" ["style"="solid","shape"="box"]
+"tyrian.js.compile" ["style"="solid","shape"="box"]
+"tyrian-tags.js.compile" ["style"="solid","shape"="box"]
+"indigo-next.js.compile" ["style"="solid","shape"="box"]
+"indigo-next.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-physics.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-physics.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-platform.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-platform.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-platform-api.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-platform-api.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-plugin.compile" ["style"="solid","shape"="box"]
+"indigo-plugin.test.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.perf.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.perf.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.physics.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.physics.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.sandbox.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.sandbox.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.shader.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.shader.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-indigo-bridge.js.compile" ["style"="solid","shape"="box"]
+"tyrian-io.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.tyrian-sandbox.js.compile" ["style"="solid","shape"="box"]
+"indigo-sandboxes.tyrian-sandbox.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-scenegraph.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-scenegraph.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigo-shaders.js.test.compile" ["style"="solid","shape"="box"]
+"indigo-shaders.jvm.test.compile" ["style"="solid","shape"="box"]
+"indigoengine-shared.js.test.compile" ["style"="solid","shape"="box"]
+"indigoengine-shared.jvm.test.compile" ["style"="solid","shape"="box"]
+"mill-indigo.compile" ["style"="solid","shape"="box"]
+"mill-indigo.test.compile" ["style"="solid","shape"="box"]
+"roguelike-starterkit.js.compile" ["style"="solid","shape"="box"]
+"roguelike-starterkit.js.test.compile" ["style"="solid","shape"="box"]
+"roguelike-starterkit-demo.js.compile" ["style"="solid","shape"="box"]
+"roguelike-starterkit-demo.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-htmx.js.compile" ["style"="solid","shape"="box"]
+"tyrian-htmx.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-tags.jvm.compile" ["style"="solid","shape"="box"]
+"tyrian-htmx.jvm.compile" ["style"="solid","shape"="box"]
+"tyrian-htmx.jvm.test.compile" ["style"="solid","shape"="box"]
+"tyrian-indigo-bridge.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-io.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox.js.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-io.js.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-io.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-ssr.jvm.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-ssr.jvm.test.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-ui.js.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-ui.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-zio.js.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-zio.js.compile" ["style"="solid","shape"="box"]
+"tyrian-sandboxes.sandbox-zio.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-tags.js.test.compile" ["style"="solid","shape"="box"]
+"tyrian-tags.jvm.test.compile" ["style"="solid","shape"="box"]
+"tyrian-zio.js.test.compile" ["style"="solid","shape"="box"]
+"ultraviolet.js.test.compile" ["style"="solid","shape"="box"]
+"ultraviolet.jvm.test.compile" ["style"="solid","shape"="box"]
+"ultraviolet-sandbox.js.compile" ["style"="solid","shape"="box"]
+"ultraviolet-sandbox.js.test.compile" ["style"="solid","shape"="box"]
+"indigoengine-shared.js.compile" -> "indigoengine-shared.js.test.compile"
+"indigoengine-shared.js.compile" -> "tyrian.js.compile"
+"indigoengine-shared.js.compile" -> "indigo-core.js.compile"
+"indigo-core.js.compile" -> "indigo-core.js.test.compile"
+"indigo-core.js.compile" -> "indigo-shaders.js.compile"
+"indigo-shaders.js.compile" -> "indigo-shaders.js.test.compile"
+"indigo-shaders.js.compile" -> "indigo-scenegraph.js.compile"
+"ultraviolet.js.compile" -> "ultraviolet.js.test.compile"
+"ultraviolet.js.compile" -> "indigo-shaders.js.compile"
+"indigo-scenegraph.js.compile" -> "indigo-scenegraph.js.test.compile"
+"indigo-scenegraph.js.compile" -> "indigo-platform-api.js.compile"
+"indigo-scenegraph.js.compile" -> "indigo-physics.js.compile"
+"indigo-physics.js.compile" -> "indigo-physics.js.test.compile"
+"indigo-physics.js.compile" -> "indigo.js.compile"
+"indigo-platform-api.js.compile" -> "indigo-platform-api.js.test.compile"
+"indigo-platform-api.js.compile" -> "indigo-platform.js.compile"
+"indigo-platform.js.compile" -> "indigo-platform.js.test.compile"
+"indigo-platform.js.compile" -> "indigo.js.compile"
+"indigo.js.compile" -> "tyrian-indigo-bridge.js.compile"
+"indigo.js.compile" -> "indigo-next.js.compile"
+"indigo.js.compile" -> "indigo-json-circe.js.compile"
+"indigo.js.compile" -> "indigo-extras.js.compile"
+"indigo.js.compile" -> "indigo.js.test.compile"
+"indigoengine-shared.jvm.compile" -> "indigoengine-shared.jvm.test.compile"
+"indigoengine-shared.jvm.compile" -> "indigo-core.jvm.compile"
+"indigo-core.jvm.compile" -> "indigo-core.jvm.test.compile"
+"indigo-core.jvm.compile" -> "indigo-shaders.jvm.compile"
+"indigo-shaders.jvm.compile" -> "indigo-shaders.jvm.test.compile"
+"indigo-shaders.jvm.compile" -> "indigo-scenegraph.jvm.compile"
+"ultraviolet.jvm.compile" -> "ultraviolet.jvm.test.compile"
+"ultraviolet.jvm.compile" -> "indigo-shaders.jvm.compile"
+"indigo-scenegraph.jvm.compile" -> "indigo-scenegraph.jvm.test.compile"
+"indigo-scenegraph.jvm.compile" -> "indigo-platform-api.jvm.compile"
+"indigo-scenegraph.jvm.compile" -> "indigo-physics.jvm.compile"
+"indigo-physics.jvm.compile" -> "indigo-physics.jvm.test.compile"
+"indigo-physics.jvm.compile" -> "indigo.jvm.compile"
+"indigo-platform-api.jvm.compile" -> "indigo-platform-api.jvm.test.compile"
+"indigo-platform-api.jvm.compile" -> "indigo-platform.jvm.compile"
+"indigo-platform.jvm.compile" -> "indigo-platform.jvm.test.compile"
+"indigo-platform.jvm.compile" -> "indigo.jvm.compile"
+"indigo.jvm.compile" -> "indigo-json-circe.jvm.compile"
+"indigo.jvm.compile" -> "indigo-extras.jvm.compile"
+"indigo.jvm.compile" -> "indigo.jvm.test.compile"
+"indigo-extras.js.compile" -> "ultraviolet-sandbox.js.compile"
+"indigo-extras.js.compile" -> "roguelike-starterkit.js.compile"
+"indigo-extras.js.compile" -> "indigo-sandboxes.tyrian-sandbox.js.compile"
+"indigo-extras.js.compile" -> "indigo-sandboxes.shader.js.compile"
+"indigo-extras.js.compile" -> "indigo-sandboxes.sandbox.js.compile"
+"indigo-extras.js.compile" -> "indigo-sandboxes.physics.js.compile"
+"indigo-extras.js.compile" -> "indigo-sandboxes.perf.js.compile"
+"indigo-extras.js.compile" -> "indigo-extras.js.test.compile"
+"indigo-extras.jvm.compile" -> "indigo-extras.jvm.test.compile"
+"indigo-json-circe.js.compile" -> "ultraviolet-sandbox.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-sandboxes.tyrian-sandbox.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-sandboxes.shader.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-sandboxes.sandbox.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-sandboxes.physics.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-sandboxes.perf.js.compile"
+"indigo-json-circe.js.compile" -> "indigo-json-circe.js.test.compile"
+"indigo-json-circe.jvm.compile" -> "indigo-json-circe.jvm.test.compile"
+"tyrian.js.compile" -> "tyrian-zio.js.compile"
+"tyrian.js.compile" -> "tyrian-sandboxes.sandbox-ui.js.compile"
+"tyrian.js.compile" -> "tyrian-sandboxes.sandbox.js.compile"
+"tyrian.js.compile" -> "tyrian.js.test.compile"
+"tyrian.js.compile" -> "tyrian-io.js.compile"
+"tyrian.js.compile" -> "tyrian-indigo-bridge.js.compile"
+"tyrian.js.compile" -> "indigo-next.js.compile"
+"tyrian-tags.js.compile" -> "tyrian-tags.js.test.compile"
+"tyrian-tags.js.compile" -> "tyrian-htmx.js.compile"
+"tyrian-tags.js.compile" -> "tyrian.js.compile"
+"indigo-next.js.compile" -> "roguelike-starterkit-demo.js.compile"
+"indigo-next.js.compile" -> "indigo-next.js.test.compile"
+"indigo-plugin.compile" -> "mill-indigo.compile"
+"indigo-plugin.compile" -> "indigo-plugin.test.compile"
+"indigo-sandboxes.perf.js.compile" -> "indigo-sandboxes.perf.js.test.compile"
+"indigo-sandboxes.physics.js.compile" -> "indigo-sandboxes.physics.js.test.compile"
+"indigo-sandboxes.sandbox.js.compile" -> "indigo-sandboxes.sandbox.js.test.compile"
+"indigo-sandboxes.shader.js.compile" -> "indigo-sandboxes.shader.js.test.compile"
+"tyrian-indigo-bridge.js.compile" -> "tyrian-indigo-bridge.js.test.compile"
+"tyrian-indigo-bridge.js.compile" -> "indigo-sandboxes.tyrian-sandbox.js.compile"
+"tyrian-io.js.compile" -> "tyrian-sandboxes.sandbox-io.js.compile"
+"tyrian-io.js.compile" -> "tyrian-io.js.test.compile"
+"tyrian-io.js.compile" -> "indigo-sandboxes.tyrian-sandbox.js.compile"
+"indigo-sandboxes.tyrian-sandbox.js.compile" -> "indigo-sandboxes.tyrian-sandbox.js.test.compile"
+"mill-indigo.compile" -> "mill-indigo.test.compile"
+"roguelike-starterkit.js.compile" -> "roguelike-starterkit-demo.js.compile"
+"roguelike-starterkit.js.compile" -> "roguelike-starterkit.js.test.compile"
+"roguelike-starterkit-demo.js.compile" -> "roguelike-starterkit-demo.js.test.compile"
+"tyrian-htmx.js.compile" -> "tyrian-htmx.js.test.compile"
+"tyrian-tags.jvm.compile" -> "tyrian-tags.jvm.test.compile"
+"tyrian-tags.jvm.compile" -> "tyrian-htmx.jvm.compile"
+"tyrian-htmx.jvm.compile" -> "tyrian-sandboxes.sandbox-ssr.jvm.compile"
+"tyrian-htmx.jvm.compile" -> "tyrian-htmx.jvm.test.compile"
+"tyrian-sandboxes.sandbox.js.compile" -> "tyrian-sandboxes.sandbox.js.test.compile"
+"tyrian-sandboxes.sandbox-io.js.compile" -> "tyrian-sandboxes.sandbox-io.js.test.compile"
+"tyrian-sandboxes.sandbox-ssr.jvm.compile" -> "tyrian-sandboxes.sandbox-ssr.jvm.test.compile"
+"tyrian-sandboxes.sandbox-ui.js.compile" -> "tyrian-sandboxes.sandbox-ui.js.test.compile"
+"tyrian-zio.js.compile" -> "tyrian-zio.js.test.compile"
+"tyrian-zio.js.compile" -> "tyrian-sandboxes.sandbox-zio.js.compile"
+"tyrian-sandboxes.sandbox-zio.js.compile" -> "tyrian-sandboxes.sandbox-zio.js.test.compile"
+"ultraviolet-sandbox.js.compile" -> "ultraviolet-sandbox.js.test.compile"
+}

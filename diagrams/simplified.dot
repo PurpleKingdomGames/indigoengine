@@ -1,0 +1,79 @@
+digraph "module-deps" {
+  graph ["rankdir"="LR"]
+  "indigo" ["style"="solid","shape"="box"]
+  "indigo-core" ["style"="solid","shape"="box"]
+  "indigo-extras" ["style"="solid","shape"="box"]
+  "indigo-json-circe" ["style"="solid","shape"="box"]
+  "indigo-next.js" ["style"="solid","shape"="box"]
+  "indigo-physics" ["style"="solid","shape"="box"]
+  "indigo-platform" ["style"="solid","shape"="box"]
+  "indigo-platform-api" ["style"="solid","shape"="box"]
+  "indigo-plugin" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.perf.js" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.physics.js" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.sandbox.js" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.shader.js" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.tyrian-sandbox.js" ["style"="solid","shape"="box"]
+  "indigo-scenegraph" ["style"="solid","shape"="box"]
+  "indigo-shaders" ["style"="solid","shape"="box"]
+  "indigoengine-shared" ["style"="solid","shape"="box"]
+  "mill-indigo" ["style"="solid","shape"="box"]
+  "roguelike-starterkit-demo.js" ["style"="solid","shape"="box"]
+  "roguelike-starterkit.js" ["style"="solid","shape"="box"]
+  "tyrian-htmx" ["style"="solid","shape"="box"]
+  "tyrian-indigo-bridge.js" ["style"="solid","shape"="box"]
+  "tyrian-io.js" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-io.js" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-ssr.jvm" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-ui.js" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-zio.js" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox.js" ["style"="solid","shape"="box"]
+  "tyrian-tags" ["style"="solid","shape"="box"]
+  "tyrian-zio.js" ["style"="solid","shape"="box"]
+  "tyrian.js" ["style"="solid","shape"="box"]
+  "ultraviolet" ["style"="solid","shape"="box"]
+  "ultraviolet-sandbox.js" ["style"="solid","shape"="box"]
+  "indigo" -> "indigo-extras"
+  "indigo" -> "indigo-json-circe"
+  "indigo" -> "indigo-next.js"
+  "indigo" -> "tyrian-indigo-bridge.js"
+  "indigo-core" -> "indigo-shaders"
+  "indigo-extras" -> "indigo-sandboxes.perf.js"
+  "indigo-extras" -> "indigo-sandboxes.physics.js"
+  "indigo-extras" -> "indigo-sandboxes.sandbox.js"
+  "indigo-extras" -> "indigo-sandboxes.shader.js"
+  "indigo-extras" -> "indigo-sandboxes.tyrian-sandbox.js"
+  "indigo-extras" -> "roguelike-starterkit.js"
+  "indigo-extras" -> "ultraviolet-sandbox.js"
+  "indigo-json-circe" -> "indigo-sandboxes.perf.js"
+  "indigo-json-circe" -> "indigo-sandboxes.physics.js"
+  "indigo-json-circe" -> "indigo-sandboxes.sandbox.js"
+  "indigo-json-circe" -> "indigo-sandboxes.shader.js"
+  "indigo-json-circe" -> "indigo-sandboxes.tyrian-sandbox.js"
+  "indigo-json-circe" -> "ultraviolet-sandbox.js"
+  "indigo-next.js" -> "roguelike-starterkit-demo.js"
+  "indigo-physics" -> "indigo"
+  "indigo-platform" -> "indigo"
+  "indigo-platform-api" -> "indigo-platform"
+  "indigo-plugin" -> "mill-indigo"
+  "indigo-scenegraph" -> "indigo-physics"
+  "indigo-scenegraph" -> "indigo-platform-api"
+  "indigo-shaders" -> "indigo-scenegraph"
+  "indigoengine-shared" -> "indigo-core"
+  "indigoengine-shared" -> "tyrian.js"
+  "roguelike-starterkit.js" -> "roguelike-starterkit-demo.js"
+  "tyrian-htmx" -> "tyrian-sandboxes.sandbox-ssr.jvm"
+  "tyrian-indigo-bridge.js" -> "indigo-sandboxes.tyrian-sandbox.js"
+  "tyrian-io.js" -> "indigo-sandboxes.tyrian-sandbox.js"
+  "tyrian-io.js" -> "tyrian-sandboxes.sandbox-io.js"
+  "tyrian-tags" -> "tyrian-htmx"
+  "tyrian-tags" -> "tyrian.js"
+  "tyrian-zio.js" -> "tyrian-sandboxes.sandbox-zio.js"
+  "tyrian.js" -> "indigo-next.js"
+  "tyrian.js" -> "tyrian-indigo-bridge.js"
+  "tyrian.js" -> "tyrian-io.js"
+  "tyrian.js" -> "tyrian-sandboxes.sandbox-ui.js"
+  "tyrian.js" -> "tyrian-sandboxes.sandbox.js"
+  "tyrian.js" -> "tyrian-zio.js"
+  "ultraviolet" -> "indigo-shaders"
+}
