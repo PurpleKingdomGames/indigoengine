@@ -2,34 +2,14 @@ package indigo.gameengine
 
 import indigo.core.Outcome
 import indigo.core.animation.*
-// import indigo.core.assets.AssetName
-// import indigo.core.assets.AssetType
-// import indigo.core.config.GameConfig
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
-// import indigo.core.input.GamepadInputCapture
-// import indigo.core.utils.IndigoLogger
-// import indigo.platform.JsPlatform
-// import indigo.platform.api.AssetMapping
-// import indigo.platform.api.renderer.Renderer
 import indigo.platform.assets.*
-// import indigo.platform.audio.AudioPlayer
-// import indigo.platform.events.GlobalEventStream
-// import indigo.platform.input.GamepadInputCaptureImpl
-// import indigo.platform.storage.Storage
-// import indigo.scenegraph.registers.AnimationsRegister
-// import indigo.scenegraph.registers.BoundaryLocator
-// import indigo.scenegraph.registers.FontRegister
-// import indigo.shaders.BlendShader
-// import indigo.shaders.EntityShader
 import indigo.shaders.ShaderProgram
-// import indigo.shaders.ShaderRegister
-// import indigo.shaders.StandardShaders
-// import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
-// import indigo.shared.platform.SceneProcessor
 import indigoengine.shared.collections.Batch
+
 import scala.annotation.nowarn
 // import org.scalajs.dom.Element
 // import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

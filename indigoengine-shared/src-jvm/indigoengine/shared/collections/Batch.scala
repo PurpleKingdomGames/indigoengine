@@ -306,7 +306,7 @@ object Batch:
   /** Creates a Batch from a Scala array. */
   def fromArray[A](values: Array[A]): Batch[A] =
     Wrapped(values.toVector)
-    
+
   /** Creates a Batch from a List. */
   def fromList[A](values: List[A]): Batch[A] =
     Wrapped(Vector.from(values))

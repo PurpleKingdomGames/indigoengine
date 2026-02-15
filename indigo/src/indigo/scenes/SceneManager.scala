@@ -10,11 +10,11 @@ import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.KVP
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
-import indigoengine.shared.collections.KVP
 
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]],
@@ -29,7 +29,8 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   @nowarn("msg=unused")
   private val subSystemStates: KVP[SubSystemsRegister[GameModel]] =
-    KVP.empty[SubSystemsRegister[GameModel]]
+    KVP
+      .empty[SubSystemsRegister[GameModel]]
       .addAll(
         scenes.toBatch.map { s =>
           val r = new SubSystemsRegister[GameModel]()

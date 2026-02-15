@@ -136,7 +136,7 @@ sealed trait Batch[+A]:
   def insert[B >: A](index: Int, value: B): Batch[B] =
     val p = _jsArray.splitAt(index)
     Batch.fromJSArray((p._1 :+ value) ++ p._2)
-    
+
   def replace[B >: A](index: Int, value: B): Batch[B] =
     val p = _jsArray.splitAt(index)
     Batch.fromJSArray((p._1 :+ value) ++ p._2.drop(1))

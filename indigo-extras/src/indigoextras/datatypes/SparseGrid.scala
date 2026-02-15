@@ -44,7 +44,8 @@ final class SparseGrid[A](
         val idx = SparseGrid.pointToIndex(toInsert._1, size.width)
         val tt  = toInsert._2
 
-        if idx < length then acc.replace(idx, Some(tt)) else acc
+        if idx < length then acc.replace(idx, Some(tt))
+        else acc
       }
 
     new SparseGrid(size, updated)
@@ -113,7 +114,6 @@ final class SparseGrid[A](
 
   /** Returns all set values with their grid positions.
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toPositionedBatch: Batch[(Point, A)] =
     val count = length
 
@@ -127,7 +127,6 @@ final class SparseGrid[A](
 
   /** Returns all values with their grid positions in a given region.
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def toPositionedBatch(region: Rectangle): Batch[(Point, A)] =
     val count = length
 
@@ -242,5 +241,5 @@ object SparseGrid:
   def apply[A](size: Size): SparseGrid[A] =
     new SparseGrid[A](
       size,
-      Batch.empty[Option[A]]
+      Batch.fill(size.width * size.height)(Option.empty[A])
     )

@@ -53,7 +53,7 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
         // increase randomly the value at a random point
         val n = context.frame.dice.roll(model.data.length) - 1
         val v = (model.data(n) + context.frame.dice.roll(increase)) % 256
-        
+
         Outcome(model.copy(data = model.data.update(n, v)))
 
     case _ => Outcome(model)
