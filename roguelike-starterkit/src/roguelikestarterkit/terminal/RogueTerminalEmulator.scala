@@ -6,8 +6,6 @@ import roguelikestarterkit.Tile
 
 import scala.annotation.tailrec
 
-import scalajs.js
-
 /** `RogueTerminalEmulator` is like the `TerminalEmulator` but a little more daring and dangerous. Represents an
   * mutable, packed populated terminal. It is more performant, relative to `TerminalEmulator`, but also requires more
   * care since it's a mutable structure. There are no empty spaces in this terminal, empty tiles are filled with the
@@ -15,17 +13,17 @@ import scalajs.js
   */
 final class RogueTerminalEmulator(
     val size: Size,
-    _tiles: js.Array[Tile],
-    _foreground: js.Array[RGBA],
-    _background: js.Array[RGBA]
+    _tiles: Array[Tile],
+    _foreground: Array[RGBA],
+    _background: Array[RGBA]
 ) extends Terminal:
   lazy val length: Int                   = size.width * size.height
-  lazy val tiles: Batch[Tile]            = Batch(_tiles.concat())
-  lazy val foregroundColors: Batch[RGBA] = Batch(_foreground.concat())
-  lazy val backgroundColors: Batch[RGBA] = Batch(_foreground.concat())
+  lazy val tiles: Batch[Tile]            = Batch.fromArray(_tiles.clone())
+  lazy val foregroundColors: Batch[RGBA] = Batch.fromArray(_foreground.clone())
+  lazy val backgroundColors: Batch[RGBA] = Batch.fromArray(_foreground.clone())
 
   override def clone(): RogueTerminalEmulator =
-    new RogueTerminalEmulator(size, _tiles.concat(), _foreground.concat(), _background.concat())
+    new RogueTerminalEmulator(size, _tiles.clone(), _foreground.clone(), _background.clone())
 
   private def updateAt(
       index: Int,
@@ -210,13 +208,13 @@ final class RogueTerminalEmulator(
   def toTileBatch: Batch[MapTile] =
     val count = length
     var i     = 0
-    val acc   = new js.Array[MapTile](count)
+    val acc   = new Array[MapTile](count)
 
     while i < count do
       acc(i) = MapTile(_tiles(i), _foreground(i), _background(i))
       i += 1
 
-    Batch(acc)
+    Batch.fromArray(acc)
 
   /** Returns all MapTiles in a given region, guarantees order. */
   @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
@@ -224,7 +222,7 @@ final class RogueTerminalEmulator(
     val count = length
     var i     = 0
     var j     = 0
-    val acc   = new js.Array[MapTile](region.size.width * region.size.height)
+    val acc   = new Array[MapTile](region.size.width * region.size.height)
 
     while i < count do
       if region.contains(RogueTerminalEmulator.indexToPoint(i, size.width)) then
@@ -232,7 +230,7 @@ final class RogueTerminalEmulator(
         j += 1
       i += 1
 
-    Batch(acc)
+    Batch.fromArray(acc)
 
   /** Returns all MapTiles with their grid positions, guarantees order.
     */
@@ -240,7 +238,7 @@ final class RogueTerminalEmulator(
   def toPositionedBatch: Batch[(Point, MapTile)] =
     val count = length
     var i     = 0
-    val acc   = new js.Array[(Point, MapTile)](count)
+    val acc   = new Array[(Point, MapTile)](count)
 
     while i < count do
       acc(i) = RogueTerminalEmulator.indexToPoint(i, size.width) -> MapTile(
@@ -250,7 +248,7 @@ final class RogueTerminalEmulator(
       )
       i += 1
 
-    Batch(acc)
+    Batch.fromArray(acc)
 
   /** Returns all MapTiles with their grid positions in a given region, guarantees order.
     */
@@ -259,7 +257,7 @@ final class RogueTerminalEmulator(
     val count = length
     var i     = 0
     var j     = 0
-    val acc   = new js.Array[(Point, MapTile)](region.size.width * region.size.height)
+    val acc   = new Array[(Point, MapTile)](region.size.width * region.size.height)
 
     while i < count do
       val pt = RogueTerminalEmulator.indexToPoint(i, size.width)
@@ -272,7 +270,7 @@ final class RogueTerminalEmulator(
         j += 1
       i += 1
 
-    Batch(acc)
+    Batch.fromArray(acc)
 
   def |+|(otherConsole: Terminal): RogueTerminalEmulator =
     combine(otherConsole)
@@ -460,7 +458,7 @@ object RogueTerminalEmulator:
   def apply(size: Size): RogueTerminalEmulator =
     new RogueTerminalEmulator(
       size,
-      new js.Array(size.width * size.height),
-      new js.Array(size.width * size.height),
-      new js.Array(size.width * size.height)
+      new Array(size.width * size.height),
+      new Array(size.width * size.height),
+      new Array(size.width * size.height)
     ).fill(Terminal.EmptyTile)

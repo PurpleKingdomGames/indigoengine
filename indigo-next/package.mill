@@ -8,13 +8,24 @@ import mill.scalajslib.*
 import mill.api.BuildCtx
 
 import build.SharedJS
+import build.SharedJVM
+import build.SharedPublish
 
 object `package` extends Module:
 
-  object js extends SharedJS, PlatformScalaModule:
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps =
       Seq(
         build.`indigo`.js,
         build.`tyrian`.js
       )
+
+  // Requires a JVM version of tyrian or tyrian's runtime.
+  // object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
+
+  //   def moduleDeps =
+  //     Seq(
+  //       build.`indigo`.jvm,
+  //       build.`tyrian`.jvm
+  //     )

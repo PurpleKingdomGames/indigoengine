@@ -13,6 +13,9 @@ sealed trait KVP[A]:
   def get(key: String): Option[A] =
     _underlying.get(key)
 
+  def getUnsafe(key: String): A =
+    _underlying(key)
+
   def remove(key: String): Option[A] =
     _underlying.remove(key)
 
@@ -39,6 +42,9 @@ sealed trait KVP[A]:
 
   def toBatch: Batch[(String, A)] =
     Batch.fromList(_underlying.toList)
+
+  def map[B](f: ((String, A)) => ((String, B))): KVP[B] =
+    KVP.from(_underlying.map(f))
 
 object KVP:
 

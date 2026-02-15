@@ -22,3 +22,11 @@ object `package` extends Module:
     def mvnDeps = Seq(
       mvn"org.scala-js::scala-js-macrotask-executor::1.1.1"
     )
+
+  object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigo-physics`.jvm,
+      build.`indigo-platform-api`.jvm,
+      build.`indigo-platform`.jvm
+    )

@@ -23,11 +23,11 @@ class SubSystemsRegisterTests extends munit.FunSuite {
     r.register(Batch(PointsTrackerExample(1, 10), PointsTrackerExample(2, 50)))
 
     val data = r
-      .update(context(6), 10, Batch(PointsTrackerEvent.Add(10)).toJSArray)
+      .update(context(6), 10, Batch(PointsTrackerEvent.Add(10))) 
       .unsafeGet
       .stateMap
 
-    val actual = data.toList.map(_._2.asInstanceOf[Int])
+    val actual = data.toBatch.map(_._2.asInstanceOf[Int])
 
     assertEquals(actual.length, 2)
     assertEquals(actual.contains(30), true) // 20 + ref data of 10
@@ -38,9 +38,9 @@ class SubSystemsRegisterTests extends munit.FunSuite {
     val r = new SubSystemsRegister[Int]()
     r.register(Batch(PointsTrackerExample(1, 10), PointsTrackerExample(2, 50)))
 
-    val updated = r.update(context(6), 10, Batch(PointsTrackerEvent.LoseAll).toJSArray)
+    val updated = r.update(context(6), 10, Batch(PointsTrackerEvent.LoseAll))
 
-    val actual = updated.unsafeGet.stateMap.toList.map(_._2.asInstanceOf[Int])
+    val actual = updated.unsafeGet.stateMap.toBatch.map(_._2.asInstanceOf[Int])
 
     assertEquals(actual.length, 2)
     assertEquals(actual.forall(_ == 0), true)
@@ -53,7 +53,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
     r.register(Batch(PointsTrackerExample(1, 10), PointsTrackerExample(2, 50)))
 
     val rendered =
-      r.update(context(6), 0, Batch(PointsTrackerEvent.Add(10)).toJSArray)
+      r.update(context(6), 0, Batch(PointsTrackerEvent.Add(10)))
         .unsafeGet
         .present(context(6), 0)
         .unsafeGet

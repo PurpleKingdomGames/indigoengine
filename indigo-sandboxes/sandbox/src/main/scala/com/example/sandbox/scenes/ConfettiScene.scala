@@ -8,9 +8,6 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 
-import scalajs.js
-import scalajs.js.JSConverters.*
-
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   val spawnCount: Int = 600
@@ -77,10 +74,10 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   val count: Text[Material.ImageEffects] =
     Text("", 228, 20, Fonts.fontKey, SandboxAssets.fontMaterial)
 
-  def particlesToCloneTiles(particles: js.Array[Particle]): CloneTiles =
+  def particlesToCloneTiles(particles: Batch[Particle]): CloneTiles =
     CloneTiles(
       cloneId,
-      Batch(particles).map { p =>
+      particles.map { p =>
         val crop = crops(p.color)
         CloneTileData(p.x, p.y, Radians.zero, p.scale, p.scale, crop(0), crop(1), crop(2), crop(3))
       }
@@ -94,7 +91,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          Batch(model.particles.map(particlesToCloneTiles))
+          model.particles.map(particlesToCloneTiles)
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
@@ -102,10 +99,10 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       ).addCloneBlanks(cloneBlanks)
     )
 
-final case class ConfettiModel(color: Int, particles: js.Array[js.Array[Particle]]):
+final case class ConfettiModel(color: Int, particles: Batch[Batch[Particle]]):
   def spawn(random: Context.Services.Random, x: Int, y: Int, count: Int): ConfettiModel =
     this.copy(
-      particles = js.Array((0 until count).toJSArray.map { _ =>
+      particles = Batch(Batch.fromIndexedSeq(0 until count).map { _ =>
         Particle(
           x,
           y,
@@ -138,7 +135,7 @@ final case class ConfettiModel(color: Int, particles: js.Array[js.Array[Particle
 
 object ConfettiModel:
   val empty: ConfettiModel =
-    ConfettiModel(0, js.Array())
+    ConfettiModel(0, Batch())
 
 final case class Particle(x: Int, y: Int, fx: Float, fy: Float, color: Int, scale: Float)
 object Particle:

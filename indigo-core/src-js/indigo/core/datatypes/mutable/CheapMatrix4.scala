@@ -152,7 +152,7 @@ object CheapMatrix4:
     }
 
     def toBatch: Batch[Float] =
-      Batch(m)
+      Batch.fromJSArray(m)
 
     def toJSArray: scalajs.js.Array[Float] =
       m

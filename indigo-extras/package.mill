@@ -15,3 +15,7 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(build.indigo.js)
+
+  object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
+
+    def moduleDeps = Seq(build.indigo.jvm)

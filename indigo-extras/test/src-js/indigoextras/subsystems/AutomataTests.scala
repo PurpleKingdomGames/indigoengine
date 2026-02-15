@@ -15,8 +15,6 @@ import indigo.core.temporal.Signal
 import indigo.core.temporal.SignalReader
 import indigoengine.shared.datatypes.Seconds
 
-import scalajs.js
-
 class AutomataTests extends munit.FunSuite {
 
   import indigoextras.subsystems.FakeSubSystemFrameContext._
@@ -29,8 +27,8 @@ class AutomataTests extends munit.FunSuite {
 
   val graphic = Graphic(0, 0, 10, 10, Material.Bitmap(AssetName("fish")))
 
-  val onCull: AutomatonSeedValues => List[GlobalEvent] =
-    _ => List(eventInstance)
+  val onCull: AutomatonSeedValues => Batch[GlobalEvent] =
+    _ => Batch(eventInstance)
 
   val automaton: Automaton =
     Automaton(
@@ -47,7 +45,7 @@ class AutomataTests extends munit.FunSuite {
 
   val startingState: AutomataState =
     automata
-      .update(context(1), AutomataState(0, js.Array()))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+      .update(context(1), AutomataState(0, Batch()))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .unsafeGet
 
   test("Starting state should contain 1 automaton") {

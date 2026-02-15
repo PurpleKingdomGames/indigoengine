@@ -61,10 +61,10 @@ sealed trait Batch[+A]:
     _jsArray.exists(_ == p)
 
   def distinct: Batch[A] =
-    Batch(_jsArray.distinct)
+    Batch.fromJSArray(_jsArray.distinct)
 
   def distinctBy[B](f: A => B): Batch[A] =
-    Batch(_jsArray.distinctBy(f))
+    Batch.fromJSArray(_jsArray.distinctBy(f))
 
   def take(n: Int): Batch[A] =
     Batch.Wrapped(_jsArray.take(n))
@@ -126,7 +126,7 @@ sealed trait Batch[+A]:
     }
 
   def groupBy[K](f: A => K): Map[K, Batch[A]] =
-    _jsArray.groupBy(f).map(p => (p._1, Batch(p._2)))
+    _jsArray.groupBy(f).map(p => (p._1, Batch.fromJSArray(p._2)))
 
   def grouped(size: Int): Batch[Batch[A]] =
     Batch.fromIterator(
@@ -135,13 +135,17 @@ sealed trait Batch[+A]:
 
   def insert[B >: A](index: Int, value: B): Batch[B] =
     val p = _jsArray.splitAt(index)
-    Batch((p._1 :+ value) ++ p._2)
+    Batch.fromJSArray((p._1 :+ value) ++ p._2)
+    
+  def replace[B >: A](index: Int, value: B): Batch[B] =
+    val p = _jsArray.splitAt(index)
+    Batch.fromJSArray((p._1 :+ value) ++ p._2.drop(1))
 
   def lift(index: Int): Option[A] =
     _jsArray.lift(index)
 
   def padTo[B >: A](len: Int, elem: B): Batch[B] =
-    Batch(_jsArray.padTo(len, elem))
+    Batch.fromJSArray(_jsArray.padTo(len, elem))
 
   def partition(p: A => Boolean): (Batch[A], Batch[A]) =
     val (a, b) = _jsArray.partition(p)
@@ -247,7 +251,7 @@ sealed trait Batch[+A]:
 
   def update[B >: A](index: Int, value: B): Batch[B] =
     val p = _jsArray.splitAt(index)
-    Batch((p._1 :+ value) ++ p._2.tail)
+    Batch.fromJSArray((p._1 :+ value) ++ p._2.tail)
 
   def zipWithIndex: Batch[(A, Int)] =
     Batch.Wrapped(_jsArray.zipWithIndex)
@@ -277,10 +281,6 @@ object Batch:
   /** Creates a Batch containing a single element. */
   def apply[A](value: A): Batch[A] =
     Wrapped(js.Array(value))
-
-  /** Creates a Batch from a JavaScript array. */
-  def apply[A](values: js.Array[A]): Batch[A] =
-    Wrapped(values)
 
   /** Creates a Batch from a variable number of elements. */
   def apply[A](values: A*): Batch[A] =

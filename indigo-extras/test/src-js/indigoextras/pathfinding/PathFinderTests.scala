@@ -10,9 +10,6 @@ import org.scalacheck.*
 
 import scala.annotation.nowarn
 import scala.annotation.tailrec
-import scala.scalajs.js
-
-import js.JSConverters.*
 
 final case class TestContext(width: Int, height: Int, path: Batch[Point], allowedMoves: Batch[Point], dice: Dice) {
   def allowedPoints: Batch[Point] = path
@@ -25,10 +22,10 @@ final case class TestContext(width: Int, height: Int, path: Batch[Point], allowe
       if !path.contains(p)
     } yield p).toList)
 
-  def weighted2DGrid: js.Array[js.Array[Int]] =
+  def weighted2DGrid: Batch[Batch[Int]] =
     val grid = Array.fill(height, width)(Int.MaxValue)
     path.foreach(p => grid(p.y)(p.x) = 15)
-    grid.map(_.toJSArray).toJSArray
+    Batch.fromArray(grid.map(Batch.fromArray))
 
 }
 
@@ -98,12 +95,12 @@ final class PathFinderTests extends Properties("PathFinder") {
       dice         <- Gen.choose(1L, Long.MaxValue).map(Dice.fromSeed)
     } yield TestContext.build(width, height, allowedMoves, dice)
 
-  val weightedGrid: Gen[(Int, Int, Dice, js.Array[Int])] = // width, height, dice, grid
+  val weightedGrid: Gen[(Int, Int, Dice, Batch[Int])] = // width, height, dice, grid
     for {
       width  <- Gen.choose(4, 16)
       height <- Gen.choose(4, 16)
       dice   <- Gen.choose(0L, Long.MaxValue).map(Dice.fromSeed)
-    } yield (width, height, dice, Array.fill(height * width)(dice.roll(Int.MaxValue) - 1).toJSArray)
+    } yield (width, height, dice, Batch.fromArray(Array.fill(height * width)(dice.roll(Int.MaxValue) - 1)))
 
   property("return Some(Batch(start)) when start and end are the same") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
@@ -262,7 +259,7 @@ final class PathFinderTests extends Properties("PathFinder") {
         DefaultMaxHeuristicFactor
       )
     val pathBuilder2: PathBuilder[Point] = PathBuilder.fromWeightedGrid(
-      Batch(a2DGrid.flatten),
+      a2DGrid.flatten,
       context.width,
       context.height,
       context.allowedMoves,
@@ -277,7 +274,7 @@ final class PathFinderTests extends Properties("PathFinder") {
     // one dimensional grid last element coordinates
     val start                           = Point(0, 0)
     val end                             = Point(width - 1, height - 1)
-    val pathBuilder: PathBuilder[Point] = PathBuilder.fromWeightedGrid(Batch(grid), width, height)
+    val pathBuilder: PathBuilder[Point] = PathBuilder.fromWeightedGrid(grid, width, height)
 
     PathFinder.findPath(start, end, pathBuilder) match {
       case Some(firstPath) =>

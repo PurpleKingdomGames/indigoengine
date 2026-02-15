@@ -133,6 +133,10 @@ sealed trait Batch[+A]:
     val p = _array.splitAt(index)
     Batch.fromVector((p._1 :+ value) ++ p._2)
 
+  def replace[B >: A](index: Int, value: B): Batch[B] =
+    val p = _array.splitAt(index)
+    Batch.fromVector((p._1 :+ value) ++ p._2.drop(1))
+
   def lift(index: Int): Option[A] =
     _array.lift(index)
 
@@ -299,6 +303,10 @@ object Batch:
   def fromVector[A](values: Vector[A]): Batch[A] =
     Wrapped(Vector.from(values))
 
+  /** Creates a Batch from a Scala array. */
+  def fromArray[A](values: Array[A]): Batch[A] =
+    Wrapped(values.toVector)
+    
   /** Creates a Batch from a List. */
   def fromList[A](values: List[A]): Batch[A] =
     Wrapped(Vector.from(values))
