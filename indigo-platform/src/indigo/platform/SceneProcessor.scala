@@ -31,7 +31,7 @@ import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
 import indigo.shaders.ShaderData
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
+import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.RGBA
 
 import scala.annotation.tailrec
@@ -100,8 +100,8 @@ final class SceneProcessor(
     val gatheredCloneBlanks: Batch[CloneBlank] =
       scene.cloneBlanks ++ scene.layers.flatMap(_.layer.gatherCloneBlanks)
 
-    val cloneBlankDisplayObjects: KVP[DisplayObject] =
-      gatheredCloneBlanks.foldLeft(KVP.empty[DisplayObject]) { (acc, blank) =>
+    val cloneBlankDisplayObjects: mutable.KVP[DisplayObject] =
+      gatheredCloneBlanks.foldLeft(mutable.KVP.empty[DisplayObject]) { (acc, blank) =>
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
@@ -168,7 +168,7 @@ final class SceneProcessor(
 
     new ProcessedSceneData(
       displayLayers.map(_._1),
-      cloneBlankDisplayObjects.addAll(displayLayers.flatMap(_._2)),
+      cloneBlankDisplayObjects.toKVP.addAll(displayLayers.flatMap(_._2)),
       sceneBlend.shaderId,
       SceneProcessor.mergeShaderToUniformData(sceneBlend),
       scene.camera

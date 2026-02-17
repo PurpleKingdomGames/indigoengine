@@ -2,25 +2,16 @@ package indigoengine.shared.collections
 
 import scalajs.js.Dictionary
 
-sealed trait KVP[A]:
-  private val _underlying: Dictionary[A] = toDictionary
+sealed trait KVP[A] extends KVPOps[A, KVP]:
+  private lazy val _underlying: Dictionary[A] = toDictionary
 
   def toDictionary: Dictionary[A]
-
-  def clear(): Unit =
-    _underlying.clear()
 
   def get(key: String): Option[A] =
     _underlying.get(key)
 
   def getUnsafe(key: String): A =
     _underlying(key)
-
-  def remove(key: String): Option[A] =
-    _underlying.remove(key)
-
-  def update(key: String, value: A): Unit =
-    _underlying.update(key, value)
 
   def add(key: String, value: A): KVP[A] =
     add(key -> value)

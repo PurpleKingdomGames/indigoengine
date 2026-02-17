@@ -1,7 +1,7 @@
 package indigo.core.utils
 
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
+import indigoengine.shared.collections.mutable
 
 import scala.annotation.nowarn
 
@@ -14,7 +14,7 @@ import scala.annotation.nowarn
   * QuickCache("key")(obj)
   * ```
   */
-final class QuickCache[A](private val cache: KVP[A]):
+final class QuickCache[A](private val cache: mutable.KVP[A]):
 
   def fetch(key: CacheKey): Option[A] =
     cache.get(key.toString)
@@ -79,7 +79,7 @@ object QuickCache:
     cache.fetchOrAdd(CacheKey(key), disabled, value)
 
   def empty[A]: QuickCache[A] =
-    new QuickCache[A](KVP.empty[A])
+    new QuickCache[A](mutable.KVP.empty[A])
 
 opaque type CacheKey = String
 object CacheKey:

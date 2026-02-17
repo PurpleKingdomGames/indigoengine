@@ -2,6 +2,7 @@ package indigoengine.shared.collections
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Vector
+import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 
 /** Batch is a really thin wrapper over `Vector` to replace `List` on the Indigo APIs. Its purpose is to provide fast
@@ -9,8 +10,8 @@ import scala.util.control.NonFatal
   * of traversal are performed by flattening the structure and delegated to `Vector`. In practice, scene construction is
   * mostly about building the structure, so the penalty is acceptable, and still faster than using `List`.
   */
-sealed trait Batch[+A]:
-  private lazy val _array: Vector[A] = toVector
+sealed trait Batch[+A] extends BatchOps[A]:
+  private lazy val _underlying: Vector[A] = toVector
 
   def head: A
   def headOption: Option[A]
@@ -21,7 +22,7 @@ sealed trait Batch[+A]:
   def toVector: Vector[A]
 
   def length: Int                  = size
-  def lengthCompare(len: Int): Int = _array.lengthCompare(len)
+  def lengthCompare(len: Int): Int = _underlying.lengthCompare(len)
 
   def ++[B >: A](other: Batch[B]): Batch[B] =
     if this.isEmpty then other
@@ -41,56 +42,56 @@ sealed trait Batch[+A]:
     this ++ Batch(value)
 
   def apply(index: Int): A =
-    _array(index)
+    _underlying(index)
 
   def collect[B >: A, C](f: PartialFunction[B, C]): Batch[C] =
-    Batch.Wrapped(_array.collect(f))
+    Batch.Wrapped(_underlying.collect(f))
 
   def collectFirst[B >: A, C](f: PartialFunction[B, C]): Option[C] =
-    _array.collectFirst(f)
+    _underlying.collectFirst(f)
 
   def compact[B >: A]: Batch.Wrapped[B] =
-    Batch.Wrapped(_array) // .asInstanceOf[js.Array[B]]
+    Batch.Wrapped(_underlying) // .asInstanceOf[js.Array[B]]
 
   def contains[B >: A](p: B): Boolean =
     given CanEqual[B, B] = CanEqual.derived
-    _array.exists(_ == p)
+    _underlying.exists(_ == p)
 
   def distinct: Batch[A] =
-    Batch.fromVector(_array.distinct)
+    Batch.fromVector(_underlying.distinct)
 
   def distinctBy[B](f: A => B): Batch[A] =
-    Batch.fromVector(_array.distinctBy(f))
+    Batch.fromVector(_underlying.distinctBy(f))
 
   def take(n: Int): Batch[A] =
-    Batch.Wrapped(_array.take(n))
+    Batch.Wrapped(_underlying.take(n))
 
   def takeRight(n: Int): Batch[A] =
-    Batch.Wrapped(_array.takeRight(n))
+    Batch.Wrapped(_underlying.takeRight(n))
 
   def takeWhile(p: A => Boolean): Batch[A] =
-    Batch.Wrapped(_array.takeWhile(p))
+    Batch.Wrapped(_underlying.takeWhile(p))
 
   def drop(count: Int): Batch[A] =
-    Batch.Wrapped(_array.drop(count))
+    Batch.Wrapped(_underlying.drop(count))
 
   def dropRight(count: Int): Batch[A] =
-    Batch.Wrapped(_array.dropRight(count))
+    Batch.Wrapped(_underlying.dropRight(count))
 
   def dropWhile(p: A => Boolean): Batch[A] =
-    Batch.Wrapped(_array.dropWhile(p))
+    Batch.Wrapped(_underlying.dropWhile(p))
 
   def exists(p: A => Boolean): Boolean =
-    _array.exists(p)
+    _underlying.exists(p)
 
   def find(p: A => Boolean): Option[A] =
-    _array.find(p)
+    _underlying.find(p)
 
   def filter(p: A => Boolean): Batch[A] =
-    Batch.Wrapped(_array.filter(p))
+    Batch.Wrapped(_underlying.filter(p))
 
   def filterNot(p: A => Boolean): Batch[A] =
-    Batch.Wrapped(_array.filterNot(p))
+    Batch.Wrapped(_underlying.filterNot(p))
 
   def flatMap[B](f: A => Batch[B]): Batch[B] =
     Batch.Wrapped(toVector.flatMap(v => f(v).toVector))
@@ -99,19 +100,19 @@ sealed trait Batch[+A]:
     flatMap(asBatch)
 
   def forall(p: A => Boolean): Boolean =
-    _array.forall(p)
+    _underlying.forall(p)
 
   def fold[B >: A](z: B)(f: (B, B) => B): B =
-    _array.fold(z)(f)
+    _underlying.fold(z)(f)
 
   def foldLeft[B](z: B)(f: (B, A) => B): B =
-    _array.foldLeft(z)(f)
+    _underlying.foldLeft(z)(f)
 
   def foldRight[B](z: B)(f: (A, B) => B): B =
-    _array.foldRight(z)(f)
+    _underlying.foldRight(z)(f)
 
   def foreach(f: A => Unit): Unit =
-    _array.foreach(f)
+    _underlying.foreach(f)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def foreachWithIndex(f: (A, Int) => Unit): Unit =
@@ -122,45 +123,45 @@ sealed trait Batch[+A]:
     }
 
   def groupBy[K](f: A => K): Map[K, Batch[A]] =
-    _array.groupBy(f).map(p => (p._1, Batch.fromVector(p._2)))
+    _underlying.groupBy(f).map(p => (p._1, Batch.fromVector(p._2)))
 
   def grouped(size: Int): Batch[Batch[A]] =
     Batch.fromIterator(
-      _array.grouped(size).map(ar => Batch.fromVector(ar))
+      _underlying.grouped(size).map(ar => Batch.fromVector(ar))
     )
 
   def insert[B >: A](index: Int, value: B): Batch[B] =
-    val p = _array.splitAt(index)
+    val p = _underlying.splitAt(index)
     Batch.fromVector((p._1 :+ value) ++ p._2)
 
   def replace[B >: A](index: Int, value: B): Batch[B] =
-    val p = _array.splitAt(index)
+    val p = _underlying.splitAt(index)
     Batch.fromVector((p._1 :+ value) ++ p._2.drop(1))
 
   def lift(index: Int): Option[A] =
-    _array.lift(index)
+    _underlying.lift(index)
 
   def padTo[B >: A](len: Int, elem: B): Batch[B] =
-    Batch.fromVector(_array.padTo(len, elem))
+    Batch.fromVector(_underlying.padTo(len, elem))
 
   def partition(p: A => Boolean): (Batch[A], Batch[A]) =
-    val (a, b) = _array.partition(p)
+    val (a, b) = _underlying.partition(p)
     (Batch.Wrapped(a), Batch.Wrapped(b))
 
   def map[B](f: A => B): Batch[B] =
-    Batch.Wrapped(_array.map(f))
+    Batch.Wrapped(_underlying.map(f))
 
   def maxBy[B](f: A => B)(using ord: Ordering[B]): A =
-    _array.maxBy(f)
+    _underlying.maxBy(f)
 
   def maxByOption[B](f: A => B)(using ord: Ordering[B]): Option[A] =
-    Option.when(_array.nonEmpty)(_array.maxBy(f))
+    Option.when(_underlying.nonEmpty)(_underlying.maxBy(f))
 
   def minBy[B](f: A => B)(using ord: Ordering[B]): A =
-    _array.minBy(f)
+    _underlying.minBy(f)
 
   def minByOption[B](f: A => B)(using ord: Ordering[B]): Option[A] =
-    Option.when(_array.nonEmpty)(_array.minBy(f))
+    Option.when(_underlying.nonEmpty)(_underlying.minBy(f))
 
   /** Converts the batch into a String`
     * @return
@@ -195,68 +196,71 @@ sealed trait Batch[+A]:
     !isEmpty
 
   def reduce[B >: A](f: (B, B) => B): B =
-    _array.reduce(f)
+    _underlying.reduce(f)
 
   def reverse: Batch[A] =
-    Batch.Wrapped(_array.reverse)
+    Batch.Wrapped(_underlying.reverse)
 
   def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Batch[A] =
-    Batch.Wrapped(_array.sortBy(f))
+    Batch.Wrapped(_underlying.sortBy(f))
 
   def sorted[B >: A](implicit ord: Ordering[B]): Batch[A] =
-    Batch.Wrapped(_array.sorted)
+    Batch.Wrapped(_underlying.sorted)
 
   def sortWith(f: (A, A) => Boolean): Batch[A] =
-    Batch.Wrapped(_array.sortWith(f))
+    Batch.Wrapped(_underlying.sortWith(f))
 
   def splitAt(n: Int): (Batch[A], Batch[A]) =
-    val p = _array.splitAt(n)
+    val p = _underlying.splitAt(n)
     (Batch.Wrapped(p._1), Batch.Wrapped(p._2))
 
   def sum[B >: A](implicit num: Numeric[B]): B =
-    _array.sum
+    _underlying.sum
 
   def tail: Batch[A] =
-    Batch.Wrapped(_array.tail)
+    Batch.Wrapped(_underlying.tail)
 
   def tailOrEmpty: Batch[A] =
-    if _array.isEmpty then Batch.empty
-    else Batch.Wrapped(_array.tail)
+    if _underlying.isEmpty then Batch.empty
+    else Batch.Wrapped(_underlying.tail)
 
   def tailOption: Option[Batch[A]] =
-    if _array.isEmpty then None
-    else Option(Batch.Wrapped(_array.tail))
+    if _underlying.isEmpty then None
+    else Option(Batch.Wrapped(_underlying.tail))
 
   def uncons: Option[(A, Batch[A])] =
     headOption.map(a => (a, tailOrEmpty))
 
   // def toVector: Vector[A] =
-  //   _array
+  //   _underlying
 
   def toList: List[A] =
-    _array.toList
+    _underlying.toList
 
   def toMap[K, V](using A <:< (K, V)) =
-    _array.toMap
+    _underlying.toMap
 
   def toSet[B >: A]: Set[B] =
-    _array.toSet
+    _underlying.toSet
+
+  def toArray[B >: A: ClassTag]: Array[B] =
+    _underlying.toArray
 
   override def toString: String =
-    "Batch(" + _array.mkString(", ") + ")"
+    "Batch(" + _underlying.mkString(", ") + ")"
 
   def update[B >: A](index: Int, value: B): Batch[B] =
-    val p = _array.splitAt(index)
+    val p = _underlying.splitAt(index)
     Batch.fromVector((p._1 :+ value) ++ p._2.tail)
 
   def zipWithIndex: Batch[(A, Int)] =
-    Batch.Wrapped(_array.zipWithIndex)
+    Batch.Wrapped(_underlying.zipWithIndex)
 
   def zip[B](other: Batch[B]): Batch[(A, B)] =
-    Batch.Wrapped(_array.zip(other.toVector))
+    Batch.Wrapped(_underlying.zip(other.toVector))
 
   override def hashCode(): Int =
-    _array.foldLeft(31)((acc, v) => 31 * acc + v.hashCode())
+    _underlying.foldLeft(31)((acc, v) => 31 * acc + v.hashCode())
 
 object Batch:
 

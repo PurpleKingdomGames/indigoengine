@@ -26,6 +26,11 @@ import indigo.shaders.Uniform
 import indigo.core.time.GameTime
 import indigoengine.shared.datatypes.Seconds
 import indigoengine.shared.collections.KVP
+import indigoengine.shared.collections.mutable
+import indigo.core.datatypes.FontChar
+import indigo.core.datatypes.FontInfo
+import indigo.core.datatypes.FontKey
+import indigo.scenegraph.Text
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -39,7 +44,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(KVP.empty.add("texture" -> texture))
 
-  val cloneBlankMapping: KVP[DisplayObject] = KVP.empty[DisplayObject]
+  val cloneBlankMapping: mutable.KVP[DisplayObject] = mutable.KVP.empty[DisplayObject]
 
   implicit val cache: QuickCache[Batch[Float]] = QuickCache.empty
 
@@ -141,8 +146,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected: Batch[Float] =
       Batch[Batch[Float]](
         Batch[Float](1, 0, 2, 3)
-      )
-      .flatten
+      ).flatten
 
     val actual: Batch[Float] =
       DisplayObjectConversions.packUBO(uniforms, "", true)
@@ -283,6 +287,50 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       expected.toList
     )
 
+  }
+
+  test("text rendering produces display entities for each character (WebGL1)") {
+    val testFontKey = FontKey("test-font")
+
+    val fontInfo = FontInfo(
+      fontKey = testFontKey,
+      unknownChar = FontChar("?", Rectangle(0, 0, 10, 10)),
+      fontChars = Batch(
+        FontChar("A", Rectangle(0, 0, 10, 10)),
+        FontChar("B", Rectangle(10, 0, 12, 10)),
+        FontChar("C", Rectangle(22, 0, 8, 10))
+      ),
+      caseSensitive = true
+    )
+
+    fontRegister.register(fontInfo)
+
+    val textNode = Text("ABC", 0, 0, testFontKey, Material.Bitmap(AssetName("texture")))
+
+    doc.purgeCaches()
+
+    val result = doc
+      .processSceneNodes(
+        Batch(textNode),
+        GameTime.is(Seconds(1)),
+        assetMapping,
+        cloneBlankMapping,
+        RenderingTechnology.WebGL1,
+        256,
+        Batch[GlobalEvent](),
+        (_: GlobalEvent) => ()
+      )
+      ._1
+
+    assertEquals(result.size, 1)
+
+    result.head match {
+      case dtl: DisplayTextLetters =>
+        assertEquals(dtl.letters.size, 3)
+
+      case other =>
+        throw new Exception(s"Expected DisplayTextLetters but got $other")
+    }
   }
 
 }

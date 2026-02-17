@@ -5,11 +5,11 @@ import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.scenegraph.SceneUpdateFragment
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
+import indigoengine.shared.collections.mutable
 
 final class SubSystemsRegister[Model] {
 
-  private[subsystems] val stateMap: KVP[Object] = KVP.empty
+  private[subsystems] val stateMap: mutable.KVP[Object] = mutable.KVP.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredSubSystems: Batch[RegisteredSubSystem[Model]] = Batch()

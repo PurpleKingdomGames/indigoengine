@@ -49,10 +49,9 @@ import indigo.shaders.ShaderPrimitive
 import indigo.shaders.Uniform
 import indigo.shaders.UniformBlock
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
+import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.Radians
 
-import scala.annotation.nowarn
 import scala.annotation.tailrec
 
 final class DisplayObjectConversions(
@@ -150,7 +149,7 @@ final class DisplayObjectConversions(
       sceneNodes: Batch[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => KVP[DisplayObject],
+      cloneBlankDisplayObjects: => mutable.KVP[DisplayObject],
       renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
@@ -215,7 +214,7 @@ final class DisplayObjectConversions(
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => KVP[DisplayObject],
+      cloneBlankDisplayObjects: => mutable.KVP[DisplayObject],
       renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
@@ -830,28 +829,26 @@ final class DisplayObjectConversions(
       }
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var accCharDetails: Batch[(FontChar, Int)] = Batch()
-
-  @nowarn("msg=unused")
   private def zipWithCharDetails(
       charList: Batch[Char],
       fontInfo: FontInfo,
       letterSpacing: Int
   ): Batch[(FontChar, Int)] = {
     @tailrec
-    def rec(remaining: Batch[(Char, FontChar)], nextX: Int): Batch[(FontChar, Int)] =
-      if remaining.isEmpty then accCharDetails
+    def rec(
+        remaining: Batch[(Char, FontChar)],
+        nextX: Int,
+        acc: mutable.Batch[(FontChar, Int)]
+    ): mutable.Batch[(FontChar, Int)] =
+      if remaining.isEmpty then acc
       else
         val x  = remaining.head
         val xs = remaining.tail
-        (x._2, nextX) +: accCharDetails
-
+        acc += ((x._2, nextX))
         val ls = if xs.isEmpty then 0 else letterSpacing
-        rec(xs, nextX + x._2.bounds.width + ls)
+        rec(xs, nextX + x._2.bounds.width + ls, acc)
 
-    accCharDetails = Batch()
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
+    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, mutable.Batch.empty).toBatch
   }
 
   def findAssetOffsetValues(
