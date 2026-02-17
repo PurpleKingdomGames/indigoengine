@@ -94,6 +94,22 @@ If tests fail with `NoClassDefFoundError` in Scala.js testing classes (e.g., `Se
 - **Scalafix** rules: DisableSyntax, OrganizeImports (config in `.scalafix.conf`)
 - Scalafix enforces: no vars, throws, nulls, returns, while loops, XML, default args
 
+Follow the existing coding style in terms of whitespace and layout.
+Prefer braceless Scala 3 in the small, but use braces for larger code blocks.
+Use vertical whitespace to keep line lengh down and to group logical code blocks.
+
+Generally do not add comments (groupings, separators, notes), except in the following circumstances:
+1. The code block being commented is particularly complicated, unintuitive, or subtle.
+2. The comments are Scaladocs on user facing APIs.
+
+## Testing Approach
+
+Follow **pragmatic TDD** when working on pure logic and data structures:
+- Write unit tests (not property-based tests) to confirm behaviour before or alongside implementation
+- Use MUnit `FunSuite` with direct `assertEquals`/`assert` assertions
+- Test files go alongside source in `test/src/`, `test/src-js/`, or `test/src-jvm/` mirroring the source package structure
+- Do not write integration tests with complicated set ups without discussion or unless specifically asked
+
 ## Architecture
 
 ### Module Dependency Graph
