@@ -15,11 +15,11 @@ import indigo.platform.display.DisplayEntity
 import indigo.platform.display.DisplayGroup
 import indigo.platform.display.DisplayObject
 import indigo.platform.display.DisplayTextLetters
+import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.ProcessedSceneData
 import indigo.platform.renderer.Renderer
 import indigo.platform.renderer.RendererConfig
 import indigo.platform.renderer.ScreenCaptureConfig
-import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset

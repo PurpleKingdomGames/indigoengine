@@ -15,8 +15,6 @@ import indigo.platform.AtlasId
 import indigo.platform.Platform
 import indigo.platform.PlatformFullScreen
 import indigo.platform.TextureRefAndOffset
-import indigo.platform.renderer.Renderer
-import indigo.platform.renderer.RendererConfig
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
@@ -24,6 +22,8 @@ import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.events.WorldEvents
 import indigo.platform.input.GamepadInputCaptureImpl
+import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.RendererConfig
 import indigo.platform.renderer.RendererInitialiser
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.shaders.RawShaderCode

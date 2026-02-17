@@ -1,13 +1,12 @@
 package indigo.next
 
 import indigo.BootResult
-import indigo.launchers.MinimalLauncher
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
-import indigo.platform.gameengine.GameEngine
+import indigo.launchers.MinimalLauncher
 import indigo.next.bridge.BridgeData
 import indigo.next.bridge.BridgeMsg
 import indigo.next.bridge.TyrianIndigoNextBridge
@@ -16,6 +15,7 @@ import indigo.next.scenes.Scene
 import indigo.next.scenes.SceneManager
 import indigo.next.scenes.SceneName
 import indigo.platform.assets.AssetCollection
+import indigo.platform.gameengine.GameEngine
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.Context
 import indigo.shared.Startup

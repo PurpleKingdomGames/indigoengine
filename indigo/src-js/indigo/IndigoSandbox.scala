@@ -1,6 +1,5 @@
 package indigo
 
-import indigo.launchers.GameLauncher
 import indigo.core.Outcome
 import indigo.core.animation.Animation
 import indigo.core.assets.AssetType
@@ -10,8 +9,9 @@ import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.frameprocessors.StandardFrameProcessor
-import indigo.platform.gameengine.GameEngine
+import indigo.launchers.GameLauncher
 import indigo.platform.assets.AssetCollection
+import indigo.platform.gameengine.GameEngine
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shaders.ShaderProgram
 import indigo.shared.Context

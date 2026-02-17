@@ -1,11 +1,11 @@
 package indigo.shared.formats
 
-import indigo.core.datatypes.Size
-import indigo.core.datatypes.Rectangle
-import indigo.scenegraph.materials.Material
-import indigo.scenegraph.Graphic
-import indigo.core.datatypes.Point
 import indigo.core.assets.AssetName
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
+import indigo.scenegraph.Graphic
+import indigo.scenegraph.materials.Material
 
 /** Utility for working with generic sprite sheets. The sheet must be uniform, with each sprite having the same width
   * and height, and a (possibly zero-pixel) inner margin.

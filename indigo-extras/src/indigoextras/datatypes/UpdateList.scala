@@ -32,7 +32,6 @@ object UpdateList:
   def empty[A]: UpdateList[A] =
     apply(Nil)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def updateList[A](l: List[A], f: A => A, pattern: UpdatePattern): (List[A], UpdatePattern) =
     val res =
       l.zipWithIndex.map((v, i) => pattern.update(v, f, v, i))

@@ -5,11 +5,11 @@ import indigo.core.animation.*
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
+import indigo.gameengine.FrameProcessor
 import indigo.platform.assets.*
 import indigo.shaders.ShaderProgram
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
-import indigo.gameengine.FrameProcessor
 
 import scala.annotation.nowarn
 // import org.scalajs.dom.Element

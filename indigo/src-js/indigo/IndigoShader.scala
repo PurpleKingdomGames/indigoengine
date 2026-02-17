@@ -1,7 +1,6 @@
 package indigo
 
 import indigo.BootResult
-import indigo.launchers.GameLauncher
 import indigo.core.Outcome
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
@@ -17,8 +16,9 @@ import indigo.core.events.ToggleFullScreen
 import indigo.core.events.ViewportResize
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.StandardFrameProcessor
-import indigo.platform.gameengine.GameEngine
+import indigo.launchers.GameLauncher
 import indigo.platform.assets.AssetCollection
+import indigo.platform.gameengine.GameEngine
 import indigo.scenegraph.BlankEntity
 import indigo.scenegraph.Layer
 import indigo.scenegraph.SceneUpdateFragment

@@ -10,13 +10,15 @@ import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
-import indigo.platform.JsPlatform
+import indigo.gameengine.FrameProcessor
 import indigo.platform.AssetMapping
-import indigo.platform.renderer.Renderer
+import indigo.platform.JsPlatform
+import indigo.platform.SceneProcessor
 import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.input.GamepadInputCaptureImpl
+import indigo.platform.renderer.Renderer
 import indigo.platform.storage.Storage
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -28,8 +30,6 @@ import indigo.shaders.ShaderRegister
 import indigo.shaders.StandardShaders
 import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
-import indigo.platform.SceneProcessor
-import indigo.gameengine.FrameProcessor
 import indigoengine.shared.collections.Batch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

@@ -1,8 +1,8 @@
 package indigo.shared
 
-import indigo.core.datatypes.FontKey
 import indigo.core.assets.AssetType
 import indigo.core.config.GameViewport
+import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
