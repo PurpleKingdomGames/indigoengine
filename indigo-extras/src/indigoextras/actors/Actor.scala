@@ -1,7 +1,7 @@
 package indigoextras.actors
 
-import indigo.GlobalEvent
-import indigo.Outcome
+import indigo.core.Outcome
+import indigo.core.events.GlobalEvent
 import indigo.scenegraph.SceneNode
 import indigoengine.shared.collections.Batch
 

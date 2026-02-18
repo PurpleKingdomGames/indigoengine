@@ -1,7 +1,6 @@
 package indigo
 
 import indigo.BootResult
-import indigo.MinimalLauncher
 import indigo.bridge.BridgeData
 import indigo.bridge.BridgeMsg
 import indigo.bridge.TyrianIndigoNextBridge
@@ -11,8 +10,9 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
-import indigo.gameengine.GameEngine
+import indigo.launchers.MinimalLauncher
 import indigo.platform.assets.AssetCollection
+import indigo.platform.gameengine.GameEngine
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager

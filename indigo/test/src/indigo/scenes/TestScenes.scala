@@ -1,8 +1,6 @@
 package indigo.scenes
 
 import indigo.*
-import indigo.core.events.EventFilters
-import indigo.core.events.GlobalEvent
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 

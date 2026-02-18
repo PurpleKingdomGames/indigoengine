@@ -1,7 +1,7 @@
 package indigo
 
-import indigo.launchers.GameLauncher
 import indigo.bridge.BridgeMsg
+import indigo.launchers.GameLauncher
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import tyrian.Action

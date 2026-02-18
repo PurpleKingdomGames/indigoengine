@@ -1,6 +1,7 @@
 package indigo
 
 import indigo.*
+import indigo.launchers.GameLauncher
 import tyrian.*
 import tyrian.Html.*
 
