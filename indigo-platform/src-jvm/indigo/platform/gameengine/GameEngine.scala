@@ -19,14 +19,13 @@ import scala.annotation.nowarn
 // import scala.concurrent.Future
 
 @nowarn("msg=unused")
-final class GameEngine[StartUpData, GameModel, ViewModel](
+final class GameEngine[StartUpData, GameModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
     shaders: Set[ShaderProgram],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
-    initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
-    frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+    frameProccessor: FrameProcessor[StartUpData, GameModel],
     initialisationEvents: Batch[GlobalEvent]
 ) {
   // val stepsToLoad = 4

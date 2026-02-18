@@ -28,7 +28,7 @@ object syntax:
     def toCloneId: CloneId           = CloneId(s)
     def toCycleLabel: CycleLabel     = CycleLabel(s)
     def toFontKey: FontKey           = FontKey(s)
-    def toScene: scenes.SceneName    = scenes.SceneName(s)
+    def toScene: SceneName           = SceneName(s)
     def toShaderId: ShaderId         = ShaderId(s)
 
   extension (t: (Double, Double)) def toVector2: Vector2 = Vector2(t._1, t._2)

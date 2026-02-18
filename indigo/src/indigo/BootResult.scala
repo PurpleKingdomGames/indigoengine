@@ -1,5 +1,9 @@
 package indigo
 
+import indigo.core.animation.Animation
+import indigo.core.assets.AssetType
+import indigo.core.config.GameConfig
+import indigo.core.datatypes.FontInfo
 import indigo.shaders.ShaderProgram
 import indigo.shared.subsystems.SubSystem
 
@@ -17,7 +21,7 @@ final case class BootResult[BootData, Model](
     fonts: Set[FontInfo],
     subSystems: Set[SubSystem[Model]],
     shaders: Set[ShaderProgram]
-) derives CanEqual {
+) derives CanEqual:
 
   def addAnimations(newAnimations: Set[Animation]): BootResult[BootData, Model] =
     this.copy(animations = animations ++ newAnimations)
@@ -64,8 +68,7 @@ final case class BootResult[BootData, Model](
   def withShaders(newShaders: ShaderProgram*): BootResult[BootData, Model] =
     withShaders(newShaders.toSet)
 
-}
-object BootResult {
+object BootResult:
   def apply[BootData, Model](gameConfig: GameConfig, bootData: BootData): BootResult[BootData, Model] =
     new BootResult[BootData, Model](gameConfig, bootData, Set(), Set(), Set(), Set(), Set())
 
@@ -76,4 +79,3 @@ object BootResult {
 
   def default[Model]: BootResult[Unit, Model] =
     noData(GameConfig.default)
-}

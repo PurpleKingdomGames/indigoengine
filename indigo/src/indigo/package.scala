@@ -676,16 +676,6 @@ object aliases:
   // type BootResult[BootData, Model] = indigo.BootResult[BootData, Model]
   // val BootResult: indigo.BootResult.type = indigo.BootResult
 
-  // Bridge
-
-  type BridgeData = bridge.BridgeData
-
-  type BridgeEvent = bridge.BridgeEvent
-  val BridgeEvent: bridge.BridgeEvent.type = bridge.BridgeEvent
-
-  type BridgeMsg = bridge.BridgeMsg
-  val BridgeMsg: bridge.BridgeMsg.type = bridge.BridgeMsg
-
   // Scenes
 
   type Scene[StartUpData, GameModel] = indigo.scenes.Scene[StartUpData, GameModel]
