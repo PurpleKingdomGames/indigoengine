@@ -4,7 +4,6 @@ digraph "module-deps" {
   "indigo-core" ["style"="solid","shape"="box"]
   "indigo-extras" ["style"="solid","shape"="box"]
   "indigo-json-circe" ["style"="solid","shape"="box"]
-  "indigo-next.js" ["style"="solid","shape"="box"]
   "indigo-physics" ["style"="solid","shape"="box"]
   "indigo-platform" ["style"="solid","shape"="box"]
   "indigo-plugin" ["style"="solid","shape"="box"]
@@ -34,7 +33,6 @@ digraph "module-deps" {
   "ultraviolet-sandbox.js" ["style"="solid","shape"="box"]
   "indigo" -> "indigo-extras"
   "indigo" -> "indigo-json-circe"
-  "indigo" -> "indigo-next.js"
   "indigo" -> "tyrian-indigo-bridge.js"
   "indigo-core" -> "indigo-shaders"
   "indigo-extras" -> "indigo-sandboxes.perf.js"
@@ -50,7 +48,6 @@ digraph "module-deps" {
   "indigo-json-circe" -> "indigo-sandboxes.shader.js"
   "indigo-json-circe" -> "indigo-sandboxes.tyrian-sandbox.js"
   "indigo-json-circe" -> "ultraviolet-sandbox.js"
-  "indigo-next.js" -> "roguelike-starterkit-demo.js"
   "indigo-physics" -> "indigo"
   "indigo-platform" -> "indigo"
   "indigo-plugin" -> "mill-indigo"
@@ -67,8 +64,7 @@ digraph "module-deps" {
   "tyrian-tags" -> "tyrian-htmx"
   "tyrian-tags" -> "tyrian.js"
   "tyrian-zio.js" -> "tyrian-sandboxes.sandbox-zio.js"
-  "tyrian.js" -> "indigo-next.js"
-  "tyrian.js" -> "tyrian-indigo-bridge.js"
+  "tyrian.js" -> "indigo"
   "tyrian.js" -> "tyrian-io.js"
   "tyrian.js" -> "tyrian-sandboxes.sandbox-ui.js"
   "tyrian.js" -> "tyrian-sandboxes.sandbox.js"
