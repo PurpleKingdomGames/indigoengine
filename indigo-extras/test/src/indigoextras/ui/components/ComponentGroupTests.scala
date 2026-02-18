@@ -105,7 +105,7 @@ class ComponentGroupTests extends munit.FunSuite:
     val actualDefault =
       val c = summon[Component[ComponentGroup[Unit], Unit]]
       c.refresh(
-        ctx,
+        ctx.resizeParentTo(100, 100),
         group.withBoundsMode(indigoextras.ui.components.datatypes.BoundsMode.default)
       ).dimensions
 
@@ -352,13 +352,13 @@ class ComponentGroupTests extends munit.FunSuite:
         .add("abc", "def")
 
     val updated: ComponentGroup[Unit] =
-      c.refresh(ctx, group)
+      c.refresh(ctx.resizeParentTo(100, 100), group)
 
     assertEquals(updated.contentBounds, Bounds(0, 0, 3, 12))
     assertEquals(updated.dimensions, Dimensions(100, 12))
   }
 
-  test("Calculate the next offset for nested components".only) {
+  test("Calculate the next offset for nested components") {
     val c = summon[Component[ComponentGroup[Unit], Unit]]
 
     val group = ComponentGroup()
