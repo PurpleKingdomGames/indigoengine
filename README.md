@@ -42,6 +42,10 @@ Thank you to all our wonderful sponsors, and particularly to [dedipresta](https:
 
 If you'd like to help advance our work, we are ever grateful for all forms of contribution, either by volunteering time or [financial backing](https://github.com/sponsors/PurpleKingdomGames?o=esb). 
 
+### Module Dependency Diagram
+
+![Module dependency diagram](diagrams/indigoengine.png)
+
 ## Developers & Contributors
 
 This is a predominately [Mill](https://mill-build.org/) based monorepo.

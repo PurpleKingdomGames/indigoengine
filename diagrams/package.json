@@ -1,0 +1,9 @@
+{
+  "name": "indigo-diagrams",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.6.0",
+    "sharp": "^0.33.0"
+  }
+}

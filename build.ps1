@@ -23,6 +23,9 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 .\mill.bat --no-server -j2 __.publishLocal
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+& powershell.exe -File diagrams\build.ps1
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 # Will return when sbt 2.0 supports Scala.js
 
 # SBT Indigo

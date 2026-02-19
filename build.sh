@@ -10,6 +10,8 @@ set -e
 ./mill --no-server __.test
 ./mill --no-server __.publishLocal
 
+bash diagrams/build.sh
+
 # Will return when sbt 2.0 supports Scala.js
 
 # SBT Indigo
