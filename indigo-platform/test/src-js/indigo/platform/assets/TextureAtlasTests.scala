@@ -1,7 +1,7 @@
 package indigo.platform.assets
 
 import indigo.core.datatypes.PowerOfTwo
-import indigo.platform.AtlasId
+import indigo.render.pipeline.AtlasId
 import indigo.platform.assets.*
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetTag

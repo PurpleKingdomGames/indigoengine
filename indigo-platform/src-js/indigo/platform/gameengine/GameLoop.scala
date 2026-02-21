@@ -10,9 +10,9 @@ import indigo.core.events.InputState
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
-import indigo.platform.SceneProcessor
 import indigo.platform.assets.AssetCollection
-import indigo.platform.renderer.Renderer
+import indigo.render.Renderer
+import indigo.render.pipeline.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.shared.Context

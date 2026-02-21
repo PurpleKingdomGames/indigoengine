@@ -1,4 +1,4 @@
-package build.`indigo-platform`
+package build.`indigo-render`
 
 import mill.*
 import mill.scalalib.*
@@ -14,7 +14,7 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-render`.js
+      build.`indigo-render-pipeline`.js
     )
 
     def mvnDeps = Seq(
@@ -25,7 +25,7 @@ object `package` extends Module:
   object jvm extends SharedJVM, PlatformScalaModule: //, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-render`.jvm
+      build.`indigo-render-pipeline`.jvm
     )
 
 
