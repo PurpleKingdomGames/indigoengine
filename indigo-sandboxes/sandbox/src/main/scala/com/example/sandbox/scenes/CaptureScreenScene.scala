@@ -11,7 +11,6 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.core.assets.AssetTypePrimitive
-import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.scenegraph.Shape
 import indigo.scenegraph.Shape.Box
 import indigo.scenes.*

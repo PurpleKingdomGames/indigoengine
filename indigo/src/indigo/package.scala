@@ -17,6 +17,9 @@ object aliases:
 
   export indigoengine.shared.aliases.*
 
+  type ScreenCaptureConfig = render.ScreenCaptureConfig
+  val ScreenCaptureConfig: render.ScreenCaptureConfig.type = render.ScreenCaptureConfig
+
   val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
   type Startup[SuccessType] = shared.Startup[SuccessType]

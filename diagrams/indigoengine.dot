@@ -7,6 +7,8 @@ digraph "module-deps" {
   "indigo-physics" ["style"="solid","shape"="box"]
   "indigo-platform" ["style"="solid","shape"="box"]
   "indigo-plugin" ["style"="solid","shape"="box"]
+  "indigo-render" ["style"="solid","shape"="box"]
+  "indigo-render-pipeline" ["style"="solid","shape"="box"]
   "indigo-sandboxes.perf.js" ["style"="solid","shape"="box"]
   "indigo-sandboxes.physics.js" ["style"="solid","shape"="box"]
   "indigo-sandboxes.sandbox.js" ["style"="solid","shape"="box"]
@@ -51,8 +53,10 @@ digraph "module-deps" {
   "indigo-physics" -> "indigo"
   "indigo-platform" -> "indigo"
   "indigo-plugin" -> "mill-indigo"
+  "indigo-render" -> "indigo-platform"
+  "indigo-render-pipeline" -> "indigo-render"
   "indigo-scenegraph" -> "indigo-physics"
-  "indigo-scenegraph" -> "indigo-platform"
+  "indigo-scenegraph" -> "indigo-render-pipeline"
   "indigo-shaders" -> "indigo-scenegraph"
   "indigoengine-shared" -> "indigo-core"
   "indigoengine-shared" -> "tyrian.js"
