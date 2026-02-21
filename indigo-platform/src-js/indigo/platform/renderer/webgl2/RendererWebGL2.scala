@@ -4,7 +4,6 @@ import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
 import indigo.core.config.GameViewport
-import indigo.core.config.RenderingTechnology
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
@@ -48,8 +47,6 @@ final class RendererWebGL2(
     cNc: ContextAndCanvas,
     globalEventStream: GlobalEventStream
 ) extends Renderer {
-
-  val renderingTechnology: RenderingTechnology = RenderingTechnology.WebGL2
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 

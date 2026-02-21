@@ -20,7 +20,6 @@ import indigoengine.shared.datatypes.Millis
   *   By default, context menu on right-click is disable for the canvas.
   */
 final case class AdvancedGameConfig(
-    renderingTechnology: RenderingTechnology,
     antiAliasing: Boolean,
     batchSize: Int,
     premultipliedAlpha: Boolean,
@@ -28,15 +27,6 @@ final case class AdvancedGameConfig(
     disableContextMenu: Boolean,
     clickTime: Millis
 ) derives CanEqual {
-
-  def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
-    this.copy(renderingTechnology = tech)
-  def useWebGL1: AdvancedGameConfig =
-    this.copy(renderingTechnology = RenderingTechnology.WebGL1)
-  def useWebGL2: AdvancedGameConfig =
-    this.copy(renderingTechnology = RenderingTechnology.WebGL2)
-  def useWebGL2WithFallback: AdvancedGameConfig =
-    this.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback)
 
   def withAntiAliasing(enabled: Boolean): AdvancedGameConfig =
     this.copy(antiAliasing = enabled)
@@ -69,7 +59,6 @@ final case class AdvancedGameConfig(
   val asString: String =
     s"""
        |Advanced settings
-       |- Rendering technology:        ${renderingTechnology.name}
        |- AntiAliasing enabled:        ${antiAliasing.toString}
        |- Render batch size:           ${batchSize.toString}
        |- Pre-Multiplied Alpha:        ${premultipliedAlpha.toString}
@@ -82,7 +71,6 @@ final case class AdvancedGameConfig(
 object AdvancedGameConfig {
   val default: AdvancedGameConfig =
     AdvancedGameConfig(
-      renderingTechnology = RenderingTechnology.WebGL2WithFallback,
       antiAliasing = false,
       premultipliedAlpha = true,
       batchSize = 256,
@@ -91,34 +79,3 @@ object AdvancedGameConfig {
       clickTime = Millis(250)
     )
 }
-
-/** ADT that specifies which renderer to use. The default is to try and use WebGL 2.0 and fallback to WebGL 1.0, but you
-  * can force one or the other.
-  */
-enum RenderingTechnology derives CanEqual:
-  case WebGL1, WebGL2, WebGL2WithFallback
-
-  def isWebGL1: Boolean =
-    this match
-      case WebGL1 => true
-      case _      => false
-
-  def isWebGL2: Boolean =
-    this match
-      case WebGL2 => true
-      case _      => false
-
-  // Note: This isn't really a thing. Immediately after initialisation the rendering tech is decided to be 1.0 or 2.0
-  def isWebGL2WithFallback: Boolean =
-    this match
-      case WebGL2WithFallback => true
-      case _                  => false
-
-object RenderingTechnology:
-  extension (t: RenderingTechnology)
-    def name: String =
-      t match {
-        case WebGL1             => "WebGL 1.0"
-        case WebGL2             => "WebGL 2.0"
-        case WebGL2WithFallback => "WebGL 2.0 (will fallback to WebGL 1.0)"
-      }

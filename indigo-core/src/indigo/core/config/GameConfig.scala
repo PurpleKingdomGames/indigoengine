@@ -74,13 +74,6 @@ final case class GameConfig(
   def modifyAdvancedSettings(modify: AdvancedGameConfig => AdvancedGameConfig): GameConfig =
     this.copy(advanced = modify(advanced))
 
-  def useWebGL1: GameConfig =
-    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL1))
-  def useWebGL2: GameConfig =
-    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2))
-  def useWebGL2WithFallback: GameConfig =
-    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
-
   def withTransparentBackground(enabled: Boolean): GameConfig =
     this.copy(transparentBackground = enabled)
   def useTransparentBackground: GameConfig =

@@ -2,7 +2,6 @@ package indigo.platform
 
 import indigo.core.animation.AnimationRef
 import indigo.core.assets.AssetName
-import indigo.core.config.RenderingTechnology
 import indigo.core.datatypes.FontChar
 import indigo.core.datatypes.FontInfo
 import indigo.core.datatypes.Point
@@ -150,7 +149,6 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => mutable.KVP[DisplayObject],
-      renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit
@@ -160,7 +158,6 @@ final class DisplayObjectConversions(
         gameTime,
         assetMapping,
         cloneBlankDisplayObjects,
-        renderingTechnology,
         maxBatchSize,
         inputEvents,
         sendEvent
@@ -215,7 +212,6 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => mutable.KVP[DisplayObject],
-      renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit
@@ -274,7 +270,6 @@ final class DisplayObjectConversions(
             gameTime,
             assetMapping,
             cloneBlankDisplayObjects,
-            renderingTechnology,
             maxBatchSize,
             inputEvents,
             sendEvent
@@ -304,7 +299,7 @@ final class DisplayObjectConversions(
           noClones
         )
 
-      case x: Text[_] if renderingTechnology.isWebGL1 || !(x.rotation ~== Radians.zero) =>
+      case x: Text[_] if !(x.rotation ~== Radians.zero) =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           x.alignment match {
             case TextAlignment.Left => 0
@@ -338,7 +333,7 @@ final class DisplayObjectConversions(
 
         (DisplayTextLetters(letters), noClones)
 
-      case x: Text[_] if renderingTechnology.isWebGL2 =>
+      case x: Text[_] =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           x.alignment match {
             case TextAlignment.Left => 0

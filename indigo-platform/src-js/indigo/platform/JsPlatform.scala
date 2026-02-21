@@ -46,7 +46,7 @@ class JsPlatform(
     with PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
-    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
+    new RendererInitialiser(globalEventStream)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
@@ -169,7 +169,6 @@ class JsPlatform(
       IndigoLogger.info("Starting renderer")
       rendererInit.setup(
         new RendererConfig(
-          renderingTechnology = gameConfig.advanced.renderingTechnology,
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
           maxBatchSize = gameConfig.advanced.batchSize,

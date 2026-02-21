@@ -1,6 +1,5 @@
 package indigo.platform
 
-import indigo.core.config.RenderingTechnology
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
@@ -60,7 +59,6 @@ final class SceneProcessor(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
       assetMapping: AssetMapping,
-      renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit
@@ -139,7 +137,6 @@ final class SceneProcessor(
               gameTime,
               assetMapping,
               cloneBlankDisplayObjects,
-              renderingTechnology,
               maxBatchSize,
               inputEvents,
               sendEvent

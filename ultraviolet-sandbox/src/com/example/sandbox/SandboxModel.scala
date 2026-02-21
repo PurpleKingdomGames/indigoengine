@@ -114,9 +114,6 @@ object SandboxModel {
       context: Context[SandboxStartupData],
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] = {
-    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
-      Outcome(viewModel.copy(useLightingLayer = false))
-
     case FrameTick =>
       val updateOffset: Point =
         context.frame.input.gamepad.dpad match {

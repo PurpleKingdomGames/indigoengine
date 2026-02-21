@@ -164,7 +164,6 @@ final class GameLoop[StartUpData, GameModel](
       gameTime,
       scene,
       gameEngine.assetMapping,
-      gameEngine.renderer.renderingTechnology,
       gameConfig.advanced.batchSize,
       events,
       gameEngine.globalEventStream.pushGlobalEvent
