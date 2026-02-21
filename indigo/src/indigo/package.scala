@@ -167,9 +167,6 @@ object aliases:
   type AccessControl = indigo.core.events.AccessControl
   val AccessControl: indigo.core.events.AccessControl.type = indigo.core.events.AccessControl
 
-  type RendererDetails = indigo.core.events.RendererDetails
-  val RendererDetails: indigo.core.events.RendererDetails.type = indigo.core.events.RendererDetails
-
   type ViewportResize = indigo.core.events.ViewportResize
   val ViewportResize: indigo.core.events.ViewportResize.type = indigo.core.events.ViewportResize
 
@@ -395,9 +392,6 @@ object aliases:
 
   type AdvancedGameConfig = indigo.core.config.AdvancedGameConfig
   val AdvancedGameConfig: indigo.core.config.AdvancedGameConfig.type = indigo.core.config.AdvancedGameConfig
-
-  type RenderingTechnology = indigo.core.config.RenderingTechnology
-  val RenderingTechnology: indigo.core.config.RenderingTechnology.type = indigo.core.config.RenderingTechnology
 
   val IndigoLogger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 

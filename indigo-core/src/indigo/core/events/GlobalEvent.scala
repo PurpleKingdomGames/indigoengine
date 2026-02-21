@@ -5,14 +5,12 @@ import indigo.core.assets.AssetType
 import indigo.core.audio.PlaybackPolicy
 import indigo.core.audio.Volume
 import indigo.core.config.GameViewport
-import indigo.core.config.RenderingTechnology
 import indigo.core.constants.Key
 import indigo.core.datatypes.BindingKey
 import indigo.core.datatypes.Point
 import indigo.core.events.MouseEvent.Move
 import indigo.core.events.MouseEvent.Wheel
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Radians
 
 import scala.annotation.nowarn
@@ -41,22 +39,6 @@ sealed trait ViewEvent extends GlobalEvent with Product with Serializable
   * `InputState` i.e. "Where is the mouse now?"
   */
 sealed trait InputEvent extends GlobalEvent with Product with Serializable
-
-/** Event to inform the game which rendering choices are active. For example a view may wish to behave differently
-  * depending on the rendering technology available. This event is only fired once during start up.
-  *
-  * @param renderingTechnology
-  *   WebGL 1.0 or WebGL 2.0
-  * @param clearColor
-  *   The clear color set during initialisation
-  * @param magnification
-  *   The magnification set during initialisation
-  */
-final case class RendererDetails(
-    renderingTechnology: RenderingTechnology,
-    clearColor: RGBA,
-    magnification: Int
-) extends ViewEvent
 
 /** A special event that happens once per frame, at the end of the frame. Useful for updating anything in your model
   * that "just happens" on every frame without any other prompting event. Like gravity.

@@ -1,7 +1,5 @@
 package indigo.platform.renderer
 
-import indigo.core.config.RenderingTechnology
-import indigo.core.events.RendererDetails
 import indigo.core.utils.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.events.GlobalEventStream
@@ -9,7 +7,6 @@ import indigo.platform.renderer.Renderer
 import indigo.platform.renderer.RendererConfig
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
-import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shaders.RawShaderCode
 import org.scalajs.dom
@@ -22,7 +19,6 @@ import scala.scalajs.js.Dynamic
 import scala.scalajs.js.JSConverters.*
 
 final class RendererInitialiser(
-    renderingTechnology: RenderingTechnology,
     globalEventStream: GlobalEventStream
 ) {
 
@@ -32,7 +28,7 @@ final class RendererInitialiser(
       canvas: html.Canvas,
       shaders: Set[RawShaderCode]
   ): Renderer = {
-    val (cNc, tech) = setupContextAndCanvas(
+    val cNc = setupContextAndCanvas(
       canvas,
       config.magnification,
       config.antiAliasing,
@@ -40,19 +36,8 @@ final class RendererInitialiser(
       config.transparentBackground
     )
 
-    globalEventStream.pushGlobalEvent(RendererDetails(tech, config.clearColor, config.magnification))
-
     val r =
-      tech match {
-        case RenderingTechnology.WebGL1 =>
-          new RendererWebGL1(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
-
-        case RenderingTechnology.WebGL2 =>
-          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
-
-        case RenderingTechnology.WebGL2WithFallback =>
-          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
-      }
+      new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
 
     r.init(shaders)
     r
@@ -104,8 +89,8 @@ final class RendererInitialiser(
       antiAliasing: Boolean,
       premultipliedAlpha: Boolean,
       transparentBackground: Boolean
-  ): (ContextAndCanvas, RenderingTechnology) = {
-    val (ctx, tech) = getContext(canvas, antiAliasing, premultipliedAlpha, transparentBackground)
+  ): ContextAndCanvas = {
+    val ctx = getContext(canvas, antiAliasing, premultipliedAlpha, transparentBackground)
 
     val cNc =
       new ContextAndCanvas(
@@ -114,7 +99,7 @@ final class RendererInitialiser(
         magnification = magnification
       )
 
-    (cNc, tech)
+    cNc
   }
 
   @SuppressWarnings(
@@ -128,7 +113,7 @@ final class RendererInitialiser(
       antiAliasing: Boolean,
       premultipliedAlpha: Boolean,
       transparentBackground: Boolean
-  ): (WebGLRenderingContext, RenderingTechnology) = {
+  ): WebGLRenderingContext = {
     val args =
       Dynamic.literal(
         "premultipliedAlpha" -> premultipliedAlpha,
@@ -136,28 +121,9 @@ final class RendererInitialiser(
         "antialias"          -> antiAliasing
       )
 
-    val tech: RenderingTechnology.WebGL1.type | RenderingTechnology.WebGL2.type =
-      chooseRenderingTechnology(renderingTechnology, args)
+    ensureRenderingTechnologyAvailable(args)
 
-    def useWebGL1(): (WebGLRenderingContext, RenderingTechnology) = {
-      val gl = (canvas.getContext("webgl", args) || canvas.getContext("experimental-webgl", args))
-        .asInstanceOf[WebGLRenderingContext]
-      if (gl == null) throw new Exception("This browser does not appear to support WebGL 1.0.")
-      else {
-        IndigoLogger.info("Using WebGL 1.0.")
-        (gl, RenderingTechnology.WebGL1)
-      }
-    }
-
-    def useWebGL2(): (WebGLRenderingContext, RenderingTechnology) = {
-      val gl2 = canvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
-      (gl2, RenderingTechnology.WebGL2)
-    }
-
-    tech match {
-      case RenderingTechnology.WebGL1 => useWebGL1()
-      case RenderingTechnology.WebGL2 => useWebGL2()
-    }
+    canvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
   }
 
   @SuppressWarnings(
@@ -167,55 +133,25 @@ final class RendererInitialiser(
       "scalafix:DisableSyntax.throw"
     )
   )
-  private def chooseRenderingTechnology(
-      usersPreference: RenderingTechnology,
+  private def ensureRenderingTechnologyAvailable(
       args: Dynamic
-  ): RenderingTechnology.WebGL1.type | RenderingTechnology.WebGL2.type = {
-    /* These tests rely on a temporary canvas not attached to the document.
-     * If you initialise a canvas as WebGL 2.0 and then try to reuse it as WebGL 1.0
-     * you get rendering errors.
-     * However! Once we're falling back to WebGL 1.0, you have to go back to the canvas
-     * version because some browsers won't acknowledge WebGL 1.0 _unless_ it's on the page,
-     * but this isn't a real problem since WebGL 1.0 is our last chance to render anyhow.
+  ): Unit =
+    /* This test relies on a temporary canvas not attached to the document.
      */
     val tempCanvas = createNamedCanvas(1, 1, "indigowebgl2test", None)
 
-    usersPreference match {
-      case RenderingTechnology.WebGL1 =>
-        RenderingTechnology.WebGL1
+    val gl2 = tempCanvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
 
-      case RenderingTechnology.WebGL2 =>
-        val gl2 = tempCanvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
-
-        if (gl2 == null)
-          throw new Exception("WebGL 2.0 required by indigo game. This browser does not appear to support WebGL 2.0.")
-        else if (!isWebGL2ReallySupported(gl2))
-          throw new Exception(
-            "WebGL 2.0 required by indigo game. This browser claims to support WebGL 2.0, but does not meet indigo's requirements."
-          )
-        else {
-          IndigoLogger.info("Using WebGL 2.0")
-          RenderingTechnology.WebGL2
-        }
-
-      case RenderingTechnology.WebGL2WithFallback =>
-        var gl2 = tempCanvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
-
-        if (gl2 == null) {
-          IndigoLogger.info("This browser does not appear to support WebGL 2.0, trying WebGL 1.0.")
-          RenderingTechnology.WebGL1
-        } else if (!isWebGL2ReallySupported(gl2)) {
-          IndigoLogger.info(
-            "This browser claims to support WebGL 2.0, but does not meet indigo's requirements. Trying WebGL 1.0."
-          )
-          gl2 = null
-          RenderingTechnology.WebGL1
-        } else {
-          IndigoLogger.info("Using WebGL 2.0.")
-          RenderingTechnology.WebGL2
-        }
+    if (gl2 == null)
+      throw new Exception("WebGL 2.0 required by indigo game. This browser does not appear to support WebGL 2.0.")
+    else if (!isWebGL2ReallySupported(gl2))
+      throw new Exception(
+        "WebGL 2.0 required by indigo game. This browser claims to support WebGL 2.0, but does not meet indigo's requirements."
+      )
+    else {
+      IndigoLogger.info("Using WebGL 2.0")
+      ()
     }
-  }
 
   @SuppressWarnings(
     Array(

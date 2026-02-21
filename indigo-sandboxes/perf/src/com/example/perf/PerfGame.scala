@@ -33,7 +33,6 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
             resizePolicy = ResizePolicy.NoResize,
             transparentBackground = false,
             advanced = AdvancedGameConfig.default
-              .withRenderingTechnology(RenderingTechnology.WebGL2)
               .withBatchSize(512)
               .withAutoLoadStandardShaders(false)
               .withContextMenu
