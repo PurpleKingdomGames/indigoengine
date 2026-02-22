@@ -1,7 +1,7 @@
-package tyrian.classic.runtime
+package tyrian.platform.runtime
 
 import cats.Applicative
-import tyrian.classic.Cmd
+import tyrian.platform.Cmd
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer

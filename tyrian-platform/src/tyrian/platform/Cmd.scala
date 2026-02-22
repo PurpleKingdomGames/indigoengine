@@ -1,4 +1,4 @@
-package tyrian.classic
+package tyrian.platform
 
 import cats.Applicative
 import cats.Functor
@@ -7,7 +7,7 @@ import cats.effect.kernel.Temporal
 import cats.kernel.Eq
 import cats.kernel.Monoid
 import cats.syntax.eq.*
-import tyrian.classic.runtime.CmdHelper
+import tyrian.platform.runtime.CmdHelper
 
 import scala.annotation.targetName
 import scala.concurrent.duration.FiniteDuration

@@ -1,10 +1,10 @@
-package tyrian.classic.runtime
+package tyrian.platform.runtime
 
 import cats.effect.kernel.Concurrent
 import cats.effect.kernel.Resource
 import cats.effect.syntax.all.*
 import cats.syntax.all.*
-import tyrian.classic.Sub
+import tyrian.platform.Sub
 
 import scala.annotation.tailrec
 

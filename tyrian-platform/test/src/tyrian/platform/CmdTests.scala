@@ -1,7 +1,6 @@
-package tyrian.classic
+package tyrian.platform
 
 import cats.effect.IO
-import tyrian.classic.syntax.*
 
 import scala.concurrent.duration.*
 
@@ -219,7 +218,7 @@ class CmdTests extends munit.CatsEffectSuite {
   }
 
   test("Cmd.Run use syntax to produce a command") {
-    IO("testing 2").toCmd.toTask.assertEquals("testing 2")
+    Cmd.Run(IO("testing 2")).toTask.assertEquals("testing 2")
   }
 
 }

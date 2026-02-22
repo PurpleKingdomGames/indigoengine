@@ -1,4 +1,4 @@
-package tyrian.classic.runtime
+package tyrian.platform.runtime
 
 import cats.effect.kernel.Async
 import cats.effect.kernel.Clock
@@ -8,46 +8,47 @@ import cats.effect.std.Dispatcher
 import cats.effect.std.Queue
 import cats.effect.syntax.all.*
 import cats.syntax.all.*
-import org.scalajs.dom.Element
-import snabbdom.toVNode
-import tyrian.Html
 import tyrian.Location
-import tyrian.classic.Cmd
-import tyrian.classic.Sub
+import tyrian.platform.Cmd
+import tyrian.platform.Sub
 
 object TyrianRuntime:
 
-  def apply[F[_], Model, Msg](
+  def apply[F[_], Model, Msg, View[Msg], ViewRenderer](
       router: Location => Msg,
-      node: Element,
+      // node: Element,
       initModel: Model,
       initCmd: Cmd[F, Msg],
       update: Model => Msg => (Model, Cmd[F, Msg]),
-      view: Model => Html[Msg],
-      subscriptions: Model => Sub[F, Msg]
+      view: Model => View[Msg],
+      subscriptions: Model => Sub[F, Msg],
+      viewRenderer: ViewRenderer,
+      renderUpdate: RenderUpdate[View, ViewRenderer]
   )(using F: Async[F]): F[Nothing] =
     Dispatcher.sequential[F].use { dispatcher =>
-      val loop        = mainLoop(dispatcher, router, initCmd, update, view, subscriptions)
+      val loop        = mainLoop(dispatcher, router, initCmd, update, view, subscriptions, renderUpdate)
       val model       = F.ref(initModel)
       val currentSubs = AtomicCell[F].of(List.empty[(String, F[Unit])])
       val msgQueue    = Queue.unbounded[F, Msg]
-      val renderer    = Renderer.init(toVNode(node))
+      val renderer    = F.ref(viewRenderer)
 
       (model, currentSubs, msgQueue, renderer).flatMapN(loop)
     }
 
-  def mainLoop[F[_], Model, Msg](
+  def mainLoop[F[_], Model, Msg, View[Msg], ViewRenderer](
       dispatcher: Dispatcher[F],
       router: Location => Msg,
       initCmd: Cmd[F, Msg],
       update: Model => Msg => (Model, Cmd[F, Msg]),
-      view: Model => Html[Msg],
-      subscriptions: Model => Sub[F, Msg]
+      view: Model => View[Msg],
+      subscriptions: Model => Sub[F, Msg],
+      renderUpdate: RenderUpdate[View, ViewRenderer]
   )(
       model: Ref[F, Model],
       currentSubs: AtomicCell[F, List[(String, F[Unit])]],
       msgQueue: Queue[F, Msg],
-      renderer: Ref[F, Renderer]
+      // renderer: Ref[F, Renderer]
+      renderer: Ref[F, ViewRenderer]
   )(using F: Async[F], clock: Clock[F]): F[Nothing] =
     val runCmd: Cmd[F, Msg] => F[Unit] = runCommands(msgQueue)
     val runSub: Sub[F, Msg] => F[Unit] = runSubscriptions(currentSubs, msgQueue, dispatcher)
@@ -64,7 +65,7 @@ object TyrianRuntime:
           }
 
           _ <- runCmd(cmdsAndSubs._1) *> runSub(cmdsAndSubs._2)
-          _ <- Renderer.redraw(dispatcher, renderer, model, view, onMsg, router)(using F, clock)
+          _ <- renderUpdate.redraw(dispatcher, renderer, model, view, onMsg, router)(using F, clock)
         } yield ()
       }.foreverM
 

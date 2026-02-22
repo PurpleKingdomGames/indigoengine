@@ -1,4 +1,4 @@
-package tyrian.classic
+package tyrian.platform
 
 import cats.Id
 import cats.kernel.laws.discipline.EqTests
@@ -6,7 +6,7 @@ import cats.kernel.laws.discipline.MonoidTests
 import cats.laws.discipline.FunctorTests
 import org.scalacheck.Arbitrary
 import org.scalacheck.Cogen
-import tyrian.classic.runtime.CmdHelper
+import tyrian.platform.runtime.CmdHelper
 
 class CmdLawsTests extends munit.DisciplineSuite {
 

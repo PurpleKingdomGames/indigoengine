@@ -1,4 +1,4 @@
-package tyrian.classic
+package tyrian.platform
 
 import cats.Functor
 import cats.effect.kernel.Async
@@ -8,15 +8,13 @@ import cats.kernel.Eq
 import cats.kernel.Monoid
 import cats.syntax.all.*
 import fs2.Stream
-import org.scalajs.dom
-import org.scalajs.dom.EventTarget
-import tyrian.classic.runtime.SubHelper
-import util.Functions
+import tyrian.platform.runtime.SubHelper
+// import util.Functions
 
-import java.util.concurrent.TimeUnit
-import scala.annotation.nowarn
-import scala.concurrent.duration.FiniteDuration
-import scala.scalajs.js
+// import java.util.concurrent.TimeUnit
+// import scala.annotation.nowarn
+// import scala.concurrent.duration.FiniteDuration
+// import scala.scalajs.js
 
 /** A subscription describes a resource that an application is interested in.
   *
@@ -167,74 +165,74 @@ object Sub:
     def apply[F[_], Msg](subs: Sub[F, Msg]*): Batch[F, Msg] =
       Batch(subs.toList)
 
-  /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
-  def emit[F[_]: Sync, Msg](msg: Msg): Sub[F, Msg] =
-    timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
+  // /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
+  // def emit[F[_]: Sync, Msg](msg: Msg): Sub[F, Msg] =
+  //   timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
 
-  /** A subscription that produces a `msg` after a `duration`. */
-  def timeout[F[_]: Sync, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =
-    def task(callback: Either[Throwable, Msg] => Unit): F[Option[F[Unit]]] =
-      val handle = dom.window.setTimeout(
-        Functions.fun0(() => callback(Right(msg))),
-        duration.toMillis.toDouble
-      )
-      Sync[F].delay {
-        Option(Sync[F].delay(dom.window.clearTimeout(handle)))
-      }
+  // /** A subscription that produces a `msg` after a `duration`. */
+  // def timeout[F[_]: Sync, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =
+  //   def task(callback: Either[Throwable, Msg] => Unit): F[Option[F[Unit]]] =
+  //     val handle = dom.window.setTimeout(
+  //       Functions.fun0(() => callback(Right(msg))),
+  //       duration.toMillis.toDouble
+  //     )
+  //     Sync[F].delay {
+  //       Option(Sync[F].delay(dom.window.clearTimeout(handle)))
+  //     }
 
-    Observe(id, Sync[F].pure(task))
+  //   Observe(id, Sync[F].pure(task))
 
-  /** A subscription that produces a `msg` after a `duration`. */
-  def timeout[F[_]: Sync, Msg](duration: FiniteDuration, msg: Msg): Sub[F, Msg] =
-    timeout(duration, msg, "[tyrian-sub-timeout] " + duration.toString + msg.toString)
+  // /** A subscription that produces a `msg` after a `duration`. */
+  // def timeout[F[_]: Sync, Msg](duration: FiniteDuration, msg: Msg): Sub[F, Msg] =
+  //   timeout(duration, msg, "[tyrian-sub-timeout] " + duration.toString + msg.toString)
 
-  /** A subscription that repeatedly produces a `msg` based on an `interval`. */
-  def every[F[_]: Sync](interval: FiniteDuration, id: String): Sub[F, js.Date] =
-    Sub.make[F, js.Date, Int](id) { callback =>
-      Sync[F].delay {
-        dom.window.setInterval(
-          Functions.fun0(() => callback(Right(new js.Date()))),
-          interval.toMillis.toDouble
-        )
-      }
-    } { handle =>
-      Sync[F].delay(dom.window.clearTimeout(handle))
-    }
+  // /** A subscription that repeatedly produces a `msg` based on an `interval`. */
+  // def every[F[_]: Sync](interval: FiniteDuration, id: String): Sub[F, js.Date] =
+  //   Sub.make[F, js.Date, Int](id) { callback =>
+  //     Sync[F].delay {
+  //       dom.window.setInterval(
+  //         Functions.fun0(() => callback(Right(new js.Date()))),
+  //         interval.toMillis.toDouble
+  //       )
+  //     }
+  //   } { handle =>
+  //     Sync[F].delay(dom.window.clearTimeout(handle))
+  //   }
 
-  /** A subscription that repeatedly produces a `msg` based on an `interval`. */
-  def every[F[_]: Sync](interval: FiniteDuration): Sub[F, js.Date] =
-    every(interval, "[tyrian-sub-every] " + interval.toString)
+  // /** A subscription that repeatedly produces a `msg` based on an `interval`. */
+  // def every[F[_]: Sync](interval: FiniteDuration): Sub[F, js.Date] =
+  //   every(interval, "[tyrian-sub-every] " + interval.toString)
 
-  /** A subscription that emits a `msg` based on an a JavaScript event. */
-  def fromEvent[F[_]: Sync, A, Msg](name: String, target: EventTarget)(extract: A => Option[Msg]): Sub[F, Msg] =
-    Sub.make[F, A, Msg, js.Function1[A, Unit]](name + target.hashCode) { callback =>
-      Sync[F].delay {
-        val listener = Functions.fun { (a: A) =>
-          callback(Right(a))
-        }
-        target.addEventListener(name, listener)
-        listener
-      }
-    } { listener =>
-      Sync[F].delay(target.removeEventListener(name, listener))
-    }(extract)
+  // /** A subscription that emits a `msg` based on an a JavaScript event. */
+  // def fromEvent[F[_]: Sync, A, Msg](name: String, target: EventTarget)(extract: A => Option[Msg]): Sub[F, Msg] =
+  //   Sub.make[F, A, Msg, js.Function1[A, Unit]](name + target.hashCode) { callback =>
+  //     Sync[F].delay {
+  //       val listener = Functions.fun { (a: A) =>
+  //         callback(Right(a))
+  //       }
+  //       target.addEventListener(name, listener)
+  //       listener
+  //     }
+  //   } { listener =>
+  //     Sync[F].delay(target.removeEventListener(name, listener))
+  //   }(extract)
 
-  /** A subscription that emits a `msg` based on the running time in seconds whenever the browser renders an animation
-    * frame.
-    */
-  @nowarn("msg=unused")
-  def animationFrameTick[F[_]: Async, Msg](id: String)(toMsg: Double => Msg): Sub[F, Msg] =
-    Sub.make(
-      id,
-      Stream.repeatEval {
-        Async[F].async_[Msg] { cb =>
-          dom.window.requestAnimationFrame { t =>
-            cb(Right(toMsg(t / 1000)))
-          }
-          ()
-        }
-      }
-    )
+  // /** A subscription that emits a `msg` based on the running time in seconds whenever the browser renders an animation
+  //   * frame.
+  //   */
+  // @nowarn("msg=unused")
+  // def animationFrameTick[F[_]: Async, Msg](id: String)(toMsg: Double => Msg): Sub[F, Msg] =
+  //   Sub.make(
+  //     id,
+  //     Stream.repeatEval {
+  //       Async[F].async_[Msg] { cb =>
+  //         dom.window.requestAnimationFrame { t =>
+  //           cb(Right(toMsg(t / 1000)))
+  //         }
+  //         ()
+  //       }
+  //     }
+  //   )
 
   def combineAll[F[_], A](list: List[Sub[F, A]]): Sub[F, A] =
     Monoid[Sub[F, A]].combineAll(list)

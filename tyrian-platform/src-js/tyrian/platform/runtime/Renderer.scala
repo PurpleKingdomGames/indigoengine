@@ -1,4 +1,4 @@
-package tyrian.classic.runtime
+package tyrian.platform.runtime
 
 import cats.effect.kernel.Async
 import cats.effect.kernel.Clock
@@ -17,10 +17,32 @@ final case class Renderer(vnode: PatchedVNode, state: RendererState):
 
 object Renderer:
 
+  val renderUpdate: RenderUpdate[Html, Renderer] =
+    new RenderUpdate[Html, Renderer]:
+      def redraw[F[_], Model, Msg](
+          dispatcher: Dispatcher[F],
+          renderer: Ref[F, Renderer],
+          model: Ref[F, Model],
+          view: Model => Html[Msg],
+          onMsg: Msg => Unit,
+          router: Location => Msg
+      )(using F: Async[F], clock: Clock[F]): F[Unit] =
+        Renderer.redraw(
+          dispatcher,
+          renderer,
+          model,
+          view,
+          onMsg,
+          router
+        )
+
   def init[F[_]](vnode: PatchedVNode)(using F: Async[F]): F[Ref[F, Renderer]] =
     F.ref(
       Renderer(vnode, RendererState.Idle)
     )
+
+  def initialise(vnode: PatchedVNode): Renderer =
+    Renderer(vnode, RendererState.Idle)
 
   private val timeout: Long = 1000
 

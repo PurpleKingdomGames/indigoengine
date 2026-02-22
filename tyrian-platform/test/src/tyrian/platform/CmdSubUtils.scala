@@ -1,4 +1,4 @@
-package tyrian.classic
+package tyrian.platform
 
 import cats.effect.IO
 

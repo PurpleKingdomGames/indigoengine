@@ -1,4 +1,4 @@
-package tyrian.classic.runtime
+package tyrian.platform.runtime
 
 enum RendererState derives CanEqual:
   case Idle
