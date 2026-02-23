@@ -9,8 +9,8 @@ import org.scalajs.dom.window
 import snabbdom.toVNode
 import tyrian.Html
 import tyrian.Location
+import tyrian.classic.rendering.HtmlViewState
 import tyrian.classic.syntax.*
-import tyrian.platform.runtime.Renderer
 import tyrian.platform.runtime.TyrianRuntime
 
 import scala.annotation.nowarn
@@ -202,16 +202,12 @@ object TyrianApp:
       view: Model => Html[Msg],
       subscriptions: Model => Sub[F, Msg]
   ): F[Nothing] =
-    val renderer     = Renderer.initialise(toVNode(node))
-    val renderUpdate = Renderer.renderUpdate
-
-    TyrianRuntime[F, Model, Msg, Html, Renderer](
+    TyrianRuntime[F, Model, Msg, Html, HtmlViewState](
       router,
       init._1,
       init._2,
       update,
       view,
       subscriptions,
-      renderer,
-      renderUpdate
+      HtmlViewState.initialise(toVNode(node))
     )

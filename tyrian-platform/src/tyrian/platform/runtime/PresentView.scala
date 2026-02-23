@@ -6,11 +6,11 @@ import cats.effect.kernel.Ref
 import cats.effect.std.Dispatcher
 import tyrian.Location
 
-trait RenderUpdate[View[_], ViewRenderer]:
+trait PresentView[View[_], ViewState]:
 
-  def redraw[F[_], Model, Msg](
+  def draw[F[_], Model, Msg](
       dispatcher: Dispatcher[F],
-      renderer: Ref[F, ViewRenderer],
+      viewState: Ref[F, ViewState],
       model: Ref[F, Model],
       view: Model => View[Msg],
       onMsg: Msg => Unit,

@@ -1,4 +1,4 @@
-package tyrian.platform.runtime
+package tyrian.classic.rendering
 
 import cats.effect.kernel.Async
 import cats.effect.kernel.Clock
@@ -9,61 +9,56 @@ import org.scalajs.dom
 import snabbdom.PatchedVNode
 import tyrian.Html
 import tyrian.Location
+import tyrian.platform.runtime.PresentView
 
-final case class Renderer(vnode: PatchedVNode, state: RendererState):
+final case class HtmlViewState(vnode: PatchedVNode, state: RendererState):
 
-  def runningAt(t: Long): Renderer =
+  def runningAt(t: Long): HtmlViewState =
     this.copy(state = RendererState.Running(t))
 
-object Renderer:
+object HtmlViewState:
 
-  val renderUpdate: RenderUpdate[Html, Renderer] =
-    new RenderUpdate[Html, Renderer]:
-      def redraw[F[_], Model, Msg](
-          dispatcher: Dispatcher[F],
-          renderer: Ref[F, Renderer],
-          model: Ref[F, Model],
-          view: Model => Html[Msg],
-          onMsg: Msg => Unit,
-          router: Location => Msg
-      )(using F: Async[F], clock: Clock[F]): F[Unit] =
-        Renderer.redraw(
-          dispatcher,
-          renderer,
-          model,
-          view,
-          onMsg,
-          router
-        )
+  given PresentView[Html, HtmlViewState] with
+    def draw[F[_], Model, Msg](
+        dispatcher: Dispatcher[F],
+        viewState: Ref[F, HtmlViewState],
+        model: Ref[F, Model],
+        view: Model => Html[Msg],
+        onMsg: Msg => Unit,
+        router: Location => Msg
+    )(using F: Async[F], clock: Clock[F]): F[Unit] =
+      HtmlViewState.redraw(
+        dispatcher,
+        viewState,
+        model,
+        view,
+        onMsg,
+        router
+      )
 
-  def init[F[_]](vnode: PatchedVNode)(using F: Async[F]): F[Ref[F, Renderer]] =
-    F.ref(
-      Renderer(vnode, RendererState.Idle)
-    )
-
-  def initialise(vnode: PatchedVNode): Renderer =
-    Renderer(vnode, RendererState.Idle)
+  def initialise(vnode: PatchedVNode): HtmlViewState =
+    HtmlViewState(vnode, RendererState.Idle)
 
   private val timeout: Long = 1000
 
   // This function gets called on every model update
-  def redraw[F[_], Model, Msg](
+  private def redraw[F[_], Model, Msg](
       dispatcher: Dispatcher[F],
-      renderer: Ref[F, Renderer],
+      viewState: Ref[F, HtmlViewState],
       model: Ref[F, Model],
       view: Model => Html[Msg],
       onMsg: Msg => Unit,
       router: Location => Msg
   )(using F: Async[F], clock: Clock[F]): F[Unit] =
     clock.realTime.flatMap { time =>
-      renderer.modify { r =>
+      viewState.modify { r =>
         r.state match
           case RendererState.Idle =>
             // If the render state is idle, update the last triggered time and begin.
             r.runningAt(time.toMillis) ->
               F.delay(
                 dom.window.requestAnimationFrame(_ =>
-                  render(dispatcher, renderer, model, view, onMsg, router, clock)(time.toMillis)
+                  render(dispatcher, viewState, model, view, onMsg, router, clock)(time.toMillis)
                 )
               ).void
 
@@ -75,7 +70,7 @@ object Renderer:
 
   private def render[F[_], Model, Msg](
       dispatcher: Dispatcher[F],
-      renderer: Ref[F, Renderer],
+      renderer: Ref[F, HtmlViewState],
       model: Ref[F, Model],
       view: Model => Html[Msg],
       onMsg: Msg => Unit,

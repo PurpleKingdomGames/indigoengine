@@ -1,4 +1,4 @@
-package tyrian.platform.runtime
+package tyrian.classic.rendering
 
 import org.scalajs.dom
 import org.scalajs.dom.Element
