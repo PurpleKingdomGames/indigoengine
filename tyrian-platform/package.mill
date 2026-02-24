@@ -18,13 +18,12 @@ object `package` extends Module:
 
     def moduleDeps = Seq(
       build.`indigoengine-shared`.js,
-      build.`tyrian-tags`.js
+      build.`tyrian-core`.js
     )
 
     def mvnDeps = Seq(
       mvn"org.typelevel::cats-effect-kernel::${Dependencies.catsEffect}",
-      mvn"co.fs2::fs2-core::${Dependencies.fs2}",
-      mvn"io.github.buntec::scala-js-snabbdom::${Dependencies.scalajsSnabbdom}"
+      mvn"co.fs2::fs2-core::${Dependencies.fs2}"
     )
 
   object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
