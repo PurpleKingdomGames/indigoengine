@@ -145,7 +145,6 @@ object Sub:
   /** Merge two subscriptions into a single one */
   final case class Combine[F[_], Msg](sub1: Sub[F, Msg], sub2: Sub[F, Msg]) extends Sub[F, Msg]:
     def map[OtherMsg](f: Msg => OtherMsg): Sub[F, OtherMsg] = Combine(sub1.map(f), sub2.map(f))
-    def toBatch: Sub.Batch[F, Msg]                          = Sub.Batch(List(sub1, sub2))
 
   /** Treat many subscriptions as one */
   final case class Batch[F[_], Msg](subs: List[Sub[F, Msg]]) extends Sub[F, Msg]:
