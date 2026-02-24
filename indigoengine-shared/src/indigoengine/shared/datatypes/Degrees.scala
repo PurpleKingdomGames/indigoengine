@@ -1,6 +1,5 @@
 package indigoengine.shared.datatypes
 
-import scala.annotation.targetName
 import scala.math
 
 opaque type Degrees = Double
@@ -26,33 +25,38 @@ object Degrees:
   extension (d: Degrees)
     def +(other: Degrees): Degrees =
       Degrees(d + other)
-    @targetName("+_Double")
-    def +(other: Double): Degrees =
-      Degrees(d + other)
+    // Removed due to Scala Native's Scala version requirements
+    // @targetName("+_Double")
+    // def +(other: Double): Degrees =
+    //   Degrees(d + other)
 
     def -(other: Degrees): Degrees =
       Degrees(d - other)
-    @targetName("-_Double")
-    def -(other: Double): Degrees =
-      Degrees(d - other)
+    // Removed due to Scala Native's Scala version requirements
+    // @targetName("-_Double")
+    // def -(other: Double): Degrees =
+    //   Degrees(d - other)
 
     def *(other: Degrees): Degrees =
       Degrees(d * other)
-    @targetName("*_Double")
-    def *(other: Double): Degrees =
-      Degrees(d * other)
+    // Removed due to Scala Native's Scala version requirements
+    // @targetName("*_Double")
+    // def *(other: Double): Degrees =
+    //   Degrees(d * other)
 
     def /(other: Degrees): Degrees =
       Degrees(d / other)
-    @targetName("/_Double")
-    def /(other: Double): Degrees =
-      Degrees(d / other)
+    // Removed due to Scala Native's Scala version requirements
+    // @targetName("/_Double")
+    // def /(other: Double): Degrees =
+    //   Degrees(d / other)
 
     def %(other: Degrees): Degrees =
       Degrees.mod(d, other)
-    @targetName("%_Double")
-    def %(other: Double): Degrees =
-      Degrees.mod(d, other)
+    // Removed due to Scala Native's Scala version requirements
+    // @targetName("%_Double")
+    // def %(other: Double): Degrees =
+    //   Degrees.mod(d, other)
 
     def wrap: Degrees =
       val m = d % Degrees.`360`

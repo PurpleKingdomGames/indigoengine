@@ -167,12 +167,12 @@ class Vector2Tests extends munit.FunSuite {
     // 45
     val v        = Vector2(1, 2)
     val expected = Vector2(-0.70710, 2.12132)
-    assert(v.rotateBy(Radians.PIby2 / 2f) ~== expected)
+    assert(v.rotateBy(Radians.PIby2 / Radians(2)) ~== expected)
     // magnitude should remain the same
     assert(Math.abs(v.length - expected.length) <= 0.0001)
 
     // -90
-    assert(Vector2(1, 1).rotateBy(Radians.PIby2 * -1f) ~== Vector2(1, -1))
+    assert(Vector2(1, 1).rotateBy(Radians.PIby2 * Radians(-1f)) ~== Vector2(1, -1))
   }
 
   test("rotate around given point") {
@@ -181,7 +181,7 @@ class Vector2Tests extends munit.FunSuite {
     // Adjacent quadrant
     assert(Vector2(3, 1).rotateBy(Radians.PIby2, Vector2(-2, -2)) ~== Vector2(-5, 3))
     // Negative
-    assert(Vector2(-3, 4).rotateBy(Radians.PIby2 * -1f, Vector2(-1, 2)) ~== Vector2(1, 4))
+    assert(Vector2(-3, 4).rotateBy(Radians.PIby2 * Radians(-1), Vector2(-1, 2)) ~== Vector2(1, 4))
   }
 
   test("rotate to") {
@@ -193,9 +193,9 @@ class Vector2Tests extends munit.FunSuite {
 
   test("angle") {
     // -90
-    assertEquals(Vector2(0, -1).angle, Radians.PIby2 * -1.0)
+    assertEquals(Vector2(0, -1).angle, Radians.PIby2 * Radians(-1.0))
     // -90 at different magnitude
-    assertEquals(Vector2(0, -8.5).angle, Radians.PIby2 * -1.0)
+    assertEquals(Vector2(0, -8.5).angle, Radians.PIby2 * Radians(-1.0))
   }
 
   test("mod") {
