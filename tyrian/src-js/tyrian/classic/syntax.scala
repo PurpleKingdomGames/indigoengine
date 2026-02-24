@@ -68,7 +68,7 @@ object syntax:
           )
         }
       } { handle =>
-        Sync[F].delay(dom.window.clearTimeout(handle))
+        Sync[F].delay(dom.window.clearInterval(handle))
       }
 
     /** A subscription that repeatedly produces a `msg` based on an `interval`. */
