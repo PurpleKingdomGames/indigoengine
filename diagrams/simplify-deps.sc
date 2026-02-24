@@ -32,33 +32,43 @@ val allNodes = lines.flatMap { line =>
 val nonTestNodes = allNodes.filterNot(_.contains(".test."))
 
 // Categorize by platform suffix
-val jsNodes  = nonTestNodes.filter(_.endsWith(".js.compile"))
-val jvmNodes = nonTestNodes.filter(_.endsWith(".jvm.compile"))
-val plainNodes = nonTestNodes.filter { n =>
-  n.endsWith(".compile") && !n.endsWith(".js.compile") && !n.endsWith(".jvm.compile")
+val jsNodes     = nonTestNodes.filter(_.endsWith(".js.compile"))
+val jvmNodes    = nonTestNodes.filter(_.endsWith(".jvm.compile"))
+val nativeNodes = nonTestNodes.filter(_.endsWith(".native.compile"))
+val plainNodes  = nonTestNodes.filter { n =>
+  n.endsWith(".compile") &&
+  !n.endsWith(".js.compile") &&
+  !n.endsWith(".jvm.compile") &&
+  !n.endsWith(".native.compile")
 }
 
-// Find base names present on both js and jvm
-val jsBaseNames   = jsNodes.map(_.stripSuffix(".js.compile"))
-val jvmBaseNames  = jvmNodes.map(_.stripSuffix(".jvm.compile"))
-val bothPlatforms = jsBaseNames.intersect(jvmBaseNames)
+// Compute base names for each platform
+val jsBaseNames     = jsNodes.map(_.stripSuffix(".js.compile"))
+val jvmBaseNames    = jvmNodes.map(_.stripSuffix(".jvm.compile"))
+val nativeBaseNames = nativeNodes.map(_.stripSuffix(".native.compile"))
 
-// Build rename map: original name -> simplified name
+// For each base name with platform variants, build the sorted platform list
+val allPlatformBases = (jsBaseNames ++ jvmBaseNames ++ nativeBaseNames).toSet
+val platformsForBase: Map[String, List[String]] =
+  allPlatformBases.map { base =>
+    val platforms = List(
+      if jsBaseNames.contains(base)     then Some("js")     else None,
+      if jvmBaseNames.contains(base)    then Some("jvm")    else None,
+      if nativeBaseNames.contains(base) then Some("native") else None
+    ).flatten
+    base -> platforms
+  }.toMap
+
+def displayName(base: String): String =
+  platformsForBase.get(base).fold(base)(ps => s"$base (${ps.mkString(", ")})")
+
+// Build rename map: original name -> display name
 val renameMap: Map[String, String] =
-  val jsRenames = jsNodes.map { n =>
-    val base = n.stripSuffix(".js.compile")
-    if bothPlatforms.contains(base) then n -> base
-    else n                                 -> s"$base.js"
-  }
-  val jvmRenames = jvmNodes.map { n =>
-    val base = n.stripSuffix(".jvm.compile")
-    if bothPlatforms.contains(base) then n -> base
-    else n                                 -> s"$base.jvm"
-  }
-  val plainRenames = plainNodes.map { n =>
-    n -> n.stripSuffix(".compile")
-  }
-  (jsRenames ++ jvmRenames ++ plainRenames).toMap
+  val jsRenames     = jsNodes.map { n => n -> displayName(n.stripSuffix(".js.compile")) }
+  val jvmRenames    = jvmNodes.map { n => n -> displayName(n.stripSuffix(".jvm.compile")) }
+  val nativeRenames = nativeNodes.map { n => n -> displayName(n.stripSuffix(".native.compile")) }
+  val plainRenames  = plainNodes.map { n => n -> n.stripSuffix(".compile") }
+  (jsRenames ++ jvmRenames ++ nativeRenames ++ plainRenames).toMap
 
 // Process edges: remove test refs, apply renames, dedup, drop self-loops
 val edges = lines
