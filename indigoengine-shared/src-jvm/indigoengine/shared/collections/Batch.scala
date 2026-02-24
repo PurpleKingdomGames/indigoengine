@@ -51,7 +51,7 @@ sealed trait Batch[+A] extends BatchOps[A]:
     _underlying.collectFirst(f)
 
   def compact[B >: A]: Batch.Wrapped[B] =
-    Batch.Wrapped(_underlying) // .asInstanceOf[js.Array[B]]
+    Batch.Wrapped(_underlying)
 
   def contains[B >: A](p: B): Boolean =
     given CanEqual[B, B] = CanEqual.derived
@@ -305,7 +305,7 @@ object Batch:
 
   /** Creates a Batch from a Scala vector. */
   def fromVector[A](values: Vector[A]): Batch[A] =
-    Wrapped(Vector.from(values))
+    Wrapped(values)
 
   /** Creates a Batch from a Scala array. */
   def fromArray[A](values: Array[A]): Batch[A] =
@@ -341,7 +341,7 @@ object Batch:
   def fromOption[A](value: Option[A]): Batch[A] =
     Wrapped(value.toVector)
 
-  def fromRange[A](value: Range): Batch[Int] =
+  def fromRange(value: Range): Batch[Int] =
     Wrapped(value.toVector)
 
   /** Creates an empty Batch. */

@@ -352,7 +352,7 @@ object Batch:
   def fromOption[A](value: Option[A]): Batch[A] =
     Wrapped(value.toJSArray)
 
-  def fromRange[A](value: Range): Batch[Int] =
+  def fromRange(value: Range): Batch[Int] =
     Wrapped(value.toJSArray)
 
   /** Creates an empty Batch. */
