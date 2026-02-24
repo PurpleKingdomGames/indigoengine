@@ -1,0 +1,28 @@
+package build
+
+import mill._
+import mill.scalanativelib._
+
+object `package` extends ScalaNativeModule:
+  def scalaVersion       = Task("3.5.2")
+  def scalaNativeVersion = Task("0.5.10")
+
+  def forkEnv =
+    val os = System.getProperty("os.name").toLowerCase
+    if os.contains("win") then
+      val home   = System.getProperty("user.home").replace('\\', '/')
+      val sdlLib = s"$home/scoop/apps/sdl2/current/lib"
+      val path   = System.getenv("PATH")
+      Map("PATH" -> s"$sdlLib;$path")
+    else Map.empty[String, String]
+
+  def nativeLinkingOptions =
+    val os = System.getProperty("os.name").toLowerCase
+
+    if os.contains("win") then
+      val home = System.getProperty("user.home").replace('\\', '/')
+      Seq(s"-L$home/scoop/apps/sdl2/current/lib", "-lSDL2", "-lSDL2main", "-lopengl32")
+    else if (os.contains("mac"))
+      Seq("-I/opt/homebrew/include/SDL2", "-L/opt/homebrew/lib", "-lSDL2", "-framework", "OpenGL")
+    else
+      Seq("-lSDL2", "-lGL")
