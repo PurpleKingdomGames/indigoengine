@@ -1,5 +1,6 @@
 package indigoengine.shared.datatypes
 
+import scala.annotation.targetName
 import scala.math
 
 opaque type Radians = Double
@@ -33,38 +34,33 @@ object Radians:
   extension (r: Radians)
     def +(other: Radians): Radians =
       Radians(r + other)
-    // Removed due to Scala Native's Scala version requirements
-    // @targetName("+_Double")
-    // def +(other: Double): Radians =
-    //   Radians(r + other)
+    @targetName("+_Double")
+    def +(other: Double): Radians =
+      Radians(r + other)
 
     def -(other: Radians): Radians =
       Radians(r - other)
-    // Removed due to Scala Native's Scala version requirements
-    // @targetName("-_Double")
-    // def -(other: Double): Radians =
-    //   Radians(r - other)
+    @targetName("-_Double")
+    def -(other: Double): Radians =
+      Radians(r - other)
 
     def *(other: Radians): Radians =
       Radians(r * other)
-    // Removed due to Scala Native's Scala version requirements
-    // @targetName("*_Double")
-    // def *(other: Double): Radians =
-    //   Radians(r * other)
+    @targetName("*_Double")
+    def *(other: Double): Radians =
+      Radians(r * other)
 
     def /(other: Radians): Radians =
       Radians(r / other)
-    // Removed due to Scala Native's Scala version requirements
-    // @targetName("/_Double")
-    // def /(other: Double): Radians =
-    //   Radians(r / other)
+    @targetName("/_Double")
+    def /(other: Double): Radians =
+      Radians(r / other)
 
     def %(other: Radians): Radians =
       Radians.mod(r, other)
-    // Removed due to Scala Native's Scala version requirements
-    // @targetName("%_Double")
-    // def %(other: Double): Radians =
-    //   Radians.mod(r, other)
+    @targetName("%_Double")
+    def %(other: Double): Radians =
+      Radians.mod(r, other)
 
     def wrap: Radians =
       val m = r % pi2
