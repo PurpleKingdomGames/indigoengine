@@ -6,7 +6,6 @@ import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
-import build.SharedJVM
 import build.SharedJS
 import build.SharedPublish
 
