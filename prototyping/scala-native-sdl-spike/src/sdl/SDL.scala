@@ -6,7 +6,7 @@ import scala.scalanative.unsigned.*
 @extern
 object SDL:
   // --- Init / Quit ---
-  def SDL_Init(flags: UInt): CInt = extern
+  def SDL_Init(flags: UInt): Boolean = extern
   def SDL_Quit(): Unit = extern
 
   // --- Window ---
@@ -14,8 +14,6 @@ object SDL:
 
   def SDL_CreateWindow(
       title: CString,
-      x: CInt,
-      y: CInt,
       w: CInt,
       h: CInt,
       flags: UInt
@@ -27,13 +25,13 @@ object SDL:
   type SDL_GLContext = Ptr[Byte]
 
   def SDL_GL_CreateContext(window: SDL_Window): SDL_GLContext = extern
-  def SDL_GL_DeleteContext(context: SDL_GLContext): Unit = extern
-  def SDL_GL_SwapWindow(window: SDL_Window): Unit = extern
+  def SDL_GL_DestroyContext(context: SDL_GLContext): Boolean = extern
+  def SDL_GL_SwapWindow(window: SDL_Window): Boolean = extern
   def SDL_GL_SetAttribute(attr: CInt, value: CInt): CInt = extern
 
   // --- Events ---
-  // SDL_Event is a union, largest member is 56 bytes. We treat it as opaque.
-  type SDL_Event = CArray[Byte, Nat.Digit2[Nat._5, Nat._6]]
+  // SDL_Event is a union, largest member is 128 bytes in SDL3. We treat it as opaque.
+  type SDL_Event = CArray[Byte, Nat.Digit3[Nat._1, Nat._2, Nat._8]]
 
   def SDL_PollEvent(event: Ptr[SDL_Event]): CInt = extern
 
@@ -45,17 +43,13 @@ object SDLConstants:
   // SDL_Init flags
   val SDL_INIT_VIDEO: UInt = 0x00000020.toUInt
 
-  // SDL_CreateWindow position
-  val SDL_WINDOWPOS_CENTERED: CInt = 0x2fff0000
-
   // SDL_CreateWindow flags
   val SDL_WINDOW_OPENGL: UInt = 0x00000002.toUInt
-  val SDL_WINDOW_SHOWN: UInt = 0x00000004.toUInt
 
   // SDL_GL_SetAttribute enums
   val SDL_GL_DOUBLEBUFFER: CInt = 5
   val SDL_GL_CONTEXT_MAJOR_VERSION: CInt = 17
   val SDL_GL_CONTEXT_MINOR_VERSION: CInt = 18
 
-  // SDL_EventType — we only care about SDL_QUIT
-  val SDL_QUIT: UInt = 0x100.toUInt
+  // SDL_EventType — we only care about SDL_EVENT_QUIT
+  val SDL_EVENT_QUIT: UInt = 0x100.toUInt

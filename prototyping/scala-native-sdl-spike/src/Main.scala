@@ -9,7 +9,7 @@ import gl.GLConstants.*
 object Main:
   def main(args: Array[String]): Unit =
     // Initialize SDL with video subsystem
-    if SDL_Init(SDL_INIT_VIDEO) != 0 then
+    if !SDL_Init(SDL_INIT_VIDEO) then
       val err = fromCString(SDL_GetError())
       throw new RuntimeException(s"SDL_Init failed: $err")
 
@@ -18,14 +18,12 @@ object Main:
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
 
-    // Create a 400x400 window centered on screen
+    // Create a 400x400 window
     val window = SDL_CreateWindow(
       c"Hello Triangle - Scala Native",
-      SDL_WINDOWPOS_CENTERED,
-      SDL_WINDOWPOS_CENTERED,
       400,
       400,
-      SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
+      SDL_WINDOW_OPENGL
     )
     if window == null then
       val err = fromCString(SDL_GetError())
@@ -53,7 +51,7 @@ object Main:
       while SDL_PollEvent(event) != 0 do
         // First 4 bytes of SDL_Event is the event type (Uint32)
         val eventType = !(event.asInstanceOf[Ptr[UInt]])
-        if eventType == SDL_QUIT then running = false
+        if eventType == SDL_EVENT_QUIT then running = false
 
       // Clear the screen
       glClear(GL_COLOR_BUFFER_BIT)
@@ -75,6 +73,6 @@ object Main:
       SDL_Delay(16.toUInt)
 
     // Cleanup
-    SDL_GL_DeleteContext(glCtx)
+    SDL_GL_DestroyContext(glCtx)
     SDL_DestroyWindow(window)
     SDL_Quit()
