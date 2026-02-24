@@ -233,7 +233,7 @@ final case class NonEmptyBatch[A](head: A, tail: Batch[A]) derives CanEqual:
       try
         val b = that.asInstanceOf[NonEmptyBatch[A]]
         b.head == head && b.tail == tail
-      catch _ => false
+      catch case _ => false
     else false
 
 object NonEmptyBatch:
