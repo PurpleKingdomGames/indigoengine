@@ -27,7 +27,7 @@ class WaypointPathTests extends munit.FunSuite:
     val waypoints = Batch(Vertex(1, 0), Vertex(0, 1))
     val path      = WaypointPath(waypoints, WaypointPathConfig(0.0, looping = false))
 
-    val expectedAngle = (Radians.PIby2 * 3 / 2).toDouble
+    val expectedAngle = (Radians.PIby2 * Radians(3) / Radians(2)).toDouble
     assertEqualsDouble(path.calculatePosition(0.0).direction.toDouble, expectedAngle, 0.01)
     assertEqualsDouble(path.calculatePosition(0.5).direction.toDouble, expectedAngle, 0.01)
     assertEqualsDouble(path.calculatePosition(1.0).direction.toDouble, expectedAngle, 0.01)

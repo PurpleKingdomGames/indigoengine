@@ -36,7 +36,7 @@ trait Dice:
 
   /** Roll a random angle in Radians */
   def rollAngle: Radians =
-    Radians.TAU * rollDouble
+    Radians.TAU * Radians(rollDouble)
 
   /** Roll a Long from 1 to the number of sides on the dice (inclusive)
     */

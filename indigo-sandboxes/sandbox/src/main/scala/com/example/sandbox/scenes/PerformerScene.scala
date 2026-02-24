@@ -112,8 +112,8 @@ final case class Player(position: Vector2, direction: Radians, trail: Batch[Brea
       val moveSpeed   = 2.0
       val rotateSpeed = 0.1
 
-      def rotateLeft: Radians                 = direction - rotateSpeed
-      def rotateRight: Radians                = direction + rotateSpeed
+      def rotateLeft: Radians                 = direction - Radians(rotateSpeed)
+      def rotateRight: Radians                = direction + Radians(rotateSpeed)
       def moveForward(dir: Radians): Vector2  = position + Vector2(0, -1).rotateTo(dir) * moveSpeed
       def moveBackward(dir: Radians): Vector2 = position - Vector2(0, -1).rotateTo(dir) * moveSpeed
 
@@ -176,11 +176,11 @@ final case class Player(position: Vector2, direction: Radians, trail: Batch[Brea
             Fill.Color(RGBA.Yellow)
           ),
           Shape.Circle(
-            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction - 0.5) * 15).toPoint, 4),
+            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction - Radians(0.5)) * 15).toPoint, 4),
             Fill.Color(RGBA.Black)
           ),
           Shape.Circle(
-            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction + 0.5) * 15).toPoint, 4),
+            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction + Radians(0.5)) * 15).toPoint, 4),
             Fill.Color(RGBA.Black)
           )
         )

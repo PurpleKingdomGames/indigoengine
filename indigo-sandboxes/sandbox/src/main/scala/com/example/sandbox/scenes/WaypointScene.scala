@@ -46,13 +46,13 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel]:
     SignalFunction(wpp => g.moveTo(wpp.position.toPoint))
 
   val pentagramWaypoints = (0 until 5).toBatch.map: i =>
-    val angle = ((Radians.PI * 4) / 5) * i
+    val angle = ((Radians.PI * Radians(4)) / Radians(5)) * Radians(i)
     val x     = Math.cos(angle.toDouble) * 60 + 200
     val y     = Math.sin(angle.toDouble) * 60 + 100
     Vertex(x, y)
 
   val decagonWaypoints = (0 until 10).toBatch.map: i =>
-    val angle = (Radians.PI / 5) * i
+    val angle = (Radians.PI / Radians(5)) * Radians(i)
     val x     = Math.cos(angle.toDouble) * 60 + 200
     val y     = Math.sin(angle.toDouble) * 60 + 100
     Vertex(x, y)

@@ -10,10 +10,20 @@ class SubTests extends munit.CatsEffectSuite {
   import CmdSubUtils.*
 
   test("sub is a monoid") {
-    var state = 0
+    var state1 = 0
+    var state2 = 0
+    var state3 = 0
 
-    val callback: Either[Throwable, Int] => Unit = {
-      case Right(i) => state = i; ()
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback3: Either[Throwable, Int] => Unit = {
+      case Right(i) => state3 = i; ()
       case Left(_)  => throw new Exception("failed")
     }
 
@@ -38,13 +48,13 @@ class SubTests extends munit.CatsEffectSuite {
           combo match {
             case Sub.Combine(sub1, sub2) =>
               IO.both(
-                sub1.run(callback).map(_ => state == 10).assert,
-                sub2.run(callback).map(_ => state == 20).assert
+                sub1.run(callback1).map(_ => state1 == 10).assert,
+                sub2.run(callback2).map(_ => state2 == 20).assert
               )
 
             case _ => throw new Exception("failed")
           },
-          sub3.run(callback).map(_ => state == 30).assert
+          sub3.run(callback3).map(_ => state3 == 30).assert
         )
 
       case _ => throw new Exception("failed")
@@ -75,10 +85,15 @@ class SubTests extends munit.CatsEffectSuite {
   }
 
   test("Combine") {
-    var state = 0
+    var state1 = 0
+    var state2 = 0
 
-    val callback: Either[Throwable, Int] => Unit = {
-      case Right(i) => state = i; ()
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
       case Left(_)  => throw new Exception("failed")
     }
 
@@ -95,16 +110,26 @@ class SubTests extends munit.CatsEffectSuite {
       )
 
     IO.both(
-      combined.sub1.run(callback).map(_ => state == 1000).assert,
-      combined.sub2.run(callback).map(_ => state == 100).assert
+      combined.sub1.run(callback1).map(_ => state1 == 1000).assert,
+      combined.sub2.run(callback2).map(_ => state2 == 100).assert
     )
   }
 
   test("map - Batch") {
-    var state = 0
+    var state1 = 0
+    var state2 = 0
+    var state3 = 0
 
-    val callback: Either[Throwable, Int] => Unit = {
-      case Right(i) => state = i; ()
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback3: Either[Throwable, Int] => Unit = {
+      case Right(i) => state3 = i; ()
       case Left(_)  => throw new Exception("failed")
     }
 
@@ -126,10 +151,10 @@ class SubTests extends munit.CatsEffectSuite {
     batched.subs match
       case s1 :: (ss: Sub.Combine[IO, ?]) :: Nil =>
         IO.both(
-          s1.run(callback).map(_ => state == 10).assert,
+          s1.run(callback1).map(_ => state1 == 10).assert,
           IO.both(
-            ss.sub1.run(callback).map(_ => state == 100).assert,
-            ss.sub2.run(callback).map(_ => state == 1000).assert
+            ss.sub1.run(callback2).map(_ => state2 == 100).assert,
+            ss.sub2.run(callback3).map(_ => state3 == 1000).assert
           )
         )
 
@@ -138,10 +163,15 @@ class SubTests extends munit.CatsEffectSuite {
   }
 
   test("Batch ops") {
-    var state = 0
+    var state1 = 0
+    var state2 = 0
 
-    val callback: Either[Throwable, Int] => Unit = {
-      case Right(i) => state = i; ()
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
       case Left(_)  => throw new Exception("failed")
     }
 
@@ -155,8 +185,8 @@ class SubTests extends munit.CatsEffectSuite {
       batched.subs match
         case s1 :: s2 :: Nil =>
           IO.both(
-            s1.run(callback).map(_ => state == 10).assert,
-            s2.run(callback).map(_ => state == 20).assert
+            s1.run(callback1).map(_ => state1 == 10).assert,
+            s2.run(callback2).map(_ => state2 == 20).assert
           )
 
         case _ =>
