@@ -1,13 +1,13 @@
-# Scala Native SDL2 OpenGL — Hello Triangle
+# Scala Native SDL3 OpenGL — Hello Triangle
 
-A minimal "hello triangle" demo using **Scala Native**, **SDL2**, and **OpenGL** (legacy immediate mode). Renders an RGB-colored triangle in a 400x400 window.
+A minimal "hello triangle" demo using **Scala Native**, **SDL3**, and **OpenGL** (legacy immediate mode). Renders an RGB-colored triangle in a 400x400 window.
 
 ## Prerequisites
 
 - **JDK 17+**
 - **Mill** (via included `mill.bat` / `mill` launcher)
 - **LLVM/Clang** — required by Scala Native (e.g. `scoop install llvm`)
-- **SDL2 development libraries** — e.g. `scoop install sdl2` (Windows) or `brew install sdl2` (macOS)
+- **SDL3 development libraries** — e.g. `scoop install sdl3` (Windows) or `brew install sdl3` (macOS)
 
 ## Build & Run
 
@@ -15,7 +15,7 @@ A minimal "hello triangle" demo using **Scala Native**, **SDL2**, and **OpenGL**
 mill run
 ```
 
-This compiles Scala to native code via LLVM and links against SDL2 and OpenGL.
+This compiles Scala to native code via LLVM and links against SDL3 and OpenGL.
 
 To compile without running:
 
@@ -32,7 +32,7 @@ Opens a 400x400 window and draws a triangle with red, green, and blue corners us
 ```
 build.mill                         # Mill build config with Scala Native
 src/main/scala/
-  sdl/SDL.scala                    # Minimal SDL2 C bindings
+  sdl/SDL.scala                    # Minimal SDL3 C bindings
   gl/GL.scala                      # Minimal OpenGL C bindings
   Main.scala                       # Application entry point
 ```
