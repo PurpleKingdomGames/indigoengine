@@ -14,7 +14,7 @@ class RadiansTests extends munit.FunSuite {
     assert(Radians.fromDegrees(Degrees(180)) ~== Radians.PI)
     assert(clue(Radians.fromDegrees(Degrees(359))) ~== clue(clue(Radians.TAU) - Radians(0.0175d)))
     assert(Radians.fromDegrees(Degrees(360)) ~== Radians.zero)
-    assert(clue(Radians.fromDegrees(Degrees(-90))) ~== (-Radians.PI / Radians(2))) 
+    assert(clue(Radians.fromDegrees(Degrees(-90))) ~== (-Radians.PI / Radians(2)))
 
   }
 
