@@ -71,7 +71,7 @@ object Main:
 
     while running do
       while SDL_PollEvent(event) != 0 do
-        val eventType = !event.asInstanceOf[Ptr[UInt]]
+        val eventType = event.asInstanceOf[Ptr[CStruct1[UInt]]]._1
         if eventType == SDL_EVENT_QUIT then running = false
 
       SDL_GL_MakeCurrent(window, glCtx)
