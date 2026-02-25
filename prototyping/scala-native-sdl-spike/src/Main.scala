@@ -7,20 +7,75 @@ import gl.GL.*
 import gl.GLConstants.*
 
 object Main:
+
+  // GLSL 4.10 (matches macOS OpenGL 4.1 via Metal).
+  // Positions are generated from gl_VertexID — no vertex attributes needed,
+  // which avoids a macOS Metal GL layer bug with null VBO offsets.
+  val vertSrc: CString =
+    c"#version 410 core\nout vec2 vUV;\nvoid main() {\n  vec2 pos[4];\n  pos[0]=vec2(-1.0,-1.0);\n  pos[1]=vec2( 1.0,-1.0);\n  pos[2]=vec2(-1.0, 1.0);\n  pos[3]=vec2( 1.0, 1.0);\n  vUV = pos[gl_VertexID] * 0.5 + 0.5;\n  gl_Position = vec4(pos[gl_VertexID], 0.0, 1.0);\n}\n"
+
+  val fragSrc: CString =
+    c"#version 410 core\nin vec2 vUV;\nlayout(location = 0) out vec4 fragColor;\nvoid main() {\n  fragColor = vec4(vUV.x, vUV.y, 0.0, 1.0);\n}\n"
+
+  def compileShader(shaderType: UInt, src: CString): UInt =
+    val shader = glCreateShader(shaderType)
+    val srcPtr = stackalloc[CString]()
+    !srcPtr = src
+    glShaderSource(shader, 1, srcPtr, null)
+    glCompileShader(shader)
+
+    val status = stackalloc[CInt]()
+    glGetShaderiv(shader, GL_COMPILE_STATUS, status)
+    if !status == 0 then
+      val logBuf = stackalloc[Byte](512)
+      glGetShaderInfoLog(shader, 512, null, logBuf)
+      val msg = fromCString(logBuf)
+      throw new RuntimeException(s"Shader compile error (type ${shaderType.toInt}): $msg")
+
+    shader
+
+  def createProgram(vs: CString, fs: CString): UInt =
+    val vert    = compileShader(GL_VERTEX_SHADER, vs)
+    val frag    = compileShader(GL_FRAGMENT_SHADER, fs)
+    val program = glCreateProgram()
+    glAttachShader(program, vert)
+    glAttachShader(program, frag)
+    glLinkProgram(program)
+    glDeleteShader(vert)
+    glDeleteShader(frag)
+
+    val linkStatus = stackalloc[CInt]()
+    glGetProgramiv(program, GL_LINK_STATUS, linkStatus)
+    if !linkStatus == 0 then
+      val logBuf = stackalloc[Byte](512)
+      glGetProgramInfoLog(program, 512, null, logBuf)
+      val msg = fromCString(logBuf)
+      throw new RuntimeException(s"Program link error: $msg")
+
+    program
+
+  def makeVao(): UInt =
+    val vaoPtr = stackalloc[UInt]()
+    glGenVertexArrays(1, vaoPtr)
+    val vaoId = !vaoPtr
+    glBindVertexArray(vaoId)
+    vaoId
+
   def main(args: Array[String]): Unit =
-    // Initialize SDL with video subsystem
     if !SDL_Init(SDL_INIT_VIDEO) then
       val err = fromCString(SDL_GetError())
       throw new RuntimeException(s"SDL_Init failed: $err")
 
-    // Request OpenGL 2.1 compatibility context with double buffering
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2)
+    // OpenGL 4.1 Core Profile — highest version macOS supports.
+    // Forward-compatible flag is required by macOS to get a Core Profile context.
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
 
-    // Create a 400x400 window
     val window = SDL_CreateWindow(
-      c"Hello Triangle - Scala Native",
+      c"UV Quad - Scala Native",
       400,
       400,
       SDL_WINDOW_OPENGL
@@ -30,7 +85,6 @@ object Main:
       SDL_Quit()
       throw new RuntimeException(s"SDL_CreateWindow failed: $err")
 
-    // Create OpenGL context
     val glCtx = SDL_GL_CreateContext(window)
     if glCtx == null then
       val err = fromCString(SDL_GetError())
@@ -38,41 +92,33 @@ object Main:
       SDL_Quit()
       throw new RuntimeException(s"SDL_GL_CreateContext failed: $err")
 
-    // Set up viewport and clear color
     glViewport(0, 0, 400, 400)
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
 
-    // Event loop
-    val event = stackalloc[sdl.SDL.SDL_Event]()
+    val program = createProgram(vertSrc, fragSrc)
+    val vao     = makeVao()
+
+    // Initial clear+swap to ensure the Metal drawable is ready before first draw
+    glClear(GL_COLOR_BUFFER_BIT)
+    SDL_GL_SwapWindow(window)
+
+    val event   = stackalloc[sdl.SDL.SDL_Event]()
     var running = true
 
     while running do
-      // Poll all pending events
       while SDL_PollEvent(event) != 0 do
-        // First 4 bytes of SDL_Event is the event type (Uint32)
         val eventType = !(event.asInstanceOf[Ptr[UInt]])
         if eventType == SDL_EVENT_QUIT then running = false
 
-      // Clear the screen
+      SDL_GL_MakeCurrent(window, glCtx)
       glClear(GL_COLOR_BUFFER_BIT)
+      glUseProgram(program)
+      glBindVertexArray(vao)
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
 
-      // Draw a triangle with colored vertices (legacy immediate mode)
-      glBegin(GL_TRIANGLES)
-      glColor3f(1.0f, 0.0f, 0.0f) // red
-      glVertex2f(0.0f, 0.6f) // top
-      glColor3f(0.0f, 1.0f, 0.0f) // green
-      glVertex2f(-0.6f, -0.4f) // bottom-left
-      glColor3f(0.0f, 0.0f, 1.0f) // blue
-      glVertex2f(0.6f, -0.4f) // bottom-right
-      glEnd()
-
-      glFlush()
       SDL_GL_SwapWindow(window)
-
-      // Cap at ~60 fps
       SDL_Delay(16.toUInt)
 
-    // Cleanup
     SDL_GL_DestroyContext(glCtx)
     SDL_DestroyWindow(window)
     SDL_Quit()
