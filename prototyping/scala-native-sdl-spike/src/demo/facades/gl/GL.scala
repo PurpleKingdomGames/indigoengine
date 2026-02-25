@@ -1,4 +1,4 @@
-package gl
+package demo.facades.gl
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*

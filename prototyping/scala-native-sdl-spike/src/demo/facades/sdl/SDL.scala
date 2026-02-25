@@ -1,4 +1,4 @@
-package sdl
+package demo.facades.sdl
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
