@@ -7,6 +7,7 @@ import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
 import build.SharedJS
+import build.SharedNative
 import build.SharedPublish
 import build.Dependencies
 
@@ -22,4 +23,11 @@ object `package` extends Module:
 
     def mvnDeps = Seq(
       mvn"io.github.buntec::scala-js-snabbdom::${Dependencies.scalajsSnabbdom}"
+    )
+
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigoengine-shared`.native,
+      build.`tyrian-platform`.native
     )
