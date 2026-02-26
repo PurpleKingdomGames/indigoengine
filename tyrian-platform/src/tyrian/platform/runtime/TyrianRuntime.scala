@@ -67,7 +67,7 @@ object TyrianRuntime:
       }.foreverM
 
     msgLoop.background.surround {
-      runCmd(initCmd) *> F.never
+      runCmd(initCmd) *> model.get.flatMap(m => runSub(subscriptions(m))) *> F.never
     }
 
   def runCommands[F[_], Msg](msgQueue: Queue[F, Msg])(cmd: Cmd[F, Msg])(using F: Async[F]): F[Unit] =
