@@ -34,7 +34,7 @@ object syntax:
     */
   extension [F[_]: Async, A](stream: fs2.Stream[F, A])
     def toSub(id: String): Sub[F, A] =
-      Sub.make(id, stream)
+      Sub.fromStream(id, stream)
 
   extension (s: Sub.type)
     /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
@@ -94,7 +94,7 @@ object syntax:
       */
     @nowarn("msg=unused")
     def animationFrameTick[F[_]: Async, Msg](id: String)(toMsg: Double => Msg): Sub[F, Msg] =
-      Sub.make(
+      Sub.fromStream(
         id,
         fs2.Stream.repeatEval {
           Async[F].async_[Msg] { cb =>
