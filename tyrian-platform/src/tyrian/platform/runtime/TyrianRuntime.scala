@@ -15,7 +15,7 @@ import tyrian.platform.Sub
 object TyrianRuntime:
 
   def apply[F[_], Model, Msg, View[Msg], ViewState](
-      router: Location => Msg,
+      router: Location => Option[Msg],
       initModel: Model,
       initCmd: Cmd[F, Msg],
       update: Model => Msg => (Model, Cmd[F, Msg]),
@@ -35,7 +35,7 @@ object TyrianRuntime:
 
   def mainLoop[F[_], Model, Msg, View[Msg], ViewState](
       dispatcher: Dispatcher[F],
-      router: Location => Msg,
+      router: Location => Option[Msg],
       initCmd: Cmd[F, Msg],
       update: Model => Msg => (Model, Cmd[F, Msg]),
       view: Model => View[Msg],
