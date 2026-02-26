@@ -97,7 +97,7 @@ object Action:
       task.void
 
     def toCmd: Cmd[IO, Nothing] =
-      Cmd.SideEffect[IO, A](task)
+      Cmd.SideEffect[IO](task.void)
   private[tyrian] object SideEffect:
     def apply[A](thunk: => A): SideEffect[A] =
       SideEffect(IO.delay(thunk))

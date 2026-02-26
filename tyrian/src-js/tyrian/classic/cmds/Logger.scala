@@ -40,37 +40,37 @@ object Logger:
     }
 
   /** consoleLog is JavaScripts println */
-  def consoleLog[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def consoleLog[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       consoleLogString(messages.toList.mkString(", "))
     }
 
   /** Log at an info level */
-  def info[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def info[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       infoString(messages.toList.mkString(", "))
     }
 
   /** Log at an error level */
-  def error[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def error[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       errorString(messages.toList.mkString(", "))
     }
 
   /** Log at an error level, but only log each message once. */
-  def errorOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def errorOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       errorOnceString(messages.toList.mkString(", "))
     }
 
   /** Log at an debug level */
-  def debug[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def debug[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       debugString(messages.toList.mkString(", "))
     }
 
   /** Log at an debug level, but only log each message once. */
-  def debugOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F, Unit] =
+  def debugOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
       debugOnceString(messages.toList.mkString(", "))
     }

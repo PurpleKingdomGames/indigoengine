@@ -20,8 +20,8 @@ object syntax:
 
   /** Make a side effect cmd from any `F[Unit]`
     */
-  extension [F[_]: Sync](task: F[Unit])
-    def toCmd: Cmd.SideEffect[F, Unit] =
+  extension [F[_]](task: F[Unit])
+    def toCmd: Cmd.SideEffect[F] =
       Cmd.SideEffect(task)
 
   /** Make a cmd from any `F[A]`
