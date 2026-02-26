@@ -78,7 +78,7 @@ object Rendering:
   private def onClickPreventDefault[Msg](
       attrs: List[Attr[Msg]],
       onMsg: Msg => Unit,
-      router: Location => Msg
+      router: Location => Option[Msg]
   ): (String, EventHandler) =
     val newLocation = attrs.collect { case Attribute("href", loc) =>
       loc
@@ -101,15 +101,12 @@ object Rendering:
             window.history.pushState(new js.Object, "", loc)
 
           // Invoke the page change
-          onMsg(router(locationToRoute))
-
-          ()
-
+          router(locationToRoute).foreach(onMsg)
     }
 
     "click" -> EventHandler(callback)
 
-  def toVNode[Msg](html: Html[Msg], onMsg: Msg => Unit, router: Location => Msg): VNode =
+  def toVNode[Msg](html: Html[Msg], onMsg: Msg => Unit, router: Location => Option[Msg]): VNode =
     html match
       case RawTag(name, attrs, html, key) =>
         val data = buildNodeData(attrs, onMsg, key)
@@ -141,7 +138,7 @@ object Rendering:
       case c: CustomHtml[Msg] =>
         toVNode(c.toHtml, onMsg, router)
 
-  private def elemToVNodes[Msg](elem: Elem[Msg], onMsg: Msg => Unit, router: Location => Msg): List[VNode] =
+  private def elemToVNodes[Msg](elem: Elem[Msg], onMsg: Msg => Unit, router: Location => Option[Msg]): List[VNode] =
     elem match
       case _: Empty.type      => Nil
       case t: Text            => List(VNode.text(t.value))
@@ -166,7 +163,7 @@ object Rendering:
       model: Model,
       view: Model => Html[Msg],
       onMsg: Msg => Unit,
-      router: Location => Msg
+      router: Location => Option[Msg]
   ): PatchedVNode =
     oldNode match
       case em: Element      => patch(em, Rendering.toVNode(view(model), onMsg, router))

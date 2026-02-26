@@ -25,7 +25,7 @@ object HtmlViewState:
         model: Ref[F, Model],
         view: Model => Html[Msg],
         onMsg: Msg => Unit,
-        router: Location => Msg
+        router: Location => Option[Msg]
     )(using F: Async[F], clock: Clock[F]): F[Unit] =
       HtmlViewState.redraw(
         dispatcher,
@@ -48,7 +48,7 @@ object HtmlViewState:
       model: Ref[F, Model],
       view: Model => Html[Msg],
       onMsg: Msg => Unit,
-      router: Location => Msg
+      router: Location => Option[Msg]
   )(using F: Async[F], clock: Clock[F]): F[Unit] =
     clock.realTime.flatMap { time =>
       viewState.modify { r =>
@@ -74,7 +74,7 @@ object HtmlViewState:
       model: Ref[F, Model],
       view: Model => Html[Msg],
       onMsg: Msg => Unit,
-      router: Location => Msg,
+      router: Location => Option[Msg],
       clock: Clock[F]
   )(t: Long)(using F: Async[F]): Unit =
     dispatcher.unsafeRunAndForget {

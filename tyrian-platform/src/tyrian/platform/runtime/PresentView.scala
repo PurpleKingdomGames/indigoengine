@@ -14,5 +14,5 @@ trait PresentView[View[_], ViewState]:
       model: Ref[F, Model],
       view: Model => View[Msg],
       onMsg: Msg => Unit,
-      router: Location => Msg
+      router: Location => Option[Msg]
   )(using F: Async[F], clock: Clock[F]): F[Unit]

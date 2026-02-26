@@ -202,8 +202,11 @@ object TyrianApp:
       view: Model => Html[Msg],
       subscriptions: Model => Sub[F, Msg]
   ): F[Nothing] =
+    val r: Location => Option[Msg] =
+      l => Some(router(l))
+
     TyrianRuntime[F, Model, Msg, Html, HtmlViewState](
-      router,
+      r,
       init._1,
       init._2,
       update,
