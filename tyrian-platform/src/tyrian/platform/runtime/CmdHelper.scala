@@ -26,7 +26,7 @@ object CmdHelper:
               acc += Applicative[F].map(c.toTask)(Option.apply)
               rec(cmds)
 
-            case c: Cmd.SideEffect[?, ?] =>
+            case c: Cmd.SideEffect[?] =>
               acc += Applicative[F].map(c.toTask)(_ => Option.empty[Msg])
               rec(cmds)
 

@@ -49,11 +49,11 @@ object Cmd:
     def map[OtherMsg](f: Nothing => OtherMsg): None.type = this
 
   /** Runs a task that produces no message */
-  final case class SideEffect[F[_]: Sync, A](task: F[A]) extends Cmd[F, Nothing]:
-    def map[OtherMsg](f: Nothing => OtherMsg): SideEffect[F, A] = this
-    def toTask: F[Unit]                                         = Sync[F].*>(task)(Sync[F].unit)
+  final case class SideEffect[F[_]](task: F[Unit]) extends Cmd[F, Nothing]:
+    def map[OtherMsg](f: Nothing => OtherMsg): SideEffect[F] = this
+    def toTask: F[Unit]                                      = task
   object SideEffect:
-    def apply[F[_]: Sync, A](thunk: => A): SideEffect[F, A] =
+    def apply[F[_]: Sync](thunk: => Unit): SideEffect[F] =
       SideEffect(Sync[F].delay(thunk))
 
   /** Simply produces a message that will then be actioned. */
