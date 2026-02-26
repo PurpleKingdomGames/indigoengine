@@ -145,7 +145,7 @@ object WebSocket:
 
           val subs =
             Sub.Batch(
-              Sub.make(s"[tyrian-ws-${address}]")(
+              Sub.fromStream(s"[tyrian-ws-${address}]")(
                 channel.stream
               )(
                 Async[F].delay {

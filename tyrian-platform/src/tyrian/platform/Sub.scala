@@ -117,7 +117,7 @@ object Sub:
   /** Make a subscription based on an fs2.Stream. The stream is cancelled when it it removed from the list of
     * subscriptions.
     */
-  def make[F[_]: Async, A](id: String, stream: Stream[F, A]): Sub[F, A] =
+  def fromStream[F[_]: Async, A](id: String, stream: Stream[F, A]): Sub[F, A] =
     make[F, A, Fiber[F, Throwable, Unit]](id) { cb =>
       Async[F].start(stream.attempt.foreach(result => Async[F].delay(cb(result))).compile.drain)
     }(_.cancel)
@@ -125,7 +125,7 @@ object Sub:
   /** Make a subscription based on an fs2.Stream with additional custom clean up. The stream itself is always cancelled
     * when it it removed from the list of subscriptions, even if no particular clean up is defined.
     */
-  def make[F[_]: Async, A](id: String)(stream: Stream[F, A])(cleanUp: F[Unit]): Sub[F, A] =
+  def fromStream[F[_]: Async, A](id: String)(stream: Stream[F, A])(cleanUp: F[Unit]): Sub[F, A] =
     make[F, A, Fiber[F, Throwable, Unit]](id) { cb =>
       Async[F].start(stream.attempt.foreach(result => Async[F].delay(cb(result))).compile.drain)
     }(_.cancel.flatMap(_ => cleanUp))
