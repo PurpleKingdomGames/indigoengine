@@ -1,9 +1,10 @@
-package tyrian
+package tyrian.classic
 
 import cats.effect.kernel.Async
 import cats.effect.kernel.Clock
 import cats.effect.kernel.Ref
 import cats.effect.std.Dispatcher
+import tyrian.Location
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 import tyrian.platform.runtime.PresentView
@@ -24,7 +25,7 @@ trait TyrianApp[F[_]: Async, Msg, Model]:
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any commands to
     * run at start up, in order to trigger other processes.
     */
-  def init(flags: Map[String, String]): (Model, Cmd[F, Msg])
+  def init(args: Array[String]): (Model, Cmd[F, Msg])
 
   /** The update method allows you to modify the model based on incoming messages (events). As well as an updated model,
     * you can also produce commands to run.
@@ -43,11 +44,11 @@ trait TyrianApp[F[_]: Async, Msg, Model]:
   /** Launch the app and attach it to an element with the given id, with the supplied simple flags. Can only be called
     * from Scala.
     */
-  def launch(flags: Map[String, String]): Unit =
-    ready(flags)
+  def launch(args: Array[String]): Unit =
+    ready(args)
 
-  private def _init(flags: Map[String, String]): (Model, Cmd[F, Msg]) =
-    val (m, cmd) = init(flags)
+  private def _init(args: Array[String]): (Model, Cmd[F, Msg]) =
+    val (m, cmd) = init(args)
     (m, cmd)
 
   private def _update(model: Model): Msg => (Model, Cmd[F, Msg]) =
@@ -59,10 +60,10 @@ trait TyrianApp[F[_]: Async, Msg, Model]:
   private def _subscriptions(model: Model): Sub[F, Msg] =
     subscriptions(model)
 
-  def ready(flags: Map[String, String]): Unit =
+  private def ready(args: Array[String]): Unit =
     run(
       TyrianApp.start[F, Model, Msg](
-        _init(flags),
+        _init(args),
         _update,
         _view,
         _subscriptions

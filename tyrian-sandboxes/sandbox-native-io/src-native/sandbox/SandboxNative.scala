@@ -1,25 +1,16 @@
 package sandbox
 
 import cats.effect.IO
-import cats.effect.unsafe.implicits.global
-import tyrian.NativeView
-import tyrian.TyrianApp
+import tyrian.classic.NativeView
+import tyrian.classic.TyrianIOApp
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 
 import scala.concurrent.duration.*
 
-// TODO: So actually, we probably want IO and ZIO versions as usual.
-object SandboxNative extends TyrianApp[IO, Msg, Model]:
+object SandboxNative extends TyrianIOApp[Msg, Model]:
 
-  val run: IO[Nothing] => Unit =
-    _.unsafeRunSync()
-
-  @main
-  def go(): Unit =
-    launch(Map())
-
-  def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
+  def init(args: Array[String]): (Model, Cmd[IO, Msg]) =
     val cmd = Cmd.SideEffect[IO](println("Starting my command line app!"))
 
     Model(System.currentTimeMillis()) -> cmd
@@ -42,6 +33,7 @@ object SandboxNative extends TyrianApp[IO, Msg, Model]:
     Sub.fromStream("tick", s)
 
 final case class Model(timestamp: Long)
+
 enum Msg:
   case NoOp
   case Tick(t: FiniteDuration)
