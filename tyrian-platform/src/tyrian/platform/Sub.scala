@@ -3,7 +3,6 @@ package tyrian.platform
 import cats.Functor
 import cats.effect.kernel.Async
 import cats.effect.kernel.Fiber
-import cats.effect.kernel.Sync
 import cats.kernel.Eq
 import cats.kernel.Monoid
 import cats.syntax.all.*
@@ -82,13 +81,13 @@ object Sub:
     /** Construct a cancelable observable sub by describing how to acquire and release the resource, and optionally
       * produce a message
       */
-    def apply[F[_]: Sync, A, Msg, R](
+    def apply[F[_]: Async, A, Msg, R](
         id: String,
         acquire: (Either[Throwable, A] => Unit) => F[R],
         release: R => F[Unit],
         toMsg: A => Option[Msg]
     ): Sub[F, Msg] =
-      val task = Sync[F].delay {
+      val task = Async[F].delay {
         def cancel(res: R) = Option(release(res))
         (cb: Either[Throwable, A] => Unit) => acquire(cb).map(cancel)
       }
@@ -99,17 +98,17 @@ object Sub:
       Observe(id, observable, Option.apply)
 
   /** Make a cancelable subscription that produces an optional message */
-  def make[F[_]: Sync, A, Msg, R](id: String)(acquire: (Either[Throwable, A] => Unit) => F[R])(
+  def make[F[_]: Async, A, Msg, R](id: String)(acquire: (Either[Throwable, A] => Unit) => F[R])(
       release: R => F[Unit]
   )(toMsg: A => Option[Msg]): Sub[F, Msg] =
-    val task = Sync[F].delay {
+    val task = Async[F].delay {
       def cancel(res: R) = Option(release(res))
       (cb: Either[Throwable, A] => Unit) => acquire(cb).map(cancel)
     }
     Observe[F, A, Msg](id, task, toMsg)
 
   /** Make a cancelable subscription that returns a value (to be mapped into a Msg) */
-  def make[F[_]: Sync, A, R](id: String)(acquire: (Either[Throwable, A] => Unit) => F[R])(
+  def make[F[_]: Async, A, R](id: String)(acquire: (Either[Throwable, A] => Unit) => F[R])(
       release: R => F[Unit]
   ): Sub[F, A] =
     make[F, A, A, R](id)(acquire)(release)(Option.apply)
@@ -130,15 +129,15 @@ object Sub:
       Async[F].start(stream.attempt.foreach(result => Async[F].delay(cb(result))).compile.drain)
     }(_.cancel.flatMap(_ => cleanUp))
 
-  private def _forget[F[_]: Sync]: Unit => F[Option[F[Unit]]] =
-    (_: Unit) => Sync[F].delay(Option(Sync[F].delay(())))
+  private def _forget[F[_]: Async]: Unit => F[Option[F[Unit]]] =
+    (_: Unit) => Async[F].delay(Option(Async[F].delay(())))
 
   /** Make an uncancelable subscription that produces am optional message */
-  def forever[F[_]: Sync, A, Msg](acquire: (Either[Throwable, A] => Unit) => Unit)(
+  def forever[F[_]: Async, A, Msg](acquire: (Either[Throwable, A] => Unit) => Unit)(
       toMsg: A => Option[Msg]
   ): Sub[F, Msg] =
     val task =
-      Sync[F].delay(acquire andThen _forget)
+      Async[F].delay(acquire andThen _forget)
 
     Observe[F, A, Msg]("<none>", task, toMsg)
 
