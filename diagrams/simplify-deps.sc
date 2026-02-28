@@ -1,7 +1,7 @@
 #!/usr/bin/env -S scala-cli shebang
 
 //> using scala 3
-//> using toolkit default
+//> using toolkit 0.9.1
 
 /*
 Visualises the repos modules.

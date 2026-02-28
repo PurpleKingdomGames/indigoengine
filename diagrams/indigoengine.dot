@@ -24,11 +24,11 @@ digraph "module-deps" {
   "tyrian-core (js, jvm, native)" ["style"="solid","shape"="box"]
   "tyrian-htmx (js, jvm)" ["style"="solid","shape"="box"]
   "tyrian-indigo-bridge (js)" ["style"="solid","shape"="box"]
-  "tyrian-io (js)" ["style"="solid","shape"="box"]
+  "tyrian-io (js, native)" ["style"="solid","shape"="box"]
   "tyrian-platform (js, jvm, native)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox (js)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox-io (js)" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox-native (native)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-native-io (native)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox-ssr (jvm)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox-ui (js)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox-zio (js)" ["style"="solid","shape"="box"]
@@ -65,17 +65,17 @@ digraph "module-deps" {
   "indigoengine-shared (js, jvm, native)" -> "tyrian-platform (js, jvm, native)"
   "roguelike-starterkit (js)" -> "roguelike-starterkit-demo (js)"
   "tyrian (js, native)" -> "indigo (js, jvm)"
-  "tyrian (js, native)" -> "tyrian-io (js)"
+  "tyrian (js, native)" -> "tyrian-io (js, native)"
   "tyrian (js, native)" -> "tyrian-sandboxes.sandbox (js)"
-  "tyrian (js, native)" -> "tyrian-sandboxes.sandbox-native (native)"
   "tyrian (js, native)" -> "tyrian-sandboxes.sandbox-ui (js)"
   "tyrian (js, native)" -> "tyrian-zio (js)"
   "tyrian-core (js, jvm, native)" -> "tyrian-platform (js, jvm, native)"
   "tyrian-core (js, jvm, native)" -> "tyrian-tags (js, jvm)"
   "tyrian-htmx (js, jvm)" -> "tyrian-sandboxes.sandbox-ssr (jvm)"
   "tyrian-indigo-bridge (js)" -> "indigo-sandboxes.tyrian-sandbox (js)"
-  "tyrian-io (js)" -> "indigo-sandboxes.tyrian-sandbox (js)"
-  "tyrian-io (js)" -> "tyrian-sandboxes.sandbox-io (js)"
+  "tyrian-io (js, native)" -> "indigo-sandboxes.tyrian-sandbox (js)"
+  "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-io (js)"
+  "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-native-io (native)"
   "tyrian-platform (js, jvm, native)" -> "tyrian (js, native)"
   "tyrian-tags (js, jvm)" -> "tyrian (js, native)"
   "tyrian-tags (js, jvm)" -> "tyrian-htmx (js, jvm)"
