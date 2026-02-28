@@ -8,8 +8,8 @@ import fs2.concurrent.Channel
 import org.scalajs.dom
 import tyrian.classic.Cmd
 import tyrian.classic.Sub
+import tyrian.classic.internal.Functions
 import tyrian.classic.syntax.*
-import util.Functions
 
 import scala.concurrent.duration.*
 

@@ -1,7 +1,7 @@
 package tyrian.classic.cmds
 
 import cats.effect.kernel.Sync
-import tyrian.classic.Cmd
+import tyrian.platform.Cmd
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -19,7 +19,7 @@ object Logger:
   private def formatMessage(level: String, message: String): String =
     s"""[$level] [Tyrian] $message"""
 
-  private val consoleLogString: String => Unit = message => println(message)
+  private val stdOutString: String => Unit = message => println(message)
 
   private val infoString: String => Unit = message => println(formatMessage(INFO, message))
 
@@ -39,10 +39,10 @@ object Logger:
       println(formatMessage(DEBUG, message))
     }
 
-  /** consoleLog is JavaScripts println */
-  def consoleLog[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
+  /** stdout logs to the platforms standard output with no decoration or embellishments. */
+  def stdout[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
     Cmd.SideEffect {
-      consoleLogString(messages.toList.mkString(", "))
+      stdOutString(messages.toList.mkString(", "))
     }
 
   /** Log at an info level */

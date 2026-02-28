@@ -1,7 +1,7 @@
 package tyrian.classic.cmds
 
 import cats.effect.kernel.Sync
-import tyrian.classic.Cmd
+import tyrian.platform.Cmd
 
 /** Generate random values. */
 object Random:
