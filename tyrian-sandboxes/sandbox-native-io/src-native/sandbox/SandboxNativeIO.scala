@@ -8,7 +8,7 @@ import tyrian.platform.Sub
 
 import scala.concurrent.duration.*
 
-object SandboxNative extends TyrianIOApp[Msg, Model]:
+object SandboxNativeIO extends TyrianIOApp[Msg, Model]:
 
   def init(args: Array[String]): (Model, Cmd[IO, Msg]) =
     val cmd = Cmd.SideEffect[IO](println("Starting my command line app!"))
