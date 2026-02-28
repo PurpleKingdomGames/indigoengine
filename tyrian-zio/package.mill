@@ -18,6 +18,7 @@ object `package` extends Module:
     def moduleDeps = Seq(build.tyrian.js)
 
     def mvnDeps = Seq(
+      mvn"io.github.cquiroz::scala-java-time::${Dependencies.scalaJavaTime}",
       mvn"dev.zio::zio::${Dependencies.zio}"
     )
 
@@ -27,5 +28,6 @@ object `package` extends Module:
     def moduleDeps = Seq(build.tyrian.native)
 
     def mvnDeps = Seq(
+      mvn"io.github.cquiroz::scala-java-time::${Dependencies.scalaJavaTime}",
       mvn"dev.zio::zio::${Dependencies.zio}"
     )
