@@ -13,6 +13,7 @@ import tyrian.classic.Sub
 import tyrian.classic.TyrianApp
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionRegister
+import tyrian.syntax.*
 
 import scala.scalajs.js.annotation.*
 

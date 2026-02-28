@@ -5,7 +5,7 @@ import org.scalajs.dom.Event as DomEvent
 import org.scalajs.dom.EventTarget
 import tyrian.classic.Cmd
 import tyrian.classic.Sub
-import util.Functions
+import tyrian.classic.internal.Functions
 
 import scala.annotation.nowarn
 import scala.scalajs.js

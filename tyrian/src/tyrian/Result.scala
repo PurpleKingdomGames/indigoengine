@@ -2,8 +2,8 @@ package tyrian
 
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
-import tyrian.classic.Cmd
-import tyrian.syntax.*
+import tyrian.classic.cmds.Logger
+import tyrian.platform.Cmd
 
 import scala.annotation.tailrec
 import scala.annotation.targetName
@@ -33,13 +33,13 @@ sealed trait Result[+A] derives CanEqual:
   def addActions(newActions: Batch[Action]): Result[A]
   @targetName("Result-addActions-fromCmd-repeat")
   def addActions(newCmds: Cmd[IO, GlobalMsg]*): Result[A] =
-    addActions(newCmds.map(Action.fromCmd).toBatch)
+    addActions(Batch.fromSeq(newCmds.map(Action.fromCmd)))
   @targetName("Result-addActions-fromCmd-list")
   def addActions(newCmds: Batch[Cmd[IO, GlobalMsg]]): Result[A] =
     addActions(newCmds.map(Action.fromCmd))
 
   def addCmds(newCmds: Cmd[IO, GlobalMsg]*): Result[A] =
-    addActions(newCmds.toBatch)
+    addActions(Batch.fromSeq(newCmds))
   def addCmds(newCmds: Batch[Cmd[IO, GlobalMsg]]): Result[A] =
     addActions(newCmds)
 
@@ -94,12 +94,12 @@ object Result:
 
     // TODO: Expand to all log types, also add to Outcome in Indigo
     def log(message: String): Result[A] =
-      this.addActions(Logger.consoleLog[IO](message))
+      this.addActions(Logger.stdout[IO](message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[A] =
       this
 
     def addActions(newActions: Action*): Result[A] =
-      addActions(newActions.toBatch)
+      addActions(Batch.fromSeq(newActions))
 
     def addActions(newActions: Batch[Action]): Result[A] =
       Result(state, actions ++ newActions)
@@ -179,7 +179,7 @@ object Result:
       recoverWith(e)
 
     def log(message: String): Result[Nothing] =
-      this.addActions(Logger.consoleLog[IO](message))
+      this.addActions(Logger.stdout[IO](message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[Nothing] =
       this.copy(crashReporter = reporter)
 

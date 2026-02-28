@@ -1,4 +1,4 @@
-package util
+package tyrian.classic.internal
 
 import scala.scalajs.js
 import scala.scalajs.js.Any
