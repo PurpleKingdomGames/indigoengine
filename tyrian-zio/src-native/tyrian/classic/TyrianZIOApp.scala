@@ -16,7 +16,7 @@ trait TyrianZIOApp[Msg, Model] extends TyrianApp[Task, Msg, Model]:
   @nowarn("msg=discarded")
   val run: Task[Nothing] => Unit = runnable =>
     Unsafe.unsafe { implicit unsafe =>
-      runtime.unsafe.fork(runnable)
+      runtime.unsafe.run(runnable)
     }
 
   def main(args: Array[String]): Unit =

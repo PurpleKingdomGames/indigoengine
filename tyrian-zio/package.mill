@@ -7,6 +7,7 @@ import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
 import build.SharedJS
+import build.SharedNative
 import build.SharedPublish
 import build.Dependencies
 
@@ -17,6 +18,14 @@ object `package` extends Module:
     def moduleDeps = Seq(build.tyrian.js)
 
     def mvnDeps = Seq(
-      mvn"io.github.cquiroz::scala-java-time::${Dependencies.scalaJavaTime}",
+      mvn"dev.zio::zio::${Dependencies.zio}"
+    )
+
+  // Building but not publishing because zio-interop-cats does not yet support Scala Native.
+  object native extends SharedNative, PlatformScalaModule: // , SharedPublish:
+
+    def moduleDeps = Seq(build.tyrian.native)
+
+    def mvnDeps = Seq(
       mvn"dev.zio::zio::${Dependencies.zio}"
     )
