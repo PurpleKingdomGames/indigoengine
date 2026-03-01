@@ -6,9 +6,12 @@ import org.scalajs.dom.Element
 import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.document
 import org.scalajs.dom.window
+import snabbdom.toVNode
 import tyrian.Html
 import tyrian.Location
-import tyrian.classic.runtime.TyrianRuntime
+import tyrian.classic.rendering.HtmlViewState
+import tyrian.classic.syntax.*
+import tyrian.platform.runtime.TyrianRuntime
 
 import scala.annotation.nowarn
 import scala.scalajs.js.Promise
@@ -199,4 +202,15 @@ object TyrianApp:
       view: Model => Html[Msg],
       subscriptions: Model => Sub[F, Msg]
   ): F[Nothing] =
-    TyrianRuntime[F, Model, Msg](router, node, init._1, init._2, update, view, subscriptions)
+    val r: Location => Option[Msg] =
+      l => Some(router(l))
+
+    TyrianRuntime[F, Model, Msg, Html, HtmlViewState](
+      r,
+      init._1,
+      init._2,
+      update,
+      view,
+      subscriptions,
+      HtmlViewState.initialise(toVNode(node))
+    )

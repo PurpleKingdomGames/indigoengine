@@ -1,6 +1,7 @@
 package tyrian.classic
 
 import cats.effect.kernel.Async
+import cats.syntax.all.*
 import org.scalajs.dom.window
 import tyrian.classic.Cmd
 
@@ -35,7 +36,7 @@ object Nav:
     */
   def openUrl[F[_]: Async](href: String): Cmd[F, Nothing] =
     Cmd.SideEffect {
-      window.open(href, "_blank")
+      Async[F].pure(window.open(href, "_blank")).void
     }
 
   /** Update the address bar location with a new url. Should be used in conjunction with Tyrian's frontend routing so

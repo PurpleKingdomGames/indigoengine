@@ -8,7 +8,8 @@ import fs2.concurrent.Channel
 import org.scalajs.dom
 import tyrian.classic.Cmd
 import tyrian.classic.Sub
-import util.Functions
+import tyrian.classic.internal.Functions
+import tyrian.classic.syntax.*
 
 import scala.concurrent.duration.*
 
@@ -144,7 +145,7 @@ object WebSocket:
 
           val subs =
             Sub.Batch(
-              Sub.make(s"[tyrian-ws-${address}]")(
+              Sub.fromStream(s"[tyrian-ws-${address}]")(
                 channel.stream
               )(
                 Async[F].delay {

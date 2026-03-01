@@ -109,19 +109,19 @@ class VertexTests extends munit.FunSuite {
     assert(Vertex(1, 0).rotateBy(Radians.PIby2) ~== Vertex(0, 1))
 
     // -90
-    assert(Vertex(1, 1).rotateBy(Radians.PIby2 * -1.0) ~== Vertex(1, -1))
+    assert(Vertex(1, 1).rotateBy(Radians.PIby2 * Radians(-1.0)) ~== Vertex(1, -1))
 
     // 45
     val v        = Vertex(1, 2)
     val expected = Vertex(-0.70710, 2.12132)
-    assert(v.rotateBy(Radians.PIby2 / 2.0) ~== expected)
+    assert(v.rotateBy(Radians.PIby2 / Radians(2.0)) ~== expected)
     // magnitude should remain the same
     assert(Math.abs(v.length - expected.length) <= 0.0001)
   }
 
   test("rotate around given point") {
     assert(Vertex(3, 1).rotateBy(Radians.PIby2, Vertex(-2, -2)) ~== Vertex(-5, 3))
-    assert(Vertex(-3, 4).rotateBy(Radians.PIby2 * -1.0, Vertex(-1, 2)) ~== Vertex(1, 4))
+    assert(Vertex(-3, 4).rotateBy(Radians.PIby2 * Radians(-1.0), Vertex(-1, 2)) ~== Vertex(1, 4))
   }
 
   test("rotate to") {
@@ -133,9 +133,9 @@ class VertexTests extends munit.FunSuite {
 
   test("angle") {
     // -90
-    assertEquals(Vertex(0, -1).angle, Radians.PIby2 * -1.0)
+    assertEquals(Vertex(0, -1).angle, Radians.PIby2 * Radians(-1.0))
     // -90 at different magnitude
-    assertEquals(Vertex(0, -8.5).angle, Radians.PIby2 * -1.0)
+    assertEquals(Vertex(0, -8.5).angle, Radians.PIby2 * Radians(-1.0))
   }
 
   test("ceil") {

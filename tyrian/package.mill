@@ -7,6 +7,7 @@ import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
 import build.SharedJS
+import build.SharedNative
 import build.SharedPublish
 import build.Dependencies
 
@@ -16,11 +17,17 @@ object `package` extends Module:
 
     def moduleDeps = Seq(
       build.`indigoengine-shared`.js,
+      build.`tyrian-platform`.js,
       build.`tyrian-tags`.js
     )
 
     def mvnDeps = Seq(
-      mvn"org.typelevel::cats-effect-kernel::${Dependencies.catsEffect}",
-      mvn"co.fs2::fs2-core::${Dependencies.fs2}",
       mvn"io.github.buntec::scala-js-snabbdom::${Dependencies.scalajsSnabbdom}"
+    )
+
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigoengine-shared`.native,
+      build.`tyrian-platform`.native
     )

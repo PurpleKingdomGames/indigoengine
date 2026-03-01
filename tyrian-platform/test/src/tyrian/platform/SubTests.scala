@@ -1,0 +1,228 @@
+package tyrian.platform
+
+import cats.effect.IO
+
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.var"))
+class SubTests extends munit.CatsEffectSuite {
+
+  type Obs[A] = IO[(Either[Throwable, A] => Unit) => IO[Option[IO[Unit]]]]
+
+  import CmdSubUtils.*
+
+  test("sub is a monoid") {
+    var state1 = 0
+    var state2 = 0
+    var state3 = 0
+
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback3: Either[Throwable, Int] => Unit = {
+      case Right(i) => state3 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+
+    val observable: Int => Obs[Int] = i =>
+      IO.delay { cb =>
+        cb(Right(i))
+        IO(Option(IO(())))
+      }
+
+    val subs = List(
+      Sub.Observe[IO, Int]("sub1", observable(10)),
+      Sub.Observe[IO, Int]("sub2", observable(20)),
+      Sub.Observe[IO, Int]("sub3", observable(30))
+    )
+
+    val result =
+      Sub.combineAll(subs)
+
+    result match {
+      case Sub.Combine(combo, sub3) =>
+        IO.both(
+          combo match {
+            case Sub.Combine(sub1, sub2) =>
+              IO.both(
+                sub1.run(callback1).map(_ => state1 == 10).assert,
+                sub2.run(callback2).map(_ => state2 == 20).assert
+              )
+
+            case _ => throw new Exception("failed")
+          },
+          sub3.run(callback3).map(_ => state3 == 30).assert
+        )
+
+      case _ => throw new Exception("failed")
+    }
+  }
+
+  test("map - Empty") {
+    assertEquals(Sub.None.map(_ => 10), Sub.None)
+  }
+
+  test("Run") {
+    var state = 0
+
+    val callback: Either[Throwable, Int] => Unit = {
+      case Right(i) => state = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+
+    val observable: Obs[Int] = IO.delay { cb =>
+      cb(Right(10))
+      IO(Option(IO(())))
+    }
+
+    val runnable =
+      Sub.Observe[IO, Int]("test", observable)
+
+    runnable.run(callback).map(_ => state == 10).assert
+  }
+
+  test("Combine") {
+    var state1 = 0
+    var state2 = 0
+
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+
+    val observable: Int => Obs[Int] = i =>
+      IO.delay { cb =>
+        cb(Right(i))
+        IO(Option(IO(())))
+      }
+
+    val combined =
+      Sub.Combine(
+        Sub.Observe[IO, Int]("sub1", observable(1000)),
+        Sub.Observe[IO, Int]("sub2", observable(100))
+      )
+
+    IO.both(
+      combined.sub1.run(callback1).map(_ => state1 == 1000).assert,
+      combined.sub2.run(callback2).map(_ => state2 == 100).assert
+    )
+  }
+
+  test("map - Batch") {
+    var state1 = 0
+    var state2 = 0
+    var state3 = 0
+
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback3: Either[Throwable, Int] => Unit = {
+      case Right(i) => state3 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+
+    val observable: Int => Obs[Int] = i =>
+      IO.delay { cb =>
+        cb(Right(i))
+        IO(Option(IO(())))
+      }
+
+    val batched =
+      Sub.Batch[IO, Int](
+        Sub.Observe[IO, Int]("sub1", observable(10)),
+        Sub.Combine(
+          Sub.Observe[IO, Int]("sub2", observable(100)),
+          Sub.Observe[IO, Int]("sub3", observable(1000))
+        )
+      )
+
+    batched.subs match
+      case s1 :: (ss: Sub.Combine[IO, ?]) :: Nil =>
+        IO.both(
+          s1.run(callback1).map(_ => state1 == 10).assert,
+          IO.both(
+            ss.sub1.run(callback2).map(_ => state2 == 100).assert,
+            ss.sub2.run(callback3).map(_ => state3 == 1000).assert
+          )
+        )
+
+      case _ =>
+        throw new Exception("wrong pattern")
+  }
+
+  test("Batch ops") {
+    var state1 = 0
+    var state2 = 0
+
+    val callback1: Either[Throwable, Int] => Unit = {
+      case Right(i) => state1 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+    val callback2: Either[Throwable, Int] => Unit = {
+      case Right(i) => state2 = i; ()
+      case Left(_)  => throw new Exception("failed")
+    }
+
+    val observable: Int => Obs[Int] = i =>
+      IO.delay { cb =>
+        cb(Right(i))
+        IO(Option(IO(())))
+      }
+
+    def check(batched: Sub.Batch[IO, Int]): IO[(Unit, Unit)] =
+      batched.subs match
+        case s1 :: s2 :: Nil =>
+          IO.both(
+            s1.run(callback1).map(_ => state1 == 10).assert,
+            s2.run(callback2).map(_ => state2 == 20).assert
+          )
+
+        case _ =>
+          throw new Exception("wrong pattern")
+
+    IO.both(
+      IO.both(
+        check(
+          Sub.Batch[IO, Int](
+            Sub.Observe[IO, Int]("sub1", observable(10))
+          ) ++
+            Sub.Batch[IO, Int](
+              Sub.Observe[IO, Int]("sub2", observable(20))
+            )
+        ),
+        check(
+          Sub.Observe[IO, Int]("sub1", observable(10)) ::
+            Sub.Batch[IO, Int](
+              Sub.Observe[IO, Int]("sub2", observable(20))
+            )
+        )
+      ),
+      IO.both(
+        check(
+          Sub.Batch[IO, Int](
+            Sub.Observe[IO, Int]("sub2", observable(10))
+          ) :+ Sub.Observe[IO, Int]("sub1", observable(20))
+        ),
+        check(
+          Sub.Observe[IO, Int]("sub1", observable(10)) +:
+            Sub.Batch[IO, Int](
+              Sub.Observe[IO, Int]("sub2", observable(20))
+            )
+        )
+      )
+    )
+  }
+
+}

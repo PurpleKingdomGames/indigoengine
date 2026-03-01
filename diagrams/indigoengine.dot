@@ -1,77 +1,86 @@
 digraph "module-deps" {
   graph ["rankdir"="LR"]
-  "indigo" ["style"="solid","shape"="box"]
-  "indigo-core" ["style"="solid","shape"="box"]
-  "indigo-extras" ["style"="solid","shape"="box"]
-  "indigo-json-circe" ["style"="solid","shape"="box"]
-  "indigo-physics" ["style"="solid","shape"="box"]
-  "indigo-platform" ["style"="solid","shape"="box"]
+  "indigo (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-core (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-extras (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-json-circe (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-physics (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-platform (js, jvm)" ["style"="solid","shape"="box"]
   "indigo-plugin" ["style"="solid","shape"="box"]
-  "indigo-render" ["style"="solid","shape"="box"]
-  "indigo-render-pipeline" ["style"="solid","shape"="box"]
-  "indigo-sandboxes.perf.js" ["style"="solid","shape"="box"]
-  "indigo-sandboxes.physics.js" ["style"="solid","shape"="box"]
-  "indigo-sandboxes.sandbox.js" ["style"="solid","shape"="box"]
-  "indigo-sandboxes.shader.js" ["style"="solid","shape"="box"]
-  "indigo-sandboxes.tyrian-sandbox.js" ["style"="solid","shape"="box"]
-  "indigo-scenegraph" ["style"="solid","shape"="box"]
-  "indigo-shaders" ["style"="solid","shape"="box"]
-  "indigoengine-shared" ["style"="solid","shape"="box"]
+  "indigo-render (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-render-pipeline (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.perf (js)" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.physics (js)" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.sandbox (js)" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.shader (js)" ["style"="solid","shape"="box"]
+  "indigo-sandboxes.tyrian-sandbox (js)" ["style"="solid","shape"="box"]
+  "indigo-scenegraph (js, jvm)" ["style"="solid","shape"="box"]
+  "indigo-shaders (js, jvm)" ["style"="solid","shape"="box"]
+  "indigoengine-shared (js, jvm, native)" ["style"="solid","shape"="box"]
   "mill-indigo" ["style"="solid","shape"="box"]
-  "roguelike-starterkit-demo.js" ["style"="solid","shape"="box"]
-  "roguelike-starterkit.js" ["style"="solid","shape"="box"]
-  "tyrian-htmx" ["style"="solid","shape"="box"]
-  "tyrian-indigo-bridge.js" ["style"="solid","shape"="box"]
-  "tyrian-io.js" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox-io.js" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox-ssr.jvm" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox-ui.js" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox-zio.js" ["style"="solid","shape"="box"]
-  "tyrian-sandboxes.sandbox.js" ["style"="solid","shape"="box"]
-  "tyrian-tags" ["style"="solid","shape"="box"]
-  "tyrian-zio.js" ["style"="solid","shape"="box"]
-  "tyrian.js" ["style"="solid","shape"="box"]
-  "ultraviolet" ["style"="solid","shape"="box"]
-  "ultraviolet-sandbox.js" ["style"="solid","shape"="box"]
-  "indigo" -> "indigo-extras"
-  "indigo" -> "indigo-json-circe"
-  "indigo" -> "tyrian-indigo-bridge.js"
-  "indigo-core" -> "indigo-shaders"
-  "indigo-extras" -> "indigo-sandboxes.perf.js"
-  "indigo-extras" -> "indigo-sandboxes.physics.js"
-  "indigo-extras" -> "indigo-sandboxes.sandbox.js"
-  "indigo-extras" -> "indigo-sandboxes.shader.js"
-  "indigo-extras" -> "indigo-sandboxes.tyrian-sandbox.js"
-  "indigo-extras" -> "roguelike-starterkit.js"
-  "indigo-extras" -> "ultraviolet-sandbox.js"
-  "indigo-json-circe" -> "indigo-sandboxes.perf.js"
-  "indigo-json-circe" -> "indigo-sandboxes.physics.js"
-  "indigo-json-circe" -> "indigo-sandboxes.sandbox.js"
-  "indigo-json-circe" -> "indigo-sandboxes.shader.js"
-  "indigo-json-circe" -> "indigo-sandboxes.tyrian-sandbox.js"
-  "indigo-json-circe" -> "ultraviolet-sandbox.js"
-  "indigo-physics" -> "indigo"
-  "indigo-platform" -> "indigo"
+  "roguelike-starterkit (js)" ["style"="solid","shape"="box"]
+  "roguelike-starterkit-demo (js)" ["style"="solid","shape"="box"]
+  "tyrian (js, native)" ["style"="solid","shape"="box"]
+  "tyrian-core (js, jvm, native)" ["style"="solid","shape"="box"]
+  "tyrian-htmx (js, jvm)" ["style"="solid","shape"="box"]
+  "tyrian-indigo-bridge (js)" ["style"="solid","shape"="box"]
+  "tyrian-io (js, native)" ["style"="solid","shape"="box"]
+  "tyrian-platform (js, jvm, native)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox (js)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-io (js)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-native (native)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-native-io (native)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-ssr (jvm)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-ui (js)" ["style"="solid","shape"="box"]
+  "tyrian-sandboxes.sandbox-zio (js)" ["style"="solid","shape"="box"]
+  "tyrian-tags (js, jvm)" ["style"="solid","shape"="box"]
+  "tyrian-zio (js, native)" ["style"="solid","shape"="box"]
+  "ultraviolet (js, jvm)" ["style"="solid","shape"="box"]
+  "ultraviolet-sandbox (js)" ["style"="solid","shape"="box"]
+  "indigo (js, jvm)" -> "indigo-extras (js, jvm)"
+  "indigo (js, jvm)" -> "indigo-json-circe (js, jvm)"
+  "indigo (js, jvm)" -> "tyrian-indigo-bridge (js)"
+  "indigo-core (js, jvm)" -> "indigo-shaders (js, jvm)"
+  "indigo-extras (js, jvm)" -> "indigo-sandboxes.perf (js)"
+  "indigo-extras (js, jvm)" -> "indigo-sandboxes.physics (js)"
+  "indigo-extras (js, jvm)" -> "indigo-sandboxes.sandbox (js)"
+  "indigo-extras (js, jvm)" -> "indigo-sandboxes.shader (js)"
+  "indigo-extras (js, jvm)" -> "indigo-sandboxes.tyrian-sandbox (js)"
+  "indigo-extras (js, jvm)" -> "roguelike-starterkit (js)"
+  "indigo-extras (js, jvm)" -> "ultraviolet-sandbox (js)"
+  "indigo-json-circe (js, jvm)" -> "indigo-sandboxes.perf (js)"
+  "indigo-json-circe (js, jvm)" -> "indigo-sandboxes.physics (js)"
+  "indigo-json-circe (js, jvm)" -> "indigo-sandboxes.sandbox (js)"
+  "indigo-json-circe (js, jvm)" -> "indigo-sandboxes.shader (js)"
+  "indigo-json-circe (js, jvm)" -> "indigo-sandboxes.tyrian-sandbox (js)"
+  "indigo-json-circe (js, jvm)" -> "ultraviolet-sandbox (js)"
+  "indigo-physics (js, jvm)" -> "indigo (js, jvm)"
+  "indigo-platform (js, jvm)" -> "indigo (js, jvm)"
   "indigo-plugin" -> "mill-indigo"
-  "indigo-render" -> "indigo-platform"
-  "indigo-render-pipeline" -> "indigo-render"
-  "indigo-scenegraph" -> "indigo-physics"
-  "indigo-scenegraph" -> "indigo-render-pipeline"
-  "indigo-shaders" -> "indigo-scenegraph"
-  "indigoengine-shared" -> "indigo-core"
-  "indigoengine-shared" -> "tyrian.js"
-  "roguelike-starterkit.js" -> "roguelike-starterkit-demo.js"
-  "tyrian-htmx" -> "tyrian-sandboxes.sandbox-ssr.jvm"
-  "tyrian-indigo-bridge.js" -> "indigo-sandboxes.tyrian-sandbox.js"
-  "tyrian-io.js" -> "indigo-sandboxes.tyrian-sandbox.js"
-  "tyrian-io.js" -> "tyrian-sandboxes.sandbox-io.js"
-  "tyrian-tags" -> "tyrian-htmx"
-  "tyrian-tags" -> "tyrian.js"
-  "tyrian-zio.js" -> "tyrian-sandboxes.sandbox-zio.js"
-  "tyrian.js" -> "indigo"
-  "tyrian.js" -> "tyrian-io.js"
-  "tyrian.js" -> "tyrian-sandboxes.sandbox-ui.js"
-  "tyrian.js" -> "tyrian-sandboxes.sandbox.js"
-  "tyrian.js" -> "tyrian-zio.js"
-  "ultraviolet" -> "indigo-shaders"
+  "indigo-render (js, jvm)" -> "indigo-platform (js, jvm)"
+  "indigo-render-pipeline (js, jvm)" -> "indigo-render (js, jvm)"
+  "indigo-scenegraph (js, jvm)" -> "indigo-physics (js, jvm)"
+  "indigo-scenegraph (js, jvm)" -> "indigo-render-pipeline (js, jvm)"
+  "indigo-shaders (js, jvm)" -> "indigo-scenegraph (js, jvm)"
+  "indigoengine-shared (js, jvm, native)" -> "indigo-core (js, jvm)"
+  "indigoengine-shared (js, jvm, native)" -> "tyrian-platform (js, jvm, native)"
+  "roguelike-starterkit (js)" -> "roguelike-starterkit-demo (js)"
+  "tyrian (js, native)" -> "indigo (js, jvm)"
+  "tyrian (js, native)" -> "tyrian-io (js, native)"
+  "tyrian (js, native)" -> "tyrian-sandboxes.sandbox (js)"
+  "tyrian (js, native)" -> "tyrian-sandboxes.sandbox-native (native)"
+  "tyrian (js, native)" -> "tyrian-sandboxes.sandbox-ui (js)"
+  "tyrian (js, native)" -> "tyrian-zio (js, native)"
+  "tyrian-core (js, jvm, native)" -> "tyrian-platform (js, jvm, native)"
+  "tyrian-core (js, jvm, native)" -> "tyrian-tags (js, jvm)"
+  "tyrian-htmx (js, jvm)" -> "tyrian-sandboxes.sandbox-ssr (jvm)"
+  "tyrian-indigo-bridge (js)" -> "indigo-sandboxes.tyrian-sandbox (js)"
+  "tyrian-io (js, native)" -> "indigo-sandboxes.tyrian-sandbox (js)"
+  "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-io (js)"
+  "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-native-io (native)"
+  "tyrian-platform (js, jvm, native)" -> "tyrian (js, native)"
+  "tyrian-tags (js, jvm)" -> "tyrian (js, native)"
+  "tyrian-tags (js, jvm)" -> "tyrian-htmx (js, jvm)"
+  "tyrian-zio (js, native)" -> "tyrian-sandboxes.sandbox-zio (js)"
+  "ultraviolet (js, jvm)" -> "indigo-shaders (js, jvm)"
 }

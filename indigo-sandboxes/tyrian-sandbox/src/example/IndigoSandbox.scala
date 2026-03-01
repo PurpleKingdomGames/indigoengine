@@ -132,7 +132,7 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
       (model, Cmd.emitAfterDelay(Msg.StartIndigo, 0.5.seconds))
 
     case Msg.IndigoReceive(msg) =>
-      (model, Logger.consoleLog("(Tyrian) from indigo: " + msg))
+      (model, Logger.stdout("(Tyrian) from indigo: " + msg))
 
   def view(model: Model): Html[Msg] =
     val counters = model.components.zipWithIndex.map { case (c, i) =>

@@ -8,6 +8,7 @@ import mill.scalalib.*
 import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
+import mill.scalanativelib.*
 import mill.api.BuildCtx
 import org.typelevel.scalacoptions.*
 import com.goyeau.mill.scalafix.ScalafixModule
@@ -57,6 +58,21 @@ trait SharedJS extends Shared, ScalaJSModule:
     )
 
     override def moduleKind = Task(mill.scalajslib.api.ModuleKind.CommonJSModule)
+
+    def testFramework = Task("munit.Framework")
+
+trait SharedNative extends Shared, ScalaNativeModule:
+  def scalaVersion       = Task("3.5.2")
+  def scalaNativeVersion = Task("0.5.10")
+
+  object test extends ScalaNativeTests:
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit::${Dependencies.munit}",
+      mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
+      mvn"org.typelevel::munit-cats-effect::${Dependencies.Native.munitCatsEffect3}",
+      mvn"org.typelevel::discipline-munit::${Dependencies.disciplineMUnit}",
+      mvn"org.typelevel::cats-laws::${Dependencies.catsLaws}"
+    )
 
     def testFramework = Task("munit.Framework")
 
@@ -113,6 +129,11 @@ object IndigoVersion:
 // TODO: Came from Tyrian, usage is inconsistent
 object Dependencies:
 
+  object Native:
+    val catsEffect        = "3.7.0-RC1"
+    val fs2               = "3.13.0-M8"
+    val munitCatsEffect3  = "2.2.0-RC1"
+
   val catsEffect        = "3.6.3"
   val circe             = "0.14.15"
   val fs2               = "3.12.2"
@@ -128,4 +149,4 @@ object Dependencies:
   val http4sDom         = "0.2.11"
   val http4sServer      = "0.23.32"
   val scalacheck        = "1.19.0"
-  val munit             = "1.2.1"
+  val munit             = "1.2.2"

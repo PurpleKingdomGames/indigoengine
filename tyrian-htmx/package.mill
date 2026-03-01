@@ -27,9 +27,9 @@ object `package` extends Module:
           os.copy(from, dest / from.last)
           PathRef(dest / from.last)
 
-  object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
-    def moduleDeps = Seq(build.`tyrian-tags`.jvm)
+    def moduleDeps = Seq(build.`tyrian-tags`.js)
 
     override def generatedSources =
       Task {
@@ -37,13 +37,9 @@ object `package` extends Module:
           moveGeneratedSources(_customHtmxGeneratedSources(), Task.dest)
       }
 
-  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+  object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
 
-    def moduleDeps = Seq(build.`tyrian-tags`.js)
-
-    def mvnDeps = Seq(
-      mvn"org.scala-js::scalajs-dom::${Dependencies.scalajsDomVersion}"
-    )
+    def moduleDeps = Seq(build.`tyrian-tags`.jvm)
 
     override def generatedSources =
       Task {

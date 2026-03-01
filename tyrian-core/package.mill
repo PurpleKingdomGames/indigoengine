@@ -1,0 +1,26 @@
+package build.`tyrian-core`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+
+import build.SharedJVM
+import build.SharedJS
+import build.SharedNative
+import build.SharedPublish
+import build.Dependencies
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def mvnDeps = Seq(
+      mvn"org.scala-js::scalajs-dom::${Dependencies.scalajsDomVersion}"
+    )
+
+  object jvm extends SharedJVM, PlatformScalaModule, SharedPublish
+
+  object native extends SharedNative, PlatformScalaModule, SharedPublish
+
