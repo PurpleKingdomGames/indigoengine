@@ -3,8 +3,6 @@ package sandbox
 import tyrian.*
 import tyrian.syntax.*
 
-import scala.concurrent.duration.*
-
 object SandboxNative extends App[Model]:
 
   def init(args: Array[String]): Result[Model] =
@@ -13,13 +11,13 @@ object SandboxNative extends App[Model]:
 
   def update(model: Model): GlobalMsg => Result[Model] =
     case Msg.Tick(t) =>
-      Result(model.copy(timestamp = Some(t)))
+      Result(model.copy(elapsed = Some(t)))
 
     case Msg.NoOp =>
       Result(model)
 
   def view(model: Model): TerminalFragment =
-    model.timestamp match
+    model.elapsed match
       case None =>
         TerminalFragment.empty
 
@@ -38,8 +36,8 @@ object SandboxNative extends App[Model]:
   def extensions(args: Array[String], model: Model): Set[Extension] =
     Set()
 
-final case class Model(timestamp: Option[FiniteDuration])
+final case class Model(elapsed: Option[Seconds])
 
 enum Msg extends GlobalMsg:
   case NoOp
-  case Tick(t: FiniteDuration)
+  case Tick(t: Seconds)

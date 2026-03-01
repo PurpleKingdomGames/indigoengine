@@ -50,7 +50,7 @@ object RogueLikeApp extends App[AppModel]:
     Batch(
       Watcher.every(
         5.seconds,
-        t => GameMsg.MakeIndigoLog(s"From Tyrian: ${t.toUTCString()}")
+        t => GameMsg.MakeIndigoLog(s"From Tyrian: ${t}")
       )
     )
 

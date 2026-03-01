@@ -49,21 +49,33 @@ object syntax:
       timeout(duration.toMillis, msg, "[tyrian-watcher-timeout] " + duration.toMillis.toString + msg.toString)
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Millis, id: String, toMsg: FiniteDuration => GlobalMsg): Watcher =
-      Watcher.fromSub(
-        SubNativeOps.every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
-      )
+    def every(interval: Millis, id: String, toMsg: Millis => GlobalMsg): Watcher =
+      Watcher.fromSub {
+        val f: FiniteDuration => GlobalMsg =
+          fd => toMsg(Millis(fd.toMillis))
+
+        SubNativeOps
+          .every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id)
+          .map(f)
+      }
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Seconds, id: String, toMsg: FiniteDuration => GlobalMsg): Watcher =
-      Watcher.fromSub(
-        SubNativeOps.every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
-      )
+    def every(interval: Seconds, id: String, toMsg: Seconds => GlobalMsg): Watcher =
+      Watcher.fromSub {
+        val f: FiniteDuration => GlobalMsg =
+          fd =>
+            val s: Double = fd.toMillis.toDouble / 1000
+            toMsg(Seconds(s))
+
+        SubNativeOps
+          .every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id)
+          .map(f)
+      }
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Millis, toMsg: FiniteDuration => GlobalMsg): Watcher =
+    def every(interval: Millis, toMsg: Millis => GlobalMsg): Watcher =
       every(interval, "[tyrian-watcher-every] " + interval.toString, toMsg)
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Seconds, toMsg: FiniteDuration => GlobalMsg): Watcher =
-      every(interval.toMillis, "[tyrian-watcher-every] " + interval.toMillis.toString, toMsg)
+    def every(interval: Seconds, toMsg: Seconds => GlobalMsg): Watcher =
+      every(interval, "[tyrian-watcher-every] " + interval.toMillis.toString, toMsg)
