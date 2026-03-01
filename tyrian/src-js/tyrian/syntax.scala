@@ -51,24 +51,36 @@ object syntax:
       timeout(duration.toMillis, msg, "[tyrian-watcher-timeout] " + duration.toMillis.toString + msg.toString)
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Millis, id: String, toMsg: js.Date => GlobalMsg): Watcher =
-      Watcher.fromSub(
-        SubJsOps.every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
-      )
+    def every(interval: Millis, id: String, toMsg: Millis => GlobalMsg): Watcher =
+      Watcher.fromSub {
+        val f: js.Date => GlobalMsg =
+          dt => toMsg(Millis(dt.getTime().toLong))
+
+        SubJsOps
+          .every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id)
+          .map(f)
+      }
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Seconds, id: String, toMsg: js.Date => GlobalMsg): Watcher =
-      Watcher.fromSub(
-        SubJsOps.every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id).map(toMsg)
-      )
+    def every(interval: Seconds, id: String, toMsg: Seconds => GlobalMsg): Watcher =
+      Watcher.fromSub {
+        val f: js.Date => GlobalMsg =
+          dt =>
+            val s: Double = dt.getTime() / 1000
+            toMsg(Seconds(s))
+
+        SubJsOps
+          .every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id)
+          .map(f)
+      }
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Millis, toMsg: js.Date => GlobalMsg): Watcher =
+    def every(interval: Millis, toMsg: Millis => GlobalMsg): Watcher =
       every(interval, "[tyrian-watcher-every] " + interval.toString, toMsg)
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Seconds, toMsg: js.Date => GlobalMsg): Watcher =
-      every(interval.toMillis, "[tyrian-watcher-every] " + interval.toMillis.toString, toMsg)
+    def every(interval: Seconds, toMsg: Seconds => GlobalMsg): Watcher =
+      every(interval, "[tyrian-watcher-every] " + interval.toMillis.toString, toMsg)
 
     /** Creates a watcher that listens for JavaScript events and emits messages based on them. */
     def fromEvent[A](name: String, target: EventTarget)(extract: A => Option[GlobalMsg]): Watcher =
