@@ -8,6 +8,7 @@ set -e
 ./mill --no-server --disable-ticker -j2 __.fix --check
 ./mill --no-server --disable-ticker -j2 __.fastLinkJS
 ./mill --no-server --disable-ticker -j2 __.fastLinkJSTest
+./mill --no-server --disable-ticker -j2 __.test.nativeLink
 ./mill --no-server --disable-ticker __.test
 
 # # Indigo Plugin + Mill Plugin

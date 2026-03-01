@@ -7,6 +7,7 @@ set -e
 ./mill --no-server -j2 __.fix
 ./mill --no-server -j2 __.fastLinkJS
 ./mill --no-server -j2 __.fastLinkJSTest
+./mill --no-server -j2 __.test.nativeLink
 ./mill --no-server __.test
 ./mill --no-server __.publishLocal
 
