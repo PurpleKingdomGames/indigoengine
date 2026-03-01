@@ -6,7 +6,6 @@ import tyrian.classic.internal.SubNativeOps
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 
-import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
 object syntax:
@@ -30,9 +29,9 @@ object syntax:
       Sub.fromStream(id, stream)
 
   extension (s: Sub.type)
-    /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
-    def emit[F[_]: Async, Msg](msg: Msg): Sub[F, Msg] =
-      SubNativeOps.timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
+    /** A subscription that emits a msg once. */
+    def emit[F[_]: Async, Msg](msg: Msg, id: String): Sub[F, Msg] =
+      SubNativeOps.emit(msg, id)
 
     /** A subscription that produces a `msg` after a `duration`. */
     def timeout[F[_]: Async, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =

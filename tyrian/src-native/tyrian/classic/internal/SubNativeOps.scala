@@ -13,7 +13,7 @@ object SubNativeOps:
 
   /** A subscription that produces a `msg` after a `duration`. */
   def timeout[F[_]: Async, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =
-    Sub.fromStream(id, fs2.Stream.awakeDelay(duration).map(_ => msg))
+    Sub.fromStream(id, fs2.Stream.sleep_(duration) ++ fs2.Stream.emit(msg))
 
   /** A subscription that repeatedly produces a `msg` based on an `interval`. */
   def every[F[_]: Async](interval: FiniteDuration, id: String): Sub[F, FiniteDuration] =

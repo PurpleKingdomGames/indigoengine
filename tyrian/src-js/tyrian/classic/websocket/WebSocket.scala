@@ -26,7 +26,7 @@ final class WebSocket[F[_]: Async](liveSocket: LiveSocket[F]):
   /** Subscribe to messages from this WebSocket */
   def subscribe[Msg](f: WebSocketEvent => Msg): Sub[F, Msg] =
     if WebSocketReadyState.fromInt(liveSocket.socket.readyState).isOpen then liveSocket.subs.map(f)
-    else Sub.emit(f(WebSocketEvent.Error("Connection not ready")))
+    else Sub.emit(f(WebSocketEvent.Error("Connection not ready")), "connection-not-ready")
 
 /** The running instance of the WebSocket */
 final class LiveSocket[F[_]](

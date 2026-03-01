@@ -5,29 +5,30 @@ import org.scalajs.dom
 import org.scalajs.dom.EventTarget
 import tyrian.platform.Sub
 
-import java.util.concurrent.TimeUnit
 import scala.annotation.nowarn
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
 
 object SubJsOps:
 
-  /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
-  def emit[F[_]: Async, Msg](msg: Msg): Sub[F, Msg] =
-    timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
+  /** A subscription that emits a msg once. */
+  def emit[F[_]: Async, Msg](msg: Msg, id: String): Sub[F, Msg] =
+    Sub.fromStream(id, fs2.Stream.emit[F, Msg](msg))
 
   /** A subscription that produces a `msg` after a `duration`. */
   def timeout[F[_]: Async, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =
-    def task(callback: Either[Throwable, Msg] => Unit): F[Option[F[Unit]]] =
-      val handle = dom.window.setTimeout(
-        Functions.fun0(() => callback(Right(msg))),
-        duration.toMillis.toDouble
-      )
-      Async[F].delay {
-        Option(Async[F].delay(dom.window.clearTimeout(handle)))
+    def task: F[(Either[Throwable, Msg] => Unit) => F[Option[F[Unit]]]] =
+      Async[F].delay { callback =>
+        val handle = dom.window.setTimeout(
+          Functions.fun0(() => callback(Right(msg))),
+          duration.toMillis.toDouble
+        )
+        Async[F].delay {
+          Option(Async[F].delay(dom.window.clearTimeout(handle)))
+        }
       }
 
-    Sub.Observe(id, Async[F].pure(task))
+    Sub.Observe(id, task)
 
   /** A subscription that repeatedly produces a `msg` based on an `interval`. */
   def every[F[_]: Async](interval: FiniteDuration, id: String): Sub[F, js.Date] =

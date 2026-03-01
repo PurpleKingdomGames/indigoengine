@@ -7,7 +7,6 @@ import tyrian.classic.Cmd
 import tyrian.classic.Sub
 import tyrian.classic.internal.SubJsOps
 
-import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 import scala.scalajs.js
 
@@ -35,8 +34,8 @@ object syntax:
 
   extension (s: Sub.type)
     /** A subscription that emits a msg once. Identical to timeout with a duration of 0. */
-    def emit[F[_]: Async, Msg](msg: Msg): Sub[F, Msg] =
-      SubJsOps.timeout(FiniteDuration(0, TimeUnit.MILLISECONDS), msg, msg.toString)
+    def emit[F[_]: Async, Msg](msg: Msg, id: String): Sub[F, Msg] =
+      SubJsOps.emit(msg, id)
 
     /** A subscription that produces a `msg` after a `duration`. */
     def timeout[F[_]: Async, Msg](duration: FiniteDuration, msg: Msg, id: String): Sub[F, Msg] =

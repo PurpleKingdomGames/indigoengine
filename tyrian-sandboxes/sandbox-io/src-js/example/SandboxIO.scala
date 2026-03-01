@@ -691,7 +691,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
 
   def subscriptions(model: Model): Sub[IO, Msg] =
     val webSocketSubs =
-      model.echoSocket.fold(Sub.emit[IO, Msg](WSStatus.Disconnected.asMsg)) {
+      model.echoSocket.fold(Sub.emit[IO, Msg](WSStatus.Disconnected.asMsg, "ws-disconnect")) {
         _.subscribe {
           case WebSocketEvent.Error(errorMesage) =>
             Msg.FromSocket(errorMesage)
@@ -716,7 +716,8 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
         .map(t => Msg.Log("30 second pulse at " + t.toString))
 
     val simpleSubs: Sub[IO, Msg] =
-      Sub.timeout[IO, Msg](2.seconds, Msg.Log("Logged this after 2 seconds"), "delayed log") |+|
+      Sub.emit[IO, Msg](Msg.Log("Log immediately"), "right-now") |+|
+        Sub.timeout[IO, Msg](2.seconds, Msg.Log("Logged this after 2 seconds"), "delayed log") |+|
         Sub.every[IO](1.second, hotReloadKey).map(_ => Msg.TakeSnapshot) |+|
         stream.toSub("pulse")
 
