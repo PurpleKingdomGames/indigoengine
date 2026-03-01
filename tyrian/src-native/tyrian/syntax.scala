@@ -42,11 +42,11 @@ object syntax:
 
     /** Creates a watcher that emits a message after a specified duration. */
     def timeout(duration: Millis, msg: GlobalMsg): Watcher =
-      timeout(duration, msg, "[tyrian-watcher-timout] " + duration.toString + msg.toString)
+      timeout(duration, msg, "[tyrian-watcher-timeout] " + duration.toString + msg.toString)
 
     /** Creates a watcher that emits a message after a specified duration. */
     def timeout(duration: Seconds, msg: GlobalMsg): Watcher =
-      timeout(duration.toMillis, msg, "[tyrian-watcher-timout] " + duration.toMillis.toString + msg.toString)
+      timeout(duration.toMillis, msg, "[tyrian-watcher-timeout] " + duration.toMillis.toString + msg.toString)
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
     def every(interval: Millis, id: String, toMsg: FiniteDuration => GlobalMsg): Watcher =
