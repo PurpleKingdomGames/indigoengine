@@ -5,7 +5,7 @@ import tyrian.platform.Cmd
 
 import scala.collection.mutable.ArrayBuffer
 
-/** A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
+/** A very, very simple logger that logs to stdout with a few standard headers and the log message.
   */
 object Logger:
 
