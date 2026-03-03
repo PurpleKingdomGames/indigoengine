@@ -9,6 +9,7 @@ import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 import mill.scalanativelib.*
+import mill.scalanativelib.api.*
 import mill.api.BuildCtx
 import org.typelevel.scalacoptions.*
 import com.goyeau.mill.scalafix.ScalafixModule
@@ -64,6 +65,10 @@ trait SharedJS extends Shared, ScalaJSModule:
 trait SharedNative extends Shared, ScalaNativeModule:
   def scalaVersion       = Task("3.5.2")
   def scalaNativeVersion = Task("0.5.10")
+
+  override def nativeIncrementalCompilation: T[Boolean] = Task(true)
+  override def releaseMode: T[ReleaseMode]              = Task(ReleaseMode.Debug)
+  override def nativeLTO: T[LTO]                        = Task(LTO.None)
 
   object test extends ScalaNativeTests:
     def mvnDeps = Seq(
@@ -130,9 +135,9 @@ object IndigoVersion:
 object Dependencies:
 
   object Native:
-    val catsEffect        = "3.7.0-RC1"
-    val fs2               = "3.13.0-M8"
-    val munitCatsEffect3  = "2.2.0-RC1"
+    val catsEffect       = "3.7.0-RC1"
+    val fs2              = "3.13.0-M8"
+    val munitCatsEffect3 = "2.2.0-RC1"
 
   val catsEffect        = "3.6.3"
   val circe             = "0.14.15"
