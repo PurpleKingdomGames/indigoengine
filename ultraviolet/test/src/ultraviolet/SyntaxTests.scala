@@ -1,7 +1,10 @@
 package ultraviolet
 
 import syntax.*
+import scala.annotation.nowarn
 
+@nowarn("msg=discarded")
+@nowarn("msg=unused")
 class SyntaxTests extends munit.FunSuite {
 
   test("hex interpolator") {
@@ -10,9 +13,9 @@ class SyntaxTests extends munit.FunSuite {
     val (hex1, hex2, hex3) = ("00", "ff", "00")
     assertEquals(hex"#$hex1$hex2$hex3", vec3(0f, 1f, 0f))
 
-    intercept[IllegalArgumentException](hex"#00000"): Unit
-    intercept[IllegalArgumentException](hex"#0000000"): Unit
-    intercept[IllegalArgumentException](hex"#gggggg"): Unit
+    intercept[IllegalArgumentException](hex"#00000")
+    intercept[IllegalArgumentException](hex"#0000000")
+    intercept[IllegalArgumentException](hex"#gggggg")
   }
 
   test("hexa interpolator") {
@@ -21,9 +24,9 @@ class SyntaxTests extends munit.FunSuite {
     val (hex1, hex2, hex3, hex4) = ("00", "ff", "00", "ff")
     assertEquals(hexa"#$hex1$hex2$hex3$hex4", vec4(0f, 1f, 0f, 1f))
 
-    intercept[IllegalArgumentException](hexa"#0000000"): Unit
-    intercept[IllegalArgumentException](hexa"#000000000"): Unit
-    intercept[IllegalArgumentException](hexa"#gggggggg"): Unit
+    intercept[IllegalArgumentException](hexa"#0000000")
+    intercept[IllegalArgumentException](hexa"#000000000")
+    intercept[IllegalArgumentException](hexa"#gggggggg")
   }
 
   test("rgb interpolator") {
@@ -32,11 +35,11 @@ class SyntaxTests extends munit.FunSuite {
     val (int1, int2, int3) = (0, 255, 0)
     assertEquals(rgb"$int1,$int2,$int3", vec3(0f, 1f, 0f))
 
-    intercept[IllegalArgumentException](rgb"0,0"): Unit
-    intercept[IllegalArgumentException](rgb"0,0,0,0"): Unit
-    intercept[IllegalArgumentException](rgb"0, 0, 0"): Unit
-    intercept[IllegalArgumentException](rgb"-1,0,0"): Unit
-    intercept[IllegalArgumentException](rgb"256,0,0"): Unit
+    intercept[IllegalArgumentException](rgb"0,0")
+    intercept[IllegalArgumentException](rgb"0,0,0,0")
+    intercept[IllegalArgumentException](rgb"0, 0, 0")
+    intercept[IllegalArgumentException](rgb"-1,0,0")
+    intercept[IllegalArgumentException](rgb"256,0,0")
   }
 
   test("rgba interpolator") {
@@ -45,10 +48,10 @@ class SyntaxTests extends munit.FunSuite {
     val (int1, int2, int3, int4) = (0, 255, 0, 255)
     assertEquals(rgba"$int1,$int2,$int3,$int4", vec4(0f, 1f, 0f, 1f))
 
-    intercept[IllegalArgumentException](rgba"0,0,0"): Unit
-    intercept[IllegalArgumentException](rgba"0,0,0,0,0"): Unit
-    intercept[IllegalArgumentException](rgba"0, 0, 0, 0"): Unit
-    intercept[IllegalArgumentException](rgba"-1,0,0,0"): Unit
-    intercept[IllegalArgumentException](rgba"256,0,0,0"): Unit
+    intercept[IllegalArgumentException](rgba"0,0,0")
+    intercept[IllegalArgumentException](rgba"0,0,0,0,0")
+    intercept[IllegalArgumentException](rgba"0, 0, 0, 0")
+    intercept[IllegalArgumentException](rgba"-1,0,0,0")
+    intercept[IllegalArgumentException](rgba"256,0,0,0")
   }
 }
