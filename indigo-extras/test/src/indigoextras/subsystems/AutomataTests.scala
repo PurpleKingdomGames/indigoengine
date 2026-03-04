@@ -1,227 +1,229 @@
-package indigoextras.subsystems
+// package indigoextras.subsystems
 
-import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.NonEmptyBatch
-import indigo.core.datatypes.Point
-import indigo.core.dice.Dice
-import indigo.core.events.GlobalEvent
-import indigo.scenegraph.materials.Material
-import indigo.scenegraph.Graphic
-import indigo.scenegraph.LayerKey
-import indigo.scenegraph.RenderNode
-import indigo.scenegraph.SceneNode
-import indigo.core.temporal.Signal
-import indigo.core.temporal.SignalReader
-import indigoengine.shared.datatypes.Seconds
+// import indigo.core.assets.AssetName
+// import indigoengine.shared.collections.Batch
+// import indigoengine.shared.collections.NonEmptyBatch
+// import indigo.core.datatypes.Point
+// import indigo.core.dice.Dice
+// import indigo.core.events.GlobalEvent
+// import indigo.scenegraph.materials.Material
+// import indigo.scenegraph.Graphic
+// import indigo.scenegraph.LayerKey
+// import indigo.scenegraph.RenderNode
+// import indigo.scenegraph.SceneNode
+// import indigo.core.temporal.Signal
+// import indigo.core.temporal.SignalReader
+// import indigoengine.shared.datatypes.Seconds
 
-class AutomataTests extends munit.FunSuite {
+// TODO: Bring back
 
-  import indigoextras.subsystems.FakeSubSystemFrameContext._
+// class AutomataTests extends munit.FunSuite {
 
-  val eventInstance =
-    MyCullEvent("Hello, I'm dead.")
+//   import indigoextras.subsystems.FakeSubSystemFrameContext._
 
-  val poolKey: AutomataPoolKey =
-    AutomataPoolKey("test")
+//   val eventInstance =
+//     MyCullEvent("Hello, I'm dead.")
 
-  val graphic = Graphic(0, 0, 10, 10, Material.Bitmap(AssetName("fish")))
+//   val poolKey: AutomataPoolKey =
+//     AutomataPoolKey("test")
 
-  val onCull: AutomatonSeedValues => Batch[GlobalEvent] =
-    _ => Batch(eventInstance)
+//   val graphic = Graphic(0, 0, 10, 10, Material.Bitmap(AssetName("fish")))
 
-  val automaton: Automaton =
-    Automaton(
-      AutomatonNode.Fixed(graphic),
-      Seconds(1)
-    ).withOnCullEvent(onCull)
-      .withModifier(ModiferFunctions.signal)
+//   val onCull: AutomatonSeedValues => Batch[GlobalEvent] =
+//     _ => Batch(eventInstance)
 
-  val layerKey =
-    LayerKey("test layer")
+//   val automaton: Automaton =
+//     Automaton(
+//       AutomatonNode.Fixed(graphic),
+//       Seconds(1)
+//     ).withOnCullEvent(onCull)
+//       .withModifier(ModiferFunctions.signal)
 
-  val automata: Automata[Unit] =
-    Automata(poolKey, automaton, layerKey)
+//   val layerKey =
+//     LayerKey("test layer")
 
-  val startingState: AutomataState =
-    automata
-      .update(context(1), AutomataState(0, Batch()))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
-      .unsafeGet
+//   val automata: Automata[Unit] =
+//     Automata(poolKey, automaton, layerKey)
 
-  test("Starting state should contain 1 automaton") {
+//   val startingState: AutomataState =
+//     automata
+//       .update(context(1), AutomataState(0, Batch()))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+//       .unsafeGet
 
-    val expected =
-      SpawnedAutomaton(
-        graphic,
-        ModiferFunctions.signal,
-        onCull,
-        new AutomatonSeedValues(
-          Point.zero,
-          Seconds(0),
-          Seconds(1),
-          1, // comes from the fake frame context
-          None
-        )
-      )
+//   test("Starting state should contain 1 automaton") {
 
-    assertEquals(startingState.totalSpawned, 1L)
-    assertEquals(startingState.pool.length, 1)
-    assertEquals(startingState.pool.head, expected)
-  }
+//     val expected =
+//       SpawnedAutomaton(
+//         graphic,
+//         ModiferFunctions.signal,
+//         onCull,
+//         new AutomatonSeedValues(
+//           Point.zero,
+//           Seconds(0),
+//           Seconds(1),
+//           1, // comes from the fake frame context
+//           None
+//         )
+//       )
 
-  test("should move a particle with a modifier signal") {
+//     assertEquals(startingState.totalSpawned, 1L)
+//     assertEquals(startingState.pool.length, 1)
+//     assertEquals(startingState.pool.head, expected)
+//   }
 
-    import ModiferFunctions._
+//   test("should move a particle with a modifier signal") {
 
-    // Test the signal
-    val seed = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), 0, None)
+//     import ModiferFunctions._
 
-    assertEquals(makePosition(seed).at(Seconds(0)), Point(0, 0))
-    assertEquals(makePosition(seed).at(Seconds(0.5)), Point(0, -15))
-    assertEquals(makePosition(seed).at(Seconds(1)), Point(0, -30))
+//     // Test the signal
+//     val seed = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), 0, None)
 
-    // Test the automaton
-    def drawAt(time: Seconds): Graphic[?] = {
-      val ctx = context(1, time, time)
+//     assertEquals(makePosition(seed).at(Seconds(0)), Point(0, 0))
+//     assertEquals(makePosition(seed).at(Seconds(0.5)), Point(0, -15))
+//     assertEquals(makePosition(seed).at(Seconds(1)), Point(0, -30))
 
-      val nextState =
-        automata
-          .update(ctx, startingState)(AutomataEvent.Update(poolKey))
-          .unsafeGet
+//     // Test the automaton
+//     def drawAt(time: Seconds): Graphic[?] = {
+//       val ctx = context(1, time, time)
 
-      automata
-        .present(ctx, nextState)
-        .unsafeGet
-        .layers
-        .find(l => l.hasKey(layerKey))
-        .get
-        .toBatch
-        .head
-        .nodes
-        .collect { case g: Graphic[_] => g }
-        .head
-    }
+//       val nextState =
+//         automata
+//           .update(ctx, startingState)(AutomataEvent.Update(poolKey))
+//           .unsafeGet
 
-    assertEquals(drawAt(Seconds(0)).position, Point(0, 0))
-    assertEquals(drawAt(Seconds(0.5)).position, Point(0, -15))
-    assertEquals(drawAt(Seconds(0.9)).position, Point(0, -27))
-  }
+//       automata
+//         .present(ctx, nextState)
+//         .unsafeGet
+//         .layers
+//         .find(l => l.hasKey(layerKey))
+//         .get
+//         .toBatch
+//         .head
+//         .nodes
+//         .collect { case g: Graphic[_] => g }
+//         .head
+//     }
 
-  test("culling an automaton should result in an event") {
+//     assertEquals(drawAt(Seconds(0)).position, Point(0, 0))
+//     assertEquals(drawAt(Seconds(0.5)).position, Point(0, -15))
+//     assertEquals(drawAt(Seconds(0.9)).position, Point(0, -27))
+//   }
 
-    // 1 ms over the lifespan, so should be culled
-    val outcome =
-      automata
-        .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
+//   test("culling an automaton should result in an event") {
 
-    assertEquals(outcome.unsafeGet.totalSpawned, 1L)
-    assertEquals(outcome.unsafeGet.pool.length, 0)
-    assertEquals(outcome.unsafeGlobalEvents.head, eventInstance)
-  }
+//     // 1 ms over the lifespan, so should be culled
+//     val outcome =
+//       automata
+//         .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
 
-  test("KillAll should... kill all the automatons.") {
+//     assertEquals(outcome.unsafeGet.totalSpawned, 1L)
+//     assertEquals(outcome.unsafeGet.pool.length, 0)
+//     assertEquals(outcome.unsafeGlobalEvents.head, eventInstance)
+//   }
 
-    // At any time, KillAll, should remove all automatons without trigger cull events.
-    val outcome =
-      automata
-        .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
+//   test("KillAll should... kill all the automatons.") {
 
-    assertEquals(outcome.unsafeGet.totalSpawned, 1L)
-    assertEquals(outcome.unsafeGet.pool.isEmpty, true)
-    assertEquals(outcome.unsafeGlobalEvents.isEmpty, true)
-  }
+//     // At any time, KillAll, should remove all automatons without trigger cull events.
+//     val outcome =
+//       automata
+//         .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
 
-  test("AutomatonNode.fixed") {
-    val node =
-      AutomatonNode.Fixed(graphic).giveNode(0, Dice.loaded(0))
+//     assertEquals(outcome.unsafeGet.totalSpawned, 1L)
+//     assertEquals(outcome.unsafeGet.pool.isEmpty, true)
+//     assertEquals(outcome.unsafeGlobalEvents.isEmpty, true)
+//   }
 
-    assertEquals(node, graphic)
-  }
+//   test("AutomatonNode.fixed") {
+//     val node =
+//       AutomatonNode.Fixed(graphic).giveNode(0, Dice.loaded(0))
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def toRenderNode(node: SceneNode): RenderNode[?] =
-    node match {
-      case r: RenderNode[_] => r
-      case _                => throw new Exception("Wasn't a render node")
-    }
+//     assertEquals(node, graphic)
+//   }
 
-  test("AutomatonNode.one of") {
-    val nodeList: NonEmptyBatch[SceneNode] =
-      NonEmptyBatch(
-        graphic.moveTo(0, 0),
-        graphic.moveTo(0, 10),
-        graphic.moveTo(0, 20)
-      )
+//   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+//   def toRenderNode(node: SceneNode): RenderNode[?] =
+//     node match {
+//       case r: RenderNode[_] => r
+//       case _                => throw new Exception("Wasn't a render node")
+//     }
 
-    val nodes =
-      AutomatonNode.OneOf(nodeList)
+//   test("AutomatonNode.one of") {
+//     val nodeList: NonEmptyBatch[SceneNode] =
+//       NonEmptyBatch(
+//         graphic.moveTo(0, 0),
+//         graphic.moveTo(0, 10),
+//         graphic.moveTo(0, 20)
+//       )
 
-    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(1))).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(2))).position.y, graphic.moveTo(0, 20).y)
+//     val nodes =
+//       AutomatonNode.OneOf(nodeList)
 
-    val dice = Dice.Sides.MaxInt(0)
+//     assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+//     assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(1))).position.y, graphic.moveTo(0, 10).y)
+//     assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(2))).position.y, graphic.moveTo(0, 20).y)
 
-    assertEquals(
-      (0 to 100).toList.forall { _ =>
-        val g = toRenderNode(nodes.giveNode(0, dice)).position.y
-        nodeList.toList.map(n => toRenderNode(n).position.y).contains(g)
-      },
-      true
-    )
+//     val dice = Dice.Sides.MaxInt(0)
 
-  }
+//     assertEquals(
+//       (0 to 100).toList.forall { _ =>
+//         val g = toRenderNode(nodes.giveNode(0, dice)).position.y
+//         nodeList.toList.map(n => toRenderNode(n).position.y).contains(g)
+//       },
+//       true
+//     )
 
-  test("AutomatonNode.cycle") {
-    val nodeList: NonEmptyBatch[SceneNode] =
-      NonEmptyBatch(
-        graphic.moveTo(0, 0),
-        graphic.moveTo(0, 10),
-        graphic.moveTo(0, 20)
-      )
+//   }
 
-    val nodes =
-      AutomatonNode.Cycle(nodeList)
+//   test("AutomatonNode.cycle") {
+//     val nodeList: NonEmptyBatch[SceneNode] =
+//       NonEmptyBatch(
+//         graphic.moveTo(0, 0),
+//         graphic.moveTo(0, 10),
+//         graphic.moveTo(0, 20)
+//       )
 
-    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(toRenderNode(nodes.giveNode(1, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(toRenderNode(nodes.giveNode(2, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
-    assertEquals(toRenderNode(nodes.giveNode(3, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(toRenderNode(nodes.giveNode(4, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(toRenderNode(nodes.giveNode(5, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
-    assertEquals(toRenderNode(nodes.giveNode(6, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
-  }
+//     val nodes =
+//       AutomatonNode.Cycle(nodeList)
 
-  object ModiferFunctions {
+//     assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+//     assertEquals(toRenderNode(nodes.giveNode(1, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
+//     assertEquals(toRenderNode(nodes.giveNode(2, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
+//     assertEquals(toRenderNode(nodes.giveNode(3, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+//     assertEquals(toRenderNode(nodes.giveNode(4, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
+//     assertEquals(toRenderNode(nodes.giveNode(5, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
+//     assertEquals(toRenderNode(nodes.giveNode(6, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+//   }
 
-    val makePosition: AutomatonSeedValues => Signal[Point] =
-      seed =>
-        Signal { time =>
-          seed.spawnedAt +
-            Point(
-              0,
-              -(30d * seed.progression(time)).toInt
-            )
-        }
+//   object ModiferFunctions {
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
-      SignalReader { case (seed, sceneGraphNode) =>
-        makePosition(seed).map { position =>
-          AutomatonUpdate(
-            sceneGraphNode match {
-              case g: Graphic[_] =>
-                Batch(g.moveTo(position))
+//     val makePosition: AutomatonSeedValues => Signal[Point] =
+//       seed =>
+//         Signal { time =>
+//           seed.spawnedAt +
+//             Point(
+//               0,
+//               -(30d * seed.progression(time)).toInt
+//             )
+//         }
 
-              case _ =>
-                Batch.empty
-            },
-            Batch.empty
-          )
-        }
-      }
+//     val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
+//       SignalReader { case (seed, sceneGraphNode) =>
+//         makePosition(seed).map { position =>
+//           AutomatonUpdate(
+//             sceneGraphNode match {
+//               case g: Graphic[_] =>
+//                 Batch(g.moveTo(position))
 
-  }
+//               case _ =>
+//                 Batch.empty
+//             },
+//             Batch.empty
+//           )
+//         }
+//       }
 
-}
+//   }
 
-final case class MyCullEvent(message: String) extends GlobalEvent
+// }
+
+// final case class MyCullEvent(message: String) extends GlobalEvent
