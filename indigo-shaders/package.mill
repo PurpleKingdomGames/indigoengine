@@ -5,12 +5,14 @@ import mill.scalalib.*
 import mill.scalalib.publish.*
 import mill.scalajslib.*
 
-import build.SharedJVM
+import build.SharedNative
 import build.SharedJS
+import build.SharedJVM
 import build.SharedPublish
 
 object `package` extends Module:
 
+  // Use case: For Scala.js games
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
@@ -18,10 +20,18 @@ object `package` extends Module:
       build.ultraviolet.js
     )
 
-  object jvm extends SharedJVM, PlatformScalaModule: // , SharedPublish:
+  // Use case: For compiling on the JVM, e.g. in build tool plugins.
+  object jvm extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-core`.jvm,
-      build.ultraviolet.jvm
+      build.`indigo-core`.js,
+      build.ultraviolet.js
     )
 
+  // Use case: For Scala Native games
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigo-core`.native,
+      build.ultraviolet.native
+    )
