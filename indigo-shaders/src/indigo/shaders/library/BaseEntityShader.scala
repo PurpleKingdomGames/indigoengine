@@ -515,14 +515,17 @@ trait BaseEntityShader:
       )
     )
 
+  @nowarn("msg=unused")
+  @nowarn("msg=discarded")
+  @nowarn("msg=Discarded")
   val fragmentTemplate: String => String =
     inline def tag = "//fragment_placeholder"
     inline def placeholder = Shader[IndigoUV.FragmentEnv]{
-      _ => RawGLSL(tag) : Unit
+      _ => RawGLSL(tag)
     }
 
     inline def empty = Shader[IndigoUV.FragmentEnv]{ _ =>
-      RawGLSL("//"): Unit
+      RawGLSL("//")
     }
 
     val renderedCode =
