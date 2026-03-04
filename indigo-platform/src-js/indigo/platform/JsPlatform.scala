@@ -10,8 +10,6 @@ import indigo.core.events.FullScreenExitError
 import indigo.core.events.FullScreenExited
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
-import indigo.platform.Platform
-import indigo.platform.PlatformFullScreen
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
