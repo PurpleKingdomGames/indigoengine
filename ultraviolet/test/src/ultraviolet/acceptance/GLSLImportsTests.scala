@@ -24,7 +24,7 @@ class GLSLImportsTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2](false).toOutput.code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

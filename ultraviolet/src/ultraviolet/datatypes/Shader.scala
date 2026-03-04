@@ -24,25 +24,20 @@ object Shader:
 
   extension [In, Out](inline ctx: Shader[In, Out])
 
-    inline private def toGLSLWithHeaders[T](headers: List[ShaderHeader], useValidation: Boolean)(using
+    inline private def toGLSLWithHeaders[T](headers: List[ShaderHeader])(using
         p: ShaderPrinter[T]
     ): ShaderResult =
       try
-        if useValidation then ShaderMacros.toAST(ctx).render(headers)
-        else ShaderMacros.toASTNoValidation(ctx).render(headers)
+        ShaderMacros.toAST(ctx).render(headers)
       catch {
         case e: ShaderError =>
           ShaderResult.Error(e.message)
       }
 
     inline def toGLSL[T](using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(Nil, true)
-    inline def toGLSL[T](useValidation: Boolean)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(Nil, useValidation)
+      toGLSLWithHeaders(Nil)
     inline def toGLSL[T](headers: ShaderHeader*)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(headers.toList, true)
-    inline def toGLSL[T](useValidation: Boolean)(headers: ShaderHeader*)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(headers.toList, useValidation)
+      toGLSLWithHeaders(headers.toList)
 
     inline def run(in: In): Out = ctx(in)
 

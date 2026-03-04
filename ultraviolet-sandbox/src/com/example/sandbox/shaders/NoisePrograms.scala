@@ -99,19 +99,11 @@ object SimplexNoiseShader:
 
 object WhiteNoiseShader:
 
-  import ultraviolet.syntax.ShaderPrinter
-
   val shader: UltravioletShader =
-    println(">> " + fragment.toGLSL[ShaderPrinter.WebGL2](false).toOutput.code)
-
-    val res = UltravioletShader.entityFragment(
+    UltravioletShader.entityFragment(
       ShaderId("white noise shader"),
       EntityShader.fragment(fragment, FragmentEnv.reference)
     )
-
-    println("<< " + res)
-
-    res
 
   import ultraviolet.syntax.*
 
