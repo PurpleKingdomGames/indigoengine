@@ -7,6 +7,7 @@ import mill.scalajslib.*
 
 import build.SharedNative
 import build.SharedJS
+import build.SharedJVM
 import build.SharedPublish
 
 object `package` extends Module:
@@ -15,6 +16,12 @@ object `package` extends Module:
 
     def moduleDeps = Seq(
       build.`indigoengine-shared`.js
+    )
+
+  object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(
+      build.`indigoengine-shared`.jvm
     )
 
   object native extends SharedNative, PlatformScalaModule, SharedPublish:
