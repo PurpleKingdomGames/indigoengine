@@ -5,7 +5,7 @@ import mill.scalalib.*
 import mill.scalalib.publish.*
 import mill.scalajslib.*
 
-import build.SharedJVM
+import build.SharedNative
 import build.SharedJS
 import build.SharedPublish
 
@@ -17,15 +17,8 @@ object `package` extends Module:
       build.`indigo-scenegraph`.js
     )
 
-    def mvnDeps = Seq(
-      mvn"org.scala-js::scala-js-macrotask-executor::1.1.1",
-      mvn"org.scala-js::scalajs-dom::2.8.0"
-    )
-
-  object jvm extends SharedJVM, PlatformScalaModule: //, SharedPublish:
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-scenegraph`.jvm
+      build.`indigo-scenegraph`.native
     )
-
-

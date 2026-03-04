@@ -3,8 +3,6 @@ package indigo.render.pipeline
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
-import indigo.render.pipeline.AssetMapping
-import indigo.render.pipeline.ProcessedSceneData
 import indigo.render.pipeline.display.DisplayLayer
 import indigo.render.pipeline.display.DisplayObject
 import indigo.render.pipeline.display.DisplayObjectUniformData

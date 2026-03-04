@@ -1,28 +1,30 @@
-package indigoextras.ui
+// package indigoextras.ui
 
-import indigo.core.Outcome
-import indigo.core.events.GlobalEvent
-import indigo.scenegraph.Layer
-import indigoextras.ui.component.Component
-import indigoextras.ui.datatypes.UIContext
+// import indigo.core.Outcome
+// import indigo.core.events.GlobalEvent
+// import indigo.scenegraph.Layer
+// import indigoextras.ui.component.Component
+// import indigoextras.ui.datatypes.UIContext
 
-object Helper:
+// TODO: Bring back
 
-  extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
-    def bounds(context: UIContext[ReferenceData]): Bounds =
-      c.bounds(context, component)
+// object Helper:
 
-    def update(
-        context: UIContext[ReferenceData]
-    ): GlobalEvent => Outcome[A] =
-      c.updateModel(context, component)
+//   extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
+//     def bounds(context: UIContext[ReferenceData]): Bounds =
+//       c.bounds(context, component)
 
-    def present(
-        context: UIContext[ReferenceData]
-    ): Outcome[Layer] =
-      c.present(context, component)
+//     def update(
+//         context: UIContext[ReferenceData]
+//     ): GlobalEvent => Outcome[A] =
+//       c.updateModel(context, component)
 
-    def refresh(
-        context: UIContext[ReferenceData]
-    ): A =
-      c.refresh(context, component)
+//     def present(
+//         context: UIContext[ReferenceData]
+//     ): Outcome[Layer] =
+//       c.present(context, component)
+
+//     def refresh(
+//         context: UIContext[ReferenceData]
+//     ): A =
+//       c.refresh(context, component)
