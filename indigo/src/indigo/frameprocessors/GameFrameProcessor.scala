@@ -3,7 +3,6 @@ package indigo.frameprocessors
 import indigo.core.Outcome
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
-import indigo.frameprocessors.StandardFrameProcessorFunctions
 import indigo.gameengine.FrameProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.SceneManager
