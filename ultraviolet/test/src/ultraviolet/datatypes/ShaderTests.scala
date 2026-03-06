@@ -70,7 +70,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -107,7 +107,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -141,7 +141,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -184,7 +184,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -228,7 +228,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -277,7 +277,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -333,7 +333,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -394,7 +394,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -442,7 +442,7 @@ class ShaderTests extends munit.FunSuite {
       }
 
     val actualCode =
-      shader(modifyVertex).toGLSL[WebGL2].toOutput.code
+      shader(modifyVertex).toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader(modifyVertex))
     // println(actualCode)
@@ -477,7 +477,7 @@ class ShaderTests extends munit.FunSuite {
         Shader[Unit, vec4] { _ =>
           input + vec4(1.0f)
         }
-      }.toGLSL[WebGL2].toOutput.code
+      }.toGLSL300.toOutput.code
 
     assertNoDiff(
       actualCode,
@@ -502,7 +502,7 @@ class ShaderTests extends munit.FunSuite {
         }
 
     inline def actualCode =
-      Foo.shader(modifyVertex).toGLSL[WebGL2].toOutput.code
+      Foo.shader(modifyVertex).toGLSL300.toOutput.code
 
     // DebugAST.toAST(actualCode)
     // println(actualCode)
@@ -615,11 +615,11 @@ class ShaderTests extends munit.FunSuite {
   //   // interceptMessage[ShaderError.Validation](
   //   //   "[ultraviolet] It is not permitted to nest named functions, however, you can declare nested anonymous functions."
   //   // ) {
-  //   //   shader.toGLSL[WebGL2]
+  //   //   shader.toGLSL
   //   // }
 
   //   val actualCode =
-  //     shader.toGLSL[WebGL2].toOutput.code
+  //     shader.toGLSL300.toOutput.code
 
   //   // DebugAST.toAST(shader)
   //   // println(actualCode)
@@ -655,5 +655,5 @@ object Foo {
     }
 
   inline def shaderResult(inline f: vec4 => Shader[Env, vec4]): ShaderResult =
-    shader(f).toGLSL[WebGL2]
+    shader(f).toGLSL300
 }

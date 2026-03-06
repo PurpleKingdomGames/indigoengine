@@ -15,25 +15,25 @@ class GLSLValidationTests extends munit.FunSuite {
         val a = 1
       }
 
-    given p: ShaderPrinter[WebGL2] = new ShaderPrinter[WebGL2] {
+    // given p: ShaderPrinter[WebGL2] = new ShaderPrinter[WebGL2] {
 
-      def isValid(
-          inType: Option[String],
-          outType: Option[String],
-          functions: List[ShaderAST],
-          body: ShaderAST
-      ): ShaderValid = ShaderValid.Invalid(List("boom"))
+    //   def isValid(
+    //       inType: Option[String],
+    //       outType: Option[String],
+    //       functions: List[ShaderAST],
+    //       body: ShaderAST
+    //   ): ShaderValid = ShaderValid.Invalid(List("boom"))
 
-      def transformer: PartialFunction[ShaderAST, ShaderAST] = { case x =>
-        x
-      }
+    //   def transformer: PartialFunction[ShaderAST, ShaderAST] = { case x =>
+    //     x
+    //   }
 
-      def printer: PartialFunction[ShaderAST, List[String]] = { case x =>
-        Nil
-      }
-    }
+    //   // def printer: PartialFunction[ShaderAST, List[String]] = { case x =>
+    //   //   Nil
+    //   // }
+    // }
 
-    val actual = fragment.toGLSL[WebGL2](using p)
+    val actual = fragment.toGLSL300
 
     // DebugAST.toAST(fragment)
     // println(actual)

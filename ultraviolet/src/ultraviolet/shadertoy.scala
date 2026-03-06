@@ -42,114 +42,114 @@ object shadertoy:
 
   sealed trait ShaderToy
 
-  given ShaderPrinter[ShaderToy] = new ShaderPrinter[ShaderToy] {
-    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
+  // given ShaderPrinter[ShaderToy] = new ShaderPrinter[ShaderToy] {
+  //   val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
-    def isValid(
-        inType: Option[String],
-        outType: Option[String],
-        functions: List[ShaderAST],
-        body: ShaderAST
-    ): ShaderValid =
-      val inTypeValid: ShaderValid =
-        if inType.contains("ShaderToyEnv") then ShaderValid.Valid
-        else
-          ShaderValid.Invalid(
-            List(
-              "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], environment type was: " +
-                inType.getOrElse("<missing>")
-            )
-          )
+  //   def isValid(
+  //       inType: Option[String],
+  //       outType: Option[String],
+  //       functions: List[ShaderAST],
+  //       body: ShaderAST
+  //   ): ShaderValid =
+  //     val inTypeValid: ShaderValid =
+  //       if inType.contains("ShaderToyEnv") then ShaderValid.Valid
+  //       else
+  //         ShaderValid.Invalid(
+  //           List(
+  //             "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], environment type was: " +
+  //               inType.getOrElse("<missing>")
+  //           )
+  //         )
 
-      val outTypeValid: ShaderValid =
-        if outType.contains("Unit") then ShaderValid.Valid
-        else
-          ShaderValid.Invalid(
-            List(
-              "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], return type was: " +
-                outType.getOrElse("<missing>")
-            )
-          )
+  //     val outTypeValid: ShaderValid =
+  //       if outType.contains("Unit") then ShaderValid.Valid
+  //       else
+  //         ShaderValid.Invalid(
+  //           List(
+  //             "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], return type was: " +
+  //               outType.getOrElse("<missing>")
+  //           )
+  //         )
 
-      val hasMainImageFunction: ShaderValid =
-        val main =
-          body.find {
-            case ShaderAST.Function(
-                  "mainImage",
-                  List(
-                    (ShaderAST.DataTypes.ident("vec4") -> "fragColor"),
-                    (ShaderAST.DataTypes.ident("vec2") -> "fragCoord")
-                  ),
-                  body,
-                  ShaderAST.DataTypes.ident("vec4")
-                ) =>
-              true
+  //     val hasMainImageFunction: ShaderValid =
+  //       val main =
+  //         body.find {
+  //           case ShaderAST.Function(
+  //                 "mainImage",
+  //                 List(
+  //                   (ShaderAST.DataTypes.ident("vec4") -> "fragColor"),
+  //                   (ShaderAST.DataTypes.ident("vec2") -> "fragCoord")
+  //                 ),
+  //                 body,
+  //                 ShaderAST.DataTypes.ident("vec4")
+  //               ) =>
+  //             true
 
-            case _ => false
-          }
+  //           case _ => false
+  //         }
 
-        main match
-          case Some(_) =>
-            ShaderValid.Valid
+  //       main match
+  //         case Some(_) =>
+  //           ShaderValid.Valid
 
-          case None =>
-            ShaderValid.Invalid(
-              List(
-                "ShaderToy Shader instances must declare a 'mainImage' function: `def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = ???`"
-              )
-            )
+  //         case None =>
+  //           ShaderValid.Invalid(
+  //             List(
+  //               "ShaderToy Shader instances must declare a 'mainImage' function: `def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = ???`"
+  //             )
+  //           )
 
-      webGL2Printer.isValid(inType, outType, functions, body) |+|
-        (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
+  //     webGL2Printer.isValid(inType, outType, functions, body) |+|
+  //       (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
 
-    def transformer: PartialFunction[ShaderAST, ShaderAST] =
-      val pf: PartialFunction[ShaderAST, ShaderAST] = {
-        case ShaderAST.Function(
-              "mainImage",
-              List(typ1 -> fragColor, typ2 -> fragCoord),
-              ShaderAST.Block(statements),
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          val nonEmpty = statements
-            .filterNot(_.isEmpty)
+  //   def transformer: PartialFunction[ShaderAST, ShaderAST] =
+  //     val pf: PartialFunction[ShaderAST, ShaderAST] = {
+  //       case ShaderAST.Function(
+  //             "mainImage",
+  //             List(typ1 -> fragColor, typ2 -> fragCoord),
+  //             ShaderAST.Block(statements),
+  //             ShaderAST.DataTypes.ident("vec4")
+  //           ) =>
+  //         val nonEmpty = statements
+  //           .filterNot(_.isEmpty)
 
-          val (init, last) =
-            if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
-            else (Nil, nonEmpty)
+  //         val (init, last) =
+  //           if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
+  //           else (Nil, nonEmpty)
 
-          ShaderAST.Function(
-            "mainImage",
-            List(
-              ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
-              typ2                                                                           -> fragCoord
-            ),
-            ShaderAST.Block(
-              init ++
-                List(
-                  ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), last.headOption.getOrElse(ShaderAST.Empty()))
-                )
-            ),
-            ShaderAST.DataTypes.ident("void")
-          )
+  //         ShaderAST.Function(
+  //           "mainImage",
+  //           List(
+  //             ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
+  //             typ2                                                                           -> fragCoord
+  //           ),
+  //           ShaderAST.Block(
+  //             init ++
+  //               List(
+  //                 ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), last.headOption.getOrElse(ShaderAST.Empty()))
+  //               )
+  //           ),
+  //           ShaderAST.DataTypes.ident("void")
+  //         )
 
-        case ShaderAST.Function(
-              "mainImage",
-              List(typ1 -> fragColor, typ2 -> fragCoord),
-              body,
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          ShaderAST.Function(
-            "mainImage",
-            List(
-              ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
-              typ2                                                                           -> fragCoord
-            ),
-            ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), body),
-            ShaderAST.DataTypes.ident("void")
-          )
-      }
+  //       case ShaderAST.Function(
+  //             "mainImage",
+  //             List(typ1 -> fragColor, typ2 -> fragCoord),
+  //             body,
+  //             ShaderAST.DataTypes.ident("vec4")
+  //           ) =>
+  //         ShaderAST.Function(
+  //           "mainImage",
+  //           List(
+  //             ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
+  //             typ2                                                                           -> fragCoord
+  //           ),
+  //           ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), body),
+  //           ShaderAST.DataTypes.ident("void")
+  //         )
+  //     }
 
-      pf.orElse(webGL2Printer.transformer)
+  //     pf.orElse(webGL2Printer.transformer)
 
-    def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
-  }
+  //   // def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
+  // }

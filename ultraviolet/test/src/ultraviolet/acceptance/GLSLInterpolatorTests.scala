@@ -9,7 +9,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    val actual = fragment.toGLSL[WebGL2].toOutput.code
+    val actual = fragment.toGLSL300.toOutput.code
 
     assertNoDiff(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
   }
@@ -19,7 +19,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    val actual = fragment.toGLSL[WebGL2].toOutput.code
+    val actual = fragment.toGLSL300.toOutput.code
 
     assertNoDiff(actual, "vec4(1.0,0.0,1.0,0.0);")
   }
@@ -29,7 +29,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    val actual = fragment.toGLSL[WebGL2].toOutput.code
+    val actual = fragment.toGLSL300.toOutput.code
 
     assertNoDiff(actual, "vec4(vec3(1.0,0.0,1.0),0.0);")
   }
@@ -39,7 +39,7 @@ class GLSLInterpolatorTests extends munit.FunSuite {
 
     // println(DebugAST.toAST(fragment))
 
-    val actual = fragment.toGLSL[WebGL2].toOutput.code
+    val actual = fragment.toGLSL300.toOutput.code
 
     assertNoDiff(actual, "vec4(1.0,0.0,1.0,0.0);")
   }

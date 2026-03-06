@@ -137,7 +137,7 @@ class ProceduralShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput
+      fragment.toGLSL300.toOutput
 
     val expectedCode =
       s"""

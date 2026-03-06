@@ -41,7 +41,7 @@ object Blit:
           env.CHANNEL_0;
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSL300
 
     val expected: String =
       """

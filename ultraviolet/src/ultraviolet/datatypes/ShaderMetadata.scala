@@ -1,16 +1,6 @@
 package ultraviolet.datatypes
 
-enum ShaderResult:
-  case Error(reason: String)
-  case Output(code: String, metadata: ShaderMetadata)
-
-object ShaderResult:
-
-  extension (r: ShaderResult)
-    def toOutput: ShaderResult.Output =
-      r match
-        case Error(reason)    => ShaderResult.Output(reason, ShaderMetadata.empty)
-        case o @ Output(_, _) => o
+import scala.quoted.*
 
 final case class ShaderMetadata(
     uniforms: List[ShaderField],
@@ -27,7 +17,10 @@ final case class ShaderMetadata(
     this.copy(varyings = newVaryings)
 
 object ShaderMetadata:
+
+  given ToExpr[ShaderMetadata] with
+    def apply(x: ShaderMetadata)(using Quotes): Expr[ShaderMetadata] =
+      '{ ShaderMetadata(${ Expr(x.uniforms) }, ${ Expr(x.ubos) }, ${ Expr(x.varyings) }) }
+
   def empty: ShaderMetadata =
     ShaderMetadata(Nil, Nil, Nil)
-
-final case class ShaderField(name: String, typeOf: String)

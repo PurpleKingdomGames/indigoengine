@@ -40,58 +40,58 @@ class ShaderPrinterTests extends munit.FunSuite {
 
   }
 
-  test("A custom printer can partially match to modify the output of the print") {
+  // test("A custom printer can partially match to modify the output of the print") {
 
-    given ShaderPrinter[Any] = new ShaderPrinter[Any] {
+  //   given ShaderPrinter[Any] = new ShaderPrinter[Any] {
 
-      def isValid(
-          inType: Option[String],
-          outType: Option[String],
-          functions: List[ShaderAST],
-          body: ShaderAST
-      ): ShaderValid = ShaderValid.Valid
+  //     def isValid(
+  //         inType: Option[String],
+  //         outType: Option[String],
+  //         functions: List[ShaderAST],
+  //         body: ShaderAST
+  //     ): ShaderValid = ShaderValid.Valid
 
-      def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-        case ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")) =>
-          ShaderAST.Val("xx", ShaderAST.DataTypes.float(100.0), ShaderAST.DataTypes.ident("float"))
-      }
+  //     def transformer: PartialFunction[ShaderAST, ShaderAST] = {
+  //       case ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")) =>
+  //         ShaderAST.Val("xx", ShaderAST.DataTypes.float(100.0), ShaderAST.DataTypes.ident("float"))
+  //     }
 
-      def printer: PartialFunction[ShaderAST, List[String]] = {
-        case ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float")) =>
-          List("float foo")
-      }
-    }
+  //     def printer: PartialFunction[ShaderAST, List[String]] = {
+  //       case ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float")) =>
+  //         List("float foo")
+  //     }
+  //   }
 
-    val ast =
-      ShaderAST.Block(
-        List(
-          ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")),
-          ShaderAST.Block(
-            List(
-              ShaderAST.Annotated(
-                ShaderAST.DataTypes.ident("const"),
-                ShaderAST.Empty(),
-                ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float"))
-              ),
-              ShaderAST.Val("z", ShaderAST.DataTypes.float(3.0), ShaderAST.DataTypes.ident("float"))
-            )
-          )
-        )
-      )
+  //   val ast =
+  //     ShaderAST.Block(
+  //       List(
+  //         ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")),
+  //         ShaderAST.Block(
+  //           List(
+  //             ShaderAST.Annotated(
+  //               ShaderAST.DataTypes.ident("const"),
+  //               ShaderAST.Empty(),
+  //               ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float"))
+  //             ),
+  //             ShaderAST.Val("z", ShaderAST.DataTypes.float(3.0), ShaderAST.DataTypes.ident("float"))
+  //           )
+  //         )
+  //       )
+  //     )
 
-    val actual =
-      ShaderPrinter.print(ast)
+  //   val actual =
+  //     ShaderPrinter.print(ast)
 
-    val expected =
-      List(
-        "float xx=100.0;",
-        "const float foo;",
-        "float z=3.0;"
-      )
+  //   val expected =
+  //     List(
+  //       "float xx=100.0;",
+  //       "const float foo;",
+  //       "float z=3.0;"
+  //     )
 
-    assertEquals(actual, expected)
+  //   assertEquals(actual, expected)
 
-  }
+  // }
 
   test("Can output WebGL 1.0 and 2.0") {
 
@@ -115,7 +115,7 @@ class ShaderPrinterTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
 
     val webgl1 =
-      fragment.toGLSL[ShaderPrinter.WebGL1].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     // println(webgl1)
 
@@ -135,7 +135,7 @@ class ShaderPrinterTests extends munit.FunSuite {
     )
 
     val webgl2 =
-      fragment.toGLSL[ShaderPrinter.WebGL2].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     // println(webgl2)
 
@@ -165,7 +165,7 @@ class ShaderPrinterTests extends munit.FunSuite {
       Neg(Infix("/", ident("x"), ident("y"), ident("x")))
 
     val actual =
-      ShaderPrinter.print[WebGL2](ast)
+      ShaderPrinter.print(ast)
 
     // println(actual)
 

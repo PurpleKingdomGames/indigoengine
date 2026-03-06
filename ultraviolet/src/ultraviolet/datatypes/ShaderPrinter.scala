@@ -2,15 +2,15 @@ package ultraviolet.datatypes
 
 import ShaderAST.*
 
-trait ShaderPrinter[T]:
-  def isValid(
-      inType: Option[String],
-      outType: Option[String],
-      functions: List[ShaderAST],
-      body: ShaderAST
-  ): ShaderValid
-  def transformer: PartialFunction[ShaderAST, ShaderAST]
-  def printer: PartialFunction[ShaderAST, List[String]]
+// trait ShaderPrinter[T]:
+//   def isValid(
+//       inType: Option[String],
+//       outType: Option[String],
+//       functions: List[ShaderAST],
+//       body: ShaderAST
+//   ): ShaderValid
+//   def transformer: PartialFunction[ShaderAST, ShaderAST]
+//   // def printer: PartialFunction[ShaderAST, List[String]]
 
 object ShaderPrinter:
 
@@ -20,52 +20,52 @@ object ShaderPrinter:
   // A number of the transforms seen in the WebGL1 & 2 printers below are based
   // on this page: https://webgl2fundamentals.org/webgl/lessons/webgl1-to-webgl2.html
 
-  given ShaderPrinter[WebGL1] = new ShaderPrinter:
+  // given ShaderPrinter[WebGL1] = new ShaderPrinter:
 
-    def isValid(
-        inType: Option[String],
-        outType: Option[String],
-        functions: List[ShaderAST],
-        body: ShaderAST
-    ): ShaderValid = ShaderValid.Valid
+  //   def isValid(
+  //       inType: Option[String],
+  //       outType: Option[String],
+  //       functions: List[ShaderAST],
+  //       body: ShaderAST
+  //   ): ShaderValid = ShaderValid.Valid
 
-    def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-      case ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v @ ShaderAST.Val(_, _, _)) =>
-        ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
+  //   def transformer: PartialFunction[ShaderAST, ShaderAST] = {
+  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v @ ShaderAST.Val(_, _, _)) =>
+  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
 
-      case ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), param, v @ ShaderAST.Val(_, _, _)) =>
-        ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
-    }
+  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), param, v @ ShaderAST.Val(_, _, _)) =>
+  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
+  //   }
 
-    def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
+  //   // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
 
-  given ShaderPrinter[WebGL2] = new ShaderPrinter:
+  // given ShaderPrinter[WebGL2] = new ShaderPrinter:
 
-    def isValid(
-        inType: Option[String],
-        outType: Option[String],
-        functions: List[ShaderAST],
-        body: ShaderAST
-    ): ShaderValid = ShaderValid.Valid
+  //   def isValid(
+  //       inType: Option[String],
+  //       outType: Option[String],
+  //       functions: List[ShaderAST],
+  //       body: ShaderAST
+  //   ): ShaderValid = ShaderValid.Valid
 
-    def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-      case ShaderAST.Annotated(ShaderAST.DataTypes.ident("attribute"), param, v @ ShaderAST.Val(_, _, _)) =>
-        ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v)
+  //   def transformer: PartialFunction[ShaderAST, ShaderAST] = {
+  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("attribute"), param, v @ ShaderAST.Val(_, _, _)) =>
+  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v)
 
-      case ShaderAST.CallFunction("texture2D", args, returnType) =>
-        ShaderAST.CallFunction("texture", args, returnType)
+  //     case ShaderAST.CallFunction("texture2D", args, returnType) =>
+  //       ShaderAST.CallFunction("texture", args, returnType)
 
-      case ShaderAST.CallFunction("textureCube", args, returnType) =>
-        ShaderAST.CallFunction("texture", args, returnType)
-    }
+  //     case ShaderAST.CallFunction("textureCube", args, returnType) =>
+  //       ShaderAST.CallFunction("texture", args, returnType)
+  //   }
 
-    def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
+    // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
 
-  def print[T](ast: ShaderAST)(using pp: ShaderPrinter[T]): List[String] =
+  def print[T](ast: ShaderAST): List[String] =
     render(ast)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def render(ast: ShaderAST)(using pp: ShaderPrinter[?]): List[String] =
+  private def render(ast: ShaderAST): List[String] =
     val r: ShaderAST => List[String] = {
       case Empty() =>
         Nil
@@ -140,10 +140,10 @@ object ShaderPrinter:
           ).flatten
 
       case CallFunction(id, args, _) =>
-        List(s"""$id(${args.flatMap(render).mkString(",")})""")
+        List(s"""$id(${args.flatMap(v => render(v)).mkString(",")})""")
 
       case CallExternalFunction(id, args, _) =>
-        List(s"""$id(${args.flatMap(render).mkString(",")})""")
+        List(s"""$id(${args.flatMap(v => render(v)).mkString(",")})""")
 
       case FunctionRef(_, _, _) =>
         Nil
@@ -256,43 +256,43 @@ object ShaderPrinter:
         List(s"${v.toString}")
 
       case DataTypes.vec2(args) =>
-        List(s"vec2(${args.flatMap(render).mkString(",")})")
+        List(s"vec2(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.vec3(args) =>
-        List(s"vec3(${args.flatMap(render).mkString(",")})")
+        List(s"vec3(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.vec4(args) =>
-        List(s"vec4(${args.flatMap(render).mkString(",")})")
+        List(s"vec4(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.bvec2(args) =>
-        List(s"bvec2(${args.flatMap(render).mkString(",")})")
+        List(s"bvec2(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.bvec3(args) =>
-        List(s"bvec3(${args.flatMap(render).mkString(",")})")
+        List(s"bvec3(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.bvec4(args) =>
-        List(s"bvec4(${args.flatMap(render).mkString(",")})")
+        List(s"bvec4(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.ivec2(args) =>
-        List(s"ivec2(${args.flatMap(render).mkString(",")})")
+        List(s"ivec2(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.ivec3(args) =>
-        List(s"ivec3(${args.flatMap(render).mkString(",")})")
+        List(s"ivec3(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.ivec4(args) =>
-        List(s"ivec4(${args.flatMap(render).mkString(",")})")
+        List(s"ivec4(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.mat2(args) =>
-        List(s"mat2(${args.flatMap(render).mkString(",")})")
+        List(s"mat2(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.mat3(args) =>
-        List(s"mat3(${args.flatMap(render).mkString(",")})")
+        List(s"mat3(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.mat4(args) =>
-        List(s"mat4(${args.flatMap(render).mkString(",")})")
+        List(s"mat4(${args.flatMap(v => render(v)).mkString(",")})")
 
       case DataTypes.array(size, args, typeOf) =>
-        List(s"""${render(typeOf).mkString}(${args.flatMap(render).mkString(",")})""")
+        List(s"""${render(typeOf).mkString}(${args.flatMap(v => render(v)).mkString(",")})""")
 
       case DataTypes.swizzle(genType, swizzle, returnType) =>
         genType match
@@ -369,14 +369,13 @@ object ShaderPrinter:
 
     }
 
-    val p =
-      pp.printer.orElse { case x => r(x) }
+    val p: ShaderAST => List[String] =
+       x => r(x)
 
-    p(ast.traverse(pp.transformer.orElse(n => n)))
+    p(ast) // (ast.traverse(pp.transformer.orElse(n => n)))
 
-  private def renderStatements(statements: List[ShaderAST])(using pp: ShaderPrinter[?]): List[String] =
-    val p =
-      pp.printer.orElse {
+  private def renderStatements(statements: List[ShaderAST]): List[String] =
+    val p: ShaderAST => List[String] = {
         case ShaderAST.RawLiteral(raw) =>
           List(raw)
 
@@ -403,13 +402,13 @@ object ShaderPrinter:
       }
 
     statements
-      .map(_.traverse(pp.transformer.orElse(n => n)))
+      // .map(_.traverse(pp.transformer.orElse(n => n)))
       .flatMap(p)
       .filterNot(_.isEmpty)
 
   private def addIndent: String => String = str => "  " + str
 
-  private def decideType(a: ShaderAST)(using pp: ShaderPrinter[?]): String =
+  private def decideType(a: ShaderAST): String =
     a match
       case Empty()                        => "void"
       case Block(_)                       => "void"
@@ -471,7 +470,7 @@ object ShaderPrinter:
   private def processFunctionStatements(
       statements: List[ShaderAST],
       maybeReturnType: Option[String]
-  )(using pp: ShaderPrinter[?]): (List[String], String) =
+  ): (List[String], String) =
     val nonEmpty = statements
       .filterNot(_.isEmpty)
 
@@ -481,7 +480,7 @@ object ShaderPrinter:
 
     val returnType =
       maybeReturnType match
-        case None        => last.headOption.map(decideType).getOrElse("void")
+        case None        => last.headOption.map(v => decideType(v)).getOrElse("void")
         case Some(value) => value
 
     val end: List[String] =

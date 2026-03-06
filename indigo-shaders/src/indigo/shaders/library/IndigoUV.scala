@@ -385,8 +385,8 @@ object IndigoUV:
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       webGL2Printer.transformer
 
-    def printer: PartialFunction[ShaderAST, List[String]] =
-      webGL2Printer.printer
+    // def printer: PartialFunction[ShaderAST, List[String]] =
+    //   webGL2Printer.printer
   }
 
   given ShaderPrinter[IndigoFragmentPrinter] = new ShaderPrinter {
@@ -453,8 +453,8 @@ object IndigoUV:
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       webGL2Printer.transformer
 
-    def printer: PartialFunction[ShaderAST, List[String]] =
-      webGL2Printer.printer
+    // def printer: PartialFunction[ShaderAST, List[String]] =
+    //   webGL2Printer.printer
   }
 
   given ShaderPrinter[IndigoBlendFragmentPrinter] = new ShaderPrinter {
@@ -496,6 +496,6 @@ object IndigoUV:
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       webGL2Printer.transformer
 
-    def printer: PartialFunction[ShaderAST, List[String]] =
-      webGL2Printer.printer
+    // def printer: PartialFunction[ShaderAST, List[String]] =
+    //   webGL2Printer.printer
   }

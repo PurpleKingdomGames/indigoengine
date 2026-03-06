@@ -1,6 +1,5 @@
 package ultraviolet.indigoexamples
 
-import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
@@ -222,7 +221,7 @@ object WebGL2Base:
         
       }
 
-    val output = shader.toGLSL[Indigo](ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
+    val output = shader.toGLSL300(ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
 
     val expected: String =
       """
@@ -535,7 +534,7 @@ object WebGL2Base:
           fragColor = COLOR
         }
 
-    val output = shader.toGLSL[Indigo](ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
+    val output = shader.toGLSL300(ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
 
     val expected: String =
       """

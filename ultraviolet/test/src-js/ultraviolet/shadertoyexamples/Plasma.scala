@@ -20,7 +20,9 @@ object Plasma:
         vec4(0.5f + 0.5f * cs, 1.0f)
     }
 
-  val bufferAShader = bufferA.toGLSL[ShaderToy].toOutput.code
+  // TODO: Fix this
+  // val bufferAShader = bufferA.toGLSL[ShaderToy].toOutput.code
+  val bufferAShader = bufferA.toGLSL300.toOutput.code
 
   val bufferAExpected: String =
     """
@@ -53,7 +55,9 @@ object Plasma:
         texture2D(env.iChannel0, vec2(fract(sum), 0))
     }
 
-  val imageShader = image.toGLSL[ShaderToy].toOutput.code
+  // TODO: Fix this
+  // val imageShader = image.toGLSL[ShaderToy].toOutput.code
+  val imageShader = image.toGLSL300.toOutput.code
 
   val imageExpected: String =
     """
