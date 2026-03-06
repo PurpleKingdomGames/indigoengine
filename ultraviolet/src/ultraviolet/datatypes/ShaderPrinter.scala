@@ -59,7 +59,7 @@ object ShaderPrinter:
   //       ShaderAST.CallFunction("texture", args, returnType)
   //   }
 
-    // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
+  // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
 
   def print[T](ast: ShaderAST): List[String] =
     render(ast)
@@ -370,36 +370,36 @@ object ShaderPrinter:
     }
 
     val p: ShaderAST => List[String] =
-       x => r(x)
+      x => r(x)
 
     p(ast) // (ast.traverse(pp.transformer.orElse(n => n)))
 
   private def renderStatements(statements: List[ShaderAST]): List[String] =
     val p: ShaderAST => List[String] = {
-        case ShaderAST.RawLiteral(raw) =>
-          List(raw)
+      case ShaderAST.RawLiteral(raw) =>
+        List(raw)
 
-        case f: ShaderAST.Function =>
-          render(f)
+      case f: ShaderAST.Function =>
+        render(f)
 
-        case ShaderAST.Block(ss) =>
-          renderStatements(ss)
+      case ShaderAST.Block(ss) =>
+        renderStatements(ss)
 
-        case ShaderAST.ShaderBlock(None, None, None, ss) =>
-          renderStatements(ss)
+      case ShaderAST.ShaderBlock(None, None, None, ss) =>
+        renderStatements(ss)
 
-        case x =>
-          render(x)
-            .map {
-              case s if s.isEmpty()       => s
-              case s if s.endsWith(";")   => s
-              case s if s.endsWith(":")   => s
-              case s if s.endsWith("{")   => s
-              case s if s.endsWith("}")   => s
-              case s if s.startsWith("#") => s
-              case s                      => s + ";"
-            }
-      }
+      case x =>
+        render(x)
+          .map {
+            case s if s.isEmpty()       => s
+            case s if s.endsWith(";")   => s
+            case s if s.endsWith(":")   => s
+            case s if s.endsWith("{")   => s
+            case s if s.endsWith("}")   => s
+            case s if s.startsWith("#") => s
+            case s                      => s + ";"
+          }
+    }
 
     statements
       // .map(_.traverse(pp.transformer.orElse(n => n)))

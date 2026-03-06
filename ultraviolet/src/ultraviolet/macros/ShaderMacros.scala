@@ -37,12 +37,14 @@ object ShaderMacros:
           ${ versions }.map { version =>
             try
               // TODO: Apply transforms
+              val transformed =
+                ${ p }.applyTransformers(version.transformers)
 
               // TODO: Apply validation rules
 
               // Convert to GLSL.
               val res: ShaderResult =
-                ProceduralShader.render(${ p }, ${ headers })
+                ProceduralShader.render(transformed, ${ headers })
 
               version.id -> res
             catch {
