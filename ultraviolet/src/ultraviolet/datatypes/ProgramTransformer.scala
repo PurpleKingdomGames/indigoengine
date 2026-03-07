@@ -9,6 +9,10 @@ enum ProgramTransformer:
   /** Find all annotations with the 'from' name, and rename, e.g. varying renamed to in */
   case RenameAnnotation(from: String, to: String)
 
+  /** Find a function with a given argument, and annotate it, e.g. void foo(vec4 x) annotated to void foo(out vec4 x)
+    */
+  case AnnotateFunctionArgument(functionName: String, argumentName: String, annotation: String)
+
   /** Alter a functions return type, e.g. vec4 foo() becomes void foo() */
   case ChangeFunctionReturnType(functionName: String, newReturnType: String)
 
@@ -35,6 +39,15 @@ object ProgramTransformer:
 
         case ProgramTransformer.RenameAnnotation(from, to) =>
           '{ ProgramTransformer.RenameAnnotation(${ Expr(from) }, ${ Expr(to) }) }
+
+        case ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation) =>
+          '{
+            ProgramTransformer.AnnotateFunctionArgument(
+              ${ Expr(functionName) },
+              ${ Expr(argumentName) },
+              ${ Expr(annotation) }
+            )
+          }
 
         case ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType) =>
           '{ ProgramTransformer.ChangeFunctionReturnType(${ Expr(functionName) }, ${ Expr(newReturnType) }) }

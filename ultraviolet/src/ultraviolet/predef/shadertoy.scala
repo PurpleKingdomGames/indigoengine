@@ -104,55 +104,11 @@ object shadertoy:
   //       (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
 
   private val transformers: List[ProgramTransformer] =
-    ProgramTransformer.GLSL_300
-  //   def transformer: PartialFunction[ShaderAST, ShaderAST] =
-  //     val pf: PartialFunction[ShaderAST, ShaderAST] = {
-  //       case ShaderAST.Function(
-  //             "mainImage",
-  //             List(typ1 -> fragColor, typ2 -> fragCoord),
-  //             ShaderAST.Block(statements),
-  //             ShaderAST.DataTypes.ident("vec4")
-  //           ) =>
-  //         val nonEmpty = statements
-  //           .filterNot(_.isEmpty)
-
-  //         val (init, last) =
-  //           if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
-  //           else (Nil, nonEmpty)
-
-  //         ShaderAST.Function(
-  //           "mainImage",
-  //           List(
-  //             ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
-  //             typ2                                                                           -> fragCoord
-  //           ),
-  //           ShaderAST.Block(
-  //             init ++
-  //               List(
-  //                 ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), last.headOption.getOrElse(ShaderAST.Empty()))
-  //               )
-  //           ),
-  //           ShaderAST.DataTypes.ident("void")
-  //         )
-
-  //       case ShaderAST.Function(
-  //             "mainImage",
-  //             List(typ1 -> fragColor, typ2 -> fragCoord),
-  //             body,
-  //             ShaderAST.DataTypes.ident("vec4")
-  //           ) =>
-  //         ShaderAST.Function(
-  //           "mainImage",
-  //           List(
-  //             ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), ShaderAST.Empty(), typ1) -> fragColor,
-  //             typ2                                                                           -> fragCoord
-  //           ),
-  //           ShaderAST.Assign(ShaderAST.DataTypes.ident("fragColor"), body),
-  //           ShaderAST.DataTypes.ident("void")
-  //         )
-  //     }
-
-  //     pf.orElse(webGL2Printer.transformer)
+    List(
+      ProgramTransformer.ConvertPureFunctionToAssignment("mainImage", "fragColor"),
+      ProgramTransformer.AnnotateFunctionArgument("mainImage", "fragColor", "out")
+    ) ++
+      ProgramTransformer.GLSL_300
 
   val ShaderToyProgram: ProgramVersion =
     ProgramVersion(

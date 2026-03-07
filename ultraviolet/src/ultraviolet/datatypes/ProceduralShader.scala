@@ -1,6 +1,7 @@
 package ultraviolet.datatypes
 
 import scala.quoted.*
+import scala.annotation.tailrec
 
 final case class ProceduralShader(
     defs: List[ShaderAST],
@@ -21,6 +22,38 @@ final case class ProceduralShader(
         case ProgramTransformer.RenameFunctionAtCallSite(from, to) => {
           case ShaderAST.CallFunction(id, args, returnType) if id == from =>
             ShaderAST.CallFunction(to, args, returnType)
+        }
+
+        case ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation) => {
+          case fn @ ShaderAST.Function(
+                fnName,
+                args,
+                body,
+                returnType
+              ) if fnName == functionName =>
+            val updatedArgs =
+              args.map {
+                case (tpe @ ShaderAST.DataTypes.ident(_), argName) if argName == argumentName =>
+                  ShaderAST.Annotated(ShaderAST.DataTypes.ident(annotation), ShaderAST.Empty(), tpe) -> argName
+
+                case arg =>
+                  arg
+              }
+
+            ShaderAST.Function(
+              fnName,
+              updatedArgs,
+              body,
+              returnType
+            )
+
+          case fn @ ShaderAST.Function(
+                fnName,
+                args,
+                body,
+                returnType
+              ) =>
+            fn
         }
 
         case ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType) => {
@@ -111,15 +144,20 @@ final case class ProceduralShader(
         }
       }
 
-    // Combine them all together
-    val transform: PartialFunction[ShaderAST, ShaderAST] =
-      transformFunctions.foldLeft(PartialFunction.empty)(_.orElse(_))
+    @tailrec
+    def rec(remaining: List[PartialFunction[ShaderAST, ShaderAST]], acc: ShaderAST): ShaderAST =
+      remaining match
+        case Nil =>
+          acc
+
+        case t :: ts =>
+          rec(ts, acc.traverse(t))
 
     // Apply to all the AST parts, and return
     this.copy(
-      defs = defs.map(_.traverse(transform)),
-      annotations = annotations.map(_.traverse(transform)),
-      main = main.traverse(transform)
+      defs = defs.map(d => rec(transformFunctions, d)),
+      annotations = annotations.map(a => rec(transformFunctions, a)),
+      main = rec(transformFunctions, main)
     )
 
 object ProceduralShader:
