@@ -63,6 +63,15 @@ object Shader:
     inline def toGLSL(versions: List[ProgramVersion]): Map[ProgramVersionId, ShaderResult] =
       toGLSL(versions, Nil)
 
+    inline def toGLSL(version: ProgramVersion, headers: ShaderHeader*): ShaderResult =
+      toGLSL(List(version), headers.toList)
+        .get(version.id)
+        .getOrElse(
+          ShaderResult.Error(
+            s"Shader of version '${version.id}' was not found, meaning something went wrong during the transpile."
+          )
+        )
+
     inline def toGLSL(
         versions: List[ProgramVersion],
         headers: List[ShaderHeader]

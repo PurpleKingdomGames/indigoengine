@@ -16,6 +16,24 @@ final case class ProceduralShader(
 
     val results: List[ShaderValid] =
       rules.map {
+        case r @ ProgramValidationRule.Function0Exists(fnName, rt) =>
+          val exists =
+            main.find {
+              case ShaderAST.Function(
+                    fn,
+                    Nil,
+                    body,
+                    ShaderAST.DataTypes.ident(rType)
+                  ) if fn == fnName && rType == rt =>
+                true
+
+              case _ =>
+                false
+            }.isDefined
+
+          if exists then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+
         case r @ ProgramValidationRule.Function1Exists(fnName, arg, rt) =>
           val exists =
             main.find {

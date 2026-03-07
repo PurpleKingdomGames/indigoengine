@@ -25,13 +25,11 @@ class ShaderToyTests extends munit.FunSuite {
         }
       }
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     val actual =
       fragment
-        .toGLSL(List(ShaderToyProgram))
-        .get(ShaderToyProgram.id)
-        .map(_.toOutput.code)
-        .getOrElse(throw new Exception("Missing shadertoy default shader"))
+        .toGLSL(ShaderToyProgram)
+        .toOutput
+        .code
 
     // DebugAST.toAST(fragment)
     // println(actual)

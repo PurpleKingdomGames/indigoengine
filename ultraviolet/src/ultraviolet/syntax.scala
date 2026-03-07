@@ -44,6 +44,19 @@ object syntax extends ShaderDSLOps:
   type ShaderTypeOf[A] = ultraviolet.macros.ShaderTypeOf[A]
   val ShaderTypeOf: ultraviolet.macros.ShaderTypeOf.type = ultraviolet.macros.ShaderTypeOf
 
+  type ProgramVersion = ultraviolet.datatypes.ProgramVersion
+  val ProgramVersion: ultraviolet.datatypes.ProgramVersion.type = ultraviolet.datatypes.ProgramVersion
+
+  type ProgramVersionId = ultraviolet.datatypes.ProgramVersionId
+  val ProgramVersionId: ultraviolet.datatypes.ProgramVersionId.type = ultraviolet.datatypes.ProgramVersionId
+
+  type ProgramValidationRule = ultraviolet.datatypes.ProgramValidationRule
+  val ProgramValidationRule: ultraviolet.datatypes.ProgramValidationRule.type =
+    ultraviolet.datatypes.ProgramValidationRule
+
+  type ProgramTransformer = ultraviolet.datatypes.ProgramTransformer
+  val ProgramTransformer: ultraviolet.datatypes.ProgramTransformer.type = ultraviolet.datatypes.ProgramTransformer
+
   final class attribute extends StaticAnnotation
   final class const     extends StaticAnnotation
   final class define    extends StaticAnnotation

@@ -4,6 +4,12 @@ import scala.quoted.*
 
 enum ProgramValidationRule(val msg: String):
 
+  /** Ensure a named function that takes not arguments exists that returns an expected type. */
+  case Function0Exists(functionName: String, returnType: String)
+      extends ProgramValidationRule(
+        s"Program was missing a required function called '${functionName}' of type: () => $returnType"
+      )
+
   /** Ensure a named function with a single argument exists that returns an expected type. */
   case Function1Exists(functionName: String, argumentType: String, returnType: String)
       extends ProgramValidationRule(
@@ -40,6 +46,9 @@ object ProgramValidationRule:
   given ToExpr[ProgramValidationRule] with {
     def apply(x: ProgramValidationRule)(using Quotes): Expr[ProgramValidationRule] =
       x match
+        case Function0Exists(fn, rt) =>
+          '{ Function0Exists(${ Expr(fn) }, ${ Expr(rt) }) }
+
         case Function1Exists(fn, a, rt) =>
           '{ Function1Exists(${ Expr(fn) }, ${ Expr(a) }, ${ Expr(rt) }) }
 

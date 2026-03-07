@@ -230,13 +230,14 @@ trait BaseEntityShader:
     }
 
   inline def vertex[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
-    vertexShader[Env](userVertexFn, env).toGLSL[IndigoUV.IndigoVertexPrinter](
+    vertexShader[Env](userVertexFn, env).toGLSL(
+      IndigoUV.IndigoVertexProgram,
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
   inline def vertexRawBody[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
-    vertexShader[Env](userVertexFn, env).toGLSL[WebGL2](
+    vertexShader[Env](userVertexFn, env).toGLSL300(
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -246,7 +247,7 @@ trait BaseEntityShader:
     inline def tag = "//vertex_placeholder"
     inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
     val renderedCode =
-      vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL[WebGL2](
+      vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL300(
         ShaderHeader.Version300ES,
         ShaderHeader.PrecisionMediumPFloat
       ).toOutput.code
@@ -447,7 +448,8 @@ trait BaseEntityShader:
       userLightFn,
       userCompositeFn,
       env
-    ).toGLSL[IndigoUV.IndigoFragmentPrinter](
+    ).toGLSL(
+      IndigoUV.IndigoFragmentProgram,
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -462,7 +464,8 @@ trait BaseEntityShader:
       noopLight,
       noopComposite,
       env
-    ).toGLSL[IndigoUV.IndigoFragmentPrinter](
+    ).toGLSL(
+      IndigoUV.IndigoFragmentProgram,
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -479,7 +482,7 @@ trait BaseEntityShader:
       userLightFn,
       userCompositeFn,
       ()
-    ).toGLSL[WebGL2](
+    ).toGLSL300(
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -493,7 +496,7 @@ trait BaseEntityShader:
       noopLight,
       noopComposite,
       ()
-    ).toGLSL[WebGL2](
+    ).toGLSL300(
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -508,10 +511,11 @@ trait BaseEntityShader:
       RawGLSL("//"): Unit
     }
 
-    val renderedCode = fragmentShader(placeholder, empty, empty, empty, IndigoUV.FragmentEnv.reference).toGLSL[WebGL2](
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
-    ).toOutput.code
+    val renderedCode =
+      fragmentShader(placeholder, empty, empty, empty, IndigoUV.FragmentEnv.reference).toGLSL300(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      ).toOutput.code
 
     val location = renderedCode.indexOf(tag)
     val start = renderedCode.substring(0, location)
