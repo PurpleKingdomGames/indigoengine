@@ -41,7 +41,8 @@ object Blit:
           env.CHANNEL_0;
       }
 
-    val output = shader.toGLSL300
+    val output =
+      shader.toGLSL(List(IndigoProgram)).get(IndigoProgram.id)
 
     val expected: String =
       """

@@ -1,5 +1,9 @@
-package ultraviolet
+package ultraviolet.predef
 
+import ultraviolet.datatypes.ProgramTransformer
+import ultraviolet.datatypes.ProgramValidationRule
+import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.syntax.*
 
 object shadertoy:
@@ -40,11 +44,8 @@ object shadertoy:
         iSampleRate = 44100.0f
       )
 
-  sealed trait ShaderToy
-
-  // given ShaderPrinter[ShaderToy] = new ShaderPrinter[ShaderToy] {
-  //   val webGL2Printer = summon[ShaderPrinter[WebGL2]]
-
+  private val rules: List[ProgramValidationRule] =
+    ProgramValidationRule.GLSL_300
   //   def isValid(
   //       inType: Option[String],
   //       outType: Option[String],
@@ -102,6 +103,8 @@ object shadertoy:
   //     webGL2Printer.isValid(inType, outType, functions, body) |+|
   //       (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
 
+  private val transformers: List[ProgramTransformer] =
+    ProgramTransformer.GLSL_300
   //   def transformer: PartialFunction[ShaderAST, ShaderAST] =
   //     val pf: PartialFunction[ShaderAST, ShaderAST] = {
   //       case ShaderAST.Function(
@@ -151,5 +154,9 @@ object shadertoy:
 
   //     pf.orElse(webGL2Printer.transformer)
 
-  //   // def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
-  // }
+  val ShaderToyProgram: ProgramVersion =
+    ProgramVersion(
+      ProgramVersionId("ShaderToy"),
+      rules,
+      transformers
+    )

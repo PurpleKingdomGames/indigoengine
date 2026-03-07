@@ -1,8 +1,8 @@
 package ultraviolet.macros
 
-import ultraviolet.datatypes.GLSLVersion
-import ultraviolet.datatypes.GLSLVersionId
 import ultraviolet.datatypes.ProceduralShader
+import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.datatypes.ShaderError
@@ -19,24 +19,23 @@ object ShaderMacros:
   inline def toGLSL[In, Out](
       inline shader: Shader[In, Out],
       inline headers: List[ShaderHeader],
-      inline versions: List[GLSLVersion]
-  ): Map[GLSLVersionId, ShaderResult] =
+      inline versions: List[ProgramVersion]
+  ): Map[ProgramVersionId, ShaderResult] =
     ${ toGLSLImpl('{ shader }, '{ headers }, '{ versions }) }
 
   private[macros] def toGLSLImpl[In, Out: Type](
       shader: Expr[Shader[In, Out]],
       headers: Expr[List[ShaderHeader]],
-      versions: Expr[List[GLSLVersion]]
-  )(using q: Quotes): Expr[Map[GLSLVersionId, ShaderResult]] =
+      versions: Expr[List[ProgramVersion]]
+  )(using q: Quotes): Expr[Map[ProgramVersionId, ShaderResult]] =
     try
       val p: Expr[ProceduralShader] =
         toASTImpl(shader)
 
-      val results: Expr[List[(GLSLVersionId, ShaderResult)]] =
+      val results: Expr[List[(ProgramVersionId, ShaderResult)]] =
         '{
           ${ versions }.map { version =>
             try
-              // TODO: Apply transforms
               val transformed =
                 ${ p }.applyTransformers(version.transformers)
 
@@ -49,7 +48,7 @@ object ShaderMacros:
               version.id -> res
             catch {
               case e: ShaderError =>
-                GLSLVersionId("all") -> ShaderResult.Error(e.message)
+                ProgramVersionId("all") -> ShaderResult.Error(e.message)
             }
           }
         }
@@ -58,7 +57,7 @@ object ShaderMacros:
     catch {
       case e: ShaderError =>
         val msg = e.message
-        '{ Map(GLSLVersionId("all") -> ShaderResult.Error(${ Expr(msg) })) }
+        '{ Map(ProgramVersionId("all") -> ShaderResult.Error(${ Expr(msg) })) }
     }
 
   inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader =

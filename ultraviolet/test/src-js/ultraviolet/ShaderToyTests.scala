@@ -1,6 +1,6 @@
 package ultraviolet
 
-import ultraviolet.shadertoy.*
+import ultraviolet.predef.shadertoy.*
 import ultraviolet.shadertoyexamples.*
 import ultraviolet.syntax.*
 

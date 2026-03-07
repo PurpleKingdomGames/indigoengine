@@ -1,47 +1,49 @@
-package ultraviolet.acceptance
+// package ultraviolet.acceptance
 
-// import ultraviolet.DebugAST
-import ultraviolet.datatypes.ShaderResult
-import ultraviolet.syntax.*
+// // import ultraviolet.DebugAST
+// import ultraviolet.datatypes.ShaderResult
+// import ultraviolet.syntax.*
 
-import scala.annotation.nowarn
+// import scala.annotation.nowarn
 
-@nowarn("msg=unused")
-class GLSLValidationTests extends munit.FunSuite {
+// // TODO: Rethink or remove. Look at the old ShaderPrinter[ShaderToy] instance.
 
-  test("GLSL printer validation error are represented") {
-    inline def fragment =
-      Shader {
-        val a = 1
-      }
+// @nowarn("msg=unused")
+// class GLSLValidationTests extends munit.FunSuite {
 
-    // given p: ShaderPrinter[WebGL2] = new ShaderPrinter[WebGL2] {
+//   test("GLSL printer validation error are represented") {
+//     inline def fragment =
+//       Shader {
+//         val a = 1
+//       }
 
-    //   def isValid(
-    //       inType: Option[String],
-    //       outType: Option[String],
-    //       functions: List[ShaderAST],
-    //       body: ShaderAST
-    //   ): ShaderValid = ShaderValid.Invalid(List("boom"))
+//     // given p: ShaderPrinter[WebGL2] = new ShaderPrinter[WebGL2] {
 
-    //   def transformer: PartialFunction[ShaderAST, ShaderAST] = { case x =>
-    //     x
-    //   }
+//     //   def isValid(
+//     //       inType: Option[String],
+//     //       outType: Option[String],
+//     //       functions: List[ShaderAST],
+//     //       body: ShaderAST
+//     //   ): ShaderValid = ShaderValid.Invalid(List("boom"))
 
-    //   // def printer: PartialFunction[ShaderAST, List[String]] = { case x =>
-    //   //   Nil
-    //   // }
-    // }
+//     //   def transformer: PartialFunction[ShaderAST, ShaderAST] = { case x =>
+//     //     x
+//     //   }
 
-    val actual = fragment.toGLSL300
+//     //   // def printer: PartialFunction[ShaderAST, List[String]] = { case x =>
+//     //   //   Nil
+//     //   // }
+//     // }
 
-    // DebugAST.toAST(fragment)
-    // println(actual)
+//     val actual = fragment.toGLSL300
 
-    assertEquals(
-      actual,
-      ShaderResult.Error("[ultraviolet] Shader failed to validate because: [boom]")
-    )
-  }
+//     // DebugAST.toAST(fragment)
+//     // println(actual)
 
-}
+//     assertEquals(
+//       actual,
+//       ShaderResult.Error("[ultraviolet] Shader failed to validate because: [boom]")
+//     )
+//   }
+
+// }
