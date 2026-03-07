@@ -1,9 +1,12 @@
 package ultraviolet.macros
 
 import ultraviolet.datatypes.ProceduralShader
+import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.datatypes.ShaderError
+import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
 import java.io.File
@@ -12,13 +15,55 @@ import scala.quoted.*
 
 object ShaderMacros:
 
-  inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader = ${ toASTImpl('{ expr }, true) }
+  // TODO: Do we also need custom printer rules?
+  inline def toGLSL[In, Out](
+      inline shader: Shader[In, Out],
+      inline headers: List[ShaderHeader],
+      inline versions: List[ProgramVersion]
+  ): Map[ProgramVersionId, ShaderResult] =
+    ${ toGLSLImpl('{ shader }, '{ headers }, '{ versions }) }
 
-  inline def toASTNoValidation[In, Out](inline expr: Shader[In, Out]): ProceduralShader = ${
-    toASTImpl('{ expr }, false)
-  }
+  private[macros] def toGLSLImpl[In, Out: Type](
+      shader: Expr[Shader[In, Out]],
+      headers: Expr[List[ShaderHeader]],
+      versions: Expr[List[ProgramVersion]]
+  )(using q: Quotes): Expr[Map[ProgramVersionId, ShaderResult]] =
+    try
+      val p: Expr[ProceduralShader] =
+        toASTImpl(shader)
 
-  private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]], useValidation: Boolean)(using
+      val results: Expr[List[(ProgramVersionId, ShaderResult)]] =
+        '{
+          ${ versions }.map { version =>
+            try
+              val transformed =
+                ${ p }.applyTransformers(version.transformers)
+
+              // TODO: Apply validation rules
+
+              // Convert to GLSL.
+              val res: ShaderResult =
+                ProceduralShader.render(transformed, ${ headers })
+
+              version.id -> res
+            catch {
+              case e: ShaderError =>
+                ProgramVersionId("all") -> ShaderResult.Error(e.message)
+            }
+          }
+        }
+
+      '{ ${ results }.toMap }
+    catch {
+      case e: ShaderError =>
+        val msg = e.message
+        '{ Map(ProgramVersionId("all") -> ShaderResult.Error(${ Expr(msg) })) }
+    }
+
+  inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader =
+    ${ toASTImpl('{ expr }) }
+
+  private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using
       q: Quotes
   ): Expr[ProceduralShader] = {
     import q.reflect.*
@@ -55,13 +100,10 @@ object ShaderMacros:
 
     Expr(
       ProceduralShader(
-        if useValidation then validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword)
-        else defs,
+        validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
         createAST.uboRegister.toList,
         annotations,
-        if useValidation then
-          validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
-        else main
+        validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
       )
     )
   }

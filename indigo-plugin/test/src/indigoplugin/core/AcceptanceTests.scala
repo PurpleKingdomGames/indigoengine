@@ -1,9 +1,9 @@
 package indigoplugin.core
 
+import indigoplugin.IndigoAssets
 import indigoplugin.IndigoOptions
 import indigoplugin.IndigoTemplate
 import indigoplugin.utils.Utils
-import indigoplugin.IndigoAssets
 
 class AcceptanceTests extends munit.FunSuite {
 

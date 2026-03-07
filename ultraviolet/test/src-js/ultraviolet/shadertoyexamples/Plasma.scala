@@ -1,6 +1,6 @@
 package ultraviolet.shadertoyexamples
 
-import ultraviolet.shadertoy.*
+import ultraviolet.predef.shadertoy.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
@@ -20,7 +20,13 @@ object Plasma:
         vec4(0.5f + 0.5f * cs, 1.0f)
     }
 
-  val bufferAShader = bufferA.toGLSL[ShaderToy].toOutput.code
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  val bufferAShader =
+    bufferA
+      .toGLSL(List(ShaderToyProgram))
+      .get(ShaderToyProgram.id)
+      .map(_.toOutput.code)
+      .getOrElse(throw new Exception("Missing plasma buffer shader"))
 
   val bufferAExpected: String =
     """
@@ -53,7 +59,13 @@ object Plasma:
         texture2D(env.iChannel0, vec2(fract(sum), 0))
     }
 
-  val imageShader = image.toGLSL[ShaderToy].toOutput.code
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  val imageShader =
+    image
+      .toGLSL(List(ShaderToyProgram))
+      .get(ShaderToyProgram.id)
+      .map(_.toOutput.code)
+      .getOrElse(throw new Exception("Missing Plasma image shader"))
 
   val imageExpected: String =
     """

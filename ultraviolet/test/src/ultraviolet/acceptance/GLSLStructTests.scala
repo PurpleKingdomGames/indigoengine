@@ -28,7 +28,7 @@ class GLSLStructTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

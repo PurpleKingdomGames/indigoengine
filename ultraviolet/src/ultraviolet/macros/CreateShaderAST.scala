@@ -226,10 +226,10 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                   shaderDefs
                     .find(_.fn.id == name)
                     .map(_.fn.returnType)
-                    .getOrElse(ShaderAST.unknownType)
+                    .getOrElse(ShaderAST.void)
 
                 case _ =>
-                  ShaderAST.unknownType
+                  ShaderAST.void
 
             case s =>
               ShaderAST.DataTypes.ident(s)
@@ -863,7 +863,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       //
 
       case Apply(Select(Ident(id), "apply"), args) =>
-        val proxy = proxies.lookUp(id, Proxy(id, Nil, ShaderAST.unknownType))
+        val proxy = proxies.lookUp(id, Proxy(id, Nil, ShaderAST.void))
         ShaderAST.CallFunction(proxy.name, args.map(x => walkTerm(x, envVarName)), proxy.returnType)
 
       // map / flatMap
@@ -1180,7 +1180,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             case None =>
               List(ShaderAST.DataTypes.ident(proxy.name))
 
-        ShaderAST.CallFunction(name, args, ShaderAST.unknownType)
+        ShaderAST.CallFunction(name, args, ShaderAST.void)
 
       case Apply(Select(term, "apply"), xs) =>
         val body = walkTerm(term, envVarName)
@@ -1205,7 +1205,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             )
 
       case Apply(Select(Ident(maybeEnv), funcName), args) if envVarName.isDefined && maybeEnv == envVarName.get =>
-        ShaderAST.CallExternalFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
+        ShaderAST.CallExternalFunction(funcName, args.map(tt => walkTerm(tt, envVarName)), ShaderAST.void)
 
       //
 
@@ -1459,7 +1459,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       //
 
       case Apply(Ident(name), terms) =>
-        ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, envVarName)), ShaderAST.unknownType)
+        ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, envVarName)), ShaderAST.void)
 
       case Inlined(None, _, term) =>
         walkTerm(term, envVarName)

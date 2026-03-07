@@ -43,7 +43,7 @@ class ShaderMacrosTests extends munit.FunSuite {
   //     ShaderAST.RawLiteral(code)
 
   //   val actualCode: String =
-  //     shader.toGLSL[WebGL2].toOutput.code
+  //     shader.toGLSL300.toOutput.code
 
   //   val expectedCode: String =
   //     code

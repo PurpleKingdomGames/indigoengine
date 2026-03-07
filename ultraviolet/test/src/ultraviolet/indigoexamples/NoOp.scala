@@ -1,6 +1,5 @@
 package ultraviolet.indigoexamples
 
-import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
@@ -14,7 +13,7 @@ object NoOp:
         def vertex: Unit = {}
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSL300
 
     val expected: String =
       """
@@ -30,7 +29,7 @@ object NoOp:
         def composite: Unit = {}
       }
 
-    val output = shader.toGLSL[Indigo]
+    val output = shader.toGLSL300
 
     val expected: String =
       """

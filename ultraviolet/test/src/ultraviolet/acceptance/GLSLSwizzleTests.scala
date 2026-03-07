@@ -18,7 +18,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual1 =
-      fragment1.toGLSL[WebGL2].toOutput.code
+      fragment1.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual1,
@@ -33,7 +33,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual2 =
-      fragment2.toGLSL[WebGL2].toOutput.code
+      fragment2.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual2,
@@ -49,7 +49,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual3 =
-      fragment3.toGLSL[WebGL2].toOutput.code
+      fragment3.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual3,
@@ -67,7 +67,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual1 =
-      fragment1.toGLSL[WebGL2].toOutput.code
+      fragment1.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual1,
@@ -82,7 +82,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual2 =
-      fragment2.toGLSL[WebGL2].toOutput.code
+      fragment2.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual2,
@@ -98,7 +98,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual3 =
-      fragment3.toGLSL[WebGL2].toOutput.code
+      fragment3.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual3,
@@ -116,7 +116,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     assertNoDiff(
       actual,
@@ -144,7 +144,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -176,7 +176,7 @@ class GLSLSwizzleTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].toOutput.code
+      fragment.toGLSL300.toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

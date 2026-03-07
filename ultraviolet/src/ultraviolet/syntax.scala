@@ -9,8 +9,6 @@ import scala.deriving.Mirror
 import scala.util.matching.Regex
 
 object syntax extends ShaderDSLOps:
-  type WebGL1 = ultraviolet.datatypes.ShaderPrinter.WebGL1
-  type WebGL2 = ultraviolet.datatypes.ShaderPrinter.WebGL2
 
   type highp[A]   = A
   type mediump[A] = A
@@ -24,9 +22,6 @@ object syntax extends ShaderDSLOps:
 
   type ShaderAST = ultraviolet.datatypes.ShaderAST
   val ShaderAST: ultraviolet.datatypes.ShaderAST.type = ultraviolet.datatypes.ShaderAST
-
-  type ShaderPrinter[T] = ultraviolet.datatypes.ShaderPrinter[T]
-  val ShaderPrinter: ultraviolet.datatypes.ShaderPrinter.type = ultraviolet.datatypes.ShaderPrinter
 
   type ShaderHeader = ultraviolet.datatypes.ShaderHeader
   val ShaderHeader: ultraviolet.datatypes.ShaderHeader.type = ultraviolet.datatypes.ShaderHeader

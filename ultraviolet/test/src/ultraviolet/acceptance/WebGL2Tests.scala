@@ -22,7 +22,7 @@ class WebGL2Tests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2](Version300ES, PrecisionHighPFloat).toOutput.code
+      fragment.toGLSL300(Version300ES, PrecisionHighPFloat).toOutput.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

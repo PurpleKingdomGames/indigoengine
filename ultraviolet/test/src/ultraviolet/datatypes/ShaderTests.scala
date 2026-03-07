@@ -70,7 +70,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -107,7 +107,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -141,7 +141,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -184,7 +184,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -228,7 +228,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -277,7 +277,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -333,7 +333,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -394,7 +394,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL[WebGL2].toOutput.code
+      shader.toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -442,7 +442,7 @@ class ShaderTests extends munit.FunSuite {
       }
 
     val actualCode =
-      shader(modifyVertex).toGLSL[WebGL2].toOutput.code
+      shader(modifyVertex).toGLSL300.toOutput.code
 
     // DebugAST.toAST(shader(modifyVertex))
     // println(actualCode)
@@ -477,7 +477,7 @@ class ShaderTests extends munit.FunSuite {
         Shader[Unit, vec4] { _ =>
           input + vec4(1.0f)
         }
-      }.toGLSL[WebGL2](false).toOutput.code
+      }.toGLSL300.toOutput.code
 
     assertNoDiff(
       actualCode,
@@ -502,7 +502,7 @@ class ShaderTests extends munit.FunSuite {
         }
 
     inline def actualCode =
-      Foo.shader(modifyVertex).toGLSL[WebGL2].toOutput.code
+      Foo.shader(modifyVertex).toGLSL300.toOutput.code
 
     // DebugAST.toAST(actualCode)
     // println(actualCode)
@@ -598,45 +598,45 @@ class ShaderTests extends munit.FunSuite {
     )
   }
 
-  test("Shader validation can be disabled to render illegal programs") {
+  // test("Shader validation can be disabled to render illegal programs") {
 
-    inline def shader: Shader[Unit, vec4] =
-      Shader[Unit, vec4] { env =>
+  //   inline def shader: Shader[Unit, vec4] =
+  //     Shader[Unit, vec4] { env =>
 
-        def foo(): Float =
-          def bar(): Float = 1.0f
-          bar()
+  //       def foo(): Float =
+  //         def bar(): Float = 1.0f
+  //         bar()
 
-        vec4(vec2(1.0f), 2.0f, 1.0f)
-      }
+  //       vec4(vec2(1.0f), 2.0f, 1.0f)
+  //     }
 
-    // interceptMessage doesn't work because it isn't a runtime exception, the error is at compile time.
-    // But this is the error we'd normally see.
-    // interceptMessage[ShaderError.Validation](
-    //   "[ultraviolet] It is not permitted to nest named functions, however, you can declare nested anonymous functions."
-    // ) {
-    //   shader.toGLSL[WebGL2]
-    // }
+  //   // interceptMessage doesn't work because it isn't a runtime exception, the error is at compile time.
+  //   // But this is the error we'd normally see.
+  //   // interceptMessage[ShaderError.Validation](
+  //   //   "[ultraviolet] It is not permitted to nest named functions, however, you can declare nested anonymous functions."
+  //   // ) {
+  //   //   shader.toGLSL
+  //   // }
 
-    val actualCode =
-      shader.toGLSL[WebGL2](false).toOutput.code
+  //   val actualCode =
+  //     shader.toGLSL300.toOutput.code
 
-    // DebugAST.toAST(shader)
-    // println(actualCode)
+  //   // DebugAST.toAST(shader)
+  //   // println(actualCode)
 
-    assertNoDiff(
-      actualCode,
-      s"""
-      |float foo(){
-      |  float bar(){
-      |    return 1.0;
-      |  }
-      |  return bar();
-      |}
-      |vec4(vec2(1.0),2.0,1.0);
-      |""".stripMargin.trim
-    )
-  }
+  //   assertNoDiff(
+  //     actualCode,
+  //     s"""
+  //     |float foo(){
+  //     |  float bar(){
+  //     |    return 1.0;
+  //     |  }
+  //     |  return bar();
+  //     |}
+  //     |vec4(vec2(1.0),2.0,1.0);
+  //     |""".stripMargin.trim
+  //   )
+  // }
 
 }
 
@@ -655,5 +655,5 @@ object Foo {
     }
 
   inline def shaderResult(inline f: vec4 => Shader[Env, vec4]): ShaderResult =
-    shader(f).toGLSL[WebGL2]
+    shader(f).toGLSL300
 }

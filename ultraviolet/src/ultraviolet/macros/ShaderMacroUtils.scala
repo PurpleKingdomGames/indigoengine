@@ -10,15 +10,15 @@ trait ShaderMacroUtils:
   def isGLSLReservedWord(word: String): Boolean = allReservedWords.contains(word)
 
   def findReturnType: ShaderAST => ShaderAST =
-    case v: ShaderAST.Empty  => ShaderAST.unknownType
-    case v: ShaderAST.Block  => v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.unknownType)
+    case v: ShaderAST.Empty  => ShaderAST.void
+    case v: ShaderAST.Block  => v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.void)
     case v: ShaderAST.Neg    => findReturnType(v.value)
     case v: ShaderAST.Not    => findReturnType(v.value)
-    case v: ShaderAST.UBO    => ShaderAST.unknownType
+    case v: ShaderAST.UBO    => ShaderAST.void
     case v: ShaderAST.Struct => ShaderAST.DataTypes.ident(v.name)
     case v: ShaderAST.New    => ShaderAST.DataTypes.ident(v.name)
     case v: ShaderAST.ShaderBlock =>
-      v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.unknownType)
+      v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.void)
     case v: ShaderAST.Function                => v.returnType
     case v: ShaderAST.CallFunction            => v.returnType
     case v: ShaderAST.CallExternalFunction    => v.returnType
@@ -26,15 +26,15 @@ trait ShaderMacroUtils:
     case v: ShaderAST.Cast                    => v.typeIdent
     case v: ShaderAST.Infix                   => v.returnType
     case v: ShaderAST.Assign                  => findReturnType(v.right)
-    case v: ShaderAST.If                      => ShaderAST.unknownType
-    case v: ShaderAST.While                   => ShaderAST.unknownType
-    case v: ShaderAST.For                     => ShaderAST.unknownType
-    case v: ShaderAST.Switch                  => ShaderAST.unknownType
+    case v: ShaderAST.If                      => ShaderAST.void
+    case v: ShaderAST.While                   => ShaderAST.void
+    case v: ShaderAST.For                     => ShaderAST.void
+    case v: ShaderAST.Switch                  => ShaderAST.void
     case v: ShaderAST.Val                     => findReturnType(v.value)
     case v: ShaderAST.MultiStatements         => findReturnType(v.statements.head)
     case v: ShaderAST.Annotated               => findReturnType(v.value)
-    case v: ShaderAST.RawLiteral              => ShaderAST.unknownType
-    case v: ShaderAST.Field                   => ShaderAST.unknownType
+    case v: ShaderAST.RawLiteral              => ShaderAST.void
+    case v: ShaderAST.Field                   => ShaderAST.void
     case v: ShaderAST.DataTypes.ident         => v.typeIdent
     case v: ShaderAST.DataTypes.external      => v.typeIdent
     case v: ShaderAST.DataTypes.index         => v.typeIdent

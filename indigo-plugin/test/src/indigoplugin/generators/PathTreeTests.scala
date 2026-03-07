@@ -1,5 +1,6 @@
 package indigoplugin.generators
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class PathTreeTests extends munit.FunSuite {
 
   test("Can convert a single rel path to a path tree") {

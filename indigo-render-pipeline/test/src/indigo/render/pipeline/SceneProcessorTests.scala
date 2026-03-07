@@ -105,7 +105,7 @@ class SceneProcessorTests extends munit.FunSuite {
               Batch[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
               Batch[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
               Batch[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
-            ) + LightData.empty +                              // There are always 8 lights.
+            ) + LightData.empty +                   // There are always 8 lights.
             LightData.empty +
             LightData.empty +
             LightData.empty +

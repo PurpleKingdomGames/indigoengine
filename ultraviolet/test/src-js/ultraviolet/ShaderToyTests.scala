@@ -1,6 +1,6 @@
 package ultraviolet
 
-import ultraviolet.shadertoy.*
+import ultraviolet.predef.shadertoy.*
 import ultraviolet.shadertoyexamples.*
 import ultraviolet.syntax.*
 
@@ -25,8 +25,13 @@ class ShaderToyTests extends munit.FunSuite {
         }
       }
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     val actual =
-      fragment.toGLSL[ShaderToy].toOutput.code
+      fragment
+        .toGLSL(List(ShaderToyProgram))
+        .get(ShaderToyProgram.id)
+        .map(_.toOutput.code)
+        .getOrElse(throw new Exception("Missing shadertoy default shader"))
 
     // DebugAST.toAST(fragment)
     // println(actual)

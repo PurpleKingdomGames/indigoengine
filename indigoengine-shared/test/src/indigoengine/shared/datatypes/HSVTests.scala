@@ -46,8 +46,8 @@ class HSVTests extends munit.FunSuite {
   test("brighten increases value") {
     val brightened = HSV.Red.brighten(0.25)
     assertEqualsDouble(brightened.v, 1.0, 0.01) // Already at max
-    
-    val hsv = HSV(0, 1.0, 0.5)
+
+    val hsv         = HSV(0, 1.0, 0.5)
     val brightened2 = hsv.brighten(0.25)
     assertEqualsDouble(brightened2.v, 0.75, 0.01)
   }

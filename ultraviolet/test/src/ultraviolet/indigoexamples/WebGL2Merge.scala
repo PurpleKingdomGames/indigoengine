@@ -1,6 +1,5 @@
 package ultraviolet.indigoexamples
 
-import ultraviolet.predef.indigo.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
@@ -75,7 +74,7 @@ object WebGL2Merge:
           env.gl_Position = env.u_projection * transform * VERTEX
       }
 
-    val output = shader.toGLSL[Indigo](ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
+    val output = shader.toGLSL300(ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
 
     val expected: String =
       """
@@ -176,7 +175,7 @@ object WebGL2Merge:
         
       }
 
-    val output = shader.toGLSL[Indigo](ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
+    val output = shader.toGLSL300(ShaderHeader.Version300ES, ShaderHeader.PrecisionMediumPFloat)
 
     val expected: String =
       """

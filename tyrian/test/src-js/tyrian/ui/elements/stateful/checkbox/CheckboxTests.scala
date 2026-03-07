@@ -155,8 +155,7 @@ class CheckboxTests extends munit.FunSuite {
 
   test("Should preserve all checkbox properties when applying theme modifications") {
     val checkbox =
-      Checkbox(testKey)
-        .checked
+      Checkbox(testKey).checked
         .withLabel("Test label")
         .disabled
         .overrideTheme(_.withAccentColor(RGBA.Red))

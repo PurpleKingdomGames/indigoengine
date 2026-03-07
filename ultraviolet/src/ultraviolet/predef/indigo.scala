@@ -1,8 +1,9 @@
 package ultraviolet.predef
 
-import ultraviolet.datatypes.ShaderAST
-import ultraviolet.datatypes.ShaderPrinter
-import ultraviolet.datatypes.ShaderValid
+import ultraviolet.datatypes.ProgramTransformer
+import ultraviolet.datatypes.ProgramValidationRule
+import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.syntax.*
 
 /** This is an example of what an Indigo shader could look like based on the pre-ultraviolet set up, it's just for
@@ -106,61 +107,17 @@ object indigo:
       TAU_8: Float
   )
 
-  sealed trait Indigo
+  private val rules: List[ProgramValidationRule] =
+    ProgramValidationRule.GLSL_300
 
-  given ShaderPrinter[Indigo] = new ShaderPrinter {
-    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
+  private val transformers: List[ProgramTransformer] =
+    List(
+      ProgramTransformer.ConvertPureFunctionToAssignment("fragment", "COLOR")
+    ) ++ ProgramTransformer.GLSL_300
 
-    def isValid(
-        inType: Option[String],
-        outType: Option[String],
-        functions: List[ShaderAST],
-        body: ShaderAST
-    ): ShaderValid =
-      webGL2Printer.isValid(inType, outType, functions, body)
-
-    def transformer: PartialFunction[ShaderAST, ShaderAST] =
-      val pf: PartialFunction[ShaderAST, ShaderAST] = {
-        case ShaderAST.Function(
-              "fragment",
-              Nil,
-              ShaderAST.Block(statements),
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          val nonEmpty = statements
-            .filterNot(_.isEmpty)
-
-          val (init, last) =
-            if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
-            else (Nil, nonEmpty)
-
-          ShaderAST.Function(
-            "fragment",
-            Nil,
-            ShaderAST.Block(
-              init ++
-                List(
-                  ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), last.headOption.getOrElse(ShaderAST.Empty()))
-                )
-            ),
-            ShaderAST.unknownType
-          )
-
-        case ShaderAST.Function(
-              "fragment",
-              Nil,
-              body,
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          ShaderAST.Function(
-            "fragment",
-            Nil,
-            ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), body),
-            ShaderAST.unknownType
-          )
-      }
-
-      pf.orElse(webGL2Printer.transformer)
-
-    def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
-  }
+  val IndigoProgram: ProgramVersion =
+    ProgramVersion(
+      ProgramVersionId("Indigo"),
+      rules,
+      transformers
+    )

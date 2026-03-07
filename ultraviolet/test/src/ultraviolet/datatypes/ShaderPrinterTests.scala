@@ -7,60 +7,7 @@ import scala.annotation.nowarn
 @nowarn("msg=unused")
 class ShaderPrinterTests extends munit.FunSuite {
 
-  test("The default printer can print an AST") {
-
-    val ast =
-      ShaderAST.Block(
-        List(
-          ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")),
-          ShaderAST.Block(
-            List(
-              ShaderAST.Annotated(
-                ShaderAST.DataTypes.ident("const"),
-                ShaderAST.Empty(),
-                ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float"))
-              ),
-              ShaderAST.Val("z", ShaderAST.DataTypes.float(3.0), ShaderAST.DataTypes.ident("float"))
-            )
-          )
-        )
-      )
-
-    val actual =
-      ShaderPrinter.print[ShaderPrinter.WebGL2](ast)
-
-    val expected =
-      List(
-        "float x=1.0;",
-        "const float y=2.0;",
-        "float z=3.0;"
-      )
-
-    assertEquals(actual, expected)
-
-  }
-
-  test("A custom printer can partially match to modify the output of the print") {
-
-    given ShaderPrinter[Any] = new ShaderPrinter[Any] {
-
-      def isValid(
-          inType: Option[String],
-          outType: Option[String],
-          functions: List[ShaderAST],
-          body: ShaderAST
-      ): ShaderValid = ShaderValid.Valid
-
-      def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-        case ShaderAST.Val("x", ShaderAST.DataTypes.float(1.0), ShaderAST.DataTypes.ident("float")) =>
-          ShaderAST.Val("xx", ShaderAST.DataTypes.float(100.0), ShaderAST.DataTypes.ident("float"))
-      }
-
-      def printer: PartialFunction[ShaderAST, List[String]] = {
-        case ShaderAST.Val("y", ShaderAST.DataTypes.float(2.0), ShaderAST.DataTypes.ident("float")) =>
-          List("float foo")
-      }
-    }
+  test("Printing an AST") {
 
     val ast =
       ShaderAST.Block(
@@ -84,8 +31,8 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     val expected =
       List(
-        "float xx=100.0;",
-        "const float foo;",
+        "float x=1.0;",
+        "const float y=2.0;",
         "float z=3.0;"
       )
 
@@ -114,8 +61,19 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
+    val results =
+      fragment.toGLSL(
+        List(
+          ProgramVersion.GLSL_100,
+          ProgramVersion.GLSL_300
+        )
+      )
+
     val webgl1 =
-      fragment.toGLSL[ShaderPrinter.WebGL1].toOutput.code
+      results
+        .get(ProgramVersion.GLSL_100.id)
+        .map(_.toOutput.code)
+        .getOrElse(fail("WebGL 1 result was missing"))
 
     // println(webgl1)
 
@@ -135,7 +93,10 @@ class ShaderPrinterTests extends munit.FunSuite {
     )
 
     val webgl2 =
-      fragment.toGLSL[ShaderPrinter.WebGL2].toOutput.code
+      results
+        .get(ProgramVersion.GLSL_300.id)
+        .map(_.toOutput.code)
+        .getOrElse(fail("WebGL 2 result was missing"))
 
     // println(webgl2)
 
@@ -165,7 +126,7 @@ class ShaderPrinterTests extends munit.FunSuite {
       Neg(Infix("/", ident("x"), ident("y"), ident("x")))
 
     val actual =
-      ShaderPrinter.print[WebGL2](ast)
+      ShaderPrinter.print(ast)
 
     // println(actual)
 
@@ -191,13 +152,13 @@ class ShaderPrinterTests extends munit.FunSuite {
               ShaderAST.Assign(ShaderAST.DataTypes.ident("pos"), ShaderAST.DataTypes.float(10.0f)),
               None
             ),
-            ShaderAST.unknownType
+            ShaderAST.void
           )
         )
       )
 
     val actual =
-      ShaderPrinter.print[ShaderPrinter.WebGL2](ast)
+      ShaderPrinter.print(ast)
 
     val expected =
       List(

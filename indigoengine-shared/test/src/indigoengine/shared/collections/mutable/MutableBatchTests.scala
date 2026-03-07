@@ -1,6 +1,7 @@
 package indigoengine.shared.collections.mutable
 
-import indigoengine.shared.collections.{Batch => ImmutableBatch}
+import indigoengine.shared.collections.Batch as ImmutableBatch
+
 import scala.annotation.nowarn
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

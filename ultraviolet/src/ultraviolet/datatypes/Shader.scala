@@ -24,25 +24,50 @@ object Shader:
 
   extension [In, Out](inline ctx: Shader[In, Out])
 
-    inline private def toGLSLWithHeaders[T](headers: List[ShaderHeader], useValidation: Boolean)(using
-        p: ShaderPrinter[T]
-    ): ShaderResult =
-      try
-        if useValidation then ShaderMacros.toAST(ctx).render(headers)
-        else ShaderMacros.toASTNoValidation(ctx).render(headers)
-      catch {
-        case e: ShaderError =>
-          ShaderResult.Error(e.message)
-      }
+    inline def toGLSL100: ShaderResult =
+      toGLSL(List(ProgramVersion.GLSL_100), Nil)
+        .get(ProgramVersion.GLSL_100.id)
+        .getOrElse(
+          ShaderResult.Error(
+            "GLSL Shader of version 100 was not found, meaning something went wrong during the transpile."
+          )
+        )
 
-    inline def toGLSL[T](using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(Nil, true)
-    inline def toGLSL[T](useValidation: Boolean)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(Nil, useValidation)
-    inline def toGLSL[T](headers: ShaderHeader*)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(headers.toList, true)
-    inline def toGLSL[T](useValidation: Boolean)(headers: ShaderHeader*)(using ShaderPrinter[T]): ShaderResult =
-      toGLSLWithHeaders(headers.toList, useValidation)
+    inline def toGLSL100(headers: ShaderHeader*): ShaderResult =
+      toGLSL(List(ProgramVersion.GLSL_100), headers.toList)
+        .get(ProgramVersion.GLSL_100.id)
+        .getOrElse(
+          ShaderResult.Error(
+            "GLSL Shader of version 100 was not found, meaning something went wrong during the transpile."
+          )
+        )
+
+    inline def toGLSL300: ShaderResult =
+      toGLSL(List(ProgramVersion.GLSL_300), Nil)
+        .get(ProgramVersion.GLSL_300.id)
+        .getOrElse(
+          ShaderResult.Error(
+            "GLSL Shader of version 300 was not found, meaning something went wrong during the transpile."
+          )
+        )
+
+    inline def toGLSL300(headers: ShaderHeader*): ShaderResult =
+      toGLSL(List(ProgramVersion.GLSL_300), headers.toList)
+        .get(ProgramVersion.GLSL_300.id)
+        .getOrElse(
+          ShaderResult.Error(
+            "GLSL Shader of version 300 was not found, meaning something went wrong during the transpile."
+          )
+        )
+
+    inline def toGLSL(versions: List[ProgramVersion]): Map[ProgramVersionId, ShaderResult] =
+      toGLSL(versions, Nil)
+
+    inline def toGLSL(
+        versions: List[ProgramVersion],
+        headers: List[ShaderHeader]
+    ): Map[ProgramVersionId, ShaderResult] =
+      ShaderMacros.toGLSL(ctx, headers, versions)
 
     inline def run(in: In): Out = ctx(in)
 
