@@ -70,7 +70,8 @@ class ShaderPrinterTests extends munit.FunSuite {
       )
 
     val webgl1 =
-      results.get(ProgramVersion.GLSL_100.id)
+      results
+        .get(ProgramVersion.GLSL_100.id)
         .map(_.toOutput.code)
         .getOrElse(fail("WebGL 1 result was missing"))
 
@@ -92,7 +93,8 @@ class ShaderPrinterTests extends munit.FunSuite {
     )
 
     val webgl2 =
-      results.get(ProgramVersion.GLSL_300.id)
+      results
+        .get(ProgramVersion.GLSL_300.id)
         .map(_.toOutput.code)
         .getOrElse(fail("WebGL 2 result was missing"))
 

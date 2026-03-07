@@ -22,7 +22,9 @@ object Plasma:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   val bufferAShader =
-    bufferA.toGLSL(List(ShaderToyProgram)).get(ShaderToyProgram.id)
+    bufferA
+      .toGLSL(List(ShaderToyProgram))
+      .get(ShaderToyProgram.id)
       .map(_.toOutput.code)
       .getOrElse(throw new Exception("Missing plasma buffer shader"))
 
@@ -59,7 +61,9 @@ object Plasma:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   val imageShader =
-    image.toGLSL(List(ShaderToyProgram)).get(ShaderToyProgram.id)
+    image
+      .toGLSL(List(ShaderToyProgram))
+      .get(ShaderToyProgram.id)
       .map(_.toOutput.code)
       .getOrElse(throw new Exception("Missing Plasma image shader"))
 

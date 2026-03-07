@@ -194,10 +194,11 @@ object Seascape:
         vec4(pow(color, vec3(0.65f)), 1.0f)
     }
 
-
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   val imageShader =
-    image.toGLSL(List(ShaderToyProgram)).get(ShaderToyProgram.id)
+    image
+      .toGLSL(List(ShaderToyProgram))
+      .get(ShaderToyProgram.id)
       .map(_.toOutput.code)
       .getOrElse(throw new Exception("Missing Seascape shader"))
 

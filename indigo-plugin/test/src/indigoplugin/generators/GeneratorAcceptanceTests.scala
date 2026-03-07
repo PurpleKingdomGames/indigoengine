@@ -1,12 +1,12 @@
 package indigoplugin.generators
 
-import indigoplugin.IndigoGenerators
-import indigoplugin.FontOptions
-import indigoplugin.FontLayout
 import indigoplugin.CharSet
+import indigoplugin.FontLayout
+import indigoplugin.FontOptions
+import indigoplugin.IndigoGenerators
+import indigoplugin.IndigoOptions
 import indigoplugin.RGB
 import indigoplugin.utils.Utils
-import indigoplugin.IndigoOptions
 
 class GeneratorAcceptanceTests extends munit.FunSuite {
 

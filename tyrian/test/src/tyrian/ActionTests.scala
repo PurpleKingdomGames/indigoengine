@@ -99,7 +99,12 @@ class ActionTests extends munit.CatsEffectSuite {
       )
 
     val expected =
-      Action.internal.Many(Action.Emit(IntMsg(10)), Action.Emit(IntMsg(20)), Action.Emit(IntMsg(30)), Action.Emit(IntMsg(40)))
+      Action.internal.Many(
+        Action.Emit(IntMsg(10)),
+        Action.Emit(IntMsg(20)),
+        Action.Emit(IntMsg(30)),
+        Action.Emit(IntMsg(40))
+      )
 
     assertEquals(actual, expected)
   }
