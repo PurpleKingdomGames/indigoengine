@@ -23,7 +23,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
     r.register(Batch(PointsTrackerExample(1, 10), PointsTrackerExample(2, 50)))
 
     val data = r
-      .update(context(6), 10, Batch(PointsTrackerEvent.Add(10))) 
+      .update(context(6), 10, Batch(PointsTrackerEvent.Add(10)))
       .unsafeGet
       .stateMap
 

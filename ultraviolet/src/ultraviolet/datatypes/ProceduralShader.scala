@@ -1,7 +1,7 @@
 package ultraviolet.datatypes
 
-import scala.quoted.*
 import scala.annotation.tailrec
+import scala.quoted.*
 
 final case class ProceduralShader(
     defs: List[ShaderAST],

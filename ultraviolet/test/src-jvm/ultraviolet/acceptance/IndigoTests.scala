@@ -19,7 +19,8 @@ class IndigoTests extends munit.FunSuite {
     // DebugAST.toAST(Blit.fragment.shader)
     // println(Blit.fragment.shader)
     val actual =
-      Blit.fragment.output.map(_.toOutput.code)
+      Blit.fragment.output
+        .map(_.toOutput.code)
         .getOrElse(fail("Missing Blit program"))
 
     assertNoDiff(actual, Blit.fragment.expected)

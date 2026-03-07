@@ -1,11 +1,10 @@
 package indigoengine.shared.collections.mutable
 
-import indigoengine.shared.collections.{KVP => ImmutableKVP}
-import indigoengine.shared.collections.{Batch => ImmutableBatch}
+import indigoengine.shared.collections.Batch as ImmutableBatch
+import indigoengine.shared.collections.KVP as ImmutableKVP
 
 import scala.annotation.nowarn
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @nowarn("msg=unused")
 class MutableKVPTests extends munit.FunSuite {
 

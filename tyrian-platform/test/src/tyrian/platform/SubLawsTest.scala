@@ -11,8 +11,7 @@ import tyrian.platform.runtime.SubHelper
 class SubLawsTests extends munit.DisciplineSuite {
 
   def makeSubOf[A](value: A): Sub[IO, A] =
-    def cb: (Either[Throwable, A] => Unit) => IO[A] = _ =>
-      IO.pure(value)
+    def cb: (Either[Throwable, A] => Unit) => IO[A] = _ => IO.pure(value)
     Sub.make("test sub")(cb)(_ => IO.unit)
 
   given [A: Arbitrary]: Arbitrary[Sub[IO, A]] =
