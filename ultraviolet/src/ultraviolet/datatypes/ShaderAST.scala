@@ -404,7 +404,8 @@ object ShaderAST:
         '{ swizzle(${ Expr(x.genType) }, ${ Expr(x.swizzle) }, ${ Expr(x.returnType) }) }
     }
 
-  val unknownType: ShaderAST.DataTypes.ident = ShaderAST.DataTypes.ident("void")
+  val void: ShaderAST.DataTypes.ident =
+    ShaderAST.DataTypes.ident("void")
 
   extension (ast: ShaderAST)
     def isEmpty: Boolean =
@@ -533,34 +534,34 @@ object ShaderAST:
 
     def typeIdent: ShaderAST.DataTypes.ident =
       ast match
-        case Empty()                        => unknownType
-        case Block(_)                       => unknownType
+        case Empty()                        => void
+        case Block(_)                       => void
         case Neg(v)                         => v.typeIdent
         case Not(v)                         => v.typeIdent
-        case UBO(_)                         => unknownType
+        case UBO(_)                         => void
         case Struct(name, _)                => ShaderAST.DataTypes.ident(name)
         case New(name, _)                   => ShaderAST.DataTypes.ident(name)
-        case ShaderBlock(_, _, _, _)        => unknownType
+        case ShaderBlock(_, _, _, _)        => void
         case Function(_, _, _, rt)          => rt.typeIdent
         case CallFunction(_, _, rt)         => rt.typeIdent
         case CallExternalFunction(_, _, rt) => rt.typeIdent
         case FunctionRef(_, _, rt)          => rt.typeIdent
         case Cast(_, as)                    => ShaderAST.DataTypes.ident(as)
         case Infix(_, _, _, rt)             => rt.typeIdent
-        case Assign(_, _)                   => unknownType
-        case If(_, _, _)                    => unknownType
-        case While(_, _)                    => unknownType
-        case For(_, _, _, _)                => unknownType
-        case Switch(_, _)                   => unknownType
+        case Assign(_, _)                   => void
+        case If(_, _, _)                    => void
+        case While(_, _)                    => void
+        case For(_, _, _, _)                => void
+        case Switch(_, _)                   => void
         case Val(id, value, typeOf)         => typeOf.typeIdent
         case MultiStatements(typeOf, _)     => typeOf.typeIdent
         case Annotated(_, _, value)         => value.typeIdent
-        case RawLiteral(_)                  => unknownType
-        case Field(t, n)                    => unknownType
+        case RawLiteral(_)                  => void
+        case Field(t, n)                    => void
         case n @ DataTypes.ident(_)         => n
         case n @ DataTypes.external(_)      => ShaderAST.DataTypes.ident(n.id)
-        case DataTypes.index(_, _)          => unknownType
-        case DataTypes.externalIndex(_, _)  => unknownType
+        case DataTypes.index(_, _)          => void
+        case DataTypes.externalIndex(_, _)  => void
         case DataTypes.bool(_)              => ShaderAST.DataTypes.ident("bool")
         case DataTypes.float(_)             => ShaderAST.DataTypes.ident("float")
         case DataTypes.int(_)               => ShaderAST.DataTypes.ident("int")

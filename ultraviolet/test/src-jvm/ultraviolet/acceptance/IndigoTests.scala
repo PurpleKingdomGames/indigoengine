@@ -18,7 +18,11 @@ class IndigoTests extends munit.FunSuite {
   test("Real example: Blit") {
     // DebugAST.toAST(Blit.fragment.shader)
     // println(Blit.fragment.shader)
-    assertNoDiff(Blit.fragment.output.toOutput.code, Blit.fragment.expected)
+    val actual =
+      Blit.fragment.output.map(_.toOutput.code)
+        .getOrElse(fail("Missing Blit program"))
+
+    assertNoDiff(actual, Blit.fragment.expected)
   }
 
   test("Real example: WebGL2Merge") {

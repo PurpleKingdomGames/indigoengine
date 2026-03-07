@@ -34,7 +34,7 @@ final class ProxyManager:
   def add(originalName: String, newName: String, arg: List[ShaderAST], returnType: ShaderAST): Unit =
     proxyLookUp += originalName -> Proxy(newName, arg, returnType)
   def add(originalName: String, newName: String): Unit =
-    add(originalName, newName, Nil, ShaderAST.unknownType)
+    add(originalName, newName, Nil, ShaderAST.void)
   def add(name: String, proxy: Proxy): Unit =
     proxyLookUp += name -> proxy
 
@@ -47,4 +47,4 @@ final class ProxyManager:
 
 final case class Proxy(name: String, argType: List[ShaderAST], returnType: ShaderAST)
 object Proxy:
-  def apply(name: String): Proxy = Proxy(name, Nil, ShaderAST.unknownType)
+  def apply(name: String): Proxy = Proxy(name, Nil, ShaderAST.void)

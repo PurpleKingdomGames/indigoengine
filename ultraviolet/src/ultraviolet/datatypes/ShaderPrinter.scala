@@ -2,66 +2,9 @@ package ultraviolet.datatypes
 
 import ShaderAST.*
 
-// trait ShaderPrinter[T]:
-//   def isValid(
-//       inType: Option[String],
-//       outType: Option[String],
-//       functions: List[ShaderAST],
-//       body: ShaderAST
-//   ): ShaderValid
-//   def transformer: PartialFunction[ShaderAST, ShaderAST]
-//   // def printer: PartialFunction[ShaderAST, List[String]]
-
 object ShaderPrinter:
 
-  sealed trait WebGL1
-  sealed trait WebGL2
-
-  // A number of the transforms seen in the WebGL1 & 2 printers below are based
-  // on this page: https://webgl2fundamentals.org/webgl/lessons/webgl1-to-webgl2.html
-
-  // given ShaderPrinter[WebGL1] = new ShaderPrinter:
-
-  //   def isValid(
-  //       inType: Option[String],
-  //       outType: Option[String],
-  //       functions: List[ShaderAST],
-  //       body: ShaderAST
-  //   ): ShaderValid = ShaderValid.Valid
-
-  //   def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v @ ShaderAST.Val(_, _, _)) =>
-  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
-
-  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("out"), param, v @ ShaderAST.Val(_, _, _)) =>
-  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("varying"), param, v)
-  //   }
-
-  //   // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
-
-  // given ShaderPrinter[WebGL2] = new ShaderPrinter:
-
-  //   def isValid(
-  //       inType: Option[String],
-  //       outType: Option[String],
-  //       functions: List[ShaderAST],
-  //       body: ShaderAST
-  //   ): ShaderValid = ShaderValid.Valid
-
-  //   def transformer: PartialFunction[ShaderAST, ShaderAST] = {
-  //     case ShaderAST.Annotated(ShaderAST.DataTypes.ident("attribute"), param, v @ ShaderAST.Val(_, _, _)) =>
-  //       ShaderAST.Annotated(ShaderAST.DataTypes.ident("in"), param, v)
-
-  //     case ShaderAST.CallFunction("texture2D", args, returnType) =>
-  //       ShaderAST.CallFunction("texture", args, returnType)
-
-  //     case ShaderAST.CallFunction("textureCube", args, returnType) =>
-  //       ShaderAST.CallFunction("texture", args, returnType)
-  //   }
-
-  // def printer: PartialFunction[ShaderAST, List[String]] = PartialFunction.empty
-
-  def print[T](ast: ShaderAST): List[String] =
+  def print(ast: ShaderAST): List[String] =
     render(ast)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -369,10 +312,7 @@ object ShaderPrinter:
 
     }
 
-    val p: ShaderAST => List[String] =
-      x => r(x)
-
-    p(ast) // (ast.traverse(pp.transformer.orElse(n => n)))
+    r(ast)
 
   private def renderStatements(statements: List[ShaderAST]): List[String] =
     val p: ShaderAST => List[String] = {
@@ -402,7 +342,6 @@ object ShaderPrinter:
     }
 
     statements
-      // .map(_.traverse(pp.transformer.orElse(n => n)))
       .flatMap(p)
       .filterNot(_.isEmpty)
 

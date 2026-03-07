@@ -9,18 +9,105 @@ final case class ProceduralShader(
     main: ShaderAST
 ):
 
-  def applyTransformers(transformers: List[ShaderTransformer]): ProceduralShader =
+  def applyTransformers(transformers: List[ProgramTransformer]): ProceduralShader =
     // Convert each transformer to a partial function
     val transformFunctions: List[PartialFunction[ShaderAST, ShaderAST]] =
       transformers.map {
-        case ShaderTransformer.RenameAnnotation(from, to) => {
+        case ProgramTransformer.RenameAnnotation(from, to) => {
           case ShaderAST.Annotated(ShaderAST.DataTypes.ident(id), param, v @ ShaderAST.Val(_, _, _)) if id == from =>
             ShaderAST.Annotated(ShaderAST.DataTypes.ident(to), param, v)
         }
 
-        case ShaderTransformer.RenameFunctionAtCallSite(from, to) => {
+        case ProgramTransformer.RenameFunctionAtCallSite(from, to) => {
           case ShaderAST.CallFunction(id, args, returnType) if id == from =>
             ShaderAST.CallFunction(to, args, returnType)
+        }
+
+        case ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType) => {
+          case ShaderAST.Function(name, args, body, _) if name == functionName =>
+            ShaderAST.Function(name, args, body, ShaderAST.DataTypes.ident(newReturnType))
+        }
+
+        case ProgramTransformer.AssignFunctionReturnValueToVariable(functionName: String, outVariableName: String) => {
+          case ShaderAST.Function(
+                fnName,
+                args,
+                ShaderAST.Block(statements),
+                returnType
+              ) if fnName == functionName =>
+            val nonEmpty = statements
+              .filterNot(_.isEmpty)
+
+            val (init, last) =
+              if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
+              else (Nil, nonEmpty)
+
+            ShaderAST.Function(
+              fnName,
+              args,
+              ShaderAST.Block(
+                init ++
+                  List(
+                    ShaderAST
+                      .Assign(ShaderAST.DataTypes.ident(outVariableName), last.headOption.getOrElse(ShaderAST.Empty()))
+                  )
+              ),
+              returnType
+            )
+
+          case ShaderAST.Function(
+                fnName,
+                args,
+                body,
+                returnType
+              ) if fnName == functionName =>
+            ShaderAST.Function(
+              fnName,
+              args,
+              ShaderAST.Assign(ShaderAST.DataTypes.ident(outVariableName), body),
+              returnType
+            )
+        }
+
+        case ProgramTransformer.ConvertPureFunctionToAssignment(functionName: String, outVariableName: String) => {
+          case ShaderAST.Function(
+                fnName,
+                args,
+                ShaderAST.Block(statements),
+                _
+              ) if fnName == functionName =>
+            val nonEmpty = statements
+              .filterNot(_.isEmpty)
+
+            val (init, last) =
+              if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
+              else (Nil, nonEmpty)
+
+            ShaderAST.Function(
+              fnName,
+              args,
+              ShaderAST.Block(
+                init ++
+                  List(
+                    ShaderAST
+                      .Assign(ShaderAST.DataTypes.ident(outVariableName), last.headOption.getOrElse(ShaderAST.Empty()))
+                  )
+              ),
+              ShaderAST.void
+            )
+
+          case ShaderAST.Function(
+                fnName,
+                args,
+                body,
+                _
+              ) if fnName == functionName =>
+            ShaderAST.Function(
+              fnName,
+              args,
+              ShaderAST.Assign(ShaderAST.DataTypes.ident(outVariableName), body),
+              ShaderAST.void
+            )
         }
       }
 
@@ -41,6 +128,7 @@ object ProceduralShader:
       '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.annotations) }, ${ Expr(x.main) }) }
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def render[T](p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult.Output = {
     import ShaderAST.*
 
