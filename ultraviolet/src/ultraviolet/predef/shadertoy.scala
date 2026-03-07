@@ -45,63 +45,11 @@ object shadertoy:
       )
 
   private val rules: List[ProgramValidationRule] =
-    ProgramValidationRule.GLSL_300
-  //   def isValid(
-  //       inType: Option[String],
-  //       outType: Option[String],
-  //       functions: List[ShaderAST],
-  //       body: ShaderAST
-  //   ): ShaderValid =
-  //     val inTypeValid: ShaderValid =
-  //       if inType.contains("ShaderToyEnv") then ShaderValid.Valid
-  //       else
-  //         ShaderValid.Invalid(
-  //           List(
-  //             "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], environment type was: " +
-  //               inType.getOrElse("<missing>")
-  //           )
-  //         )
-
-  //     val outTypeValid: ShaderValid =
-  //       if outType.contains("Unit") then ShaderValid.Valid
-  //       else
-  //         ShaderValid.Invalid(
-  //           List(
-  //             "ShaderToy Shader instances must be of type Shader[ShaderToyEnv, Unit], return type was: " +
-  //               outType.getOrElse("<missing>")
-  //           )
-  //         )
-
-  //     val hasMainImageFunction: ShaderValid =
-  //       val main =
-  //         body.find {
-  //           case ShaderAST.Function(
-  //                 "mainImage",
-  //                 List(
-  //                   (ShaderAST.DataTypes.ident("vec4") -> "fragColor"),
-  //                   (ShaderAST.DataTypes.ident("vec2") -> "fragCoord")
-  //                 ),
-  //                 body,
-  //                 ShaderAST.DataTypes.ident("vec4")
-  //               ) =>
-  //             true
-
-  //           case _ => false
-  //         }
-
-  //       main match
-  //         case Some(_) =>
-  //           ShaderValid.Valid
-
-  //         case None =>
-  //           ShaderValid.Invalid(
-  //             List(
-  //               "ShaderToy Shader instances must declare a 'mainImage' function: `def mainImage(fragColor: vec4, fragCoord: vec2): vec4 = ???`"
-  //             )
-  //           )
-
-  //     webGL2Printer.isValid(inType, outType, functions, body) |+|
-  //       (inTypeValid |+| outTypeValid |+| hasMainImageFunction)
+    List(
+      ProgramValidationRule.UsesRequiredEnvironment("ShaderToyEnv"),
+      ProgramValidationRule.ReturnsRequiredType("Unit"),
+      ProgramValidationRule.Function2Exists("mainImage", "vec4", "vec2", "vec4")
+    ) ++ ProgramValidationRule.GLSL_300
 
   private val transformers: List[ProgramTransformer] =
     List(

@@ -10,6 +10,86 @@ final case class ProceduralShader(
     main: ShaderAST
 ):
 
+  def validate(rules: List[ProgramValidationRule]): ShaderValid =
+    val inType  = main.inType
+    val outType = main.outType
+
+    val results: List[ShaderValid] =
+      rules.map {
+        case r @ ProgramValidationRule.Function1Exists(fnName, arg, rt) =>
+          val exists =
+            main.find {
+              case ShaderAST.Function(
+                    fn,
+                    List(
+                      ShaderAST.DataTypes.ident(argType1) -> _
+                    ),
+                    body,
+                    ShaderAST.DataTypes.ident(rType)
+                  ) if fn == fnName && argType1 == arg && rType == rt =>
+                true
+
+              case _ =>
+                false
+            }.isDefined
+
+          if exists then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+
+        case r @ ProgramValidationRule.Function2Exists(fnName, arg1, arg2, rt) =>
+          val exists =
+            main.find {
+              case ShaderAST.Function(
+                    fn,
+                    List(
+                      (ShaderAST.DataTypes.ident(argType1) -> _),
+                      (ShaderAST.DataTypes.ident(argType2) -> _)
+                    ),
+                    body,
+                    ShaderAST.DataTypes.ident(rType)
+                  ) if fn == fnName && argType1 == arg1 && argType2 == arg2 && rType == rt =>
+                true
+
+              case _ =>
+                false
+            }.isDefined
+
+          if exists then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+
+        case r @ ProgramValidationRule.Function3Exists(fnName, arg1, arg2, arg3, rt) =>
+          val exists =
+            main.find {
+              case ShaderAST.Function(
+                    fn,
+                    List(
+                      (ShaderAST.DataTypes.ident(argType1) -> _),
+                      (ShaderAST.DataTypes.ident(argType2) -> _),
+                      (ShaderAST.DataTypes.ident(argType3) -> _)
+                    ),
+                    body,
+                    ShaderAST.DataTypes.ident(rType)
+                  ) if fn == fnName && argType1 == arg1 && argType2 == arg2 && argType3 == arg3 && rType == rt =>
+                true
+
+              case _ =>
+                false
+            }.isDefined
+
+          if exists then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+
+        case r @ ProgramValidationRule.UsesRequiredEnvironment(env) =>
+          if inType.exists(_ == env) then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+
+        case r @ ProgramValidationRule.ReturnsRequiredType(rt) =>
+          if outType.exists(_ == rt) then ShaderValid.Valid
+          else ShaderValid.Invalid(List(r.msg))
+      }
+
+    results.foldLeft(ShaderValid.Valid)(_ |+| _)
+
   def applyTransformers(transformers: List[ProgramTransformer]): ProceduralShader =
     // Convert each transformer to a partial function
     val transformFunctions: List[PartialFunction[ShaderAST, ShaderAST]] =

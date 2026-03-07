@@ -15,7 +15,6 @@ import scala.quoted.*
 
 object ShaderMacros:
 
-  // TODO: Do we also need custom printer rules?
   inline def toGLSL[In, Out](
       inline shader: Shader[In, Out],
       inline headers: List[ShaderHeader],
@@ -23,11 +22,14 @@ object ShaderMacros:
   ): Map[ProgramVersionId, ShaderResult] =
     ${ toGLSLImpl('{ shader }, '{ headers }, '{ versions }) }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def toGLSLImpl[In, Out: Type](
       shader: Expr[Shader[In, Out]],
       headers: Expr[List[ShaderHeader]],
       versions: Expr[List[ProgramVersion]]
   )(using q: Quotes): Expr[Map[ProgramVersionId, ShaderResult]] =
+    import quotes.reflect.*
+
     try
       val p: Expr[ProceduralShader] =
         toASTImpl(shader)
@@ -35,29 +37,25 @@ object ShaderMacros:
       val results: Expr[List[(ProgramVersionId, ShaderResult)]] =
         '{
           ${ versions }.map { version =>
-            try
-              val transformed =
-                ${ p }.applyTransformers(version.transformers)
+            val transformed =
+              ${ p }.applyTransformers(version.transformers)
 
-              // TODO: Apply validation rules
+            ${ p }.validate(version.rules) match
+              case ShaderValid.Valid =>
+                // Convert to GLSL.
+                version.id -> ProceduralShader.render(transformed, ${ headers })
 
-              // Convert to GLSL.
-              val res: ShaderResult =
-                ProceduralShader.render(transformed, ${ headers })
-
-              version.id -> res
-            catch {
-              case e: ShaderError =>
-                ProgramVersionId("all") -> ShaderResult.Error(e.message)
-            }
+              case ShaderValid.Invalid(reasons) =>
+                throw ShaderError.Validation(
+                  s"Shader version '${version.id}' failed to validate, because: ${reasons.mkString(", ")}"
+                )
           }
         }
 
       '{ ${ results }.toMap }
     catch {
       case e: ShaderError =>
-        val msg = e.message
-        '{ Map(ProgramVersionId("all") -> ShaderResult.Error(${ Expr(msg) })) }
+        report.errorAndAbort(e.message)
     }
 
   inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader =
