@@ -19,7 +19,7 @@ final case class ProceduralShader(
 
         case r :: rs =>
           val res =
-            ProceduralShader.ruleToValidatation(r)(proc)
+            ProceduralShader.ruleToValidation(r)(proc)
 
           rec(rs, proc, acc |+| res)
 
@@ -181,7 +181,7 @@ object ProceduralShader:
       '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.annotations) }, ${ Expr(x.main) }) }
   }
 
-  def ruleToValidatation(rule: ProgramValidationRule): ProceduralShader => ShaderValid =
+  def ruleToValidation(rule: ProgramValidationRule): ProceduralShader => ShaderValid =
     proc =>
       rule match {
         case r @ ProgramValidationRule.Function0Exists(fnName, rt) =>
@@ -290,7 +290,7 @@ object ProceduralShader:
       }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def render[T](p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult.Output = {
+  def render(p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult.Output = {
     import ShaderAST.*
 
     val renderedUBOs = p.ubos.map(u => ShaderPrinter.print(u).mkString("\n"))
