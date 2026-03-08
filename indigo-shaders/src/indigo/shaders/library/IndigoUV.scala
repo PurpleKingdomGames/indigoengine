@@ -343,8 +343,8 @@ object IndigoUV:
     ProgramVersion(
       ProgramVersionId("Indigo Vertex"),
       List(
-        ProgramValidationRule.Function1Exists("vertex", "vec4", "vec4")
-      ) ++ ProgramValidationRule.GLSL_300,
+        ProgramRequirement.Function1Exists("vertex", "vec4", "vec4")
+      ) ++ ProgramRequirement.GLSL_300,
       ProgramTransformer.GLSL_300
     )
 
@@ -352,11 +352,11 @@ object IndigoUV:
     ProgramVersion(
       ProgramVersionId("Indigo Fragment"),
       List(
-        ProgramValidationRule.Function1Exists("fragment", "vec4", "vec4"),
-        ProgramValidationRule.Function0Exists("prepare", "void"),
-        ProgramValidationRule.Function0Exists("light", "void"),
-        ProgramValidationRule.Function0Exists("composite", "void")
-      ) ++ ProgramValidationRule.GLSL_300,
+        ProgramRequirement.Function1Exists("fragment", "vec4", "vec4"),
+        ProgramRequirement.Function0Exists("prepare", "void"),
+        ProgramRequirement.Function0Exists("light", "void"),
+        ProgramRequirement.Function0Exists("composite", "void")
+      ) ++ ProgramRequirement.GLSL_300,
       ProgramTransformer.GLSL_300
     )
 
@@ -364,7 +364,7 @@ object IndigoUV:
     ProgramVersion(
       ProgramVersionId("Indigo Blend Fragment"),
       List(
-        ProgramValidationRule.Function1Exists("fragment", "vec4", "vec4")
-      ) ++ ProgramValidationRule.GLSL_300,
+        ProgramRequirement.Function1Exists("fragment", "vec4", "vec4")
+      ) ++ ProgramRequirement.GLSL_300,
       ProgramTransformer.GLSL_300
     )

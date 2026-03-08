@@ -44,13 +44,13 @@ object ShaderMacros:
       def validateVersions(): Expr[Unit] =
         '{
           ${ versions }.foreach { version =>
-            ${ p }.validate(version.rules) match
+            ${ p }.validate(version.requirements) match
               case ShaderValid.Valid =>
                 ()
 
               case ShaderValid.Invalid(reasons) =>
                 throw ShaderError.Validation(
-                  s"Shader version '${version.id}' failed to validate, because: ${reasons.mkString(", ")}"
+                  s"Shader version '${version.id}' failed requirements checks, because: ${reasons.mkString(", ")}"
                 )
           }
         }

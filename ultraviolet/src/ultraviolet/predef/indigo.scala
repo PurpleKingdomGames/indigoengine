@@ -1,7 +1,7 @@
 package ultraviolet.predef
 
 import ultraviolet.datatypes.ProgramTransformer
-import ultraviolet.datatypes.ProgramValidationRule
+import ultraviolet.datatypes.ProgramRequirement
 import ultraviolet.datatypes.ProgramVersion
 import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.syntax.*
@@ -107,8 +107,8 @@ object indigo:
       TAU_8: Float
   )
 
-  private val rules: List[ProgramValidationRule] =
-    ProgramValidationRule.GLSL_300
+  private val requirements: List[ProgramRequirement] =
+    ProgramRequirement.GLSL_300
 
   private val transformers: List[ProgramTransformer] =
     List(
@@ -118,6 +118,6 @@ object indigo:
   val IndigoProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo"),
-      rules,
+      requirements,
       transformers
     )

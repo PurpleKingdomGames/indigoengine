@@ -1,7 +1,7 @@
 package ultraviolet.predef
 
 import ultraviolet.datatypes.ProgramTransformer
-import ultraviolet.datatypes.ProgramValidationRule
+import ultraviolet.datatypes.ProgramRequirement
 import ultraviolet.datatypes.ProgramVersion
 import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.syntax.*
@@ -44,12 +44,12 @@ object shadertoy:
         iSampleRate = 44100.0f
       )
 
-  private val rules: List[ProgramValidationRule] =
+  private val requirements: List[ProgramRequirement] =
     List(
-      ProgramValidationRule.UsesRequiredEnvironment("ShaderToyEnv"),
-      ProgramValidationRule.ReturnsRequiredType("Unit"),
-      ProgramValidationRule.Function2Exists("mainImage", "vec4", "vec2", "vec4")
-    ) ++ ProgramValidationRule.GLSL_300
+      ProgramRequirement.UsesRequiredEnvironment("ShaderToyEnv"),
+      ProgramRequirement.ReturnsRequiredType("Unit"),
+      ProgramRequirement.Function2Exists("mainImage", "vec4", "vec2", "vec4")
+    ) ++ ProgramRequirement.GLSL_300
 
   private val transformers: List[ProgramTransformer] =
     List(
@@ -61,6 +61,6 @@ object shadertoy:
   val ShaderToyProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("ShaderToy"),
-      rules,
+      requirements,
       transformers
     )
