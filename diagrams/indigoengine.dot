@@ -35,7 +35,7 @@ digraph "module-deps" {
   "tyrian-sandboxes.sandbox-zio (js)" ["style"="solid","shape"="box"]
   "tyrian-tags (js, jvm)" ["style"="solid","shape"="box"]
   "tyrian-zio (js, native)" ["style"="solid","shape"="box"]
-  "ultraviolet (js, jvm)" ["style"="solid","shape"="box"]
+  "ultraviolet (js, jvm, native)" ["style"="solid","shape"="box"]
   "ultraviolet-sandbox (js)" ["style"="solid","shape"="box"]
   "indigo (js, jvm)" -> "indigo-extras (js, jvm)"
   "indigo (js, jvm)" -> "indigo-json-circe (js, jvm)"
@@ -82,5 +82,5 @@ digraph "module-deps" {
   "tyrian-tags (js, jvm)" -> "tyrian (js, native)"
   "tyrian-tags (js, jvm)" -> "tyrian-htmx (js, jvm)"
   "tyrian-zio (js, native)" -> "tyrian-sandboxes.sandbox-zio (js)"
-  "ultraviolet (js, jvm)" -> "indigo-shaders (js, jvm)"
+  "ultraviolet (js, jvm, native)" -> "indigo-shaders (js, jvm)"
 }
