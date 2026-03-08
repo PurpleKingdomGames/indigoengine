@@ -4,7 +4,7 @@ import scala.quoted.*
 
 enum ProgramRequirement(val msg: String):
 
-  /** Ensure a named function that takes not arguments exists that returns an expected type. */
+  /** Ensure a named function that takes no arguments exists that returns an expected type. */
   case Function0Exists(functionName: String, returnType: String)
       extends ProgramRequirement(
         s"Program was missing a required function called '${functionName}' of type: () => $returnType"
