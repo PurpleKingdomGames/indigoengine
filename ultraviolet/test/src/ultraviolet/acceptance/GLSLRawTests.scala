@@ -16,7 +16,7 @@ class GLSLRawTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -50,7 +50,7 @@ vec4 vertex(vec4 v){
       }
 
     val actual =
-      fragment(toEmbed).toGLSL300.toOutput.code
+      fragment(toEmbed).toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

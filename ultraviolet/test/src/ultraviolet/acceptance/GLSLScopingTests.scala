@@ -22,7 +22,7 @@ class GLSLScopingTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

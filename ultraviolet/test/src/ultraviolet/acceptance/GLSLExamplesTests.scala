@@ -25,7 +25,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       }
 
     val actual =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     assertNoDiff(
       actual,
@@ -58,7 +58,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     assertNoDiff(
       actual,
@@ -97,7 +97,7 @@ class GLSLExamplesTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     val expected =
       s"""

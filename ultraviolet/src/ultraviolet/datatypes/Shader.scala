@@ -25,58 +25,19 @@ object Shader:
   extension [In, Out](inline ctx: Shader[In, Out])
 
     inline def toGLSL100: ShaderResult =
-      toGLSL(List(ProgramVersion.GLSL_100), Nil)
-        .get(ProgramVersion.GLSL_100.id)
-        .getOrElse(
-          ShaderResult.Error(
-            "GLSL Shader of version 100 was not found, meaning something went wrong during the transpile."
-          )
-        )
+      toGLSL(ProgramVersion.GLSL_100)
 
     inline def toGLSL100(headers: ShaderHeader*): ShaderResult =
-      toGLSL(List(ProgramVersion.GLSL_100), headers.toList)
-        .get(ProgramVersion.GLSL_100.id)
-        .getOrElse(
-          ShaderResult.Error(
-            "GLSL Shader of version 100 was not found, meaning something went wrong during the transpile."
-          )
-        )
+      toGLSL(ProgramVersion.GLSL_100, headers*)
 
     inline def toGLSL300: ShaderResult =
-      toGLSL(List(ProgramVersion.GLSL_300), Nil)
-        .get(ProgramVersion.GLSL_300.id)
-        .getOrElse(
-          ShaderResult.Error(
-            "GLSL Shader of version 300 was not found, meaning something went wrong during the transpile."
-          )
-        )
+      toGLSL(ProgramVersion.GLSL_300)
 
     inline def toGLSL300(headers: ShaderHeader*): ShaderResult =
-      toGLSL(List(ProgramVersion.GLSL_300), headers.toList)
-        .get(ProgramVersion.GLSL_300.id)
-        .getOrElse(
-          ShaderResult.Error(
-            "GLSL Shader of version 300 was not found, meaning something went wrong during the transpile."
-          )
-        )
-
-    inline def toGLSL(versions: List[ProgramVersion]): Map[ProgramVersionId, ShaderResult] =
-      toGLSL(versions, Nil)
+      toGLSL(ProgramVersion.GLSL_300, headers*)
 
     inline def toGLSL(version: ProgramVersion, headers: ShaderHeader*): ShaderResult =
-      toGLSL(List(version), headers.toList)
-        .get(version.id)
-        .getOrElse(
-          ShaderResult.Error(
-            s"Shader of version '${version.id}' was not found, meaning something went wrong during the transpile."
-          )
-        )
-
-    inline def toGLSL(
-        versions: List[ProgramVersion],
-        headers: List[ShaderHeader]
-    ): Map[ProgramVersionId, ShaderResult] =
-      ShaderMacros.toGLSL(ctx, headers, versions)
+      ShaderMacros.toGLSL(ctx, headers.toList, version)
 
     inline def run(in: In): Out = ctx(in)
 

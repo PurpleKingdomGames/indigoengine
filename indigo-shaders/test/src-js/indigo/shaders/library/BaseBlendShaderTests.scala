@@ -17,7 +17,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
+      BlendShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).code
 
     val expected1: String =
       """
@@ -37,7 +37,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
 
   test("Merge WebGL 2.0 vertex shader template") {
 
-    val noop = NoOp.vertex.toGLSL300.toOutput.code
+    val noop = NoOp.vertex.toGLSL300.code
 
     val actual =
       BlendShader.vertexTemplate(noop)
@@ -59,7 +59,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.fragment(modifyColor, IndigoUV.BlendFragmentEnv.reference).toOutput.code
+      BlendShader.fragment(modifyColor, IndigoUV.BlendFragmentEnv.reference).code
 
     val expected1: String =
       """

@@ -33,7 +33,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -96,7 +96,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -183,7 +183,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -260,7 +260,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(ShaderMacros.toAST(fragment))
@@ -333,7 +333,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

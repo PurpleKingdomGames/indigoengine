@@ -19,3 +19,4 @@ object ShaderError:
   final case class GLSLReservedWord(word: String)
       extends Exception(makeMsg(s"'$word' is a reserved word in GLSL, please choose a different name."))
       with NoStackTrace
+  final case class RequirementsNotMet(msg: String) extends ShaderError(makeMsg(msg))

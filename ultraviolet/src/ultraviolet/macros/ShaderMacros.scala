@@ -2,7 +2,6 @@ package ultraviolet.macros
 
 import ultraviolet.datatypes.ProceduralShader
 import ultraviolet.datatypes.ProgramVersion
-import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderDSLOps
 import ultraviolet.datatypes.ShaderError
@@ -19,62 +18,35 @@ object ShaderMacros:
   inline def toGLSL[In, Out](
       inline shader: Shader[In, Out],
       inline headers: List[ShaderHeader],
-      inline versions: List[ProgramVersion]
-  ): Map[ProgramVersionId, ShaderResult] =
-    ${ toGLSLImpl('{ shader }, '{ headers }, '{ versions }) }
+      inline version: ProgramVersion
+  ): ShaderResult =
+    ${ toGLSLImpl('{ shader }, '{ headers }, '{ version }) }
 
   @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def toGLSLImpl[In, Out: Type](
       shader: Expr[Shader[In, Out]],
       headers: Expr[List[ShaderHeader]],
-      versions: Expr[List[ProgramVersion]]
-  )(using q: Quotes): Expr[Map[ProgramVersionId, ShaderResult]] =
+      version: Expr[ProgramVersion]
+  )(using q: Quotes): Expr[ShaderResult] =
     import quotes.reflect.*
 
     try
-      val p: Expr[ProceduralShader] =
-        toASTImpl(shader)
+      '{
+        val v = $version
+        val p = ${ toASTImpl(shader) }
 
-      // Note to my future self:
-      // This process is broken into stages to avoid the 'method too large' limit.
-      // So while it looks like these three methods should be trivial to collapse,
-      // please do not.
+        p.validate(v.requirements) match
+          case ShaderValid.Valid =>
+            val transformed = p.applyTransformers(v.transformers)
+            ProceduralShader.render(transformed, ${ headers })
 
-      def validateVersions(): Expr[Unit] =
-        '{
-          ${ versions }.foreach { version =>
-            ${ p }.validate(version.requirements) match
-              case ShaderValid.Valid =>
-                ()
-
-              case ShaderValid.Invalid(reasons) =>
-                throw ShaderError.Validation(
-                  s"Shader version '${version.id}' failed requirements checks, because: ${reasons.mkString(", ")}"
-                )
-          }
-        }
-
-      validateVersions()
-
-      def transformedVersions: Expr[List[(ProgramVersionId, ProceduralShader)]] =
-        '{
-          ${ versions }.map { version =>
-            (
-              version.id,
-              ${ p }.applyTransformers(version.transformers)
+          case ShaderValid.Invalid(reasons) =>
+            throw ShaderError.RequirementsNotMet(
+              s"Shader version '${v.id}' failed requirements checks, because: ${reasons.mkString(", ")}"
             )
-          }
-        }
 
-      def results: Expr[List[(ProgramVersionId, ShaderResult)]] =
-        '{
-          ${ transformedVersions }.map { (id, proc) =>
-            id -> ProceduralShader.render(proc, ${ headers })
-          }
-        }
-
-      '{ ${ results }.toMap }
+      }
     catch {
       case e: ShaderError =>
         report.errorAndAbort(e.message)

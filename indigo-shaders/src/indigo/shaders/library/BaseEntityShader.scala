@@ -250,7 +250,7 @@ trait BaseEntityShader:
       vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL300(
         ShaderHeader.Version300ES,
         ShaderHeader.PrecisionMediumPFloat
-      ).toOutput.code
+      ).code
 
     val location = renderedCode.indexOf(tag)
     val start = renderedCode.substring(0, location)
@@ -515,7 +515,7 @@ trait BaseEntityShader:
       fragmentShader(placeholder, empty, empty, empty, IndigoUV.FragmentEnv.reference).toGLSL300(
         ShaderHeader.Version300ES,
         ShaderHeader.PrecisionMediumPFloat
-      ).toOutput.code
+      ).code
 
     val location = renderedCode.indexOf(tag)
     val start = renderedCode.substring(0, location)

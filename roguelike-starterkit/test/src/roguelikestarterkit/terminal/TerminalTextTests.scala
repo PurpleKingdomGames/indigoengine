@@ -6,7 +6,7 @@ class TerminalTextTests extends munit.FunSuite {
     import ultraviolet.syntax.*
 
     val actual =
-      TerminalText.ShaderImpl.frag.toGLSL300.toOutput.code
+      TerminalText.ShaderImpl.frag.toGLSL300.code
 
     // println(actual)
 

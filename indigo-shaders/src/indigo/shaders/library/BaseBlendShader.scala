@@ -99,7 +99,7 @@ trait BaseBlendShader:
     val renderedCode = vertexShader(placeholder, IndigoUV.VertexEnv.reference).toGLSL300(
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
-    ).toOutput.code
+    ).code
 
     val location = renderedCode.indexOf(tag)
     val start = renderedCode.substring(0, location)
@@ -174,7 +174,7 @@ trait BaseBlendShader:
     val renderedCode = fragmentShader(placeholder, IndigoUV.BlendFragmentEnv.reference).toGLSL300(
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
-    ).toOutput.code
+    ).code
 
     val location = renderedCode.indexOf(tag)
     val start = renderedCode.substring(0, location)

@@ -20,7 +20,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -47,7 +47,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -74,7 +74,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -126,7 +126,7 @@ class GLSLArrayTests extends munit.FunSuite {
     // println(actual)
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     assertNoDiff(
       actual,
@@ -157,7 +157,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -179,7 +179,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -203,7 +203,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -230,7 +230,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -253,7 +253,7 @@ class GLSLArrayTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

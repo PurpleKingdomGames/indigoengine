@@ -61,19 +61,12 @@ class ShaderPrinterTests extends munit.FunSuite {
 
     // DebugAST.toAST(fragment)
 
-    val results =
-      fragment.toGLSL(
-        List(
-          ProgramVersion.GLSL_100,
-          ProgramVersion.GLSL_300
-        )
-      )
-
     val webgl1 =
-      results
-        .get(ProgramVersion.GLSL_100.id)
-        .map(_.toOutput.code)
-        .getOrElse(fail("WebGL 1 result was missing"))
+      fragment
+        .toGLSL(
+          ProgramVersion.GLSL_100
+        )
+        .code
 
     // println(webgl1)
 
@@ -93,10 +86,11 @@ class ShaderPrinterTests extends munit.FunSuite {
     )
 
     val webgl2 =
-      results
-        .get(ProgramVersion.GLSL_300.id)
-        .map(_.toOutput.code)
-        .getOrElse(fail("WebGL 2 result was missing"))
+      fragment
+        .toGLSL(
+          ProgramVersion.GLSL_300
+        )
+        .code
 
     // println(webgl2)
 

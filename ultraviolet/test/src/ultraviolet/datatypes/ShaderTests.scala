@@ -70,7 +70,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -107,7 +107,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -141,7 +141,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -184,7 +184,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -228,7 +228,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -277,7 +277,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -333,7 +333,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -394,7 +394,7 @@ class ShaderTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     val actualCode =
-      shader.toGLSL300.toOutput.code
+      shader.toGLSL300.code
 
     // DebugAST.toAST(shader)
     // println(actualCode)
@@ -442,7 +442,7 @@ class ShaderTests extends munit.FunSuite {
       }
 
     val actualCode =
-      shader(modifyVertex).toGLSL300.toOutput.code
+      shader(modifyVertex).toGLSL300.code
 
     // DebugAST.toAST(shader(modifyVertex))
     // println(actualCode)
@@ -477,7 +477,7 @@ class ShaderTests extends munit.FunSuite {
         Shader[Unit, vec4] { _ =>
           input + vec4(1.0f)
         }
-      }.toGLSL300.toOutput.code
+      }.toGLSL300.code
 
     assertNoDiff(
       actualCode,
@@ -502,7 +502,7 @@ class ShaderTests extends munit.FunSuite {
         }
 
     inline def actualCode =
-      Foo.shader(modifyVertex).toGLSL300.toOutput.code
+      Foo.shader(modifyVertex).toGLSL300.code
 
     // DebugAST.toAST(actualCode)
     // println(actualCode)
@@ -530,7 +530,7 @@ class ShaderTests extends munit.FunSuite {
         }
 
     val actualCode =
-      Foo.shaderResult(modifyVertex).toOutput.code
+      Foo.shaderResult(modifyVertex).code
 
     // DebugAST.toAST(Foo.shader(modifyVertex))
     // println(actualCode)
@@ -570,7 +570,7 @@ class ShaderTests extends munit.FunSuite {
         }
 
     val actualCode =
-      Foo.shaderResult(modifyColor).toOutput.code
+      Foo.shaderResult(modifyColor).code
 
     // DebugAST.toAST(Foo.shader(modifyColor))
     // println(actualCode)
@@ -619,7 +619,7 @@ class ShaderTests extends munit.FunSuite {
   //   // }
 
   //   val actualCode =
-  //     shader.toGLSL300.toOutput.code
+  //     shader.toGLSL300.code
 
   //   // DebugAST.toAST(shader)
   //   // println(actualCode)

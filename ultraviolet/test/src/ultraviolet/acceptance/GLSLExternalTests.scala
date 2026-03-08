@@ -21,7 +21,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -40,7 +40,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     assert(clue(actual) == clue("vec4(1.0,1.0,vec2(0.0,1.0));"))
   }
@@ -60,7 +60,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -93,7 +93,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     assertNoDiff(
       actual,
@@ -128,7 +128,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(actual)
 
@@ -164,7 +164,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(actual)
 
@@ -208,7 +208,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -271,7 +271,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -321,7 +321,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actualNamed =
-      fragmentNamed.toGLSL300.toOutput.code
+      fragmentNamed.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -346,7 +346,7 @@ class GLSLExternalTests extends munit.FunSuite {
       }
 
     val actualAnon =
-      fragmentAnon.toGLSL300.toOutput.code
+      fragmentAnon.toGLSL300.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

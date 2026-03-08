@@ -20,13 +20,8 @@ object Plasma:
         vec4(0.5f + 0.5f * cs, 1.0f)
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   val bufferAShader =
-    bufferA
-      .toGLSL(List(ShaderToyProgram))
-      .get(ShaderToyProgram.id)
-      .map(_.toOutput.code)
-      .getOrElse(throw new Exception("Missing plasma buffer shader"))
+    bufferA.toGLSL(ShaderToyProgram).code
 
   val bufferAExpected: String =
     """
@@ -59,13 +54,8 @@ object Plasma:
         texture2D(env.iChannel0, vec2(fract(sum), 0))
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   val imageShader =
-    image
-      .toGLSL(List(ShaderToyProgram))
-      .get(ShaderToyProgram.id)
-      .map(_.toOutput.code)
-      .getOrElse(throw new Exception("Missing Plasma image shader"))
+    image.toGLSL(ShaderToyProgram).code
 
   val imageExpected: String =
     """

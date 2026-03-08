@@ -42,7 +42,7 @@ object Blit:
       }
 
     val output =
-      shader.toGLSL(List(IndigoProgram)).get(IndigoProgram.id)
+      shader.toGLSL(IndigoProgram)
 
     val expected: String =
       """

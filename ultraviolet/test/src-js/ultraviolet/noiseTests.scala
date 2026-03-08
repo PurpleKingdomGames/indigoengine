@@ -17,7 +17,7 @@ class noiseTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(DebugAST.toAST(fragment))
     // println(actual)
@@ -106,7 +106,7 @@ class noiseTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(DebugAST.toAST(fragment))
     // println(actual)
@@ -180,7 +180,7 @@ class noiseTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(DebugAST.toAST(fragment))
     // println(actual)
@@ -228,7 +228,7 @@ class noiseTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(DebugAST.toAST(fragment))
     // println(actual)
@@ -290,7 +290,7 @@ class noiseTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300.toOutput.code
+      fragment.toGLSL300.code
 
     // println(DebugAST.toAST(fragment))
 

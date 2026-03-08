@@ -282,7 +282,7 @@ object ProceduralShader:
       }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def render(p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult.Output = {
+  def render(p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult = {
     import ShaderAST.*
 
     val renderedUBOs = p.ubos.map(u => ShaderPrinter.print(u).mkString("\n"))
@@ -342,7 +342,7 @@ object ProceduralShader:
             Nil
         }
 
-    ShaderResult.Output(
+    ShaderResult(
       code,
       ShaderMetadata(
         extractedUniforms,

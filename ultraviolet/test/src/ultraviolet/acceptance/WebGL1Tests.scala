@@ -23,7 +23,7 @@ class WebGL1Tests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL100(PrecisionMediumPFloat).toOutput.code
+      fragment.toGLSL100(PrecisionMediumPFloat).code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -98,7 +98,7 @@ class WebGL1Tests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL100.toOutput.code
+      fragment.toGLSL100.code
 
     // DebugAST.toAST(fragment)
     // println(actual)

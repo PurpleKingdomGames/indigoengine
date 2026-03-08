@@ -28,7 +28,6 @@ class ShaderToyTests extends munit.FunSuite {
     val actual =
       fragment
         .toGLSL(ShaderToyProgram)
-        .toOutput
         .code
 
     // DebugAST.toAST(fragment)
