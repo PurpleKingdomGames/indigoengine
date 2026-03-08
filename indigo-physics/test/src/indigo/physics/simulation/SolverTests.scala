@@ -1,12 +1,12 @@
 package indigo.physics.simulation
 
-import indigo.physics.*
-import indigo.core.trees.QuadTree
+import indigo.core.datatypes.Vector2
 import indigo.core.geometry.BoundingBox
 import indigo.core.geometry.BoundingCircle
-import indigoengine.shared.collections.Batch
-import indigo.core.datatypes.Vector2
 import indigo.core.geometry.Vertex
+import indigo.core.trees.QuadTree
+import indigo.physics.*
+import indigoengine.shared.collections.Batch
 
 class SolverTests extends munit.FunSuite:
 

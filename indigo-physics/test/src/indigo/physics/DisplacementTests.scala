@@ -1,11 +1,11 @@
 package indigo.physics
 
-import indigo.physics.*
 import indigo.core.datatypes.Vector2
 import indigo.core.geometry.BoundingBox
 import indigo.core.geometry.BoundingCircle
 import indigo.core.geometry.LineSegment
 import indigo.core.geometry.Vertex
+import indigo.physics.*
 
 class DisplacementTests extends munit.FunSuite:
 

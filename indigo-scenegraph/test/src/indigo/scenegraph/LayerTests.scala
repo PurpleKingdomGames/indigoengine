@@ -1,8 +1,8 @@
 package indigo.scenegraph
 
+import indigo.scenegraph.materials.BlendMaterial
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
-import indigo.scenegraph.materials.BlendMaterial
 
 class LayerTests extends munit.FunSuite {
 

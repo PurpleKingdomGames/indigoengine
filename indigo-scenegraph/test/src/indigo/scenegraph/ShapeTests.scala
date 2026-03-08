@@ -1,14 +1,14 @@
 package indigo.scenegraph
 
+import indigo.core.datatypes.Fill
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Stroke
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
-import indigo.core.datatypes.Rectangle
-import indigo.core.datatypes.Point
-import indigo.core.datatypes.Fill
-import indigo.core.datatypes.Stroke
-import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 
 class ShapeTests extends munit.FunSuite:
 

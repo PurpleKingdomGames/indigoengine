@@ -1,9 +1,9 @@
 package indigo.core.dice
 
+import indigoengine.shared.datatypes.Radians
 import org.scalacheck.*
 
 import scala.annotation.nowarn
-import indigoengine.shared.datatypes.Radians
 
 @nowarn("msg=unused")
 class DiceSpecification extends Properties("Dice") {

@@ -1,11 +1,11 @@
 package indigo.shared.formats
 
 import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.NonEmptyBatch
 import indigo.core.datatypes.Point
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.Group
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class TiledMapTests extends munit.FunSuite {

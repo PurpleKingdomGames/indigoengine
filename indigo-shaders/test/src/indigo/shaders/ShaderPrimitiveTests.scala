@@ -1,9 +1,9 @@
 package indigo.shaders
 
 import indigo.core.datatypes.Matrix4
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGB
 import indigoengine.shared.datatypes.RGBA
-import indigoengine.shared.collections.Batch
 
 class ShaderPrimitiveTests extends munit.FunSuite {
 

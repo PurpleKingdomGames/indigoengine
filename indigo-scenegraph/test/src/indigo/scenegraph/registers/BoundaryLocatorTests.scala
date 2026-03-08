@@ -1,18 +1,18 @@
 package indigo.scenegraph.registers
 
 import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.Fill
 import indigo.core.datatypes.FontChar
 import indigo.core.datatypes.FontInfo
 import indigo.core.datatypes.FontKey
-import indigoengine.shared.datatypes.RGBA
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Stroke
 import indigo.core.events.GlobalEvent
-import indigo.scenegraph.materials.Material
 import indigo.scenegraph.Shape
 import indigo.scenegraph.Text
+import indigo.scenegraph.materials.Material
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
 
 class BoundaryLocatorTests extends munit.FunSuite {
 

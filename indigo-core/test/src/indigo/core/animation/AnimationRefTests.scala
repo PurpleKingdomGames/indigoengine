@@ -1,8 +1,8 @@
 package indigo.core.animation
 
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.*
 import indigo.core.time.GameTime
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 
 class AnimationRefTests extends munit.FunSuite {

@@ -8,13 +8,13 @@ import indigo.core.animation.AnimationMemento
 import indigo.core.animation.Cycle
 import indigo.core.animation.CycleLabel
 import indigo.core.animation.Frame
-import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.NonEmptyBatch
 import indigo.core.datatypes.BindingKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.time.GameTime
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Millis
 import indigoengine.shared.datatypes.Seconds
 

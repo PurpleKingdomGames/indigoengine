@@ -3,8 +3,8 @@ package indigo.scenegraph
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Size
-import indigo.scenegraph.materials.Material
 import indigo.core.time.FPS
+import indigo.scenegraph.materials.Material
 import indigoengine.shared.datatypes.Seconds
 
 class ClipTests extends munit.FunSuite {

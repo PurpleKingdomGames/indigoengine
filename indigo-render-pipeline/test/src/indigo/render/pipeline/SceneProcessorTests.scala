@@ -1,19 +1,19 @@
 package indigo.render.pipeline
 
-import indigo.scenegraph.Light
-import indigo.scenegraph.AmbientLight
-import indigoengine.shared.datatypes.RGBA
-import indigoengine.shared.collections.Batch
-import indigo.scenegraph.DirectionLight
-import indigoengine.shared.datatypes.Radians
-import indigo.scenegraph.LayerEntry
-import indigo.scenegraph.Shape
-import indigo.scenegraph.Layer
-import indigo.scenegraph.LayerKey
-import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Fill
-import indigo.scenegraph.Camera
 import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
+import indigo.scenegraph.AmbientLight
+import indigo.scenegraph.Camera
+import indigo.scenegraph.DirectionLight
+import indigo.scenegraph.Layer
+import indigo.scenegraph.LayerEntry
+import indigo.scenegraph.LayerKey
+import indigo.scenegraph.Light
+import indigo.scenegraph.Shape
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.RGBA
+import indigoengine.shared.datatypes.Radians
 
 class SceneProcessorTests extends munit.FunSuite {
 

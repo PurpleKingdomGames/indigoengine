@@ -1,10 +1,10 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.TextBlock
 import tyrian.ui.datatypes.Border
 import tyrian.ui.datatypes.BorderWidth
-import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.theme.Theme
 
 class ContainerTests extends munit.FunSuite {

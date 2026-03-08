@@ -1,8 +1,8 @@
 package indigo.shared.formats
 
 import indigo.core.assets.AssetName
-import indigo.core.datatypes.Size
 import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
 
 class TileSheetTests extends munit.FunSuite:
   private val tileWidth  = 16

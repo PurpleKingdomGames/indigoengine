@@ -1,9 +1,9 @@
 package indigo.core.geometry
 
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
+import indigoengine.shared.collections.Batch
 
 class PolygonTests extends munit.FunSuite {
 

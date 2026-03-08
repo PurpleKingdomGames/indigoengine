@@ -1,11 +1,11 @@
 package indigoextras.jobs
 
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.BindingKey
 import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 import indigoengine.shared.datatypes.Seconds
 
