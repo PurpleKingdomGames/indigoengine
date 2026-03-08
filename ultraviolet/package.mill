@@ -9,6 +9,7 @@ import org.typelevel.scalacoptions.*
 
 import build.SharedJVM
 import build.SharedJS
+import build.SharedNative
 import build.SharedPublish
 
 object `package` extends Module:
@@ -28,6 +29,14 @@ object `package` extends Module:
           os.copy(from, dest / from.last)
           PathRef(dest / from.last)
 
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    override def generatedSources =
+      Task {
+        super.generatedSources() ++
+          moveGeneratedSources(_customGeneratedSources(), Task.dest)
+      }
+
   object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
 
     override def generatedSources =
@@ -36,7 +45,7 @@ object `package` extends Module:
           moveGeneratedSources(_customGeneratedSources(), Task.dest)
       }
 
-  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
 
     override def generatedSources =
       Task {
