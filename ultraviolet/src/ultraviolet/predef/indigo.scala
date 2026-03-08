@@ -115,6 +115,7 @@ object indigo:
       ProgramTransformer.ConvertPureFunctionToAssignment("fragment", "COLOR")
     ) ++ ProgramTransformer.GLSL_300
 
+  /** ProgramVersion for a basic Indigo shader. Please note that this version does not enforce the full requirements. */
   val IndigoProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo"),
