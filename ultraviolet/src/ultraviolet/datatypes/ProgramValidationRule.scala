@@ -65,6 +65,30 @@ object ProgramValidationRule:
           '{ ReturnsRequiredType(${ Expr(rt) }) }
   }
 
+  given FromExpr[ProgramValidationRule] with
+    def unapply(x: Expr[ProgramValidationRule])(using Quotes): Option[ProgramValidationRule] =
+      x match
+        case '{ Function0Exists(${ Expr(fn) }, ${ Expr(rt) }) } =>
+          Some(Function0Exists(fn, rt))
+
+        case '{ Function1Exists(${ Expr(fn) }, ${ Expr(a) }, ${ Expr(rt) }) } =>
+          Some(Function1Exists(fn, a, rt))
+
+        case '{ Function2Exists(${ Expr(fn) }, ${ Expr(a1) }, ${ Expr(a2) }, ${ Expr(rt) }) } =>
+          Some(Function2Exists(fn, a1, a2, rt))
+
+        case '{ Function3Exists(${ Expr(fn) }, ${ Expr(a1) }, ${ Expr(a2) }, ${ Expr(a3) }, ${ Expr(rt) }) } =>
+          Some(Function3Exists(fn, a1, a2, a3, rt))
+
+        case '{ UsesRequiredEnvironment(${ Expr(env) }) } =>
+          Some(UsesRequiredEnvironment(env))
+
+        case '{ ReturnsRequiredType(${ Expr(rt) }) } =>
+          Some(ReturnsRequiredType(rt))
+
+        case _ =>
+          None
+
   val GLSL_100: List[ProgramValidationRule] =
     Nil
 

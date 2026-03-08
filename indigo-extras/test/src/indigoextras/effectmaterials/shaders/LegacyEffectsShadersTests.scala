@@ -7,7 +7,7 @@ class LegacyEffectsShadersTests extends munit.FunSuite {
   test("Legacy effects vertex shader") {
 
     val actual =
-      LegacyEffectsShaders.vertex.toGLSL[WebGL2].toOutput.code
+      LegacyEffectsShaders.vertex.toGLSL300.toOutput.code
 
     val expected: String =
       """

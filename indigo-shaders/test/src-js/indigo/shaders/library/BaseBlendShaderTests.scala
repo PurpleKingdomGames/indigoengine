@@ -37,7 +37,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
 
   test("Merge WebGL 2.0 vertex shader template") {
 
-    val noop = NoOp.vertex.toGLSL[WebGL2].toOutput.code
+    val noop = NoOp.vertex.toGLSL300.toOutput.code
 
     val actual =
       BlendShader.vertexTemplate(noop)

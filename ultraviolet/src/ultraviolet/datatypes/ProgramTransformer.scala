@@ -61,6 +61,43 @@ object ProgramTransformer:
           '{ ProgramTransformer.ConvertPureFunctionToAssignment(${ Expr(functionName) }, ${ Expr(outVariableName) }) }
   }
 
+  given FromExpr[ProgramTransformer] with
+    def unapply(x: Expr[ProgramTransformer])(using Quotes): Option[ProgramTransformer] =
+      x match
+        case '{ ProgramTransformer.RenameFunctionAtCallSite(${ Expr(from) }, ${ Expr(to) }) } =>
+          Some(ProgramTransformer.RenameFunctionAtCallSite(from, to))
+
+        case '{ ProgramTransformer.RenameAnnotation(${ Expr(from) }, ${ Expr(to) }) } =>
+          Some(ProgramTransformer.RenameAnnotation(from, to))
+
+        case '{
+              ProgramTransformer.AnnotateFunctionArgument(
+                ${ Expr(functionName) },
+                ${ Expr(argumentName) },
+                ${ Expr(annotation) }
+              )
+            } =>
+          Some(ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation))
+
+        case '{ ProgramTransformer.ChangeFunctionReturnType(${ Expr(functionName) }, ${ Expr(newReturnType) }) } =>
+          Some(ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType))
+
+        case '{
+              ProgramTransformer.AssignFunctionReturnValueToVariable(
+                ${ Expr(functionName) },
+                ${ Expr(outVariableName) }
+              )
+            } =>
+          Some(ProgramTransformer.AssignFunctionReturnValueToVariable(functionName, outVariableName))
+
+        case '{
+              ProgramTransformer.ConvertPureFunctionToAssignment(${ Expr(functionName) }, ${ Expr(outVariableName) })
+            } =>
+          Some(ProgramTransformer.ConvertPureFunctionToAssignment(functionName, outVariableName))
+
+        case _ =>
+          None
+
   val GLSL_100: List[ProgramTransformer] =
     List(
       ProgramTransformer.RenameAnnotation("in", "varying"),

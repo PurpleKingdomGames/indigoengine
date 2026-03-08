@@ -10,7 +10,7 @@ class LightingTests extends munit.FunSuite {
   test("Lighting prepare") {
 
     val actual =
-      Lighting.prepare.toGLSL[WebGL2].toOutput.code
+      Lighting.prepare.toGLSL300.toOutput.code
 
     val expected: String =
       """
@@ -67,7 +67,7 @@ class LightingTests extends munit.FunSuite {
   test("Lighting light") {
 
     val actual =
-      Lighting.light.toGLSL[WebGL2].toOutput.code
+      Lighting.light.toGLSL300.toOutput.code
 
     val expected: String =
       """
@@ -158,7 +158,7 @@ class LightingTests extends munit.FunSuite {
   test("Lighting composite") {
 
     val actual =
-      Lighting.composite.toGLSL[WebGL2].toOutput.code
+      Lighting.composite.toGLSL300.toOutput.code
 
     val expected: String =
       """

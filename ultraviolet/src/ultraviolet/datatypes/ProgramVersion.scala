@@ -1,5 +1,7 @@
 package ultraviolet.datatypes
 
+import scala.quoted.*
+
 final case class ProgramVersion(
     id: ProgramVersionId,
     rules: List[ProgramValidationRule],
@@ -7,6 +9,22 @@ final case class ProgramVersion(
 )
 
 object ProgramVersion:
+
+  given ToExpr[ProgramVersion] with {
+    def apply(x: ProgramVersion)(using Quotes): Expr[ProgramVersion] =
+      x match
+        case ProgramVersion(id, rules, transformers) =>
+          '{ ProgramVersion(${ Expr(id) }, ${ Expr(rules) }, ${ Expr(transformers) }) }
+  }
+
+  given FromExpr[ProgramVersion] with
+    def unapply(x: Expr[ProgramVersion])(using Quotes): Option[ProgramVersion] =
+      x match
+        case '{ ProgramVersion(${ Expr(id) }, ${ Expr(rules) }, ${ Expr(transformers) }) } =>
+          Some(ProgramVersion(id, rules, transformers))
+
+        case _ =>
+          None
 
   val GLSL_100: ProgramVersion =
     ProgramVersion(

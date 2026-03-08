@@ -10,6 +10,7 @@ import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
 import java.io.File
+import scala.annotation.nowarn
 import scala.io.Source
 import scala.quoted.*
 
@@ -22,6 +23,7 @@ object ShaderMacros:
   ): Map[ProgramVersionId, ShaderResult] =
     ${ toGLSLImpl('{ shader }, '{ headers }, '{ versions }) }
 
+  @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def toGLSLImpl[In, Out: Type](
       shader: Expr[Shader[In, Out]],
@@ -34,21 +36,41 @@ object ShaderMacros:
       val p: Expr[ProceduralShader] =
         toASTImpl(shader)
 
-      val results: Expr[List[(ProgramVersionId, ShaderResult)]] =
-        '{
-          ${ versions }.map { version =>
-            val transformed =
-              ${ p }.applyTransformers(version.transformers)
+      // Note to my future self:
+      // This process is broken into stages to avoid the 'method too large' limit.
+      // So while it looks like these three methods should be trivial to collaspe,
+      // please do not.
 
+      def validateVersions(): Expr[Unit] =
+        '{
+          ${ versions }.foreach { version =>
             ${ p }.validate(version.rules) match
               case ShaderValid.Valid =>
-                // Convert to GLSL.
-                version.id -> ProceduralShader.render(transformed, ${ headers })
+                ()
 
               case ShaderValid.Invalid(reasons) =>
                 throw ShaderError.Validation(
                   s"Shader version '${version.id}' failed to validate, because: ${reasons.mkString(", ")}"
                 )
+          }
+        }
+
+      validateVersions()
+
+      def transformedVersions: Expr[List[(ProgramVersionId, ProceduralShader)]] =
+        '{
+          ${ versions }.map { version =>
+            (
+              version.id,
+              ${ p }.applyTransformers(version.transformers)
+            )
+          }
+        }
+
+      def results: Expr[List[(ProgramVersionId, ShaderResult)]] =
+        '{
+          ${ transformedVersions }.map { (id, proc) =>
+            id -> ProceduralShader.render(proc, ${ headers })
           }
         }
 
