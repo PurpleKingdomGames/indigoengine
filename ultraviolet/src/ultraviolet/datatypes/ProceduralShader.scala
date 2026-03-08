@@ -61,14 +61,6 @@ final case class ProceduralShader(
               body,
               returnType
             )
-
-          case fn @ ShaderAST.Function(
-                fnName,
-                args,
-                body,
-                returnType
-              ) =>
-            fn
         }
 
         case ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType) => {
