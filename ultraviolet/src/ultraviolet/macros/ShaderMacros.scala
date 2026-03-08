@@ -38,7 +38,7 @@ object ShaderMacros:
 
       // Note to my future self:
       // This process is broken into stages to avoid the 'method too large' limit.
-      // So while it looks like these three methods should be trivial to collaspe,
+      // So while it looks like these three methods should be trivial to collapse,
       // please do not.
 
       def validateVersions(): Expr[Unit] =
