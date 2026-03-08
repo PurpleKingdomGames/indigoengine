@@ -2,23 +2,23 @@ package ultraviolet.datatypes
 
 import scala.quoted.*
 
-enum ProgramValidationRule(val msg: String):
+enum ProgramRequirement(val msg: String):
 
   /** Ensure a named function that takes not arguments exists that returns an expected type. */
   case Function0Exists(functionName: String, returnType: String)
-      extends ProgramValidationRule(
+      extends ProgramRequirement(
         s"Program was missing a required function called '${functionName}' of type: () => $returnType"
       )
 
   /** Ensure a named function with a single argument exists that returns an expected type. */
   case Function1Exists(functionName: String, argumentType: String, returnType: String)
-      extends ProgramValidationRule(
+      extends ProgramRequirement(
         s"Program was missing a required function called '${functionName}' of type: $argumentType => $returnType"
       )
 
   /** Ensure a named function with two arguments exists that returns an expected type. */
   case Function2Exists(functionName: String, argumentType1: String, argumentType2: String, returnType: String)
-      extends ProgramValidationRule(
+      extends ProgramRequirement(
         s"Program was missing a required function called '${functionName}' of type: ($argumentType1, $argumentType2) => $returnType"
       )
 
@@ -29,22 +29,22 @@ enum ProgramValidationRule(val msg: String):
       argumentType2: String,
       argumentType3: String,
       returnType: String
-  ) extends ProgramValidationRule(
+  ) extends ProgramRequirement(
         s"Program was missing a required function called '${functionName}' of type: ($argumentType1, $argumentType2, $argumentType3) => $returnType"
       )
 
   /** Ensure shader program has the expected environment type. */
   case UsesRequiredEnvironment(environment: String)
-      extends ProgramValidationRule(s"Program did not have the required environment: '${environment}'")
+      extends ProgramRequirement(s"Program did not have the required environment: '${environment}'")
 
   /** Ensure shader program has the expected return type. */
   case ReturnsRequiredType(returnType: String)
-      extends ProgramValidationRule(s"Program does not return the required '${returnType}' return type.")
+      extends ProgramRequirement(s"Program does not return the required '${returnType}' return type.")
 
-object ProgramValidationRule:
+object ProgramRequirement:
 
-  given ToExpr[ProgramValidationRule] with {
-    def apply(x: ProgramValidationRule)(using Quotes): Expr[ProgramValidationRule] =
+  given ToExpr[ProgramRequirement] with {
+    def apply(x: ProgramRequirement)(using Quotes): Expr[ProgramRequirement] =
       x match
         case Function0Exists(fn, rt) =>
           '{ Function0Exists(${ Expr(fn) }, ${ Expr(rt) }) }
@@ -65,8 +65,8 @@ object ProgramValidationRule:
           '{ ReturnsRequiredType(${ Expr(rt) }) }
   }
 
-  given FromExpr[ProgramValidationRule] with
-    def unapply(x: Expr[ProgramValidationRule])(using Quotes): Option[ProgramValidationRule] =
+  given FromExpr[ProgramRequirement] with
+    def unapply(x: Expr[ProgramRequirement])(using Quotes): Option[ProgramRequirement] =
       x match
         case '{ Function0Exists(${ Expr(fn) }, ${ Expr(rt) }) } =>
           Some(Function0Exists(fn, rt))
@@ -89,8 +89,8 @@ object ProgramValidationRule:
         case _ =>
           None
 
-  val GLSL_100: List[ProgramValidationRule] =
+  val GLSL_100: List[ProgramRequirement] =
     Nil
 
-  val GLSL_300: List[ProgramValidationRule] =
+  val GLSL_300: List[ProgramRequirement] =
     Nil

@@ -10,20 +10,20 @@ final case class ProceduralShader(
     main: ShaderAST
 ):
 
-  def validate(rules: List[ProgramValidationRule]): ShaderValid =
+  def validate(requirements: List[ProgramRequirement]): ShaderValid =
     @tailrec
-    def rec(remaining: List[ProgramValidationRule], proc: ProceduralShader, acc: ShaderValid): ShaderValid =
+    def rec(remaining: List[ProgramRequirement], proc: ProceduralShader, acc: ShaderValid): ShaderValid =
       remaining match
         case Nil =>
           acc
 
         case r :: rs =>
           val res =
-            ProceduralShader.ruleToValidation(r)(proc)
+            ProceduralShader.requirementToValidation(r)(proc)
 
           rec(rs, proc, acc |+| res)
 
-    rec(rules, this, ShaderValid.Valid)
+    rec(requirements, this, ShaderValid.Valid)
 
   def applyTransformers(transformers: List[ProgramTransformer]): ProceduralShader =
     // Convert each transformer to a partial function
@@ -181,10 +181,10 @@ object ProceduralShader:
       '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.annotations) }, ${ Expr(x.main) }) }
   }
 
-  def ruleToValidation(rule: ProgramValidationRule): ProceduralShader => ShaderValid =
+  def requirementToValidation(requirement: ProgramRequirement): ProceduralShader => ShaderValid =
     proc =>
-      rule match {
-        case r @ ProgramValidationRule.Function0Exists(fnName, rt) =>
+      requirement match {
+        case r @ ProgramRequirement.Function0Exists(fnName, rt) =>
           val exists =
             proc.main.find {
               case ShaderAST.Function(
@@ -202,7 +202,7 @@ object ProceduralShader:
           if exists then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
 
-        case r @ ProgramValidationRule.Function1Exists(fnName, arg, rt) =>
+        case r @ ProgramRequirement.Function1Exists(fnName, arg, rt) =>
           val exists =
             proc.main.find {
               case ShaderAST.Function(
@@ -222,7 +222,7 @@ object ProceduralShader:
           if exists then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
 
-        case r @ ProgramValidationRule.Function2Exists(fnName, arg1, arg2, rt) =>
+        case r @ ProgramRequirement.Function2Exists(fnName, arg1, arg2, rt) =>
           val exists =
             proc.main.find {
               case ShaderAST.Function(
@@ -258,7 +258,7 @@ object ProceduralShader:
           if exists then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
 
-        case r @ ProgramValidationRule.Function3Exists(fnName, arg1, arg2, arg3, rt) =>
+        case r @ ProgramRequirement.Function3Exists(fnName, arg1, arg2, arg3, rt) =>
           val exists =
             proc.main.find {
               case ShaderAST.Function(
@@ -280,11 +280,11 @@ object ProceduralShader:
           if exists then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
 
-        case r @ ProgramValidationRule.UsesRequiredEnvironment(env) =>
+        case r @ ProgramRequirement.UsesRequiredEnvironment(env) =>
           if proc.main.inType.exists(_ == env) then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
 
-        case r @ ProgramValidationRule.ReturnsRequiredType(rt) =>
+        case r @ ProgramRequirement.ReturnsRequiredType(rt) =>
           if proc.main.outType.exists(_ == rt) then ShaderValid.Valid
           else ShaderValid.Invalid(List(r.msg))
       }

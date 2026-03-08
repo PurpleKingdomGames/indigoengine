@@ -50,9 +50,9 @@ object syntax extends ShaderDSLOps:
   type ProgramVersionId = ultraviolet.datatypes.ProgramVersionId
   val ProgramVersionId: ultraviolet.datatypes.ProgramVersionId.type = ultraviolet.datatypes.ProgramVersionId
 
-  type ProgramValidationRule = ultraviolet.datatypes.ProgramValidationRule
-  val ProgramValidationRule: ultraviolet.datatypes.ProgramValidationRule.type =
-    ultraviolet.datatypes.ProgramValidationRule
+  type ProgramRequirement = ultraviolet.datatypes.ProgramRequirement
+  val ProgramRequirement: ultraviolet.datatypes.ProgramRequirement.type =
+    ultraviolet.datatypes.ProgramRequirement
 
   type ProgramTransformer = ultraviolet.datatypes.ProgramTransformer
   val ProgramTransformer: ultraviolet.datatypes.ProgramTransformer.type = ultraviolet.datatypes.ProgramTransformer
