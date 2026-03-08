@@ -1,31 +1,31 @@
 package indigo.render.pipeline
 
+import indigo.core.assets.AssetName
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Vector2
+import indigo.core.events.GlobalEvent
+import indigo.core.time.GameTime
+import indigo.core.utils.QuickCache
 import indigo.render.pipeline.AssetMapping
 import indigo.render.pipeline.AtlasId
 import indigo.render.pipeline.TextureRefAndOffset
-import indigo.scenegraph.registers.AnimationsRegister
-import indigo.scenegraph.registers.BoundaryLocator
-import indigo.scenegraph.registers.FontRegister
-import indigo.core.utils.QuickCache
-import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
-import indigo.core.datatypes.Rectangle
-import indigo.core.datatypes.Vector2
 import indigo.render.pipeline.display.DisplayCloneBatch
 import indigo.render.pipeline.display.DisplayCloneTiles
 import indigo.render.pipeline.display.DisplayGroup
 import indigo.render.pipeline.display.DisplayMutants
 import indigo.render.pipeline.display.DisplayObject
 import indigo.render.pipeline.display.DisplayTextLetters
-import indigo.core.events.GlobalEvent
-import indigo.scenegraph.materials.Material
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.SceneNode
+import indigo.scenegraph.materials.Material
+import indigo.scenegraph.registers.AnimationsRegister
+import indigo.scenegraph.registers.BoundaryLocator
+import indigo.scenegraph.registers.FontRegister
 import indigo.shaders.Uniform
-import indigo.core.time.GameTime
-import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
 import indigoengine.shared.collections.mutable
+import indigoengine.shared.datatypes.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {

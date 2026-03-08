@@ -1,14 +1,14 @@
 package indigo.shared.formats
 
-import indigoengine.shared.datatypes.Radians
 import indigo.core.animation.*
 import indigo.core.assets.AssetName
-import indigoengine.shared.collections.NonEmptyBatch
 import indigo.core.datatypes.*
 import indigo.core.dice.Dice
-import indigo.scenegraph.materials.Material
 import indigo.scenegraph.*
+import indigo.scenegraph.materials.Material
+import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Millis
+import indigoengine.shared.datatypes.Radians
 import indigoengine.shared.datatypes.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.noValPatterns"))

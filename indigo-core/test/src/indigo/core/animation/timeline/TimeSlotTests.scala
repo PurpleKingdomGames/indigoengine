@@ -1,7 +1,7 @@
 package indigo.core.animation.timeline
 
-import indigoengine.shared.collections.Batch
 import indigo.core.temporal.SignalFunction
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 class TimeSlotTests extends munit.FunSuite {

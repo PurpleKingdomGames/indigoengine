@@ -1,10 +1,10 @@
 package indigo.core.geometry
 
-import indigo.core.datatypes.Vector2
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
+import indigo.core.datatypes.Vector2
+import indigoengine.shared.collections.Batch
 
 class BoundingBoxTests extends munit.FunSuite {
 

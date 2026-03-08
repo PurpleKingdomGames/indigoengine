@@ -1,11 +1,11 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.datatypes.Degrees
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.datatypes.BackgroundMode
-import indigoengine.shared.datatypes.Degrees
 import tyrian.ui.datatypes.Fill
 import tyrian.ui.datatypes.Position
-import indigoengine.shared.datatypes.RGBA
 
 class ContainerThemeTests extends munit.FunSuite {
 

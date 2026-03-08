@@ -1,7 +1,7 @@
 package tyrian
 
-import tyrian.syntax.*
 import indigoengine.shared.collections.Batch
+import tyrian.syntax.*
 
 import Result.*
 

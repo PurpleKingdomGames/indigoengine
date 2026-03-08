@@ -1,12 +1,12 @@
 package tyrian.ui.theme
 
+import indigoengine.shared.datatypes.Degrees
 import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.Input
 import tyrian.ui.TextBlock
 import tyrian.ui.UIKey
 import tyrian.ui.theme.Theme
-import indigoengine.shared.datatypes.Degrees
 
 class ThemeTests extends munit.FunSuite {
 

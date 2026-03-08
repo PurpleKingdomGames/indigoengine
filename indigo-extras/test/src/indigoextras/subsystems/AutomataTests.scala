@@ -1,18 +1,18 @@
 package indigoextras.subsystems
 
 import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.NonEmptyBatch
 import indigo.core.datatypes.Point
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
-import indigo.scenegraph.materials.Material
+import indigo.core.temporal.Signal
+import indigo.core.temporal.SignalReader
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.LayerKey
 import indigo.scenegraph.RenderNode
 import indigo.scenegraph.SceneNode
-import indigo.core.temporal.Signal
-import indigo.core.temporal.SignalReader
+import indigo.scenegraph.materials.Material
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
 
 class AutomataTests extends munit.FunSuite {

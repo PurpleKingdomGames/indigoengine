@@ -1,8 +1,8 @@
 package indigo.scenes
 
-import indigo.shared.Context
 import indigo.core.dice.Dice
 import indigo.core.time.GameTime
+import indigo.shared.Context
 import indigoengine.shared.datatypes.Seconds
 
 object FakeFrameContext {

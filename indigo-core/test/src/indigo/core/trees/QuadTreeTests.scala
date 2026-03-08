@@ -1,13 +1,13 @@
 package indigo.core.trees
 
-import indigo.core.geometry.BoundingCircle
 import indigo.core.datatypes.Circle
-import indigo.core.geometry.LineSegment
-import indigo.core.datatypes.Rectangle
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
 import indigo.core.geometry.BoundingBox
+import indigo.core.geometry.BoundingCircle
+import indigo.core.geometry.LineSegment
 import indigo.core.geometry.Vertex
+import indigoengine.shared.collections.Batch
 
 class QuadTreeTests extends munit.FunSuite {
   given CanEqual[Option[String], Option[String]] = CanEqual.derived

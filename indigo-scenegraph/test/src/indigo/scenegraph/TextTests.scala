@@ -1,16 +1,16 @@
 package indigo.scenegraph
 
-import indigo.scenegraph.registers.AnimationsRegister
-import indigo.scenegraph.registers.BoundaryLocator
-import indigo.scenegraph.registers.FontRegister
 import indigo.core.assets.AssetName
-import indigoengine.shared.collections.Batch
 import indigo.core.datatypes.FontChar
 import indigo.core.datatypes.FontInfo
 import indigo.core.datatypes.FontKey
-import indigoengine.shared.datatypes.Radians
 import indigo.core.datatypes.Rectangle
 import indigo.scenegraph.materials.Material
+import indigo.scenegraph.registers.AnimationsRegister
+import indigo.scenegraph.registers.BoundaryLocator
+import indigo.scenegraph.registers.FontRegister
+import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Radians
 
 class TextTests extends munit.FunSuite {
 

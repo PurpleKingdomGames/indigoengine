@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateful.input
 
+import indigoengine.shared.datatypes.RGBA
 import tyrian.Style
 import tyrian.ui.UIKey
 import tyrian.ui.datatypes.BorderRadius
@@ -8,7 +9,6 @@ import tyrian.ui.datatypes.BorderWidth
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.FontWeight
 import tyrian.ui.datatypes.Padding
-import indigoengine.shared.datatypes.RGBA
 import tyrian.ui.theme.Theme
 
 class InputTests extends munit.FunSuite {

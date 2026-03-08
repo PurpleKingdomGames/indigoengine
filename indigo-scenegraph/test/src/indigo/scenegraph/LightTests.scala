@@ -1,8 +1,8 @@
 package indigo.scenegraph
 
 import indigo.core.datatypes.Point
-import indigoengine.shared.datatypes.Radians
 import indigo.core.datatypes.Vector2
+import indigoengine.shared.datatypes.Radians
 
 class LightTests extends munit.FunSuite {
 

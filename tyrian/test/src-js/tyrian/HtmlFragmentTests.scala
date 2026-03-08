@@ -1,7 +1,7 @@
 package tyrian
 
-import tyrian.Html.*
 import indigoengine.shared.collections.Batch
+import tyrian.Html.*
 
 class HtmlFragmentTests extends munit.FunSuite {
 

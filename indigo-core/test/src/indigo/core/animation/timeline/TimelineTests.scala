@@ -1,10 +1,10 @@
 package indigo.core.animation.timeline
 
 import indigo.core.Outcome
-import indigoengine.shared.collections.Batch
 import indigo.core.events.GlobalEvent
 import indigo.core.temporal.Signal
 import indigo.core.temporal.SignalFunction
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 class TimelineTests extends munit.FunSuite {

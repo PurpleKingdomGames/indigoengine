@@ -1,7 +1,7 @@
 package indigo.core
 
-import indigoengine.shared.collections.Batch
 import indigo.core.events.GlobalEvent
+import indigoengine.shared.collections.Batch
 
 import Outcome.*
 

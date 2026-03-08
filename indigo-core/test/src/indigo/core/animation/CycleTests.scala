@@ -1,7 +1,7 @@
 package indigo.core.animation
 
-import indigoengine.shared.collections.NonEmptyBatch
 import indigo.core.datatypes.*
+import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Millis
 
 class CycleTests extends munit.FunSuite {

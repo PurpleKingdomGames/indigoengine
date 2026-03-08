@@ -4,9 +4,9 @@ import indigo.core.Outcome
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.FontKey
 import indigo.core.events.GlobalEvent
-import indigo.scenegraph.materials.Material
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.Text
+import indigo.scenegraph.materials.Material
 
 final case class PointsTrackerExample(num: Int, startingPoints: Int) extends SubSystem[Int] {
   type EventType      = PointsTrackerEvent

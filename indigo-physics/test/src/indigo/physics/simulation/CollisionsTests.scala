@@ -1,9 +1,9 @@
 package indigo.physics.simulation
 
-import indigo.physics.*
-import indigo.core.trees.QuadTree
 import indigo.core.geometry.BoundingBox
 import indigo.core.geometry.BoundingCircle
+import indigo.core.trees.QuadTree
+import indigo.physics.*
 import indigoengine.shared.collections.Batch
 
 class CollisionsTests extends munit.FunSuite:

@@ -1,7 +1,7 @@
 package tyrian.ui.elements.stateless.link
 
-import tyrian.Tag
 import tyrian.GlobalMsg
+import tyrian.Tag
 import tyrian.ui.Target
 import tyrian.ui.TextBlock
 import tyrian.ui.theme.Theme
