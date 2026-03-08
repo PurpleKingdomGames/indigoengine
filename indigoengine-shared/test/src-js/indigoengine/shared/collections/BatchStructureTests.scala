@@ -4,7 +4,6 @@ import scala.annotation.nowarn
 
 import scalajs.js
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @nowarn("msg=unused")
 class BatchStructureTests extends munit.FunSuite {
 

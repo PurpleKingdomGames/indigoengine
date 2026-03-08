@@ -2,7 +2,6 @@ package indigoengine.shared.collections
 
 import scala.annotation.nowarn
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @nowarn("msg=unused")
 class BatchStructureTests extends munit.FunSuite {
 
