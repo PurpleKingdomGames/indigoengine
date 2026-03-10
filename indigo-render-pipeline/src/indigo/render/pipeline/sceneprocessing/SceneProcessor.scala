@@ -4,10 +4,10 @@ import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
 import indigo.render.pipeline.assets.AssetMapping
-import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.render.pipeline.datatypes.DisplayLayer
 import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.datatypes.DisplayObjectUniformData
+import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.scenegraph.AmbientLight
 import indigo.scenegraph.Blending
@@ -389,4 +389,3 @@ object SceneProcessor {
       a.camera == b.camera
 
 }
-
