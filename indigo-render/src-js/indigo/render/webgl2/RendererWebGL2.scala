@@ -15,7 +15,7 @@ import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.ScreenCaptureConfig
 import indigo.render.facades.WebGL2RenderingContext
-import indigo.render.pipeline.ProcessedSceneData
+import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.scenegraph.Blend
 import indigo.scenegraph.BlendFactor
 import indigo.shaders.RawShaderCode

@@ -4,10 +4,10 @@ import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
 import indigo.render.pipeline.assets.AssetMapping
-import indigo.render.pipeline.ProcessedSceneData
-import indigo.render.pipeline.display.DisplayLayer
-import indigo.render.pipeline.display.DisplayObject
-import indigo.render.pipeline.display.DisplayObjectUniformData
+import indigo.render.pipeline.datatypes.ProcessedSceneData
+import indigo.render.pipeline.datatypes.DisplayLayer
+import indigo.render.pipeline.datatypes.DisplayObject
+import indigo.render.pipeline.datatypes.DisplayObjectUniformData
 import indigo.scenegraph.AmbientLight
 import indigo.scenegraph.Blending
 import indigo.scenegraph.CloneBlank

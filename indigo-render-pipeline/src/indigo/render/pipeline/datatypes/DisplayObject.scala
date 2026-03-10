@@ -1,4 +1,4 @@
-package indigo.render.pipeline.display
+package indigo.render.pipeline.datatypes
 
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
@@ -10,6 +10,7 @@ import indigo.shaders.ShaderId
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Radians
 
+// TODO: Convert to enum
 sealed trait DisplayEntity
 
 final case class DisplayGroup(
