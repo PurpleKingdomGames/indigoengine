@@ -7,7 +7,7 @@ import scala.quoted.*
   * but also vary in terms of the program structure requirements. For example, to make a shader compatible Indigo, you
   * need to provide certain required functions.
   *
-  * ProgramVersions aid this tuning process by providing requirements and transformers. If they user's shader meets this
+  * ProgramVersions aid this tuning process by providing requirements and transformers. If the user's shader meets this
   * version's requirements, then the expectation is that we should be able to transform it into a usable shader.
   */
 final case class ProgramVersion(
