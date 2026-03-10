@@ -7,7 +7,7 @@ import scala.quoted.*
   * but also vary in terms of the program structure requirements. For example, to make a shader compatible Indigo, you
   * need to provide certain required functions.
   *
-  * ProgramVersions aid this tuning process by providing requiements and transformers. If they user's shader meets this
+  * ProgramVersions aid this tuning process by providing requirements and transformers. If they user's shader meets this
   * version's requirements, then the expectation is that we should be able to transform it into a useable shader.
   */
 final case class ProgramVersion(
@@ -119,19 +119,12 @@ object ProgramVersion:
     ProgramVersion(
       ProgramVersionId("GLSL 100"),
       List.empty[ProgramRequirement],
-      List(
-        ProgramTransformer.RenameAnnotation("in", "varying"),
-        ProgramTransformer.RenameAnnotation("out", "varying")
-      )
+      ProgramTransformer.GLSL_100
     )
 
   inline def GLSL_300: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("GLSL 300"),
       List.empty[ProgramRequirement],
-      List(
-        ProgramTransformer.RenameAnnotation("attribute", "in"),
-        ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),
-        ProgramTransformer.RenameFunctionAtCallSite("textureCube", "texture")
-      )
+      ProgramTransformer.GLSL_300
     )
