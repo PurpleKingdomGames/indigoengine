@@ -5,7 +5,8 @@ import ultraviolet.datatypes.ProgramVersion
 import ultraviolet.datatypes.ProgramVersionId
 import ultraviolet.syntax.*
 
-/** This is a minimal Indigo-like set up, mostly for testing. If you're going to develop shaders for Indigo, use Indigo!  */
+/** This is a minimal Indigo-like set up, mostly for testing. If you're going to develop shaders for Indigo, use Indigo!
+  */
 object indigo:
 
   final case class IndigoVertexEnv(
@@ -104,7 +105,8 @@ object indigo:
       TAU_8: Float
   )
 
-  /** ProgramVersion for a basic Indigo shader. Please note that this version does not enforce any program requirements. */
+  /** ProgramVersion for a basic Indigo shader. Please note that this version does not enforce any program requirements.
+    */
   inline def IndigoProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo"),
