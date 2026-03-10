@@ -8,7 +8,7 @@ import scala.quoted.*
   * need to provide certain required functions.
   *
   * ProgramVersions aid this tuning process by providing requirements and transformers. If they user's shader meets this
-  * version's requirements, then the expectation is that we should be able to transform it into a useable shader.
+  * version's requirements, then the expectation is that we should be able to transform it into a usable shader.
   */
 final case class ProgramVersion(
     id: ProgramVersionId,
