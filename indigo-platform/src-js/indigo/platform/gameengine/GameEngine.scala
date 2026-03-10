@@ -18,7 +18,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.storage.Storage
 import indigo.render.Renderer
-import indigo.render.pipeline.AssetMapping
+import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.SceneProcessor
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator

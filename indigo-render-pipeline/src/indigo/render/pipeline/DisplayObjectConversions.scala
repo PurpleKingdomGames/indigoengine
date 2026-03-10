@@ -13,8 +13,8 @@ import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.core.utils.QuickCache
-import indigo.render.pipeline.AssetMapping
-import indigo.render.pipeline.TextureRefAndOffset
+import indigo.render.pipeline.assets.AssetMapping
+import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.render.pipeline.display.DisplayCloneBatch
 import indigo.render.pipeline.display.DisplayCloneTiles
 import indigo.render.pipeline.display.DisplayEntity

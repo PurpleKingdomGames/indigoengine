@@ -1,4 +1,4 @@
-package indigo.render.pipeline
+package indigo.render.pipeline.assets
 
 import indigo.core.datatypes.Vector2
 

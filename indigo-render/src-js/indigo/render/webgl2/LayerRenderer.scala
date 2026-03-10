@@ -2,7 +2,7 @@ package indigo.render.webgl2
 
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.render.facades.WebGL2RenderingContext
-import indigo.render.pipeline.AtlasId
+import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.display.DisplayCloneBatch
 import indigo.render.pipeline.display.DisplayCloneTiles
 import indigo.render.pipeline.display.DisplayEntity
