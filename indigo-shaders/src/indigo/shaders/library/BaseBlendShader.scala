@@ -82,14 +82,18 @@ trait BaseBlendShader:
   inline def vertex[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
     vertexShader(userVertexFn, env).toGLSL(
       IndigoUV.IndigoVertexProgram,
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def vertexRawBody(inline userVertexFn: Shader[Unit, Unit]): ShaderResult =
     vertexShader(userVertexFn, ()).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   @nowarn("msg=discarded")
@@ -97,8 +101,10 @@ trait BaseBlendShader:
     inline def tag = "//vertex_placeholder"
     inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
     val renderedCode = vertexShader(placeholder, IndigoUV.VertexEnv.reference).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     ).code
 
     val location = renderedCode.indexOf(tag)
@@ -156,14 +162,18 @@ trait BaseBlendShader:
   inline def fragment[Env](inline userFragmentFn: Shader[Env, Unit], env: Env): ShaderResult =
     fragmentShader(userFragmentFn, env).toGLSL(
       IndigoUV.IndigoBlendFragmentProgram,
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def fragmentRawBody(inline userFragmentFn: Shader[Unit, Unit]): ShaderResult =
     fragmentShader(userFragmentFn, ()).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   @nowarn("msg=discarded")
@@ -172,8 +182,10 @@ trait BaseBlendShader:
     inline def placeholder = Shader[IndigoUV.BlendFragmentEnv]{_ => RawGLSL(tag)}
     
     val renderedCode = fragmentShader(placeholder, IndigoUV.BlendFragmentEnv.reference).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     ).code
 
     val location = renderedCode.indexOf(tag)

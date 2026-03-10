@@ -339,16 +339,16 @@ object IndigoUV:
     val TAU_4: Float                = 0.0f
     val TAU_8: Float                = 0.0f
 
-  val IndigoVertexProgram: ProgramVersion =
+  inline def IndigoVertexProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo Vertex"),
       List(
         ProgramRequirement.Function1Exists("vertex", "vec4", "vec4")
-      ) ++ ProgramRequirement.GLSL_300,
+      ),
       ProgramTransformer.GLSL_300
     )
 
-  val IndigoFragmentProgram: ProgramVersion =
+  inline def IndigoFragmentProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo Fragment"),
       List(
@@ -356,15 +356,15 @@ object IndigoUV:
         ProgramRequirement.Function0Exists("prepare", "void"),
         ProgramRequirement.Function0Exists("light", "void"),
         ProgramRequirement.Function0Exists("composite", "void")
-      ) ++ ProgramRequirement.GLSL_300,
+      ),
       ProgramTransformer.GLSL_300
     )
 
-  val IndigoBlendFragmentProgram: ProgramVersion =
+  inline def IndigoBlendFragmentProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo Blend Fragment"),
       List(
         ProgramRequirement.Function1Exists("fragment", "vec4", "vec4")
-      ) ++ ProgramRequirement.GLSL_300,
+      ),
       ProgramTransformer.GLSL_300
     )

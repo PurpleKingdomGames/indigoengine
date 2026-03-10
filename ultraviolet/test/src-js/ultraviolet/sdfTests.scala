@@ -99,7 +99,7 @@ class sdfTests extends munit.FunSuite {
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg){
-      |  vec3 k=vec3(-0.8660253882408142,0.5,0.5773502588272095);
+      |  vec3 k=vec3(-0.8660254,0.5,0.57735026);
       |  vec2 pt=abs(_ptArg);
       |  pt=pt-((2.0*min(dot(k.xy,pt),0.0))*k.xy);
       |  pt=pt-(vec2(clamp(pt.x,(-k.z)*_rArg,k.z*_rArg),_rArg));
@@ -166,7 +166,7 @@ class sdfTests extends munit.FunSuite {
       actual,
       s"""
       |float def1(in vec2 _ptArg,in float _rArg,in float _irArg){
-      |  vec2 k1=vec2(0.80901700258255,-0.5877852439880371);
+      |  vec2 k1=vec2(0.809017,-0.58778524);
       |  vec2 k2=vec2(-k1.x,k1.y);
       |  vec2 p2=vec2(abs(_ptArg.x),-_ptArg.y);
       |  p2=p2-((2.0*max(dot(k1,p2),0.0))*k1);

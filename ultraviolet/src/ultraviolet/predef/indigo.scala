@@ -1,6 +1,5 @@
 package ultraviolet.predef
 
-import ultraviolet.datatypes.ProgramRequirement
 import ultraviolet.datatypes.ProgramTransformer
 import ultraviolet.datatypes.ProgramVersion
 import ultraviolet.datatypes.ProgramVersionId
@@ -107,18 +106,15 @@ object indigo:
       TAU_8: Float
   )
 
-  private val requirements: List[ProgramRequirement] =
-    ProgramRequirement.GLSL_300
-
-  private val transformers: List[ProgramTransformer] =
-    List(
-      ProgramTransformer.ConvertPureFunctionToAssignment("fragment", "COLOR")
-    ) ++ ProgramTransformer.GLSL_300
-
   /** ProgramVersion for a basic Indigo shader. Please note that this version does not enforce the full requirements. */
-  val IndigoProgram: ProgramVersion =
+  inline def IndigoProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("Indigo"),
-      requirements,
-      transformers
+      Nil,
+      List(
+        ProgramTransformer.ConvertPureFunctionToAssignment("fragment", "COLOR"),
+        ProgramTransformer.RenameAnnotation("attribute", "in"),
+        ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),
+        ProgramTransformer.RenameFunctionAtCallSite("textureCube", "texture")
+      )
     )

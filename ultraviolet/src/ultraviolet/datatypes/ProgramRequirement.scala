@@ -67,7 +67,15 @@ object ProgramRequirement:
 
   given FromExpr[ProgramRequirement] with
     def unapply(x: Expr[ProgramRequirement])(using Quotes): Option[ProgramRequirement] =
-      x match
+      import quotes.reflect.*
+
+      def unwrap(term: Term): Term =
+        term match
+          case Inlined(_, _, inner) => unwrap(inner)
+          case Typed(inner, _)      => unwrap(inner)
+          case other                => other
+
+      unwrap(x.asTerm).asExprOf[ProgramRequirement] match
         case '{ Function0Exists(${ Expr(fn) }, ${ Expr(rt) }) } =>
           Some(Function0Exists(fn, rt))
 
@@ -86,11 +94,9 @@ object ProgramRequirement:
         case '{ ReturnsRequiredType(${ Expr(rt) }) } =>
           Some(ReturnsRequiredType(rt))
 
-        case _ =>
+        case e =>
+          report.errorAndAbort(
+            s"[Ultraviolet macro error, please report.] ProgramRequirement after unwrap expr:\n${e.asTerm
+                .show(using Printer.TreeStructure)}"
+          )
           None
-
-  val GLSL_100: List[ProgramRequirement] =
-    Nil
-
-  val GLSL_300: List[ProgramRequirement] =
-    Nil

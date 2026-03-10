@@ -12,11 +12,21 @@ object ProgramVersionId:
 
   given FromExpr[ProgramVersionId] with
     def unapply(x: Expr[ProgramVersionId])(using Quotes): Option[ProgramVersionId] =
-      x match
-        case Expr(id) =>
-          Some(ProgramVersionId(id))
+      import quotes.reflect.*
 
-        case _ =>
+      def unwrap(term: Term): Term =
+        term match
+          case Inlined(_, _, inner) => unwrap(inner)
+          case Typed(inner, _)      => unwrap(inner)
+          case other                => other
+
+      unwrap(x.asTerm) match
+        case Apply(_, List(Literal(StringConstant(s)))) =>
+          Some(ProgramVersionId(s))
+
+        case e =>
+          report.errorAndAbort(s"[Ultraviolet macro error, please report.] ProgramVersionId after unwrap expr:\n${e
+              .show(using Printer.TreeStructure)}")
           None
 
   def apply(id: String): ProgramVersionId = id

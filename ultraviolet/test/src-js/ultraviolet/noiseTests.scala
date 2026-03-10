@@ -26,20 +26,20 @@ class noiseTests extends munit.FunSuite {
       actual,
       s"""
       |vec2 def2(in vec2 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec3 def3(in vec3 value){
-      |  return value-((floor(value*0.1428571492433548))*7.0);
+      |  return value-((floor(value*0.14285715))*7.0);
       |}
       |vec3 def5(in vec3 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec3 def4(in vec3 value){
       |  return def5(((34.0*value)+10.0)*value);
       |}
       |vec2 def1(in vec2 _ptArg){
-      |  float K=0.1428571492433548;
-      |  float Ko=0.4285714328289032;
+      |  float K=0.14285715;
+      |  float Ko=0.42857143;
       |  float jitter=1.0;
       |  vec2 Pi=def2(floor(_ptArg));
       |  vec2 Pf=fract(_ptArg);
@@ -115,16 +115,16 @@ class noiseTests extends munit.FunSuite {
       actual,
       s"""
       |vec4 def2(in vec4 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec4 def4(in vec4 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec4 def3(in vec4 value){
       |  return def4(((value*34.0)+10.0)*value);
       |}
       |vec4 def5(in vec4 value){
-      |  return 1.7928428649902344-(0.8537347316741943*value);
+      |  return 1.7928429-(0.85373473*value);
       |}
       |vec2 def6(in vec2 value){
       |  return ((value*value)*value)*((value*((value*6.0)-15.0))+10.0);
@@ -138,7 +138,7 @@ class noiseTests extends munit.FunSuite {
       |  vec4 fx=Pf.xzxz;
       |  vec4 fy=Pf.yyww;
       |  vec4 i=def3(def3(ix)+iy);
-      |  vec4 gx=((fract(i*0.024390242993831635))*2.0)-1.0;
+      |  vec4 gx=((fract(i*0.024390243))*2.0)-1.0;
       |  vec4 gy=abs(gx)-0.5;
       |  vec4 tx=floor(gx+0.5);
       |  gx=gx-tx;
@@ -158,7 +158,7 @@ class noiseTests extends munit.FunSuite {
       |  vec2 fade_xy=def6(Pf.xy);
       |  vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
       |  float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
-      |  return 2.299999952316284*n_xy;
+      |  return 2.3*n_xy;
       |}
       |float def0(in vec2 p){
       |  return def1(p);
@@ -189,7 +189,7 @@ class noiseTests extends munit.FunSuite {
       actual,
       s"""
       |vec2 def2(in vec2 value){
-      |  vec2 k=vec2(0.3183099031448364,0.36787939071655273);
+      |  vec2 k=vec2(0.3183099,0.3678794);
       |  vec2 y=(value*k)+k.yx;
       |  return (-1.0)+(2.0*(fract((16.0*k)*(fract((y.x*y.y)*(y.x+y.y))))));
       |}
@@ -237,16 +237,16 @@ class noiseTests extends munit.FunSuite {
       actual,
       s"""
       |vec2 def2(in vec2 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec3 def4(in vec3 value){
-      |  return value-((floor(value*0.0034602077212184668))*289.0);
+      |  return value-((floor(value*0.0034602077))*289.0);
       |}
       |vec3 def3(in vec3 value){
       |  return def4(((34.0*value)+10.0)*value);
       |}
       |float def1(in vec2 _ptArg){
-      |  vec4 C=vec4(0.21132487058639526,0.3660254180431366,-0.5773502588272095,0.024390242993831635);
+      |  vec4 C=vec4(0.21132487,0.36602542,-0.57735026,0.024390243);
       |  vec2 i=floor(_ptArg+dot(_ptArg,C.yy));
       |  vec2 x0=(_ptArg-i)+dot(i,C.xx);
       |  vec2 i1;
@@ -266,7 +266,7 @@ class noiseTests extends munit.FunSuite {
       |  vec3 h=abs(x)-0.5;
       |  vec3 ox=floor(x+0.5);
       |  vec3 a0=x-ox;
-      |  m=m*(1.7928428649902344-(0.8537347316741943*(a0*a0)+(h*h)));
+      |  m=m*(1.7928429-(0.85373473*(a0*a0)+(h*h)));
       |  vec3 g=vec3((a0.x*x0.x)+(h.x*x0.y),(a0.yz*x12.xz)+(h.yz*x12.yw));
       |  return 130.0*dot(m,g);
       |}
@@ -298,8 +298,8 @@ class noiseTests extends munit.FunSuite {
       actual,
       s"""
       |vec3 def1(in vec2 _ptArg){
-      |  vec3 a=fract(_ptArg.xyx*vec3(123.33999633789062,234.33999633789062,345.6499938964844));
-      |  a=a+(dot(a,a+34.45000076293945));
+      |  vec3 a=fract(_ptArg.xyx*vec3(123.34,234.34,345.65));
+      |  a=a+(dot(a,a+34.45));
       |  return fract(vec3(a.x*a.y,a.y*a.z,a.z*a.x));
       |}
       |vec3 def0(in vec2 p){

@@ -25,7 +25,7 @@ class GLSLUBOTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300(Version300ES, PrecisionHighPFloat).code
+      fragment.toGLSL300(List(Version300ES, PrecisionHighPFloat)).code
 
     // DebugAST.toAST(fragment)
     // println(actual)
@@ -72,7 +72,7 @@ class GLSLUBOTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL300(Version300ES, PrecisionHighPFloat).code
+      fragment.toGLSL300(List(Version300ES, PrecisionHighPFloat)).code
 
     // DebugAST.toAST(fragment)
     // println(actual)

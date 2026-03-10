@@ -44,23 +44,19 @@ object shadertoy:
         iSampleRate = 44100.0f
       )
 
-  private val requirements: List[ProgramRequirement] =
-    List(
-      ProgramRequirement.UsesRequiredEnvironment("ShaderToyEnv"),
-      ProgramRequirement.ReturnsRequiredType("Unit"),
-      ProgramRequirement.Function2Exists("mainImage", "vec4", "vec2", "vec4")
-    ) ++ ProgramRequirement.GLSL_300
-
-  private val transformers: List[ProgramTransformer] =
-    List(
-      ProgramTransformer.ConvertPureFunctionToAssignment("mainImage", "fragColor"),
-      ProgramTransformer.AnnotateFunctionArgument("mainImage", "fragColor", "out")
-    ) ++
-      ProgramTransformer.GLSL_300
-
-  val ShaderToyProgram: ProgramVersion =
+  inline def ShaderToyProgram: ProgramVersion =
     ProgramVersion(
       ProgramVersionId("ShaderToy"),
-      requirements,
-      transformers
+      List(
+        ProgramRequirement.UsesRequiredEnvironment("ShaderToyEnv"),
+        ProgramRequirement.ReturnsRequiredType("Unit"),
+        ProgramRequirement.Function2Exists("mainImage", "vec4", "vec2", "vec4")
+      ),
+      List(
+        ProgramTransformer.ConvertPureFunctionToAssignment("mainImage", "fragColor"),
+        ProgramTransformer.AnnotateFunctionArgument("mainImage", "fragColor", "out"),
+        ProgramTransformer.RenameAnnotation("attribute", "in"),
+        ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),
+        ProgramTransformer.RenameFunctionAtCallSite("textureCube", "texture")
+      )
     )

@@ -232,14 +232,18 @@ trait BaseEntityShader:
   inline def vertex[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
     vertexShader[Env](userVertexFn, env).toGLSL(
       IndigoUV.IndigoVertexProgram,
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def vertexRawBody[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
     vertexShader[Env](userVertexFn, env).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   @nowarn("msg=discarded")
@@ -248,8 +252,10 @@ trait BaseEntityShader:
     inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
     val renderedCode =
       vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL300(
-        ShaderHeader.Version300ES,
-        ShaderHeader.PrecisionMediumPFloat
+        List(
+          ShaderHeader.Version300ES,
+          ShaderHeader.PrecisionMediumPFloat
+        )
       ).code
 
     val location = renderedCode.indexOf(tag)
@@ -450,8 +456,10 @@ trait BaseEntityShader:
       env
     ).toGLSL(
       IndigoUV.IndigoFragmentProgram,
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def fragment[Env](
@@ -466,8 +474,10 @@ trait BaseEntityShader:
       env
     ).toGLSL(
       IndigoUV.IndigoFragmentProgram,
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def fragmentRawBody(
@@ -483,8 +493,10 @@ trait BaseEntityShader:
       userCompositeFn,
       ()
     ).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   inline def fragmentRawBody(
@@ -497,8 +509,10 @@ trait BaseEntityShader:
       noopComposite,
       ()
     ).toGLSL300(
-      ShaderHeader.Version300ES,
-      ShaderHeader.PrecisionMediumPFloat
+      List(
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )
     )
 
   val fragmentTemplate: String => String =
@@ -513,8 +527,10 @@ trait BaseEntityShader:
 
     val renderedCode =
       fragmentShader(placeholder, empty, empty, empty, IndigoUV.FragmentEnv.reference).toGLSL300(
-        ShaderHeader.Version300ES,
-        ShaderHeader.PrecisionMediumPFloat
+        List(
+          ShaderHeader.Version300ES,
+          ShaderHeader.PrecisionMediumPFloat
+        )
       ).code
 
     val location = renderedCode.indexOf(tag)

@@ -19,7 +19,7 @@ class LightingTests extends munit.FunSuite {
       |  highp vec2 LIGHT_NORMAL;
       |  highp vec2 LIGHT_ROUGHNESS;
       |};
-      |const float SCREEN_GAMMA=2.200000047683716;
+      |const float SCREEN_GAMMA=2.2;
       |vec4 normalColor;
       |vec4 roughnessColor;
       |vec4 emissiveColor;
