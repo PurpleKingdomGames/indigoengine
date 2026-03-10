@@ -63,48 +63,67 @@ object ProgramTransformer:
 
   given FromExpr[ProgramTransformer] with
     def unapply(x: Expr[ProgramTransformer])(using Quotes): Option[ProgramTransformer] =
-      x match
-        case '{ ProgramTransformer.RenameFunctionAtCallSite(${ Expr(from) }, ${ Expr(to) }) } =>
+      import quotes.reflect.*
+
+      def unwrap(term: Term): Term =
+        term match
+          case Inlined(_, _, inner) => unwrap(inner)
+          case Typed(inner, _)      => unwrap(inner)
+          case other                => other
+
+      unwrap(x.asTerm) match
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "RenameFunctionAtCallSite"), "apply"),
+              List(Literal(StringConstant(from)), Literal(StringConstant(to)))
+            ) =>
           Some(ProgramTransformer.RenameFunctionAtCallSite(from, to))
 
-        case '{ ProgramTransformer.RenameAnnotation(${ Expr(from) }, ${ Expr(to) }) } =>
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "RenameAnnotation"), "apply"),
+              List(Literal(StringConstant(from)), Literal(StringConstant(to)))
+            ) =>
           Some(ProgramTransformer.RenameAnnotation(from, to))
 
-        case '{
-              ProgramTransformer.AnnotateFunctionArgument(
-                ${ Expr(functionName) },
-                ${ Expr(argumentName) },
-                ${ Expr(annotation) }
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "AnnotateFunctionArgument"), "apply"),
+              List(
+                Literal(StringConstant(functionName)),
+                Literal(StringConstant(argumentName)),
+                Literal(StringConstant(annotation))
               )
-            } =>
+            ) =>
           Some(ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation))
 
-        case '{ ProgramTransformer.ChangeFunctionReturnType(${ Expr(functionName) }, ${ Expr(newReturnType) }) } =>
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "ChangeFunctionReturnType"), "apply"),
+              List(Literal(StringConstant(functionName)), Literal(StringConstant(newReturnType)))
+            ) =>
           Some(ProgramTransformer.ChangeFunctionReturnType(functionName, newReturnType))
 
-        case '{
-              ProgramTransformer.AssignFunctionReturnValueToVariable(
-                ${ Expr(functionName) },
-                ${ Expr(outVariableName) }
-              )
-            } =>
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "AssignFunctionReturnValueToVariable"), "apply"),
+              List(Literal(StringConstant(functionName)), Literal(StringConstant(outVariableName)))
+            ) =>
           Some(ProgramTransformer.AssignFunctionReturnValueToVariable(functionName, outVariableName))
 
-        case '{
-              ProgramTransformer.ConvertPureFunctionToAssignment(${ Expr(functionName) }, ${ Expr(outVariableName) })
-            } =>
+        case Apply(
+              Select(Select(Ident("ProgramTransformer"), "ConvertPureFunctionToAssignment"), "apply"),
+              List(Literal(StringConstant(functionName)), Literal(StringConstant(outVariableName)))
+            ) =>
           Some(ProgramTransformer.ConvertPureFunctionToAssignment(functionName, outVariableName))
 
-        case _ =>
+        case e =>
+          report.errorAndAbort(s"[Ultraviolet macro error, please report.] ProgramTransformer after unwrap expr:\n${e
+              .show(using Printer.TreeStructure)}")
           None
 
-  val GLSL_100: List[ProgramTransformer] =
+  inline def GLSL_100: List[ProgramTransformer] =
     List(
       ProgramTransformer.RenameAnnotation("in", "varying"),
       ProgramTransformer.RenameAnnotation("out", "varying")
     )
 
-  val GLSL_300: List[ProgramTransformer] =
+  inline def GLSL_300: List[ProgramTransformer] =
     List(
       ProgramTransformer.RenameAnnotation("attribute", "in"),
       ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),

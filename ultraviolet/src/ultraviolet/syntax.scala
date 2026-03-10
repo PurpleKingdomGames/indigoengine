@@ -129,10 +129,10 @@ object syntax extends ShaderDSLOps:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class WebGL2Env(var gl_FragColor: vec4, var gl_Position: vec4) extends WebGLEnv
 
-  def Version300ES: ShaderHeader          = ShaderHeader.Version300ES
-  def PrecisionHighPFloat: ShaderHeader   = ShaderHeader.PrecisionHighPFloat
-  def PrecisionMediumPFloat: ShaderHeader = ShaderHeader.PrecisionMediumPFloat
-  def PrecisionLowPFloat: ShaderHeader    = ShaderHeader.PrecisionLowPFloat
+  inline def Version300ES: ShaderHeader          = ShaderHeader.Version300ES
+  inline def PrecisionHighPFloat: ShaderHeader   = ShaderHeader.PrecisionHighPFloat
+  inline def PrecisionMediumPFloat: ShaderHeader = ShaderHeader.PrecisionMediumPFloat
+  inline def PrecisionLowPFloat: ShaderHeader    = ShaderHeader.PrecisionLowPFloat
 
   private[ultraviolet] object interpolators:
 

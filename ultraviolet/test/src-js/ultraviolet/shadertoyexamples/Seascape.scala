@@ -200,19 +200,19 @@ object Seascape:
   val imageExpected: String =
     """
     |const int NUM_STEPS=8;
-    |const float PI=3.141592025756836;
-    |const float EPSILON=0.0010000000474974513;
-    |#define EPSILON_NRM 0.10000000149011612/iResolution.x
+    |const float PI=3.141592;
+    |const float EPSILON=0.001;
+    |#define EPSILON_NRM 0.1/iResolution.x
     |const int ITER_GEOMETRY=3;
     |const int ITER_FRAGMENT=5;
-    |const float SEA_HEIGHT=0.6000000238418579;
+    |const float SEA_HEIGHT=0.6;
     |const float SEA_CHOPPY=4.0;
-    |const float SEA_SPEED=0.800000011920929;
-    |const float SEA_FREQ=0.1599999964237213;
-    |const vec3 SEA_BASE=vec3(0.0,0.09000000357627869,0.18000000715255737);
-    |const vec3 SEA_WATER_COLOR=vec3(0.800000011920929,0.8999999761581421,0.6000000238418579)*0.6000000238418579;
+    |const float SEA_SPEED=0.8;
+    |const float SEA_FREQ=0.16;
+    |const vec3 SEA_BASE=vec3(0.0,0.09,0.18);
+    |const vec3 SEA_WATER_COLOR=vec3(0.8,0.9,0.6)*0.6;
     |#define SEA_TIME 1.0+(iTime*SEA_SPEED)
-    |const mat2 octave_m=mat2(1.600000023841858,1.2000000476837158,-1.2000000476837158,1.600000023841858);
+    |const mat2 octave_m=mat2(1.6,1.2,-1.2,1.6);
     |mat3 fromEuler(in vec3 ang){
     |  vec2 a1=vec2(sin(ang.x),cos(ang.x));
     |  vec2 a2=vec2(sin(ang.y),cos(ang.y));
@@ -224,8 +224,8 @@ object Seascape:
     |  return m;
     |}
     |float hash(in vec2 p){
-    |  float h=dot(p,vec2(127.0999984741211,311.70001220703125));
-    |  return fract(sin(h)*43758.546875);
+    |  float h=dot(p,vec2(127.1,311.7));
+    |  return fract(sin(h)*43758.547);
     |}
     |float noise(in vec2 p){
     |  vec2 i=floor(p);
@@ -234,15 +234,15 @@ object Seascape:
     |  return (-1.0)+(2.0*(mix(mix(hash(i+vec2(0.0,0.0)),hash(i+vec2(1.0,0.0)),u.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),u.x),u.y)));
     |}
     |float diffuse(in vec3 n,in vec3 l,in float p){
-    |  return pow((dot(n,l)*0.4000000059604645)+0.6000000238418579,p);
+    |  return pow((dot(n,l)*0.4)+0.6,p);
     |}
     |float specular(in vec3 n,in vec3 l,in vec3 e,in float s){
     |  float nrm=(s+8.0)/(PI*8.0);
     |  return pow(max(dot(reflect(e,n),l),0.0),s)*nrm;
     |}
     |vec3 getSkyColor(in vec3 c){
-    |  vec3 e=vec3(c.x,((max(c.y,0.0)*0.800000011920929)+0.20000000298023224)*0.18000000715255737,c.z);
-    |  return (vec3(pow(1.0-e.y,2.0),1.0-e.y,0.6000000238418579+((1.0-e.y)*0.4000000059604645)))*1.100000023841858;
+    |  vec3 e=vec3(c.x,((max(c.y,0.0)*0.8)+0.2)*0.18,c.z);
+    |  return (vec3(pow(1.0-e.y,2.0),1.0-e.y,0.6+((1.0-e.y)*0.4)))*1.1;
     |}
     |float sea_octave(in vec2 uv,in float choppy){
     |  float n=noise(uv);
@@ -250,7 +250,7 @@ object Seascape:
     |  vec2 wv=1.0-abs(sin(uv2));
     |  vec2 swv=abs(cos(uv2));
     |  wv=mix(wv,swv,wv);
-    |  return pow(1.0-(pow(wv.x*wv.y,0.6499999761581421)),choppy);
+    |  return pow(1.0-(pow(wv.x*wv.y,0.65)),choppy);
     |}
     |float map(in vec3 p){
     |  float freq=SEA_FREQ;
@@ -265,9 +265,9 @@ object Seascape:
     |    d=d+(sea_octave((uv-SEA_TIME)*freq,choppy));
     |    h=h+(d*amp);
     |    uv=uv*octave_m;
-    |    freq=freq*1.899999976158142;
-    |    amp=amp*0.2199999988079071;
-    |    choppy=mix(choppy,1.0,0.20000000298023224);
+    |    freq=freq*1.9;
+    |    amp=amp*0.22;
+    |    choppy=mix(choppy,1.0,0.2);
     |  }
     |  return p.y-h;
     |}
@@ -275,10 +275,10 @@ object Seascape:
     |  float fresnel=clamp(1.0-(dot(n,-eye)),0.0,1.0);
     |  fresnel=pow(fresnel,3.0)*0.5;
     |  vec3 reflected=getSkyColor(reflect(eye,n));
-    |  vec3 refracted=SEA_BASE+((diffuse(n,l,80.0)*SEA_WATER_COLOR)*0.11999999731779099);
+    |  vec3 refracted=SEA_BASE+((diffuse(n,l,80.0)*SEA_WATER_COLOR)*0.12);
     |  vec3 color=mix(refracted,reflected,fresnel);
-    |  float atten=max(1.0-(dot(dist,dist)*0.0010000000474974513),0.0);
-    |  color=color+(((SEA_WATER_COLOR*(p.y-SEA_HEIGHT))*0.18000000715255737)*atten);
+    |  float atten=max(1.0-(dot(dist,dist)*0.001),0.0);
+    |  color=color+(((SEA_WATER_COLOR*(p.y-SEA_HEIGHT))*0.18)*atten);
     |  color=color+vec3(specular(n,l,eye,60.0));
     |  return color;
     |}
@@ -322,21 +322,21 @@ object Seascape:
     |  vec2 uv=coord/iResolution.xy;
     |  uv=(uv*2.0)-1.0;
     |  uv=vec2(uv.x*(iResolution.x/iResolution.y),uv.y);
-    |  vec3 ang=vec3((sin(time*3.0))*0.10000000149011612,(sin(time)*0.20000000298023224)+0.30000001192092896,time);
+    |  vec3 ang=vec3((sin(time*3.0))*0.1,(sin(time)*0.2)+0.3,time);
     |  vec3 ori=vec3(0.0,3.5,time*5.0);
     |  vec3 dir=normalize(vec3(uv.xy,-2.0));
-    |  dir=vec3(dir.xy,dir.z+(length(uv)*0.14000000059604645));
+    |  dir=vec3(dir.xy,dir.z+(length(uv)*0.14));
     |  dir=normalize(dir)*fromEuler(ang);
     |  heightMapTracing(ori,dir);
     |  vec3 dist=pOut-ori;
     |  vec3 n=getNormal(pOut,dot(dist,dist)*EPSILON_NRM);
-    |  vec3 light=normalize(vec3(0.0,1.0,0.800000011920929));
-    |  return mix(getSkyColor(dir),getSeaColor(pOut,n,light,dir,dist),pow(smoothstep(0.0,-0.019999999552965164,dir.y),0.20000000298023224));
+    |  vec3 light=normalize(vec3(0.0,1.0,0.8));
+    |  return mix(getSkyColor(dir),getSeaColor(pOut,n,light,dir,dist),pow(smoothstep(0.0,-0.02,dir.y),0.2));
     |}
     |void mainImage(out vec4 fragColor,in vec2 fragCoord){
-    |  float time=(iTime*0.30000001192092896)+(iMouse.x*0.009999999776482582);
+    |  float time=(iTime*0.3)+(iMouse.x*0.01);
     |  vec3 color=getPixel(fragCoord,time);
-    |  fragColor=vec4(pow(color,vec3(0.6499999761581421)),1.0);
+    |  fragColor=vec4(pow(color,vec3(0.65)),1.0);
     |}
     |""".stripMargin.trim
 

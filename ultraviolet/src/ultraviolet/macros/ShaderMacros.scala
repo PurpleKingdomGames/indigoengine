@@ -32,21 +32,32 @@ object ShaderMacros:
     import quotes.reflect.*
 
     try
-      '{
-        val v = $version
-        val p = ${ toASTImpl(shader) }
-
-        p.validate(v.requirements) match
-          case ShaderValid.Valid =>
-            val transformed = p.applyTransformers(v.transformers)
-            ProceduralShader.render(transformed, ${ headers })
-
-          case ShaderValid.Invalid(reasons) =>
-            throw ShaderError.RequirementsNotMet(
-              s"Shader version '${v.id}' failed requirements checks, because: ${reasons.mkString(", ")}"
-            )
-
+      val v = version.value.getOrElse {
+        report.errorAndAbort(
+          s"""ProgramVersion must be inline. Try making it an `inline val` or `inline def`.
+          |[Ultraviolet macro, please report if the issue persists.]
+          |version expr: ${version.asTerm.show(using Printer.TreeStructure)}""".stripMargin
+        )
       }
+      val h = headers.value.getOrElse {
+        report.errorAndAbort(
+          s"""List[ShaderHeader] must be inline. Try making it an `inline val` or `inline def`.
+          |[Ultraviolet macro, please report if the issue persists.]
+          |headers expr: ${headers.asTerm.show(using Printer.TreeStructure)}""".stripMargin
+        )
+      }
+      val p = buildProceduralShader(shader)
+
+      p.validate(v.requirements) match
+        case ShaderValid.Valid =>
+          val transformed = p.applyTransformers(v.transformers)
+          Expr(ProceduralShader.render(transformed, h))
+
+        case ShaderValid.Invalid(reasons) =>
+          throw ShaderError.RequirementsNotMet(
+            s"Shader version '${v.id}' failed requirements checks, because: ${reasons.mkString(", ")}"
+          )
+
     catch {
       case e: ShaderError =>
         report.errorAndAbort(e.message)
@@ -57,7 +68,12 @@ object ShaderMacros:
 
   private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using
       q: Quotes
-  ): Expr[ProceduralShader] = {
+  ): Expr[ProceduralShader] =
+    Expr(buildProceduralShader(expr))
+
+  private[macros] def buildProceduralShader[In, Out: Type](expr: Expr[Shader[In, Out]])(using
+      q: Quotes
+  ): ProceduralShader = {
     import q.reflect.*
     import ShaderProgramValidation.*
 
@@ -90,13 +106,11 @@ object ShaderMacros:
         "sampler2D"
       )
 
-    Expr(
-      ProceduralShader(
-        validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
-        createAST.uboRegister.toList,
-        annotations,
-        validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
-      )
+    ProceduralShader(
+      validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
+      createAST.uboRegister.toList,
+      annotations,
+      validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
     )
   }
 

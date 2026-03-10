@@ -27,17 +27,20 @@ object Shader:
     inline def toGLSL100: ShaderResult =
       toGLSL(ProgramVersion.GLSL_100)
 
-    inline def toGLSL100(headers: ShaderHeader*): ShaderResult =
-      toGLSL(ProgramVersion.GLSL_100, headers*)
+    inline def toGLSL100(inline headers: List[ShaderHeader]): ShaderResult =
+      toGLSL(ProgramVersion.GLSL_100, headers)
 
     inline def toGLSL300: ShaderResult =
       toGLSL(ProgramVersion.GLSL_300)
 
-    inline def toGLSL300(headers: ShaderHeader*): ShaderResult =
-      toGLSL(ProgramVersion.GLSL_300, headers*)
+    inline def toGLSL300(inline headers: List[ShaderHeader]): ShaderResult =
+      toGLSL(ProgramVersion.GLSL_300, headers)
 
-    inline def toGLSL(version: ProgramVersion, headers: ShaderHeader*): ShaderResult =
-      ShaderMacros.toGLSL(ctx, headers.toList, version)
+    inline def toGLSL(inline version: ProgramVersion): ShaderResult =
+      ShaderMacros.toGLSL(ctx, Nil, version)
+
+    inline def toGLSL(inline version: ProgramVersion, inline headers: List[ShaderHeader]): ShaderResult =
+      ShaderMacros.toGLSL(ctx, headers, version)
 
     inline def run(in: In): Out = ctx(in)
 

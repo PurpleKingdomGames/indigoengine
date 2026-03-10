@@ -25,7 +25,7 @@ object Plasma:
 
   val bufferAExpected: String =
     """
-    |const float pi=3.1415927410125732;
+    |const float pi=3.1415927;
     |void mainImage(out vec4 fragColor,in vec2 fragCoord){
     |  float i=fragCoord.x/iResolution.x;
     |  vec3 t=(iTime+iMouse.y)/vec3(63.0,78.0,45.0);
