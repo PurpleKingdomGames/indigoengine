@@ -1,4 +1,4 @@
-package indigo.render.pipeline
+package indigo.render.pipeline.displayprocessing
 
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.Rectangle

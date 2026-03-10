@@ -1,4 +1,4 @@
-package indigo.render.pipeline
+package indigo.render.pipeline.displayprocessing
 
 import indigo.core.animation.AnimationRef
 import indigo.core.assets.AssetName
