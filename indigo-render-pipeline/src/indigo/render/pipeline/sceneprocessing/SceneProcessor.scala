@@ -1,4 +1,4 @@
-package indigo.render.pipeline
+package indigo.render.pipeline.sceneprocessing
 
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
@@ -8,6 +8,7 @@ import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.render.pipeline.datatypes.DisplayLayer
 import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.datatypes.DisplayObjectUniformData
+import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.scenegraph.AmbientLight
 import indigo.scenegraph.Blending
 import indigo.scenegraph.CloneBlank
@@ -389,39 +390,3 @@ object SceneProcessor {
 
 }
 
-final case class LightData(
-    lightFlags: Batch[Float],
-    lightColor: Batch[Float],
-    lightSpecular: Batch[Float],
-    lightPositionRotation: Batch[Float],
-    lightNearFarAngleIntensity: Batch[Float]
-) derives CanEqual {
-  def +(other: LightData): LightData =
-    this.copy(
-      lightFlags = lightFlags ++ other.lightFlags,
-      lightColor = lightColor ++ other.lightColor,
-      lightSpecular = lightSpecular ++ other.lightSpecular,
-      lightPositionRotation = lightPositionRotation ++ other.lightPositionRotation,
-      lightNearFarAngleIntensity = lightNearFarAngleIntensity ++ other.lightNearFarAngleIntensity
-    )
-
-  def toArray: Batch[Float] =
-    lightFlags ++
-      lightColor ++
-      lightSpecular ++
-      lightPositionRotation ++
-      lightNearFarAngleIntensity
-}
-object LightData {
-  val empty: LightData =
-    LightData(
-      Batch[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Batch[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Batch[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Batch[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Batch[Float](0.0f, 0.0f, 0.0f, 0.0f)
-    )
-
-  val emptyData: Batch[Float] =
-    empty.toArray
-}

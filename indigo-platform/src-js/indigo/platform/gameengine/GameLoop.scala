@@ -12,7 +12,7 @@ import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
 import indigo.platform.assets.AssetCollection
 import indigo.render.Renderer
-import indigo.render.pipeline.SceneProcessor
+import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.shared.Context

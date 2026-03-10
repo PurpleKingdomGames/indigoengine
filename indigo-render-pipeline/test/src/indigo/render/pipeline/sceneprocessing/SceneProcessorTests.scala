@@ -1,4 +1,4 @@
-package indigo.render.pipeline
+package indigo.render.pipeline.sceneprocessing
 
 import indigo.core.datatypes.Fill
 import indigo.core.datatypes.Point
