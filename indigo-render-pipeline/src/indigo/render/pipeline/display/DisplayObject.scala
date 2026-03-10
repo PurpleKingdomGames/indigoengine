@@ -2,7 +2,7 @@ package indigo.render.pipeline.display
 
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
-import indigo.render.pipeline.AtlasId
+import indigo.render.pipeline.assets.AtlasId
 import indigo.scenegraph.CloneBatchData
 import indigo.scenegraph.CloneId
 import indigo.scenegraph.CloneTileData
