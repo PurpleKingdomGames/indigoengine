@@ -1,21 +1,17 @@
-package indigo.render.pipeline.sceneprocessing
+package indigo.render.pipeline.sceneprocessing.utils
 
-import indigo.core.datatypes.Fill
-import indigo.core.datatypes.Point
-import indigo.core.datatypes.Rectangle
+import indigo.render.pipeline.sceneprocessing.LightData
 import indigo.scenegraph.AmbientLight
-import indigo.scenegraph.Camera
 import indigo.scenegraph.DirectionLight
-import indigo.scenegraph.Layer
-import indigo.scenegraph.LayerEntry
-import indigo.scenegraph.LayerKey
 import indigo.scenegraph.Light
-import indigo.scenegraph.Shape
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Radians
 
-class SceneProcessorTests extends munit.FunSuite {
+class BuildLightingDataTests extends munit.FunSuite:
+
+  def to2dp(d: Float): Double =
+    Math.round(d.toDouble * 100).toDouble / 100.0
 
   /*
   For reference, this is what the shader is expecting.
@@ -35,7 +31,7 @@ class SceneProcessorTests extends munit.FunSuite {
       AmbientLight(RGBA.Red.withAmount(0.5))
 
     val actual: LightData =
-      SceneProcessor.makeLightData(light)
+      BuildLightingData.makeLightData(light)
 
     val expected: LightData =
       LightData(
@@ -56,7 +52,7 @@ class SceneProcessorTests extends munit.FunSuite {
       DirectionLight(RGBA.Cyan.withAlpha(0.5), RGBA.White, Radians(0.25))
 
     val actual: LightData =
-      SceneProcessor.makeLightData(light)
+      BuildLightingData.makeLightData(light)
 
     val expected: LightData =
       LightData(
@@ -80,7 +76,7 @@ class SceneProcessorTests extends munit.FunSuite {
       )
 
     val actual: Batch[Float] =
-      SceneProcessor.makeLightsData(lights)
+      BuildLightingData.makeLightsData(lights)
 
     val expected: Batch[Float] =
       Batch[Float](3, 0, 0, 0) ++ // first value, even though single float, requires space of vec4.
@@ -114,71 +110,3 @@ class SceneProcessorTests extends munit.FunSuite {
 
     assertEquals(actual.toList.map(to2dp), expected.toList.map(to2dp))
   }
-
-  test("Layer compacting") {
-    val layers: Batch[LayerEntry] =
-      SceneProcessorTestData.uncompacted
-
-    val actual =
-      SceneProcessor.compactLayers(layers)
-
-    val expected =
-      SceneProcessorTestData.compacted
-
-    assertEquals(clue(actual), clue(expected))
-  }
-
-  def to2dp(d: Float): Double =
-    Math.round(d.toDouble * 100).toDouble / 100.0
-
-}
-
-object SceneProcessorTestData:
-
-  val shape: Shape.Box =
-    Shape.Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Red))
-
-  val uncompacted: Batch[LayerEntry] =
-    Batch(
-      LayerEntry(Layer.empty),
-      LayerEntry(LayerKey("b"), Layer.empty),
-      LayerEntry(
-        LayerKey("c"),
-        Layer.Stack(
-          Layer.Content(shape),
-          Layer.Content(shape)
-        )
-      ),
-      LayerEntry(
-        LayerKey("d"),
-        Layer.Stack(
-          Layer.empty.withCamera(Camera.Fixed(Point.zero)),
-          Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
-          Layer.Content(shape).withCamera(Camera.Fixed(Point(10))),
-          Layer.Stack(
-            Layer(shape).withCamera(Camera.Fixed(Point(10))),
-            Layer(shape)
-          )
-        )
-      )
-    )
-
-  val compacted: Batch[(Option[LayerKey], Batch[Layer.Content])] =
-    Batch(
-      (None, Batch(Layer.Content.empty)),
-      (Some(LayerKey("b")), Batch(Layer.Content.empty)),
-      (
-        Some(LayerKey("c")),
-        Batch(
-          Layer.Content(shape, shape)
-        )
-      ),
-      (
-        Some(LayerKey("d")),
-        Batch(
-          Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
-          Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
-          Layer.Content(shape)
-        )
-      )
-    )
