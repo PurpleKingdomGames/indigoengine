@@ -10,12 +10,7 @@ import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.render.pipeline.sceneprocessing.utils.*
 import indigo.scenegraph.Blending
-import indigo.scenegraph.CloneBlank
-import indigo.scenegraph.EntityNode
-import indigo.scenegraph.Graphic
 import indigo.scenegraph.SceneUpdateFragment
-import indigo.scenegraph.Shape
-import indigo.scenegraph.Sprite
 import indigo.scenegraph.materials.BlendMaterial
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -104,9 +99,9 @@ final class SceneProcessor(
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
-              cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+              displayObjectConverterClone.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
             }
-          else cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+          else displayObjectConverterClone.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
 
         maybeDO match
           case None => acc
@@ -114,43 +109,6 @@ final class SceneProcessor(
             acc.update(blank.id.toString, displayObject)
             acc
       }
-
-  private def cloneBlankToDisplayObject(
-      blank: CloneBlank,
-      gameTime: GameTime,
-      assetMapping: AssetMapping
-  ): Option[DisplayObject] =
-    blank.cloneable() match
-      case s: Shape[_] =>
-        Some(displayObjectConverterClone.shapeToDisplayObject(s))
-
-      case g: Graphic[_] =>
-        Some(displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
-
-      case s: Sprite[_] =>
-        animationsRegister
-          .fetchAnimationForSprite(
-            gameTime,
-            s.bindingKey,
-            s.animationKey,
-            s.animationActions
-          )
-          .map { anim =>
-            displayObjectConverterClone.spriteToDisplayObject(
-              boundaryLocator,
-              s,
-              assetMapping,
-              anim
-            )
-          }
-
-      // TODO: Should we just use this for everything? Clip isn't caught above, for instance.
-      // Or are we better off calling the specialised functions?
-      case e: EntityNode[_] =>
-        Some(displayObjectConverterClone.sceneEntityToDisplayObject(e, assetMapping))
-
-      case _ =>
-        None
 
   // TODO: Be more efficient, remove allocations from flatMaps and zips and maps etc.
   private def makeDisplayLayers(
