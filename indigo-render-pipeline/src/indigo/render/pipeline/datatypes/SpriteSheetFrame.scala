@@ -10,21 +10,23 @@ object SpriteSheetFrame:
       frameCrop: Rectangle,
       textureOffset: Vector2
   ): SpriteSheetFrameCoordinateOffsets =
-    val frameSize   = frameCrop.size.toVector
-    val scaleFactor = frameSize / atlasSize
+    val frameSize       = frameCrop.size.toVector
+    val scaleFactor     = frameSize / atlasSize
+    val frameCropPos    = frameCrop.position.toVector
+    val translateScale  = scaleFactor / frameSize
+    val translateOffset = scaleFactor * (frameCropPos / frameSize)
+    val translate       = translateScale * textureOffset + translateOffset
 
-    val translator: Vector2 => Vector2 =
-      texturePosition => scaleFactor * ((frameCrop.position.toVector + texturePosition) / frameSize)
-
-    SpriteSheetFrameCoordinateOffsets(scaleFactor, translator(textureOffset), translator)
+    SpriteSheetFrameCoordinateOffsets(scaleFactor, translate, translateScale, translateOffset)
 
   val defaultOffset: SpriteSheetFrameCoordinateOffsets =
     calculateFrameOffset(Vector2(1.0, 1.0), Rectangle(0, 0, 1, 1), Vector2.zero)
 
-  final case class SpriteSheetFrameCoordinateOffsets(
-      scale: Vector2,
-      translate: Vector2,
-      translateCoords: Vector2 => Vector2
+  final class SpriteSheetFrameCoordinateOffsets(
+      val scale: Vector2,
+      val translate: Vector2,
+      val translateScale: Vector2,
+      val translateOffset: Vector2
   ) derives CanEqual:
     inline def offsetToCoords(textureOffset: Vector2): Vector2 =
-      translateCoords(textureOffset)
+      translateScale * textureOffset + translateOffset

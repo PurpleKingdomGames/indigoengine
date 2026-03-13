@@ -101,4 +101,34 @@ class SpriteSheetFrameTests extends munit.FunSuite {
 
   }
 
+  test("offsetToCoords on a non-square atlas") {
+
+    val atlasSize     = Vector2(256, 128)
+    val frameCrop     = Rectangle(64, 0, 64, 64)
+    val textureOffset = Vector2(0, 0)
+
+    val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
+
+    assertEquals(offset.scale, Vector2(0.25, 0.5))
+
+    assertEquals(offset.offsetToCoords(Vector2(0, 0)), Vector2(0.25, 0.0))
+    assertEquals(offset.offsetToCoords(Vector2(64, 0)), Vector2(0.5, 0.0))
+    assertEquals(offset.offsetToCoords(Vector2(0, 64)), Vector2(0.25, 0.5))
+    assertEquals(offset.offsetToCoords(Vector2(64, 64)), Vector2(0.5, 0.5))
+
+  }
+
+  test("offsetToCoords with non-zero texture offset on cropped frame") {
+
+    val atlasSize     = Vector2(128, 128)
+    val frameCrop     = Rectangle(32, 16, 32, 32)
+    val textureOffset = Vector2(10, 20)
+
+    val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
+
+    assertEquals(offset.offsetToCoords(Vector2(0, 0)), Vector2(0.25, 0.125))
+    assertEquals(offset.offsetToCoords(Vector2(10, 20)), offset.translate)
+
+  }
+
 }

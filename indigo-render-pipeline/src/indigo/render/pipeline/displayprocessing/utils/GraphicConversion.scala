@@ -21,7 +21,7 @@ object GraphicConversion:
       QuickCache[Batch[Float]]
   ): DisplayObject = {
     val shaderData     = leaf.material.toShaderData
-    val shaderDataHash = shaderData.toCacheKey
+    val shaderDataHash = toCacheKey(shaderData)
     val materialName   = shaderData.channel0.get
 
     val emissiveOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")

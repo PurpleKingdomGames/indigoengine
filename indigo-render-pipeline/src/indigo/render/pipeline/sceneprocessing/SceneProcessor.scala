@@ -29,8 +29,6 @@ final class SceneProcessor(
 
   private val displayObjectConverter: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterClone: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
   private given uniformsCache: QuickCache[Batch[Float]]             = QuickCache.empty
   private given staticCloneCache: QuickCache[Option[DisplayObject]] = QuickCache.empty
@@ -38,7 +36,6 @@ final class SceneProcessor(
   // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
     displayObjectConverter.purgeCaches()
-    displayObjectConverterClone.purgeCaches()
     uniformsCache.purgeAllNow()
     // TODO: I've just added this, wasn't here before.. was it missed? How static is static. Assess.
     // staticCloneCache.purgeAllNow()
@@ -71,7 +68,6 @@ final class SceneProcessor(
       scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
 
     displayObjectConverter.purgeEachFrame()
-    displayObjectConverterClone.purgeEachFrame()
 
     // TODO: Can this be more efficient?
     // Looks like splitting the diplayLayers into two batches might be good instead of traversing twice? (see next TODO)
@@ -98,9 +94,9 @@ final class SceneProcessor(
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
-              displayObjectConverterClone.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+              displayObjectConverter.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
             }
-          else displayObjectConverterClone.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+          else displayObjectConverter.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
 
         maybeDO match
           case None => acc

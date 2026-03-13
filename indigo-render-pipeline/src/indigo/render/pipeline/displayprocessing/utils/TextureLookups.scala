@@ -15,11 +15,12 @@ object TextureLookups:
       cacheSuffix: String
   )(using QuickCache[Vector2], QuickCache[TextureRefAndOffset]): Vector2 =
     QuickCache[Vector2](cacheKey + cacheSuffix) {
-      maybeAssetName
-        .map { t =>
+      maybeAssetName match
+        case Some(t) =>
           lookupTexture(assetMapping, t).offset
-        }
-        .getOrElse(Vector2.zero)
+
+        case None =>
+          Vector2.zero
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName])(using

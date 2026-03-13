@@ -40,7 +40,7 @@ object TextConversion:
 
       val material       = leaf.material
       val shaderData     = material.toShaderData
-      val shaderDataHash = shaderData.toCacheKey
+      val shaderDataHash = toCacheKey(shaderData)
       val materialName   = shaderData.channel0.get
 
       val lineHash: String =
@@ -138,7 +138,7 @@ object TextConversion:
       QuickCache(s"[indigo_text_clone_ref][${cloneId.toString}]") {
         val material       = leaf.material
         val shaderData     = material.toShaderData
-        val shaderDataHash = shaderData.toCacheKey
+        val shaderDataHash = toCacheKey(shaderData)
         val materialName   = shaderData.channel0.get
         val emissiveOffset =
           TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")

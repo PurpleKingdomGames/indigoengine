@@ -14,6 +14,8 @@ import indigoengine.shared.collections.Batch
 
 object ShapeConversion:
 
+  private val pointZero: Point = Point.zero
+
   def shapeToDisplayObject(leaf: Shape[?])(using
       QuickCache[Batch[Float]]
   ): DisplayObject = {
@@ -22,13 +24,13 @@ object ShapeConversion:
       case s: Shape.Box =>
         val size = s.dimensions.size
 
-        if size.width == size.height then Point.zero
+        if size.width == size.height then pointZero
         else if size.width < size.height then
           Point(-Math.round((size.height.toDouble - size.width.toDouble) / 2).toInt, 0)
         else Point(0, -Math.round((size.width.toDouble - size.height.toDouble) / 2).toInt)
 
       case _ =>
-        Point.zero
+        pointZero
 
     val boundsActual = BoundaryLocator.untransformedShapeBounds(leaf)
 

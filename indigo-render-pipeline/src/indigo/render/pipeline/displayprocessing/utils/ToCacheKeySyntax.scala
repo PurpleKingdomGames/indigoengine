@@ -4,11 +4,11 @@ import indigo.shaders.ShaderData
 
 object ToCacheKeySyntax:
 
-  extension (sd: ShaderData)
-    def toCacheKey: String =
-      sd.shaderId.toString +
-        sd.channel0.map(_.toString).getOrElse("") +
-        sd.channel1.map(_.toString).getOrElse("") +
-        sd.channel2.map(_.toString).getOrElse("") +
-        sd.channel3.map(_.toString).getOrElse("") +
-        sd.uniformBlocks.map(_.uniformHash).mkString
+  def toCacheKey(sd: ShaderData): String =
+    val sb = new StringBuilder(sd.shaderId.toString)
+    sd.channel0.foreach(v => sb.append(v.toString))
+    sd.channel1.foreach(v => sb.append(v.toString))
+    sd.channel2.foreach(v => sb.append(v.toString))
+    sd.channel3.foreach(v => sb.append(v.toString))
+    sd.uniformBlocks.foreach(ub => sb.append(ub.uniformHash))
+    sb.toString
