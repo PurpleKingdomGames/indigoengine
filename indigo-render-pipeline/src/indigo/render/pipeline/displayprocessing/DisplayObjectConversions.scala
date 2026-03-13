@@ -46,7 +46,6 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ):
 
-  // TODO: Use static explicit QuickCache instances to remove implicit search.
   // Per asset load
   implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
