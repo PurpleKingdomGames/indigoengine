@@ -4,68 +4,69 @@ import indigo.core.utils.QuickCache
 import indigo.shaders.ShaderPrimitive
 import indigo.shaders.Uniform
 import indigoengine.shared.collections.Batch
-
-import scala.annotation.tailrec
+import indigoengine.shared.collections.mutable
 
 object PackUBOs:
 
-  private val empty0: Batch[Float] = Batch[Float]()
-  private val empty1: Batch[Float] = Batch[Float](0.0f)
-  private val empty2: Batch[Float] = Batch[Float](0.0f, 0.0f)
-  private val empty3: Batch[Float] = Batch[Float](0.0f, 0.0f, 0.0f)
-
-  def expandTo4(arr: Batch[Float]): Batch[Float] =
-    arr.length match {
-      case 0 => arr
-      case 1 => arr ++ empty3
-      case 2 => arr ++ empty2
-      case 3 => arr ++ empty1
-      case 4 => arr
-      case _ => arr
-    }
-
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def packUBO(
       uniforms: Batch[(Uniform, ShaderPrimitive)],
       cacheKey: String,
       disableCache: Boolean
-  )(using QuickCache[Batch[Float]]): Batch[Float] = {
-    @tailrec
-    def rec(
-        remaining: Batch[ShaderPrimitive],
-        current: Batch[Float],
-        acc: Batch[Float]
-    ): Batch[Float] =
-      remaining match
-        case us if us.isEmpty =>
-          // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
-          // println(s"result: ${(acc ++ expandTo4(current)).toList}")
-          acc ++ expandTo4(current)
-
-        case us if current.length == 4 =>
-          // println(s"current full, sub-result: ${(acc ++ current).toList}")
-          rec(us, empty0, acc ++ current)
-
-        case us if current.isEmpty && us.head.isArray =>
-          // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
-          rec(us.tail, us.head.toBatch, acc)
-
-        case us if current.length == 1 && us.head.length == 2 =>
-          // println("Current value is float, must not straddle byte boundary when adding vec2")
-          rec(us.tail, current ++ Batch(0.0f) ++ us.head.toBatch, acc)
-
-        case us if current.length + us.head.length > 4 =>
-          // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
-          rec(us, empty0, acc ++ expandTo4(current))
-
-        case us if us.head.isArray =>
-          // println(s"fits but next value is array, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
-          rec(us, empty0, acc ++ current)
-
-        case us =>
-          // println(s"fits, current is now: ${(current ++ u.toArray).toList}")
-          rec(us.tail, current ++ us.head.toBatch, acc)
-
+  )(using QuickCache[Batch[Float]]): Batch[Float] =
     QuickCache(cacheKey, disableCache) {
-      rec(uniforms.map(_._2), empty0, empty0)
+      val prims   = uniforms.map(_._2)
+      val buf     = mutable.Batch.empty[Float]
+      var rowUsed = 0
+      var i       = 0
+
+      while i < prims.length do
+        val p = prims(i)
+        i += 1
+
+        if rowUsed == 4 then rowUsed = 0 // Row complete, reset
+
+        // Arrays are pre-packed; pad partial row and append directly
+        if p.isArray then
+          if rowUsed > 0 then
+            while rowUsed < 4 do
+              buf.append(0.0f)
+              rowUsed += 1
+            rowUsed = 0
+          appendBatch(buf, p.toBatch)
+        else
+          val primLen = p.length
+
+          // std140: vec2 must not straddle a 16-byte boundary
+          if rowUsed == 1 && primLen == 2 then
+            buf.append(0.0f)
+            rowUsed = 2
+
+          // Primitive doesn't fit in current row
+          if rowUsed + primLen > 4 then
+            // Pad remaining row; rowUsed == 0 handles large primitives like mat4
+            if rowUsed > 0 then
+              while rowUsed < 4 do
+                buf.append(0.0f)
+                rowUsed += 1
+            appendBatch(buf, p.toBatch)
+            rowUsed = primLen % 4
+          else
+            appendBatch(buf, p.toBatch)
+            rowUsed += primLen
+
+      // Pad final partial row
+      if rowUsed > 0 && rowUsed < 4 then
+        while rowUsed < 4 do
+          buf.append(0.0f)
+          rowUsed += 1
+
+      buf.toBatch
     }
-  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private def appendBatch(buf: mutable.Batch[Float], b: Batch[Float]): Unit =
+    var j = 0
+    while j < b.length do
+      buf.append(b(j))
+      j += 1

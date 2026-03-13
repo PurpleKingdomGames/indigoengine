@@ -178,6 +178,141 @@ class PackUBOsTests extends munit.FunSuite {
 
   }
 
+  // Scalar packing tests
+
+  test("empty uniforms") {
+    val actual = PackUBOs.packUBO(Batch.empty, "", true)
+    assertEquals(actual.toList, List.empty[Float])
+  }
+
+  test("single float pads to vec4") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> float(42))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](42, 0, 0, 0))
+  }
+
+  test("two floats pad to vec4") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> float(1), Uniform("b") -> float(2))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 0, 0))
+  }
+
+  test("three floats pad to vec4") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> float(2),
+      Uniform("c") -> float(3)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0))
+  }
+
+  test("four floats fill a row exactly") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> float(2),
+      Uniform("c") -> float(3),
+      Uniform("d") -> float(4)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4))
+  }
+
+  test("five floats span two rows") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> float(2),
+      Uniform("c") -> float(3),
+      Uniform("d") -> float(4),
+      Uniform("e") -> float(5)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4, 5, 0, 0, 0))
+  }
+
+  // Vector packing tests
+
+  test("single vec4") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec4(1, 2, 3, 4))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4))
+  }
+
+  test("single vec3 pads to 16 bytes") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0))
+  }
+
+  test("two vec2s pack into one row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec2(1, 2), Uniform("b") -> vec2(3, 4))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4))
+  }
+
+  test("vec3 then float starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3), Uniform("b") -> float(4))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 0, 0, 0))
+  }
+
+  test("float then vec3 - float pads, vec3 gets own row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> float(1), Uniform("b") -> vec3(2, 3, 4))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 0, 0, 0, 2, 3, 4, 0))
+  }
+
+  // Boundary straddling tests
+
+  test("float-vec2 inserts padding") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> float(1), Uniform("b") -> vec2(2, 3))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 0, 2, 3))
+  }
+
+  test("float-float-vec2 packs without padding") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> float(2),
+      Uniform("c") -> vec2(3, 4)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4))
+  }
+
+  // mat4 tests
+
+  test("standalone mat4") {
+    import indigo.shaders.ShaderPrimitive._
+    val data     = Batch.fromList((1 to 16).map(_.toFloat).toList)
+    val uniforms = Batch(Uniform("a") -> mat4(data))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, (1 to 16).map(_.toFloat).toList)
+  }
+
+  test("float then mat4") {
+    import indigo.shaders.ShaderPrimitive._
+    val data     = Batch.fromList((1 to 16).map(_.toFloat).toList)
+    val uniforms = Batch(Uniform("a") -> float(1), Uniform("b") -> mat4(data))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(
+      actual.toList,
+      List[Float](1, 0, 0, 0) ++ (1 to 16).map(_.toFloat).toList
+    )
+  }
+
   test("ubo packing - raw array of floats") {
 
     import indigo.shaders.ShaderPrimitive._
