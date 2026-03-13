@@ -32,7 +32,6 @@ final class SceneProcessor(
   private val displayObjectConverterClone: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
-  // TODO: Stop using implicits here. Maybe just use mutable.KVP directly?
   private given uniformsCache: QuickCache[Batch[Float]]             = QuickCache.empty
   private given staticCloneCache: QuickCache[Option[DisplayObject]] = QuickCache.empty
 
