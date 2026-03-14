@@ -48,7 +48,8 @@ object SpriteConversion:
         )
       }
 
-    val bounds = boundaryLocator.spriteFrameBounds(leaf).getOrElse(Rectangle.zero)
+    val bounds =
+      boundaryLocator.spriteFrameBounds(leaf).getOrElse(Rectangle.zero)
 
     val shaderId = shaderData.shaderId
 
