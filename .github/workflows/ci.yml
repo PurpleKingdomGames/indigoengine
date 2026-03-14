@@ -29,7 +29,6 @@ jobs:
 
   js:
     name: Indigo engine build (Scala.js)
-    needs: jvm
     runs-on: ubuntu-latest
     env:
       JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
@@ -56,7 +55,6 @@ jobs:
 
   native:
     name: Indigo engine build (Scala Native)
-    needs: jvm
     runs-on: ubuntu-latest
     env:
       JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
