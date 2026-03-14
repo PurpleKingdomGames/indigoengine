@@ -49,7 +49,7 @@ jobs:
     - name: Check linting
       run: ./mill --no-server --disable-ticker -j2 __.js.fix --check
     - name: Link Scala.js tests
-      run: ./mill --no-server --disable-ticker -j2 __.js.fastLinkJSTest
+      run: ./mill --no-server --disable-ticker -j2 __.fastLinkJSTest
     - name: Run Scala.js tests
       run: ./mill --no-server --disable-ticker __.js.test
 
