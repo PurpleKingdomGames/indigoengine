@@ -8,6 +8,8 @@ import indigoengine.shared.collections.mutable
 
 object PackUBOs:
 
+  private val buf: mutable.Batch[Float] = mutable.Batch.empty
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def packUBO(
       uniforms: Batch[(Uniform, ShaderPrimitive)],
@@ -15,8 +17,8 @@ object PackUBOs:
       disableCache: Boolean
   )(using QuickCache[Batch[Float]]): Batch[Float] =
     QuickCache(cacheKey, disableCache) {
-      val prims   = uniforms.map(_._2)
-      val buf     = mutable.Batch.empty[Float]
+      val prims = uniforms.map(_._2)
+      buf.clear()
       var rowUsed = 0
       var i       = 0
 

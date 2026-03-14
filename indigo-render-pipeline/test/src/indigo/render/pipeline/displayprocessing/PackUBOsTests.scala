@@ -313,6 +313,25 @@ class PackUBOsTests extends munit.FunSuite {
     )
   }
 
+  test("consecutive calls produce independent results") {
+    import indigo.shaders.ShaderPrimitive._
+
+    val uniformsA = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> vec3(2, 3, 4)
+    )
+    val uniformsB = Batch(
+      Uniform("x") -> vec2(10, 20),
+      Uniform("y") -> vec2(30, 40)
+    )
+
+    val resultA = PackUBOs.packUBO(uniformsA, "A", true)
+    val resultB = PackUBOs.packUBO(uniformsB, "B", true)
+
+    assertEquals(resultA.toList, List[Float](1, 0, 0, 0, 2, 3, 4, 0))
+    assertEquals(resultB.toList, List[Float](10, 20, 30, 40))
+  }
+
   test("ubo packing - raw array of floats") {
 
     import indigo.shaders.ShaderPrimitive._
