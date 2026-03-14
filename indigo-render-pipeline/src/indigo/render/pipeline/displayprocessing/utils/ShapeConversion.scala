@@ -34,18 +34,12 @@ object ShapeConversion:
 
     val boundsActual = BoundaryLocator.untransformedShapeBounds(leaf)
 
-    val shader: ShaderData = Shape.toShaderData(leaf, boundsActual)
-    val bounds             = boundsActual.toSquare
+    val shaderData: ShaderData = Shape.toShaderData(leaf, boundsActual)
+    val bounds                 = boundsActual.toSquare
 
     val vec2Zero = Vector2.zero
     val uniformData: Batch[DisplayObjectUniformData] =
-      shader.uniformBlocks.map { ub =>
-        DisplayObjectUniformData(
-          uniformHash = ub.uniformHash,
-          blockName = ub.blockName.toString,
-          data = PackUBOs.packUBO(ub.uniforms, ub.uniformHash, false)
-        )
-      }
+      ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
     val offsetRef = leaf.ref - offset
 
@@ -69,7 +63,7 @@ object ShapeConversion:
       texturePosition = vec2Zero,
       textureSize = vec2Zero,
       atlasSize = vec2Zero,
-      shaderId = shader.shaderId,
+      shaderId = shaderData.shaderId,
       shaderUniformData = uniformData
     )
   }

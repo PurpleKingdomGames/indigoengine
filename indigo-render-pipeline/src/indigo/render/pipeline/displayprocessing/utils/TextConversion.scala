@@ -64,13 +64,7 @@ object TextConversion:
       val shaderId = shaderData.shaderId
 
       val uniformData: Batch[DisplayObjectUniformData] =
-        shaderData.uniformBlocks.map { ub =>
-          DisplayObjectUniformData(
-            uniformHash = ub.uniformHash,
-            blockName = ub.blockName.toString,
-            data = PackUBOs.packUBO(ub.uniforms, ub.uniformHash, false)
-          )
-        }
+        ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
       QuickCache(lineHash) {
         zipWithCharDetails(Batch.fromArray(line.text.toCharArray), fontInfo, leaf.letterSpacing).map {

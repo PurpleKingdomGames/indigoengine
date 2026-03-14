@@ -42,13 +42,7 @@ object GraphicConversion:
     val shaderId = shaderData.shaderId
 
     val uniformData: Batch[DisplayObjectUniformData] =
-      shaderData.uniformBlocks.map { ub =>
-        DisplayObjectUniformData(
-          uniformHash = ub.uniformHash,
-          blockName = ub.blockName.toString,
-          data = PackUBOs.packUBO(ub.uniforms, ub.uniformHash, false)
-        )
-      }
+      ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
     DisplayObject(
       x = leaf.position.x.toFloat,

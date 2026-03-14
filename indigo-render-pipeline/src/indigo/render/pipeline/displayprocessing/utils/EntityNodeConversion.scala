@@ -22,16 +22,16 @@ object EntityNodeConversion:
       QuickCache[SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets],
       QuickCache[Batch[Float]]
   ): DisplayObject = {
-    val shader: ShaderData = leaf.toShaderData
+    val shaderData: ShaderData = leaf.toShaderData
 
-    val channelOffset1 = TextureLookups.optionalAssetToOffset(assetMapping, shader.channel1)
-    val channelOffset2 = TextureLookups.optionalAssetToOffset(assetMapping, shader.channel2)
-    val channelOffset3 = TextureLookups.optionalAssetToOffset(assetMapping, shader.channel3)
+    val channelOffset1 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel1)
+    val channelOffset2 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel2)
+    val channelOffset3 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel3)
 
     val bounds = Rectangle(Point.zero, leaf.size)
 
     val texture =
-      shader.channel0.map(assetName => TextureLookups.lookupTexture(assetMapping, assetName))
+      shaderData.channel0.map(assetName => TextureLookups.lookupTexture(assetMapping, assetName))
 
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
       texture match {
@@ -39,7 +39,7 @@ object EntityNodeConversion:
           SpriteSheetFrame.defaultOffset
 
         case Some(texture) =>
-          QuickCache(s"${bounds.hashCode().toString}_${shader.hashCode().toString}") {
+          QuickCache(s"${bounds.hashCode().toString}_${shaderData.hashCode().toString}") {
             SpriteSheetFrame.calculateFrameOffset(
               atlasSize = texture.atlasSize,
               frameCrop = bounds,
@@ -48,16 +48,10 @@ object EntityNodeConversion:
           }
       }
 
-    val shaderId = shader.shaderId
+    val shaderId = shaderData.shaderId
 
     val uniformData: Batch[DisplayObjectUniformData] =
-      shader.uniformBlocks.map { ub =>
-        DisplayObjectUniformData(
-          uniformHash = ub.uniformHash,
-          blockName = ub.blockName.toString,
-          data = PackUBOs.packUBO(ub.uniforms, ub.uniformHash, false)
-        )
-      }
+      ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
     DisplayObject(
       x = leaf.position.x.toFloat,
