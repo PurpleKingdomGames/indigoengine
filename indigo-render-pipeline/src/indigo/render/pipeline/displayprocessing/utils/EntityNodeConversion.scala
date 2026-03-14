@@ -53,6 +53,14 @@ object EntityNodeConversion:
     val uniformData: Batch[DisplayObjectUniformData] =
       ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
+    val (txPos, txSize, aSize, atlasName) =
+      texture match
+        case None =>
+          (Vector2.zero, Vector2.zero, Vector2.zero, None)
+
+        case Some(tx) =>
+          (tx.offset, tx.size, tx.atlasSize, Some(tx.atlasName))
+
     DisplayObject(
       x = leaf.position.x.toFloat,
       y = leaf.position.y.toFloat,
@@ -65,14 +73,14 @@ object EntityNodeConversion:
       rotation = leaf.rotation,
       width = bounds.size.width,
       height = bounds.size.height,
-      atlasName = texture.map(_.atlasName),
+      atlasName = atlasName,
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
       channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
-      texturePosition = texture.map(_.offset).getOrElse(Vector2.zero),
-      textureSize = texture.map(_.size).getOrElse(Vector2.zero),
-      atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
+      texturePosition = txPos,
+      textureSize = txSize,
+      atlasSize = aSize,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
