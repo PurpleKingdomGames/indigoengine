@@ -137,35 +137,54 @@ object BuildLightingData:
         )
 
   private def extractFalloff(falloff: Falloff): (Float, Float, Float, Float) =
-    val useFarCutoff: Float =
-      falloff match
-        case Falloff.None(_, far)      => if far.isDefined then 1.0f else 0.0f
-        case Falloff.Linear(_, far)    => if far.isDefined then 1.0f else 0.0f
-        case Falloff.Quadratic(_, far) => if far.isDefined then 1.0f else 0.0f
-        case _                         => 1.0f
+    falloff match
+      case Falloff.None(near, Some(far)) =>
+        val useFarCutoff: Float = 1.0f
+        val falloffType: Float  = 0.0f
 
-    val falloffType: Float =
-      falloff match
-        case _: Falloff.None            => 0.0f
-        case _: Falloff.SmoothLinear    => 1.0f
-        case _: Falloff.SmoothQuadratic => 2.0f
-        case _: Falloff.Linear          => 3.0f
-        case _: Falloff.Quadratic       => 4.0f
+        (useFarCutoff, falloffType, near.toFloat, far.toFloat)
 
-    val near: Float =
-      falloff match
-        case Falloff.None(near, _)            => near.toFloat
-        case Falloff.SmoothLinear(near, _)    => near.toFloat
-        case Falloff.SmoothQuadratic(near, _) => near.toFloat
-        case Falloff.Linear(near, _)          => near.toFloat
-        case Falloff.Quadratic(near, _)       => near.toFloat
+      case Falloff.None(near, None) =>
+        val useFarCutoff: Float = 0.0f
+        val falloffType: Float  = 0.0f
+        val far: Float          = 10000.0f
 
-    val far: Float =
-      falloff match
-        case Falloff.None(_, far)            => far.map(_.toFloat).getOrElse(10000.0f)
-        case Falloff.SmoothLinear(_, far)    => far.toFloat
-        case Falloff.SmoothQuadratic(_, far) => far.toFloat
-        case Falloff.Linear(_, far)          => far.map(_.toFloat).getOrElse(10000.0f)
-        case Falloff.Quadratic(_, far)       => far.map(_.toFloat).getOrElse(10000.0f)
+        (useFarCutoff, falloffType, near.toFloat, far)
 
-    (useFarCutoff, falloffType, near, far)
+      case Falloff.SmoothLinear(near, far) =>
+        val useFarCutoff: Float = 1.0f
+        val falloffType: Float  = 1.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far.toFloat)
+
+      case Falloff.SmoothQuadratic(near, far) =>
+        val useFarCutoff: Float = 1.0f
+        val falloffType: Float  = 2.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far.toFloat)
+
+      case Falloff.Linear(near, Some(far)) =>
+        val useFarCutoff: Float = 1.0f
+        val falloffType: Float  = 3.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far.toFloat)
+
+      case Falloff.Linear(near, None) =>
+        val useFarCutoff: Float = 0.0f
+        val falloffType: Float  = 3.0f
+        val far: Float          = 10000.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far)
+
+      case Falloff.Quadratic(near, Some(far)) =>
+        val useFarCutoff: Float = 1.0f
+        val falloffType: Float  = 4.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far.toFloat)
+
+      case Falloff.Quadratic(near, None) =>
+        val useFarCutoff: Float = 0.0f
+        val falloffType: Float  = 4.0f
+        val far: Float          = 10000.0f
+
+        (useFarCutoff, falloffType, near.toFloat, far)
