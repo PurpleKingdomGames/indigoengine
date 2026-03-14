@@ -5,7 +5,8 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  build:
+  jvm:
+    name: Indigo engine build (JVM)
     runs-on: ubuntu-latest
     env:
       JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
@@ -14,6 +15,66 @@ jobs:
     - uses: coursier/cache-action@v6
     - uses: coursier/setup-action@v1
       with:
-        java-version: adopt@1.11
-    - name: Indigo Engine Libs Compile & Test
-      run: bash ci.sh
+        java-version: temurin@17
+    - name: Clean and trigger meta build
+      run: ./mill --no-server --disable-ticker clean
+    - name: Compile
+      run: ./mill --no-server --disable-ticker __.jvm.compile
+    - name: Check formatting
+      run: ./mill --no-server --disable-ticker __.jvm.checkFormat
+    - name: Check linting
+      run: ./mill --no-server --disable-ticker -j2 __.jvm.fix --check
+    - name: Run JVM tests
+      run: ./mill --no-server --disable-ticker __.jvm.test
+
+  js:
+    name: Indigo engine build (Scala.js)
+    needs: jvm
+    runs-on: ubuntu-latest
+    env:
+      JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
+    steps:
+    - uses: actions/checkout@v4
+    - uses: coursier/cache-action@v6
+    - uses: coursier/setup-action@v1
+      with:
+        java-version: temurin@17
+    - name: Clean and trigger meta build
+      run: ./mill --no-server --disable-ticker clean
+    - name: Compile
+      run: ./mill --no-server --disable-ticker __.js.compile
+    - name: Link Scala.js
+      run: ./mill --no-server --disable-ticker -j2 __.js.fastLinkJS
+    - name: Check formatting
+      run: ./mill --no-server --disable-ticker __.js.checkFormat
+    - name: Check linting
+      run: ./mill --no-server --disable-ticker -j2 __.js.fix --check
+    - name: Link Scala.js tests
+      run: ./mill --no-server --disable-ticker -j2 __.js.fastLinkJSTest
+    - name: Run Scala.js tests
+      run: ./mill --no-server --disable-ticker __.js.test
+
+  native:
+    name: Indigo engine build (Scala Native)
+    needs: jvm
+    runs-on: ubuntu-latest
+    env:
+      JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
+    steps:
+    - uses: actions/checkout@v4
+    - uses: coursier/cache-action@v6
+    - uses: coursier/setup-action@v1
+      with:
+        java-version: temurin@17
+    - name: Clean and trigger meta build
+      run: ./mill --no-server --disable-ticker clean
+    - name: Compile
+      run: ./mill --no-server --disable-ticker __.native.compile
+    - name: Check formatting
+      run: ./mill --no-server --disable-ticker __.native.checkFormat
+    - name: Check linting
+      run: ./mill --no-server --disable-ticker -j2 __.native.fix --check
+    - name: Link Scala Native tests
+      run: ./mill --no-server --disable-ticker -j2 __.native.test.nativeLink
+    - name: Run Scala Native tests
+      run: ./mill --no-server --disable-ticker __.native.test
