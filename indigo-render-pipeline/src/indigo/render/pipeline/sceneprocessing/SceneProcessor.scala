@@ -17,7 +17,6 @@ import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
 import indigo.shaders.ShaderData
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
 import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.RGBA
 
@@ -53,15 +52,16 @@ final class SceneProcessor(
     val cloneBlankDisplayObjects: mutable.KVP[DisplayObject] =
       gatherCloneBlankDisplayObjects(scene, gameTime, assetMapping)
 
-    val displayLayers: Batch[(DisplayLayer, Batch[(String, DisplayObject)])] =
-      makeDisplayLayers(
+    val (displayLayers, layerCloneBlanks) =
+      SceneProcessor.makeDisplayLayers(
         scene,
         gameTime,
         assetMapping,
         maxBatchSize,
         inputEvents,
         sendEvent,
-        cloneBlankDisplayObjects
+        cloneBlankDisplayObjects,
+        displayObjectConverter
       )
 
     val sceneBlend: ShaderData =
@@ -69,14 +69,13 @@ final class SceneProcessor(
 
     displayObjectConverter.purgeEachFrame()
 
-    // TODO: Can this be more efficient?
-    // Looks like splitting the diplayLayers into two batches might be good instead of traversing twice? (see next TODO)
-    val cloneBlankDOs: KVP[DisplayObject] =
-      cloneBlankDisplayObjects.toKVP.addAll(displayLayers.flatMap(_._2))
+    layerCloneBlanks.toBatch.foreach { case (k, v) =>
+      cloneBlankDisplayObjects.update(k, v)
+    }
 
     new ProcessedSceneData(
-      displayLayers.map(_._1), // TODO: Remove map
-      cloneBlankDOs,
+      displayLayers.toBatch,
+      cloneBlankDisplayObjects.toKVP,
       sceneBlend.shaderId,
       MergeUniformData.mergeShaderToUniformData(sceneBlend),
       scene.camera
@@ -105,35 +104,36 @@ final class SceneProcessor(
             acc
       }
 
-  // TODO: Be more efficient, remove allocations from flatMaps and zips and maps etc.
-  private def makeDisplayLayers(
+object SceneProcessor:
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private[sceneprocessing] def makeDisplayLayers(
       scene: SceneUpdateFragment,
       gameTime: GameTime,
       assetMapping: AssetMapping,
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit,
-      cloneBlankDisplayObjects: mutable.KVP[DisplayObject]
-  ): Batch[(DisplayLayer, Batch[(String, DisplayObject)])] =
-    CompactLayers
-      .compactLayers(scene.layers)
-      .flatMap((maybeLayerKey, contentLayers) =>
-        contentLayers
-          .map(
-            (
-              maybeLayerKey,
-              _
-            )
-          )
-      )
-      .zipWithIndex
-      .map { case (l, i) =>
-        val blending   = l._2.blending.getOrElse(Blending.Normal)
+      cloneBlankDisplayObjects: mutable.KVP[DisplayObject],
+      displayObjectConverter: DisplayObjectConversions
+  )(using QuickCache[Batch[Float]]): (mutable.Batch[DisplayLayer], mutable.KVP[DisplayObject]) =
+    val compacted      = CompactLayers.compactLayers(scene.layers)
+    val layerResults   = mutable.Batch.empty[DisplayLayer]
+    val allCloneBlanks = mutable.KVP.empty[DisplayObject]
+
+    var i = 0
+    while i < compacted.length do
+      val (maybeLayerKey, contentLayers) = compacted(i)
+
+      var j = 0
+      while j < contentLayers.length do
+        val content    = contentLayers(j)
+        val blending   = content.blending.getOrElse(Blending.Normal)
         val shaderData = blending.blendMaterial.toShaderData
 
         val conversionResults = displayObjectConverter
           .processSceneNodes(
-            l._2.nodes,
+            content.nodes,
             gameTime,
             assetMapping,
             cloneBlankDisplayObjects,
@@ -142,18 +142,33 @@ final class SceneProcessor(
             sendEvent
           )
 
-        val layer = DisplayLayer(
-          l._1,
-          conversionResults._1,
-          BuildLightingData.makeLightsData(scene.lights ++ l._2.lights),
-          blending.clearColor.getOrElse(RGBA.Zero),
-          l._2.magnification,
-          blending.entity,
-          blending.layer,
-          shaderData.shaderId,
-          MergeUniformData.mergeShaderToUniformData(shaderData),
-          l._2.camera
+        layerResults.append(
+          DisplayLayer(
+            maybeLayerKey,
+            conversionResults._1,
+            BuildLightingData.makeLightsData(scene.lights ++ content.lights),
+            blending.clearColor.getOrElse(RGBA.Zero),
+            content.magnification,
+            blending.entity,
+            blending.layer,
+            shaderData.shaderId,
+            MergeUniformData.mergeShaderToUniformData(shaderData),
+            content.camera
+          )
         )
 
-        (layer, conversionResults._2)
-      }
+        val cbs = conversionResults._2
+        var k   = 0
+        while k < cbs.length do
+          val (key, value) = cbs(k)
+          allCloneBlanks.update(key, value)
+          k += 1
+        end while
+
+        j += 1
+      end while
+
+      i += 1
+    end while
+
+    (layerResults, allCloneBlanks)
