@@ -2,7 +2,7 @@ package indigo.render
 
 import indigo.core.assets.AssetType
 import indigo.core.datatypes.mutable.CheapMatrix4
-import indigo.render.pipeline.ProcessedSceneData
+import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds

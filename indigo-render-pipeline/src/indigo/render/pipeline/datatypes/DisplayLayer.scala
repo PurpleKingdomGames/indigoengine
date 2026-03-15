@@ -1,4 +1,4 @@
-package indigo.render.pipeline.display
+package indigo.render.pipeline.datatypes
 
 import indigo.scenegraph.Blend
 import indigo.scenegraph.Camera

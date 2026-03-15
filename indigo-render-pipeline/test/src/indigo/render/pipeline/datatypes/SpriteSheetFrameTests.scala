@@ -1,4 +1,4 @@
-package indigo.render.pipeline.display
+package indigo.render.pipeline.datatypes
 
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
@@ -98,6 +98,36 @@ class SpriteSheetFrameTests extends munit.FunSuite {
 
     val offset3 = offset0.offsetToCoords(Vector2(0, 64))
     assertEquals(offset3, Vector2(0.125, 0.625))
+
+  }
+
+  test("offsetToCoords on a non-square atlas") {
+
+    val atlasSize     = Vector2(256, 128)
+    val frameCrop     = Rectangle(64, 0, 64, 64)
+    val textureOffset = Vector2(0, 0)
+
+    val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
+
+    assertEquals(offset.scale, Vector2(0.25, 0.5))
+
+    assertEquals(offset.offsetToCoords(Vector2(0, 0)), Vector2(0.25, 0.0))
+    assertEquals(offset.offsetToCoords(Vector2(64, 0)), Vector2(0.5, 0.0))
+    assertEquals(offset.offsetToCoords(Vector2(0, 64)), Vector2(0.25, 0.5))
+    assertEquals(offset.offsetToCoords(Vector2(64, 64)), Vector2(0.5, 0.5))
+
+  }
+
+  test("offsetToCoords with non-zero texture offset on cropped frame") {
+
+    val atlasSize     = Vector2(128, 128)
+    val frameCrop     = Rectangle(32, 16, 32, 32)
+    val textureOffset = Vector2(10, 20)
+
+    val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
+
+    assertEquals(offset.offsetToCoords(Vector2(0, 0)), Vector2(0.25, 0.125))
+    assertEquals(offset.offsetToCoords(Vector2(10, 20)), offset.translate)
 
   }
 

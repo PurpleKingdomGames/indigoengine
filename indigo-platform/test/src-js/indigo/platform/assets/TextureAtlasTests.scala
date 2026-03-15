@@ -5,7 +5,7 @@ import indigo.core.assets.AssetTag
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.PowerOfTwo
 import indigo.platform.assets.*
-import indigo.render.pipeline.AtlasId
+import indigo.render.pipeline.assets.AtlasId
 
 class TextureAtlasTests extends munit.FunSuite {
 

@@ -2,14 +2,14 @@ package indigo.render.webgl2
 
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.render.facades.WebGL2RenderingContext
-import indigo.render.pipeline.AtlasId
-import indigo.render.pipeline.display.DisplayCloneBatch
-import indigo.render.pipeline.display.DisplayCloneTiles
-import indigo.render.pipeline.display.DisplayEntity
-import indigo.render.pipeline.display.DisplayGroup
-import indigo.render.pipeline.display.DisplayMutants
-import indigo.render.pipeline.display.DisplayObject
-import indigo.render.pipeline.display.DisplayTextLetters
+import indigo.render.pipeline.assets.AtlasId
+import indigo.render.pipeline.datatypes.DisplayCloneBatch
+import indigo.render.pipeline.datatypes.DisplayCloneTiles
+import indigo.render.pipeline.datatypes.DisplayEntity
+import indigo.render.pipeline.datatypes.DisplayGroup
+import indigo.render.pipeline.datatypes.DisplayMutants
+import indigo.render.pipeline.datatypes.DisplayObject
+import indigo.render.pipeline.datatypes.DisplayTextLetters
 import indigo.scenegraph.CloneBatchData
 import indigo.scenegraph.CloneId
 import indigo.shaders.ShaderId

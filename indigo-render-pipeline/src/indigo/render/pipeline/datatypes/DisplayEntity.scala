@@ -1,8 +1,8 @@
-package indigo.render.pipeline.display
+package indigo.render.pipeline.datatypes
 
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
-import indigo.render.pipeline.AtlasId
+import indigo.render.pipeline.assets.AtlasId
 import indigo.scenegraph.CloneBatchData
 import indigo.scenegraph.CloneId
 import indigo.scenegraph.CloneTileData
@@ -12,65 +12,67 @@ import indigoengine.shared.datatypes.Radians
 
 sealed trait DisplayEntity
 
-final case class DisplayGroup(
-    transform: CheapMatrix4,
-    entities: Batch[DisplayEntity]
+final class DisplayGroup(
+    val transform: CheapMatrix4,
+    val entities: Batch[DisplayEntity]
 ) extends DisplayEntity derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
     DisplayGroup(CheapMatrix4.identity, Batch())
 
-final case class DisplayTextLetters(letters: Batch[DisplayEntity]) extends DisplayEntity derives CanEqual
+final class DisplayTextLetters(
+    val letters: Batch[DisplayEntity]
+) extends DisplayEntity derives CanEqual
 object DisplayTextLetters:
   val empty: DisplayTextLetters =
     DisplayTextLetters(Batch())
 
-final case class DisplayCloneBatch(
-    id: CloneId,
-    cloneData: Batch[CloneBatchData]
+final class DisplayCloneBatch(
+    val id: CloneId,
+    val cloneData: Batch[CloneBatchData]
 ) extends DisplayEntity derives CanEqual
 
-final case class DisplayCloneTiles(
-    id: CloneId,
-    cloneData: Batch[CloneTileData]
+final class DisplayCloneTiles(
+    val id: CloneId,
+    val cloneData: Batch[CloneTileData]
 ) extends DisplayEntity derives CanEqual
 
-final case class DisplayMutants(
-    id: CloneId,
-    cloneData: Batch[Batch[DisplayObjectUniformData]]
+final class DisplayMutants(
+    val id: CloneId,
+    val cloneData: Batch[Batch[DisplayObjectUniformData]]
 ) extends DisplayEntity derives CanEqual
 
-final case class DisplayObject(
-    x: Float,
-    y: Float,
-    scaleX: Float,
-    scaleY: Float,
-    refX: Float,
-    refY: Float,
-    flipX: Float,
-    flipY: Float,
-    rotation: Radians,
-    width: Float,
-    height: Float,
-    atlasName: Option[AtlasId],
-    frameScaleX: Float,
-    frameScaleY: Float,
-    channelOffset0X: Float,
-    channelOffset0Y: Float,
-    channelOffset1X: Float,
-    channelOffset1Y: Float,
-    channelOffset2X: Float,
-    channelOffset2Y: Float,
-    channelOffset3X: Float,
-    channelOffset3Y: Float,
-    textureX: Float,
-    textureY: Float,
-    textureWidth: Float,
-    textureHeight: Float,
-    atlasWidth: Float,
-    atlasHeight: Float,
-    shaderId: ShaderId,
-    shaderUniformData: Batch[DisplayObjectUniformData]
+final class DisplayObject(
+    val x: Float,
+    val y: Float,
+    val scaleX: Float,
+    val scaleY: Float,
+    val refX: Float,
+    val refY: Float,
+    val flipX: Float,
+    val flipY: Float,
+    val rotation: Radians,
+    val width: Float,
+    val height: Float,
+    val atlasName: Option[AtlasId],
+    val frameScaleX: Float,
+    val frameScaleY: Float,
+    val channelOffset0X: Float,
+    val channelOffset0Y: Float,
+    val channelOffset1X: Float,
+    val channelOffset1Y: Float,
+    val channelOffset2X: Float,
+    val channelOffset2Y: Float,
+    val channelOffset3X: Float,
+    val channelOffset3Y: Float,
+    val textureX: Float,
+    val textureY: Float,
+    val textureWidth: Float,
+    val textureHeight: Float,
+    val atlasWidth: Float,
+    val atlasHeight: Float,
+    val shaderId: ShaderId,
+    val shaderUniformData: Batch[DisplayObjectUniformData]
 ) extends DisplayEntity derives CanEqual
 object DisplayObject:
 
@@ -99,7 +101,7 @@ object DisplayObject:
       shaderId: ShaderId,
       shaderUniformData: Batch[DisplayObjectUniformData]
   ): DisplayObject =
-    DisplayObject(
+    new DisplayObject(
       x,
       y,
       scaleX,
@@ -132,4 +134,8 @@ object DisplayObject:
       shaderUniformData
     )
 
-final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Batch[Float]) derives CanEqual
+final class DisplayObjectUniformData(
+    val uniformHash: String,
+    val blockName: String,
+    val data: Batch[Float]
+) derives CanEqual

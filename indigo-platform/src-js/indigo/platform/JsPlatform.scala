@@ -22,9 +22,9 @@ import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.RendererInitialiser
-import indigo.render.pipeline.AssetMapping
-import indigo.render.pipeline.AtlasId
-import indigo.render.pipeline.TextureRefAndOffset
+import indigo.render.pipeline.assets.AssetMapping
+import indigo.render.pipeline.assets.AtlasId
+import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.render.webgl2.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch

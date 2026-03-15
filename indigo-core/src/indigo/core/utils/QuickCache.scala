@@ -72,10 +72,10 @@ final class QuickCache[A](private val cache: mutable.KVP[A]):
 
 object QuickCache:
 
-  def apply[A](key: String)(value: => A)(implicit cache: QuickCache[A]): A =
+  def apply[A](key: String)(value: => A)(using cache: QuickCache[A]): A =
     cache.fetchOrAdd(CacheKey(key), false, value)
 
-  def apply[A](key: String, disabled: Boolean)(value: => A)(implicit cache: QuickCache[A]): A =
+  def apply[A](key: String, disabled: Boolean)(value: => A)(using cache: QuickCache[A]): A =
     cache.fetchOrAdd(CacheKey(key), disabled, value)
 
   def empty[A]: QuickCache[A] =
@@ -98,8 +98,8 @@ object ToCacheKey:
       def toKey(a: A): CacheKey = f(a)
     }
 
-  implicit val s: ToCacheKey[String] =
+  given ToCacheKey[String] =
     ToCacheKey(str => CacheKey(str))
 
-  implicit val i: ToCacheKey[Int] =
+  given ToCacheKey[Int] =
     ToCacheKey(p => CacheKey(p.toString))
