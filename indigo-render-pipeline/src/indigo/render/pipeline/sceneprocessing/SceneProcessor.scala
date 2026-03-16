@@ -7,6 +7,7 @@ import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.datatypes.DisplayLayer
 import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.datatypes.ProcessedSceneData
+import indigo.render.pipeline.displayprocessing.DisplayConversionResults
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.render.pipeline.sceneprocessing.utils.*
 import indigo.scenegraph.Blending
@@ -131,21 +132,22 @@ object SceneProcessor:
         val blending   = content.blending.getOrElse(Blending.Normal)
         val shaderData = blending.blendMaterial.toShaderData
 
-        val conversionResults = displayObjectConverter
-          .processSceneNodes(
-            content.nodes,
-            gameTime,
-            assetMapping,
-            cloneBlankDisplayObjects,
-            maxBatchSize,
-            inputEvents,
-            sendEvent
-          )
+        val conversionResults: DisplayConversionResults =
+          displayObjectConverter
+            .processSceneNodes(
+              content.nodes,
+              gameTime,
+              assetMapping,
+              cloneBlankDisplayObjects,
+              maxBatchSize,
+              inputEvents,
+              sendEvent
+            )
 
         layerResults.append(
           DisplayLayer(
             maybeLayerKey,
-            conversionResults._1,
+            conversionResults.displayObjects,
             BuildLightingData.makeLightsData(scene.lights ++ content.lights),
             blending.clearColor.getOrElse(RGBA.Zero),
             content.magnification,
@@ -157,11 +159,11 @@ object SceneProcessor:
           )
         )
 
-        val cbs = conversionResults._2
+        val cbs = conversionResults.clones
         var k   = 0
         while k < cbs.length do
-          val (key, value) = cbs(k)
-          allCloneBlanks.update(key, value)
+          val kvp = cbs(k)
+          allCloneBlanks.update(kvp.id, kvp.displayObject)
           k += 1
         end while
 

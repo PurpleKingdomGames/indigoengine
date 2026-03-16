@@ -58,7 +58,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Batch[GlobalEvent](),
         (_: GlobalEvent) => ()
       )
-      ._1
+      .displayObjects
       .head match {
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")

@@ -86,7 +86,7 @@ final class DisplayObjectConversions(
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit
-  ): (Batch[DisplayEntity], Batch[(String, DisplayObject)]) =
+  ): DisplayConversionResults =
     val f =
       sceneNodeToDisplayObject(
         gameTime,
@@ -120,7 +120,10 @@ final class DisplayObjectConversions(
       f(node)
     }
 
-    (l.map(_._1), l.foldLeft(Batch[(String, DisplayObject)]())(_ ++ _._2))
+    DisplayConversionResults(
+      l.map(_.displayObject),
+      l.foldLeft(Batch.empty[DisplayConversionResultClone])(_ ++ _.clones)
+    )
 
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
@@ -129,20 +132,21 @@ final class DisplayObjectConversions(
       maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit
-  )(sceneNode: SceneNode): (DisplayEntity, Batch[(String, DisplayObject)]) =
-    val noClones = Batch[(String, DisplayObject)]()
+  )(sceneNode: SceneNode): DisplayConversionResult =
+    val noClones = Batch.empty[DisplayConversionResultClone]
+
     sceneNode match {
       case x: Graphic[_] =>
-        (GraphicConversion.graphicToDisplayObject(x, assetMapping), noClones)
+        DisplayConversionResult(GraphicConversion.graphicToDisplayObject(x, assetMapping), noClones)
 
       case s: Shape[_] =>
-        (ShapeConversion.shapeToDisplayObject(s), noClones)
+        DisplayConversionResult(ShapeConversion.shapeToDisplayObject(s), noClones)
 
       case s: EntityNode[_] =>
-        (EntityNodeConversion.sceneEntityToDisplayObject(s, assetMapping), noClones)
+        DisplayConversionResult(EntityNodeConversion.sceneEntityToDisplayObject(s, assetMapping), noClones)
 
       case c: CloneBatch =>
-        (
+        DisplayConversionResult(
           cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
@@ -154,7 +158,7 @@ final class DisplayObjectConversions(
         )
 
       case c: CloneTiles =>
-        (
+        DisplayConversionResult(
           cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
@@ -166,7 +170,7 @@ final class DisplayObjectConversions(
         )
 
       case c: Mutants =>
-        (
+        DisplayConversionResult(
           cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
@@ -188,12 +192,12 @@ final class DisplayObjectConversions(
             inputEvents,
             sendEvent
           )
-        (
+        DisplayConversionResult(
           DisplayGroup(
             GroupConversion.groupToMatrix(g),
-            children._1
+            children.displayObjects
           ),
-          children._2
+          children.clones
         )
 
       case x: Sprite[_] =>
@@ -201,7 +205,7 @@ final class DisplayObjectConversions(
           animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions)
         }
 
-        (
+        DisplayConversionResult(
           animation match {
             case None =>
               IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
@@ -245,7 +249,7 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        (DisplayTextLetters(letters), noClones)
+        DisplayConversionResult(DisplayTextLetters(letters), noClones)
 
       case x: Text[_] =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
@@ -283,7 +287,7 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        (
+        DisplayConversionResult(
           DisplayTextLetters(
             letters.grouped(maxBatchSize).map { d =>
               new DisplayCloneTiles(
@@ -292,14 +296,14 @@ final class DisplayObjectConversions(
               )
             }
           ),
-          Batch((cloneId.toString, clone))
+          Batch(DisplayConversionResultClone(cloneId.toString, clone))
         )
 
       case _: RenderNode[_] =>
-        (DisplayGroup.empty, noClones)
+        DisplayConversionResult(DisplayGroup.empty, noClones)
 
       case _: DependentNode[_] =>
-        (DisplayGroup.empty, noClones)
+        DisplayConversionResult(DisplayGroup.empty, noClones)
     }
 
   def cloneBlankToDisplayObject(
@@ -338,3 +342,10 @@ final class DisplayObjectConversions(
 
       case _ =>
         None
+
+final class DisplayConversionResult(val displayObject: DisplayEntity, val clones: Batch[DisplayConversionResultClone])
+final class DisplayConversionResults(
+    val displayObjects: Batch[DisplayEntity],
+    val clones: Batch[DisplayConversionResultClone]
+)
+final class DisplayConversionResultClone(val id: String, val displayObject: DisplayObject)
