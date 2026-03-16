@@ -21,8 +21,6 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.Radians
 
-import scala.annotation.tailrec
-
 object TextConversion:
 
   def textLineToDisplayObjects(
@@ -44,16 +42,17 @@ object TextConversion:
       val materialName   = shaderData.channel0.get
 
       val lineHash: String =
-        "[indigo_txt]" +
-          leaf.material.hashCode.toString +
-          leaf.position.hashCode.toString +
-          leaf.scale.hashCode.toString +
-          leaf.rotation.hashCode.toString +
-          leaf.ref.hashCode.toString +
-          leaf.flip.horizontal.toString +
-          leaf.flip.vertical.toString +
-          leaf.fontKey.toString +
-          line.hashCode.toString
+        new StringBuilder("[indigo_txt]")
+          .append(leaf.material.hashCode)
+          .append(leaf.position.hashCode)
+          .append(leaf.scale.hashCode)
+          .append(leaf.rotation.hashCode)
+          .append(leaf.ref.hashCode)
+          .append(leaf.flip.horizontal)
+          .append(leaf.flip.vertical)
+          .append(leaf.fontKey.toString)
+          .append(line.hashCode)
+          .toString
 
       val emissiveOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
       val normalOffset   = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
@@ -70,7 +69,13 @@ object TextConversion:
         zipWithCharDetails(Batch.fromArray(line.text.toCharArray), fontInfo, leaf.letterSpacing).map {
           case (fontChar, xPosition) =>
             val frameInfo =
-              QuickCache(fontChar.bounds.hashCode().toString + "_" + shaderDataHash) {
+              QuickCache(
+                new StringBuilder()
+                  .append(fontChar.bounds.hashCode())
+                  .append('_')
+                  .append(shaderDataHash)
+                  .toString
+              ) {
                 SpriteSheetFrame.calculateFrameOffset(
                   atlasSize = texture.atlasSize,
                   frameCrop = fontChar.bounds,
@@ -113,19 +118,19 @@ object TextConversion:
       QuickCache[TextureRefAndOffset],
       QuickCache[Batch[Float]],
       QuickCache[DisplayObject]
-  ): (CloneId, DisplayObject) = {
-
+  ): (CloneId, DisplayObject) =
     val cloneId: CloneId =
       CloneId(
-        "[indigo_txt_clone]" +
-          leaf.material.hashCode.toString +
-          leaf.position.hashCode.toString +
-          leaf.scale.hashCode.toString +
-          leaf.rotation.hashCode.toString +
-          leaf.ref.hashCode.toString +
-          leaf.flip.horizontal.toString +
-          leaf.flip.vertical.toString +
-          leaf.fontKey.toString
+        new StringBuilder("[indigo_txt_clone]")
+          .append(leaf.material.hashCode)
+          .append(leaf.position.hashCode)
+          .append(leaf.scale.hashCode)
+          .append(leaf.rotation.hashCode)
+          .append(leaf.ref.hashCode)
+          .append(leaf.flip.horizontal)
+          .append(leaf.flip.vertical)
+          .append(leaf.fontKey.toString)
+          .toString
       )
 
     val clone =
@@ -183,24 +188,21 @@ object TextConversion:
         )
       }
 
-    (
-      cloneId,
-      clone
-    )
-  }
+    (cloneId, clone)
 
   def textLineToDisplayCloneTileData(
       leaf: Text[?],
       fontInfo: FontInfo
   )(using QuickCache[Batch[CloneTileData]]): (TextLine, Int, Int) => Batch[CloneTileData] =
-    (line, alignmentOffsetX, yOffset) => {
+    (line, alignmentOffsetX, yOffset) =>
       val lineHash: String =
-        "[indigo_tln]" +
-          leaf.position.hashCode.toString +
-          leaf.ref.hashCode.toString +
-          leaf.scale.hashCode.toString +
-          line.hashCode.toString +
-          leaf.fontKey.toString
+        new StringBuilder("[indigo_tln]")
+          .append(leaf.position.hashCode)
+          .append(leaf.ref.hashCode)
+          .append(leaf.scale.hashCode)
+          .append(line.hashCode)
+          .append(leaf.fontKey.toString)
+          .toString
 
       QuickCache(lineHash) {
         zipWithCharDetails(Batch.fromArray(line.text.toArray), fontInfo, leaf.letterSpacing).map {
@@ -218,26 +220,26 @@ object TextConversion:
             )
         }
       }
-    }
 
-  private def zipWithCharDetails(
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private[utils] def zipWithCharDetails(
       charList: Batch[Char],
       fontInfo: FontInfo,
       letterSpacing: Int
-  ): Batch[(FontChar, Int)] = {
-    @tailrec
-    def rec(
-        remaining: Batch[(Char, FontChar)],
-        nextX: Int,
-        acc: mutable.Batch[(FontChar, Int)]
-    ): mutable.Batch[(FontChar, Int)] =
-      if remaining.isEmpty then acc
-      else
-        val x  = remaining.head
-        val xs = remaining.tail
-        acc += ((x._2, nextX))
-        val ls = if xs.isEmpty then 0 else letterSpacing
-        rec(xs, nextX + x._2.bounds.width + ls, acc)
+  ): Batch[(FontChar, Int)] =
+    val len = charList.length
 
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, mutable.Batch.empty).toBatch
-  }
+    if len == 0 then Batch.empty
+    else
+      val acc = mutable.Batch.empty[(FontChar, Int)]
+      var i   = 0
+      var x   = 0
+
+      while i < len do
+        val fontChar = fontInfo.findByCharacter(charList(i))
+
+        acc += ((fontChar, x))
+        x += fontChar.bounds.width + (if i < len - 1 then letterSpacing else 0)
+        i += 1
+
+      acc.toBatch
