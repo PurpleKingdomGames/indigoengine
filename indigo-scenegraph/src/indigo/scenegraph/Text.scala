@@ -25,6 +25,9 @@ final case class Text[M <: Material](
 ) extends DependentNode[Text[M]]
     with SpatialModifiers[Text[M]] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitText(this)
+
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 

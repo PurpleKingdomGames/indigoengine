@@ -19,6 +19,9 @@ final case class Group(
 ) extends DependentNode[Group]
     with SpatialModifiers[Group] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitGroup(this)
+
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 

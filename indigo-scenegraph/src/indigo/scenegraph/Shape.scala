@@ -73,6 +73,9 @@ object Shape:
       shaderId: Option[ShaderId]
   ) extends Shape[Box] {
 
+    override def accept[A](visitor: SceneNodeVisitor[A]): A =
+      visitor.visitShapeBox(this)
+
     lazy val position: Point =
       dimensions.position - (stroke.width / 2)
     lazy val size: Size =
@@ -210,6 +213,9 @@ object Shape:
       flip: Flip,
       shaderId: Option[ShaderId]
   ) extends Shape[Circle] {
+
+    override def accept[A](visitor: SceneNodeVisitor[A]): A =
+      visitor.visitShapeCircle(this)
 
     lazy val position: Point =
       circle.center - circle.radius - (stroke.width / 2)
@@ -381,6 +387,9 @@ object Shape:
       shaderId: Option[ShaderId]
   ) extends Shape[Line] {
 
+    override def accept[A](visitor: SceneNodeVisitor[A]): A =
+      visitor.visitShapeLine(this)
+
     lazy val position: Point =
       Point(Math.min(start.x, end.x), Math.min(start.y, end.y)) - (stroke.width / 2)
 
@@ -517,6 +526,9 @@ object Shape:
       flip: Flip,
       shaderId: Option[ShaderId]
   ) extends Shape[Polygon] {
+
+    override def accept[A](visitor: SceneNodeVisitor[A]): A =
+      visitor.visitShapePolygon(this)
 
     private lazy val verticesBounds: Rectangle =
       Rectangle.fromPointCloud(vertices).expand(stroke.width / 2)

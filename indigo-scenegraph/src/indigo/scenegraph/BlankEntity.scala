@@ -23,6 +23,9 @@ final case class BlankEntity(
     with Cloneable
     with SpatialModifiers[BlankEntity] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitBlankEntity(this)
+
   lazy val x: Int      = position.x
   lazy val y: Int      = position.y
   lazy val width: Int  = size.width
