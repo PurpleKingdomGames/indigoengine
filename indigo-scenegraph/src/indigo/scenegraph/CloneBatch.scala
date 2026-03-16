@@ -13,6 +13,9 @@ final case class CloneBatch(
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode[CloneBatch] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitCloneBatch(this)
+
   lazy val scale: Vector2    = Vector2.one
   lazy val rotation: Radians = Radians.zero
   lazy val ref: Point        = Point.zero

@@ -14,6 +14,9 @@ final case class CloneTiles(
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode[CloneTiles] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitCloneTiles(this)
+
   lazy val scale: Vector2    = Vector2.one
   lazy val rotation: Radians = Radians.zero
   lazy val ref: Point        = Point.zero

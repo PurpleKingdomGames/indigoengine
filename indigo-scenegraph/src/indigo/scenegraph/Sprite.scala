@@ -28,6 +28,9 @@ final case class Sprite[M <: Material](
     with Cloneable
     with SpatialModifiers[Sprite[M]] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitSprite(this)
+
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 

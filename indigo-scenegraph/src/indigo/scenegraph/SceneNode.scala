@@ -15,6 +15,7 @@ sealed trait SceneNode:
   def scale: Vector2
   def flip: Flip
   def ref: Point
+  def accept[A](visitor: SceneNodeVisitor[A]): A
 object SceneNode:
   given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
   given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
@@ -47,6 +48,9 @@ object DependentNode:
   * Can be made cloneable by extending `Cloneable`.
   */
 trait EntityNode[T <: SceneNode] extends RenderNode[T]:
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitEntityNode(this)
+
   def toShaderData: ShaderData
 
   def bounds: Rectangle =

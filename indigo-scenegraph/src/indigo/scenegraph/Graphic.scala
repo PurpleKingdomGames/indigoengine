@@ -28,6 +28,9 @@ final case class Graphic[M <: Material](
     with Cloneable
     with SpatialModifiers[Graphic[M]] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitGraphic(this)
+
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)
 

@@ -30,6 +30,9 @@ final case class Clip[M <: Material](
     with Cloneable
     with SpatialModifiers[Clip[M]] derives CanEqual:
 
+  override def accept[A](visitor: SceneNodeVisitor[A]): A =
+    visitor.visitClip(this)
+
   export sheet.frameCount
   export sheet.frameDuration
 
