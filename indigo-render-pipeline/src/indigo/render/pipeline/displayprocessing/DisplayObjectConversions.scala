@@ -121,7 +121,7 @@ final class DisplayObjectConversions(
     }
 
     DisplayConversionResults(
-      l.map(_.displayObject),
+      l.map(_.displayEntity),
       l.foldLeft(Batch.empty[DisplayConversionResultClone])(_ ++ _.clones)
     )
 
@@ -195,7 +195,7 @@ final class DisplayObjectConversions(
         DisplayConversionResult(
           DisplayGroup(
             GroupConversion.groupToMatrix(g),
-            children.displayObjects
+            children.displayEntities
           ),
           children.clones
         )
@@ -343,9 +343,9 @@ final class DisplayObjectConversions(
       case _ =>
         None
 
-final class DisplayConversionResult(val displayObject: DisplayEntity, val clones: Batch[DisplayConversionResultClone])
+final class DisplayConversionResult(val displayEntity: DisplayEntity, val clones: Batch[DisplayConversionResultClone])
 final class DisplayConversionResults(
-    val displayObjects: Batch[DisplayEntity],
+    val displayEntities: Batch[DisplayEntity],
     val clones: Batch[DisplayConversionResultClone]
 )
 final class DisplayConversionResultClone(val id: String, val displayObject: DisplayObject)

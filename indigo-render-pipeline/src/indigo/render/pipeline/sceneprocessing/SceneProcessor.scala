@@ -147,7 +147,7 @@ object SceneProcessor:
         layerResults.append(
           DisplayLayer(
             maybeLayerKey,
-            conversionResults.displayObjects,
+            conversionResults.displayEntities,
             BuildLightingData.makeLightsData(scene.lights ++ content.lights),
             blending.clearColor.getOrElse(RGBA.Zero),
             content.magnification,
