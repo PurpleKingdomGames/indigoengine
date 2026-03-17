@@ -9,7 +9,6 @@ import indigo.core.utils.QuickCache
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
-import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.Layer
@@ -20,7 +19,6 @@ import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
-import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Seconds
 
@@ -37,18 +35,23 @@ class SceneProcessorTests extends munit.FunSuite {
 
   given QuickCache[Batch[Float]] = QuickCache.empty
 
+  override def beforeEach(context: BeforeEach): Unit =
+    doc.prepareToProcessFrame(
+      GameTime.is(Seconds(1)),
+      assetMapping,
+      256,
+      Batch.empty[GlobalEvent],
+      (_: GlobalEvent) => ()
+    )
+
   test("makeDisplayLayers - single layer with one graphic") {
     val graphic = Graphic(Rectangle(10, 20, 200, 100), Material.Bitmap(AssetName("texture")))
     val scene   = SceneUpdateFragment(graphic)
 
     val result = SceneProcessor.makeDisplayLayers(
       scene,
-      GameTime.is(Seconds(1)),
-      assetMapping,
-      256,
       Batch.empty[GlobalEvent],
       (_: GlobalEvent) => (),
-      mutable.KVP.empty[DisplayObject],
       doc
     )
 
@@ -71,12 +74,8 @@ class SceneProcessorTests extends munit.FunSuite {
 
     val result = SceneProcessor.makeDisplayLayers(
       scene,
-      GameTime.is(Seconds(1)),
-      assetMapping,
-      256,
       Batch.empty[GlobalEvent],
       (_: GlobalEvent) => (),
-      mutable.KVP.empty[DisplayObject],
       doc
     )
 
@@ -91,12 +90,8 @@ class SceneProcessorTests extends munit.FunSuite {
 
     val result = SceneProcessor.makeDisplayLayers(
       scene,
-      GameTime.is(Seconds(1)),
-      assetMapping,
-      256,
       Batch.empty[GlobalEvent],
       (_: GlobalEvent) => (),
-      mutable.KVP.empty[DisplayObject],
       doc
     )
 

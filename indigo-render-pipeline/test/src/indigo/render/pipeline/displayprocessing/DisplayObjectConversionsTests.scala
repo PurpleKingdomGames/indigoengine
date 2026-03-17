@@ -22,7 +22,6 @@ import indigo.scenegraph.registers.BoundaryLocator
 import indigo.scenegraph.registers.FontRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
-import indigoengine.shared.collections.mutable
 import indigoengine.shared.datatypes.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -37,8 +36,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(KVP.empty.add("texture" -> texture))
 
-  val cloneBlankMapping: mutable.KVP[DisplayObject] = mutable.KVP.empty[DisplayObject]
-
   val doc = new DisplayObjectConversions(
     boundaryLocator,
     animationRegister,
@@ -48,13 +45,17 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   def convert(node: SceneNode): DisplayObject = {
     doc.purgeCaches()
 
+    doc.prepareToProcessFrame(
+      GameTime.is(Seconds(1)),
+      assetMapping,
+      256,
+      Batch.empty[GlobalEvent],
+      (_: GlobalEvent) => ()
+    )
+
     doc
       .processSceneNodes(
         Batch(node),
-        GameTime.is(Seconds(1)),
-        assetMapping,
-        cloneBlankMapping,
-        256,
         Batch[GlobalEvent](),
         (_: GlobalEvent) => ()
       )
