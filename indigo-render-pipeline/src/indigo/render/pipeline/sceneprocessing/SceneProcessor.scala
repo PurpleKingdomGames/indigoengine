@@ -50,18 +50,24 @@ final class SceneProcessor(
       sendEvent: GlobalEvent => Unit
   ): ProcessedSceneData = {
 
+    displayObjectConverter.prepareToProcessFrame(
+      gameTime,
+      assetMapping,
+      maxBatchSize,
+      inputEvents,
+      sendEvent
+    )
+
     val cloneBlankDisplayObjects: mutable.KVP[DisplayObject] =
-      gatherCloneBlankDisplayObjects(scene, gameTime, assetMapping)
+      gatherCloneBlankDisplayObjects(scene)
+
+    displayObjectConverter.updateConvertorCloneBlanks(cloneBlankDisplayObjects)
 
     val (displayLayers, layerCloneBlanks) =
       SceneProcessor.makeDisplayLayers(
         scene,
-        gameTime,
-        assetMapping,
-        maxBatchSize,
         inputEvents,
         sendEvent,
-        cloneBlankDisplayObjects,
         displayObjectConverter
       )
 
@@ -85,18 +91,16 @@ final class SceneProcessor(
 
   // TODO: Build the KVP more efficiently. Remove flatMap's, foldLefts, and ++'s.
   private def gatherCloneBlankDisplayObjects(
-      scene: SceneUpdateFragment,
-      gameTime: GameTime,
-      assetMapping: AssetMapping
+      scene: SceneUpdateFragment
   ): mutable.KVP[DisplayObject] =
     (scene.cloneBlanks ++ scene.layers.flatMap(_.layer.gatherCloneBlanks))
       .foldLeft(mutable.KVP.empty[DisplayObject]) { (acc, blank) =>
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
-              displayObjectConverter.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+              displayObjectConverter.cloneBlankToDisplayObject(blank)
             }
-          else displayObjectConverter.cloneBlankToDisplayObject(blank, gameTime, assetMapping)
+          else displayObjectConverter.cloneBlankToDisplayObject(blank)
 
         maybeDO match
           case None => acc
@@ -110,12 +114,8 @@ object SceneProcessor:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   private[sceneprocessing] def makeDisplayLayers(
       scene: SceneUpdateFragment,
-      gameTime: GameTime,
-      assetMapping: AssetMapping,
-      maxBatchSize: Int,
       inputEvents: => Batch[GlobalEvent],
       sendEvent: GlobalEvent => Unit,
-      cloneBlankDisplayObjects: mutable.KVP[DisplayObject],
       displayObjectConverter: DisplayObjectConversions
   )(using QuickCache[Batch[Float]]): (mutable.Batch[DisplayLayer], mutable.KVP[DisplayObject]) =
     val compacted      = CompactLayers.compactLayers(scene.layers)
@@ -136,10 +136,6 @@ object SceneProcessor:
           displayObjectConverter
             .processSceneNodes(
               content.nodes,
-              gameTime,
-              assetMapping,
-              cloneBlankDisplayObjects,
-              maxBatchSize,
               inputEvents,
               sendEvent
             )
