@@ -11,6 +11,7 @@ import indigo.render.pipeline.displayprocessing.DisplayConversionResults
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.render.pipeline.sceneprocessing.utils.*
 import indigo.scenegraph.Blending
+import indigo.scenegraph.CloneBlank
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.materials.BlendMaterial
 import indigo.scenegraph.registers.AnimationsRegister
@@ -88,25 +89,31 @@ final class SceneProcessor(
     )
   }
 
-  // TODO: Build the KVP more efficiently. Remove flatMap's, foldLefts, and ++'s.
+  private def addCloneToMap(acc: => mutable.KVP[DisplayObject], blank: CloneBlank): Unit =
+    val maybeDO =
+      if blank.isStatic then
+        QuickCache(blank.id.toString) {
+          displayObjectConverter.cloneBlankToDisplayObject(blank)
+        }(using staticCloneCache)
+      else displayObjectConverter.cloneBlankToDisplayObject(blank)
+
+    maybeDO.foreach: displayObject =>
+      acc.update(blank.id.toString, displayObject)
+
   private def gatherCloneBlankDisplayObjects(
       scene: SceneUpdateFragment
   ): mutable.KVP[DisplayObject] =
-    (scene.cloneBlanks ++ scene.layers.flatMap(_.layer.gatherCloneBlanks))
-      .foldLeft(mutable.KVP.empty[DisplayObject]) { (acc, blank) =>
-        val maybeDO =
-          if blank.isStatic then
-            QuickCache(blank.id.toString) {
-              displayObjectConverter.cloneBlankToDisplayObject(blank)
-            }
-          else displayObjectConverter.cloneBlankToDisplayObject(blank)
+    val acc = mutable.KVP.empty[DisplayObject]
 
-        maybeDO match
-          case None => acc
-          case Some(displayObject) =>
-            acc.update(blank.id.toString, displayObject)
-            acc
-      }
+    scene.cloneBlanks.foreach: blank =>
+      addCloneToMap(acc, blank)
+
+    scene.layers
+      .flatMap(_.layer.gatherCloneBlanks)
+      .foreach: blank =>
+        addCloneToMap(acc, blank)
+
+    acc
 
 object SceneProcessor:
 
