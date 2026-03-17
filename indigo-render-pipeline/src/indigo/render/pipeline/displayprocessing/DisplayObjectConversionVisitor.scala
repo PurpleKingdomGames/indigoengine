@@ -169,8 +169,12 @@ final class DisplayObjectConversionVisitor(
     DisplayConversionResult(ShapeConversion.shapeToDisplayObject(node), noClones)
 
   def visitSprite(node: Sprite[?]): DisplayConversionResult =
-    // TODO: Use StringBuilder here.
-    val animation = QuickCache("anim-" + node.bindingKey + node.animationKey + node.animationActions.hashCode.toString) {
+    val key = new StringBuilder("anim-")
+    key.append(node.bindingKey)
+    key.append(node.animationKey)
+    key.append(node.animationActions.hashCode.toString)
+
+    val animation = QuickCache(key.toString) {
       animationsRegister.fetchAnimationForSprite(gameTime, node.bindingKey, node.animationKey, node.animationActions)
     }
 
