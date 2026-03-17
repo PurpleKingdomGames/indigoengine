@@ -37,8 +37,7 @@ final class SceneProcessor(
   def purgeCaches(): Unit = {
     displayObjectConverter.purgeCaches()
     uniformsCache.purgeAllNow()
-    // TODO: I've just added this, wasn't here before.. was it missed? How static is static. Assess.
-    // staticCloneCache.purgeAllNow()
+    // staticCloneCache persists for the duration of the game, and should not be purged.
   }
 
   def processScene(
