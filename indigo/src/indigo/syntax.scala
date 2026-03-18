@@ -145,10 +145,6 @@ object syntax:
     extension (a: Array[Float])
       def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
         ultraviolet.syntax.array(a)
-    // TODO: Remove?
-    // extension (a: scalajs.js.Array[Float])
-    //   def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
-    //     ultraviolet.syntax.array(a.toArray)
 
   end shaders
 end syntax
