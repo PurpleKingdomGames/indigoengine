@@ -2,7 +2,6 @@ package indigo.core.datatypes.mutable
 
 import indigo.core.datatypes.Matrix4
 import indigo.core.datatypes.Vector3
-import indigo.core.datatypes.mutable
 import indigoengine.shared.collections.Batch
 
 import scala.scalajs.js

@@ -3,10 +3,10 @@ package indigo.platform
 import indigo.core.events.GlobalEvent
 import indigoengine.shared.collections.Batch
 
-/** No-op JVM Platform implementation stub.
+/** No-op Native Platform implementation stub.
   *
-  * This is a placeholder implementation to validate that the platform abstraction architecture compiles on the JVM. All
-  * methods are no-ops and this should not be used for actual game execution.
+  * This is a placeholder implementation to validate that the platform abstraction architecture compiles against native
+  * platforms. All methods are no-ops and this should not be used for actual game execution.
   */
 class NativePlatform extends Platform with PlatformFullScreen:
 

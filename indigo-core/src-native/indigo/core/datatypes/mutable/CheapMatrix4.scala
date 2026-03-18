@@ -2,7 +2,6 @@ package indigo.core.datatypes.mutable
 
 import indigo.core.datatypes.Matrix4
 import indigo.core.datatypes.Vector3
-import indigo.core.datatypes.mutable
 import indigoengine.shared.collections.Batch
 
 /** `CheapMatrix4` is intended for use internally within Indigo, but remains available for general use. You are advised
@@ -87,8 +86,8 @@ object CheapMatrix4:
       // ... that those fields aren't used by the engine...
       // ... and by knowing things we can avoid work.
 
-      val listA = m.toArray
-      val listB = other.toArray
+      val listA = m.clone()
+      val listB = other
 
       val a00 = listA(0 * 4 + 0)
       val a01 = listA(0 * 4 + 1)
@@ -151,10 +150,10 @@ object CheapMatrix4:
       Batch.fromVector(m.toVector)
 
     def toMatrix4: Matrix4 =
-      Matrix4(m.toArray.map(_.toDouble))
+      Matrix4(m.map(_.toDouble))
 
     def deepClone: CheapMatrix4 =
-      CheapMatrix4(Array[Float]().concat(m))
+      CheapMatrix4(m.clone())
 
     def transform(vector: Vector3): Vector3 =
       val col1: Array[Float] = Array(m(0), m(4), m(8), m(12))
