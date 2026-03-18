@@ -3,7 +3,6 @@ package ultraviolet
 import scala.annotation.nowarn
 
 import syntax.*
-import scala.annotation.nowarn
 
 @nowarn("msg=unused")
 @nowarn("msg=discarded")

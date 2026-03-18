@@ -1,9 +1,9 @@
 package indigo.shaders
 
 import indigo.core.datatypes.Matrix4
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGB
 import indigoengine.shared.datatypes.RGBA
-import indigoengine.shared.collections.Batch
 
 class ShaderPrimitiveTests extends munit.FunSuite {
 
@@ -113,7 +113,9 @@ class ShaderPrimitiveTests extends munit.FunSuite {
       mat4.fromMatrix4(Matrix4.identity).toBatch.toList
 
     val expected =
-      Batch.fromList(List[List[Float]](List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)).flatten).toList
+      Batch
+        .fromList(List[List[Float]](List(1, 0, 0, 0), List(0, 1, 0, 0), List(0, 0, 1, 0), List(0, 0, 0, 1)).flatten)
+        .toList
 
     assertEquals(actual.toList, expected.toList)
 
