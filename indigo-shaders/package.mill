@@ -24,8 +24,8 @@ object `package` extends Module:
   object jvm extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-core`.js,
-      build.ultraviolet.js
+      build.`indigo-core`.jvm,
+      build.ultraviolet.jvm
     )
 
   // Use case: For Scala Native games
