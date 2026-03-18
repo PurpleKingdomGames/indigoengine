@@ -8,7 +8,6 @@ import mill.scalajslib.*
 import org.typelevel.scalacoptions.*
 
 import build.SharedJVM
-import build.SharedNative
 import build.SharedJS
 import build.SharedNative
 import build.SharedPublish
