@@ -21,7 +21,7 @@ object `package` extends Module:
     )
 
   // Use case: For compiling on the JVM, e.g. in build tool plugins.
-  object jvm extends SharedJS, PlatformScalaModule, SharedPublish:
+  object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
       build.`indigo-core`.jvm,
