@@ -12,7 +12,7 @@ import indigoplugin.*
 
 object `package` extends Module:
 
-  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+  object js extends MillIndigoJS, SharedJS, PlatformScalaModule:
 
     def moduleDeps = Seq(
       build.ultraviolet.js,

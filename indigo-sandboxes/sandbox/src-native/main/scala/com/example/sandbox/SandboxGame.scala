@@ -10,60 +10,20 @@ import indigoextras.subsystems.FPSCounter
 
 final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
-  val gameId: GameId = GameId("sandbox")
-
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(BgAudioScene.name)
+    Some(WindowsScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
-    NonEmptyBatch(
-      OriginalScene,
-      ShapesScene,
-      LightsScene,
-      RefractionScene,
-      LegacyEffectsScene,
-      BoundsScene,
-      CameraScene,
-      TextureTileScene,
-      ConfettiScene,
-      MutantsScene,
-      CratesScene,
-      ClipScene,
-      TextScene,
-      BoxesScene,
-      ManyEventHandlers,
-      TimelineScene,
-      UltravioletScene,
-      PointersScene,
-      BoundingCircleScene,
-      LineReflectionScene,
-      CameraWithCloneTilesScene,
-      PathFindingScene,
-      CaptureScreenScene,
-      NineSliceScene,
-      SfxScene,
-      ComponentUIScene,
-      ComponentUIScene2,
-      WindowsScene,
-      MeshScene,
-      WaypointScene,
-      ActorPoolScene,
-      ActorPoolPhysicsScene,
-      PerformerScene,
-      PerformerPhysicsScene,
-      ViewportResizeScene,
-      MultiPointScene,
-      BgAudioScene
-    )
+    ScenesList.scenes
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] =
+  def boot(args: Array[String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] =
     Outcome(
       BootResult(
         EngineConfig.default
           .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
-        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
+        SandboxBootData(args.find(_ == "key").getOrElse("No entry for 'key'."))
       ).withAssets(
         SandboxAssets.assets ++
           Shaders.assets ++
@@ -99,7 +59,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       dice: Dice
   ): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
-
+    
     def makeStartupData(
         aseprite: Aseprite,
         spriteAndAnimations: SpriteAndAnimations,
@@ -111,7 +71,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(SandboxGame.screenCenter) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips
@@ -137,7 +97,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModel.updateModel(context, model)
+    SandboxModelShared.updateModel(context, model)
 
   def present(
       context: Context[SandboxStartupData],

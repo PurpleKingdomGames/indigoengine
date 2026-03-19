@@ -13,7 +13,7 @@ import indigoplugin.*
 
 object `package` extends Module:
 
-  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+  object js extends MillIndigoJS, SharedJS, PlatformScalaModule:
 
     // This is the root directory of the workspace / project.
     private val workspaceDir: os.Path =
