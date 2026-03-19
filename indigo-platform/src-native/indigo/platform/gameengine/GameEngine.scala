@@ -2,9 +2,12 @@ package indigo.platform.gameengine
 
 import indigo.core.Outcome
 import indigo.core.animation.*
+import indigo.core.assets.AssetType
+import indigo.core.config.GameConfig
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
+import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
 import indigo.platform.assets.*
 import indigo.shaders.ShaderProgram
@@ -12,6 +15,7 @@ import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 
 import scala.annotation.nowarn
+import scala.concurrent.Future
 // import org.scalajs.dom.Element
 // import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
@@ -67,76 +71,75 @@ final class GameEngine[StartUpData, GameModel](
   // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   // var platform: JsPlatform = null
 
-  // def kill(): Unit =
-  //   platform.kill()
-  //   gameLoopInstance.kill()
-  //   animationsRegister.kill()
-  //   fontRegister.kill()
-  //   shaderRegister.kill()
-  //   boundaryLocator.purgeCache()
-  //   sceneProcessor.purgeCaches()
-  //   audioPlayer.kill()
-  //   globalEventStream.kill()
-
-  //   ()
+  def kill(): Unit =
+    //   platform.kill()
+    //   gameLoopInstance.kill()
+    //   animationsRegister.kill()
+    //   fontRegister.kill()
+    //   shaderRegister.kill()
+    //   boundaryLocator.purgeCache()
+    //   sceneProcessor.purgeCaches()
+    //   audioPlayer.kill()
+    //   globalEventStream.kill()
+    ()
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  // def start(
-  //     parentElement: Element,
-  //     config: GameConfig,
-  //     configAsync: Future[Option[GameConfig]],
-  //     assets: Set[AssetType],
-  //     assetsAsync: Future[Set[AssetType]],
-  //     bootEvents: Batch[GlobalEvent]
-  // ): GameEngine[StartUpData, GameModel, ViewModel] = {
+  def start(
+      //     parentElement: Element,
+      config: GameConfig,
+      configAsync: Future[Option[GameConfig]],
+      assets: Set[AssetType],
+      assetsAsync: Future[Set[AssetType]],
+      bootEvents: Batch[GlobalEvent]
+  ): GameEngine[StartUpData, GameModel] = {
 
-  //   IndigoLogger.info("Starting Indigo")
+    IndigoLogger.info("Starting Indigo")
 
-  //   // emit an event to denote that indigo has started loading
-  //   GameEngineStatusEvent.Initiated.dispatch(parentElement)
+    //   // emit an event to denote that indigo has started loading
+    //   GameEngineStatusEvent.Initiated.dispatch(parentElement)
 
-  //   storage = Storage.default
-  //   globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
-  //   gamepadInputCapture = GamepadInputCaptureImpl()
+    //   storage = Storage.default
+    //   globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
+    //   gamepadInputCapture = GamepadInputCaptureImpl()
 
-  //   // Intialisation / Boot events
-  //   initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
-  //   bootEvents.foreach(globalEventStream.pushGlobalEvent)
+    //   // Intialisation / Boot events
+    //   initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
+    //   bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-  //   if (config.advanced.autoLoadStandardShaders)
-  //     StandardShaders.all.foreach(shaderRegister.register)
-  //   else shaderRegister.register(StandardShaders.NormalBlend)
+    //   if (config.advanced.autoLoadStandardShaders)
+    //     StandardShaders.all.foreach(shaderRegister.register)
+    //   else shaderRegister.register(StandardShaders.NormalBlend)
 
-  //   // Arrange config
-  //   configAsync.map(_.getOrElse(config)).foreach { gc =>
-  //     gameConfig = gc
+    //   // Arrange config
+    //   configAsync.map(_.getOrElse(config)).foreach { gc =>
+    //     gameConfig = gc
 
-  //     IndigoLogger.info("Configuration: " + gameConfig.asString)
+    //     IndigoLogger.info("Configuration: " + gameConfig.asString)
 
-  //     if ((gameConfig.viewport.width % 2 != 0) || (gameConfig.viewport.height % 2 != 0))
-  //       IndigoLogger.info(
-  //         "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
-  //       )
+    //     if ((gameConfig.viewport.width % 2 != 0) || (gameConfig.viewport.height % 2 != 0))
+    //       IndigoLogger.info(
+    //         "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
+    //       )
 
-  //     // Arrange initial asset load
-  //     IndigoLogger.info("Attempting to load assets")
+    //     // Arrange initial asset load
+    //     IndigoLogger.info("Attempting to load assets")
 
-  //     // Start the loading event
-  //     GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", true).dispatch(parentElement)
+    //     // Start the loading event
+    //     GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", true).dispatch(parentElement)
 
-  //     assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
-  //       IndigoLogger.info("Asset load complete")
+    //     assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
+    //       IndigoLogger.info("Asset load complete")
 
-  //       rebuildGameLoop(parentElement, true)(assetCollection)
+    //       rebuildGameLoop(parentElement, true)(assetCollection)
 
-  //       if (gameLoop != null)
-  //         platform.tick(gameLoop(0.0d))
-  //     }
+    //       if (gameLoop != null)
+    //         platform.tick(gameLoop(0.0d))
+    //     }
 
-  //   }
+    //   }
 
-  //   this
-  // }
+    this
+  }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   // def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
