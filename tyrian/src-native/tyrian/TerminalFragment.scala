@@ -13,10 +13,10 @@ final case class TerminalFragment(ops: Batch[TerminalOps]):
 
 object TerminalFragment:
 
-  def empty[Msg]: TerminalFragment =
+  def empty: TerminalFragment =
     TerminalFragment(Batch.empty[TerminalOps])
 
-  def combineAll[Msg](frags: Batch[TerminalFragment]): TerminalFragment =
+  def combineAll(frags: Batch[TerminalFragment]): TerminalFragment =
     if frags.isEmpty then TerminalFragment.empty
     else
       val h = frags.head
