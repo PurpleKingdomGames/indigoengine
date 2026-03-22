@@ -165,6 +165,9 @@ final class Batch[A] private (private val _underlying: js.Array[A]) extends Batc
   def toSet[B >: A]: Set[B] =
     _underlying.toSet
 
+  def drop(n: Int): Batch[A] =
+    new Batch(_underlying.drop(n))
+
 object Batch:
   def apply[A](values: A*): Batch[A] =
     new Batch(js.Array(values*))
