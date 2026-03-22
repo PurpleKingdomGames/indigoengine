@@ -25,15 +25,46 @@ final case class IndigoGenerators private (
 
   val workspaceDir = Utils.findWorkspace
 
-  def toSourcePaths(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path): Seq[os.Path] =
+  def toSourcePaths(
+      options: IndigoOptions,
+      assetsDirectory: os.Path,
+      destination: os.Path
+  ): Seq[os.Path] =
     sources.flatMap(_(IndigoGenerators.SourceParams(options, assetsDirectory, destination)))
-  def toSourcePaths(options: IndigoOptions, assetsDirectory: File, destination: File): Seq[os.Path] =
-    sources.flatMap(_(IndigoGenerators.SourceParams(options, os.Path(assetsDirectory), os.Path(destination))))
-  def toSourceFiles(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path): Seq[File] =
-    sources.flatMap(_(IndigoGenerators.SourceParams(options, assetsDirectory, destination))).map(_.toIO)
-  def toSourceFiles(options: IndigoOptions, assetsDirectory: File, destination: File): Seq[File] =
+  def toSourcePaths(
+      options: IndigoOptions,
+      assetsDirectory: File,
+      destination: File
+  ): Seq[os.Path] =
+    sources.flatMap(
+      _(
+        IndigoGenerators.SourceParams(
+          options,
+          os.Path(assetsDirectory),
+          os.Path(destination)
+        )
+      )
+    )
+  def toSourceFiles(
+      options: IndigoOptions,
+      assetsDirectory: os.Path,
+      destination: os.Path
+  ): Seq[File] =
     sources
-      .flatMap(_(IndigoGenerators.SourceParams(options, os.Path(assetsDirectory), os.Path(destination))))
+      .flatMap(_(IndigoGenerators.SourceParams(options, assetsDirectory, destination)))
+      .map(_.toIO)
+  def toSourceFiles(
+      options: IndigoOptions,
+      assetsDirectory: File,
+      destination: File
+  ): Seq[File] =
+    sources
+      .flatMap(
+        _(
+          IndigoGenerators
+            .SourceParams(options, os.Path(assetsDirectory), os.Path(destination))
+        )
+      )
       .map(_.toIO)
 
   /** Set a fully qualified package names for your output sources, e.g. com.mycompany.generated.code */
@@ -505,6 +536,10 @@ object IndigoGenerators {
   def apply(fullyQualifiedPackageName: String): IndigoGenerators =
     IndigoGenerators(fullyQualifiedPackageName, Seq())
 
-  final case class SourceParams(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path)
+  final case class SourceParams(
+      options: IndigoOptions,
+      assetsDirectory: os.Path,
+      destination: os.Path
+  )
 
 }
