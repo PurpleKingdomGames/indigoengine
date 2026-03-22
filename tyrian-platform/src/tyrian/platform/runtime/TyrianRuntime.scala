@@ -12,6 +12,8 @@ import tyrian.Location
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 
+import scala.util.control.NonFatal
+
 object TyrianRuntime:
 
   def apply[F[_], Model, Msg, View[Msg], ViewState](
@@ -70,9 +72,21 @@ object TyrianRuntime:
       runCmd(initCmd) *> model.get.flatMap(m => runSub(subscriptions(m))) *> F.never
     }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def runCommands[F[_], Msg](msgQueue: Queue[F, Msg])(cmd: Cmd[F, Msg])(using F: Async[F]): F[Unit] =
     CmdHelper.cmdToTaskList(cmd).foldMapM { task =>
-      task.handleError(_ => None).flatMap(_.traverse_(msgQueue.offer(_))).start.void
+      task
+        .handleError {
+          case NonFatal(e) =>
+            println(e.getMessage)
+            None
+
+          case e =>
+            throw e
+        }
+        .flatMap(_.traverse_(msgQueue.offer(_)))
+        .start
+        .void
     }
 
   def runSubscriptions[F[_], Msg](
