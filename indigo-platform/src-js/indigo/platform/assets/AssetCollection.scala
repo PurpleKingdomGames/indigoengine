@@ -1,7 +1,6 @@
 package indigo.platform.assets
 
 import indigo.core.assets.AssetName
-import indigo.core.assets.AssetTag
 import org.scalajs.dom
 import org.scalajs.dom.html
 
@@ -41,7 +40,3 @@ object AssetCollection {
   def empty: AssetCollection =
     new AssetCollection(Set(), Set(), Set())
 }
-
-final case class LoadedAudioAsset(val name: AssetName, val data: dom.AudioBuffer)
-final case class LoadedImageAsset(val name: AssetName, val data: html.Image, val tag: Option[AssetTag])
-final case class LoadedTextAsset(val name: AssetName, val data: String)

@@ -1,18 +1,19 @@
 package indigo
 
 import indigo.BootResult
-import indigo.bridge.BridgeData
-import indigo.bridge.BridgeMsg
-import indigo.bridge.TyrianIndigoNextBridge
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
-import indigo.launchers.MinimalLauncher
+import indigo.internal.assets.AssetLoader
+import indigo.platform.IndigoCoreServices
 import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.TempImageData
+import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
+import indigo.render.EmitGlobalEvent
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager
@@ -23,14 +24,12 @@ import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
-import tyrian.Action
-import tyrian.Watcher
+import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
-// TODO: How much of this is the same as the JS version?
+import scala.util.Failure
+import scala.util.Success
 
 /** A trait representing a game with scene management baked in
   *
@@ -46,7 +45,12 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model]:
+trait Game[BootData, StartUpData, Model]:
+
+  def gameId: GameId
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  private var gameInstance: GameEngine[StartUpData, Model] = null
 
   /** A non-empty ordered list of scenes
     *
@@ -74,8 +78,8 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
   /** `boot` provides the initial boot up function for your game, accepting commandline-like arguments and allowing you
     * to declare pre-request assets assets and data that must be in place for your game to get going.
     *
-    * @param args
-    *   The command line args passed over during initial boot.
+    * @param flags
+    *   A simply key-value object/map passed in during initial boot.
     * @return
     *   Bootup data consisting of a custom data type, animations, subsystems, assets, fonts, and the game's config.
     */
@@ -133,31 +137,51 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
     */
   def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
-  object bridge:
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _push: Option[EmitGlobalEvent] = None
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _pull: Option[GlobalEventCallback] = None
 
-    private[indigo] val _bridge: TyrianIndigoNextBridge[Model] =
-      new TyrianIndigoNextBridge
+  object events:
 
-    /** Send events from Tyrian to Indigo
-      */
-    def send(data: BridgeData): Action =
-      Action(_bridge.send(BridgeMsg.Send(data)))
+    def push(event: GlobalEvent): Unit =
+      _push.foreach(_.pushGlobalEvent(event))
 
-    /** Allows Tyrian to watch for messages from Indigo
-      */
-    def watch: Watcher =
-      Watcher(_bridge.subscribe)
+    def eventCallback: Option[GlobalEventCallback] =
+      _pull
 
-  end bridge
+  object system:
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
+      if gameInstance != null then gameInstance.tick(runningTime, timeDelta)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    def halt(): Unit =
+      if gameInstance != null then gameInstance.kill()
+      _push = None
+      _pull = None
+      ()
+
+  def launch(
+      initialWidth: Int,
+      initialHeight: Int,
+      context: String, // Fake, obvs.
+      args: Array[String],
+      services: IndigoCoreServices[TempImageData, Array[Byte]]
+  ): Unit =
+    gameInstance = ready(initialWidth, initialHeight, context, args, services)
+    ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
-  private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model] = {
+  private def indigoGame(
+      bootUp: BootResult[BootData, Model],
+      services: IndigoCoreServices[TempImageData, Array[Byte]]
+  ): GameEngine[StartUpData, Model] = {
 
-    val bridgeSubSystem = bridge._bridge.subSystem
-
-    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems ++ Set(bridgeSubSystem)))
+    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
     val sceneManager: SceneManager[StartUpData, Model] = {
       val s = scenes(bootUp.bootData)
@@ -181,6 +205,8 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
       )
 
     new GameEngine[StartUpData, Model](
+      services,
+      bootUp.engineConfig,
       bootUp.fonts,
       bootUp.animations,
       bootUp.shaders,
@@ -192,7 +218,13 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  protected def ready(args: Array[String]): GameEngine[StartUpData, Model] =
+  def ready(
+      initialWidth: Int,
+      initialHeight: Int,
+      context: String, // Fake, obvs
+      args: Array[String],
+      services: IndigoCoreServices[TempImageData, Array[Byte]]
+  ): GameEngine[StartUpData, Model] =
     boot(args) match
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during boot - Halting")
@@ -200,13 +232,32 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
         throw e
 
       case Outcome.Result(b, evts) =>
-        indigoGame(b).start(b.engineConfig, Future(None), b.assets, Future(Set()), evts)
+        val engine = indigoGame(b, services)
 
-end Game
+        _push = Some(engine.globalEventStream)
+        _pull = Some(engine.globalEventStream)
+
+        AssetLoader.loadAssets(b.assets).onComplete {
+          case Success(ac) =>
+            engine.start(
+              initialWidth,
+              initialHeight,
+              context,
+              ac,
+              evts
+            )
+
+          case Failure(e) =>
+            IndigoLogger.error("Error during asset load - Halting")
+            IndigoLogger.error(e.getMessage)
+            throw e
+        }
+
+        engine
 
 object Game:
 
-  trait ShaderPlayground extends Game[ShaderPlayground.Model, ShaderPlayground.Model, ShaderPlayground.Model]:
+  trait ShaderPlayground extends Game[ShaderPlayground.Channels, ShaderPlayground.Channels, ShaderPlayground.Model]:
 
     given [A](using toUBO: ToUniformBlock[A]): Conversion[A, UniformBlock] with
       def apply(value: A): UniformBlock = toUBO.toUniformBlock(value)
@@ -271,20 +322,26 @@ object Game:
       */
     def shader: ShaderProgram
 
-    def scenes(bootData: ShaderPlayground.Model): NonEmptyBatch[Scene[ShaderPlayground.Model, ShaderPlayground.Model]] =
-      NonEmptyBatch(Scene.empty[ShaderPlayground.Model, ShaderPlayground.Model])
+    def scenes(
+        bootData: ShaderPlayground.Channels
+    ): NonEmptyBatch[Scene[ShaderPlayground.Channels, ShaderPlayground.Model]] =
+      NonEmptyBatch(Scene.empty[ShaderPlayground.Channels, ShaderPlayground.Model])
 
-    def initialScene(bootData: ShaderPlayground.Model): Option[SceneName] =
+    def initialScene(bootData: ShaderPlayground.Channels): Option[SceneName] =
       None
 
     def eventFilters: EventFilters =
-      EventFilters.BlockAll
+      EventFilters {
+        case e: ViewportResize      => Some(e)
+        case e: KeyboardEvent.KeyUp => Some(e)
+        case _                      => None
+      }
 
-    final def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Model, ShaderPlayground.Model]] =
-      val c0     = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
-      val c1     = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
-      val c2     = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
-      val c3     = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
+    final def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Channels, ShaderPlayground.Model]] =
+      val c0 = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
+      val c1 = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
+      val c2 = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
+      val c3 = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
 
       val channelAssets: Set[AssetType] =
         (c0.toSet.map(Channel0Name -> _) ++
@@ -299,8 +356,7 @@ object Game:
           .withAutoLoadStandardShaders(false)
 
       val bootData =
-        ShaderPlayground.Model(
-          Size.one,
+        ShaderPlayground.Channels(
           c0.map(_ => AssetName(Channel0Name)),
           c1.map(_ => AssetName(Channel1Name)),
           c2.map(_ => AssetName(Channel2Name)),
@@ -320,21 +376,26 @@ object Game:
       )
 
     final def setup(
-        bootData: ShaderPlayground.Model,
+        channels: ShaderPlayground.Channels,
         assetCollection: AssetCollection,
         dice: Dice
-    ): Outcome[Startup[ShaderPlayground.Model]] =
+    ): Outcome[Startup[ShaderPlayground.Channels]] =
       Outcome(
         Startup.Success(
-          bootData
+          channels
         )
       )
 
-    final def initialModel(startupData: ShaderPlayground.Model): Outcome[ShaderPlayground.Model] =
-      Outcome(startupData)
+    final def initialModel(channels: ShaderPlayground.Channels): Outcome[ShaderPlayground.Model] =
+      Outcome(
+        ShaderPlayground.Model(
+          Size.one,
+          channels
+        )
+      )
 
     final def updateModel(
-        context: Context[ShaderPlayground.Model],
+        context: Context[ShaderPlayground.Channels],
         model: ShaderPlayground.Model
     ): GlobalEvent => Outcome[ShaderPlayground.Model] = {
       case ViewportResize(size) =>
@@ -348,7 +409,7 @@ object Game:
     }
 
     final def present(
-        context: Context[ShaderPlayground.Model],
+        context: Context[ShaderPlayground.Channels],
         model: ShaderPlayground.Model
     ): Outcome[SceneUpdateFragment] =
       Outcome(
@@ -359,10 +420,10 @@ object Game:
               ShaderData(
                 shader.id,
                 uniformBlocks,
-                model.channel0,
-                model.channel1,
-                model.channel2,
-                model.channel3
+                model.channels.channel0,
+                model.channels.channel1,
+                model.channels.channel2,
+                model.channels.channel3
               )
             )
           ).withBlendMaterial(ShaderPlayground.SceneBlendShader.material)
@@ -371,12 +432,16 @@ object Game:
 
   object ShaderPlayground:
 
-    final case class Model(
-        viewport: Size,
+    final case class Channels(
         channel0: Option[AssetName],
         channel1: Option[AssetName],
         channel2: Option[AssetName],
         channel3: Option[AssetName]
+    )
+
+    final case class Model(
+        viewport: Size,
+        channels: Channels
     )
 
     object SceneBlendShader:
@@ -408,5 +473,3 @@ object Game:
         new BlendMaterial:
           def toShaderData: ShaderData =
             ShaderData(shader.id)
-
-end Game

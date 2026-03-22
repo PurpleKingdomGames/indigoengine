@@ -32,6 +32,9 @@ final class KVP[A] private (private val _underlying: HashMap[String, A]) extends
     _underlying.addAll(values.toVector)
     this
 
+  def ++(other: KVP[A]): KVP[A] =
+    addAll(other.toBatch)
+
   def keys: Batch[String] =
     Batch.fromIterable(_underlying.keys)
 
@@ -59,6 +62,11 @@ final class KVP[A] private (private val _underlying: HashMap[String, A]) extends
 
   def map[B](f: ((String, A)) => ((String, B))): KVP[B] =
     new KVP(_underlying.map(f))
+
+  def mapValues[B](f: A => B): KVP[B] =
+    val g: ((String, A)) => ((String, B)) =
+      (k, v) => (k, f(v))
+    map(g)
 
 object KVP:
   def empty[A]: KVP[A] =

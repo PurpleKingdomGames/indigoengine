@@ -10,6 +10,8 @@ import indigoextras.subsystems.FPSCounter
 
 final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
+  val gameId: GameId = GameId("sandbox-native")
+
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(WindowsScene.name)
 
@@ -60,7 +62,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       dice: Dice
   ): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
-    
+
     def makeStartupData(
         aseprite: Aseprite,
         spriteAndAnimations: SpriteAndAnimations,
@@ -72,7 +74,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(SandboxGame.screenCenter) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips

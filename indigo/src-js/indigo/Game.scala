@@ -25,6 +25,8 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
+import org.scalajs.dom.ImageData
+import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.annotation.nowarn
@@ -168,7 +170,7 @@ trait Game[BootData, StartUpData, Model]:
       initialHeight: Int,
       context: WebGL2RenderingContext,
       flags: Map[String, String],
-      services: IndigoCoreServices
+      services: IndigoCoreServices[html.Image, ImageData]
   ): Unit =
     gameInstance = ready(initialWidth, initialHeight, context, flags, services)
     ()
@@ -178,7 +180,7 @@ trait Game[BootData, StartUpData, Model]:
 
   private def indigoGame(
       bootUp: BootResult[BootData, Model],
-      services: IndigoCoreServices
+      services: IndigoCoreServices[html.Image, ImageData]
   ): GameEngine[StartUpData, Model] = {
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
@@ -223,7 +225,7 @@ trait Game[BootData, StartUpData, Model]:
       initialHeight: Int,
       context: WebGL2RenderingContext,
       flags: Map[String, String],
-      services: IndigoCoreServices
+      services: IndigoCoreServices[html.Image, ImageData]
   ): GameEngine[StartUpData, Model] =
     boot(flags) match
       case oe @ Outcome.Error(e, _) =>

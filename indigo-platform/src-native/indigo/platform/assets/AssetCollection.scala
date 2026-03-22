@@ -1,14 +1,13 @@
 package indigo.platform.assets
 
 import indigo.core.assets.AssetName
-import indigo.core.assets.AssetTag
 
-// TODO: This placeholder uses nonsense String types.
+// TODO: Can we merge these if we parameterise?
 final class AssetCollection(
     val images: Set[LoadedImageAsset],
     val texts: Set[LoadedTextAsset],
     val sounds: Set[LoadedAudioAsset]
-) {
+):
 
   val count: Int =
     images.size + texts.size + sounds.size
@@ -25,22 +24,15 @@ final class AssetCollection(
       texts.exists(_.name == name) ||
       sounds.exists(_.name == name)
 
-  def findImageDataByName(name: AssetName): Option[String] =
+  def findImageDataByName(name: AssetName): Option[TempImageData] =
     images.find(_.name == name).map(_.data)
 
   def findTextDataByName(name: AssetName): Option[String] =
     texts.find(_.name == name).map(_.data)
 
-  def findAudioDataByName(name: AssetName): Option[String] =
+  def findAudioDataByName(name: AssetName): Option[Array[Byte]] =
     sounds.find(_.name == name).map(_.data)
 
-}
-
-object AssetCollection {
+object AssetCollection:
   def empty: AssetCollection =
     new AssetCollection(Set(), Set(), Set())
-}
-
-final case class LoadedAudioAsset(val name: AssetName, val data: String)
-final case class LoadedImageAsset(val name: AssetName, val data: String, val tag: Option[AssetTag])
-final case class LoadedTextAsset(val name: AssetName, val data: String)

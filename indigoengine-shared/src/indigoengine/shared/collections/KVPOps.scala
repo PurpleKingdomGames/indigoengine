@@ -9,8 +9,10 @@ trait KVPOps[A, KVPOut[_]]:
   def add(key: String, value: A): KVPOut[A]
   def add(value: (String, A)): KVPOut[A]
   def addAll(values: Batch[(String, A)]): KVPOut[A]
+  def ++(other: KVPOut[A]): KVPOut[A]
   def keys: Batch[String]
   def size: Int
   def toMap: Map[String, A]
   def toBatch: Batch[(String, A)]
   def map[B](f: ((String, A)) => ((String, B))): KVPOut[B]
+  def mapValues[B](f: A => B): KVPOut[B]

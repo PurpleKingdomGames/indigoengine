@@ -158,13 +158,13 @@ class TextureAtlasTests extends munit.FunSuite {
   }
 
   test("The texture atlas functions.should be able to pick the right bucket for my image size") {
-    assertEquals(TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, 116, 24).value, 128)
+    assertEquals(TextureAtlasFunctionsShared.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, 116, 24).value, 128)
   }
 
   test("The texture atlas functions.should be able to tell if an image is too big") {
 
-    assertEquals(TextureAtlasFunctions.isTooBig(PowerOfTwo.Max, 10, 10), false)
-    assertEquals(TextureAtlasFunctions.isTooBig(PowerOfTwo._512, 1024, 1024), true)
+    assertEquals(TextureAtlasFunctionsShared.isTooBig(PowerOfTwo.Max, 10, 10), false)
+    assertEquals(TextureAtlasFunctionsShared.isTooBig(PowerOfTwo._512, 1024, 1024), true)
 
   }
 
@@ -184,7 +184,7 @@ class TextureAtlasTests extends munit.FunSuite {
       TextureDetails(ImageRef(AssetName("a"), 10, 10, None), PowerOfTwo._16, None)
     )
 
-    assertEquals(TextureAtlasFunctions.inflateAndSortByPowerOfTwo(original), expected)
+    assertEquals(TextureAtlasFunctionsShared.inflateAndSortByPowerOfTwo(original), expected)
 
   }
 
@@ -202,7 +202,7 @@ class TextureAtlasTests extends munit.FunSuite {
       )
     )
 
-    assertEquals(TextureAtlasFunctions.convertTextureDetailsToTree(original), expected)
+    assertEquals(TextureAtlasFunctionsShared.convertTextureDetailsToTree(original), expected)
 
   }
 
@@ -226,7 +226,7 @@ class TextureAtlasTests extends munit.FunSuite {
       tex(AssetName("k"), PowerOfTwo._256)
     )
 
-    val result = TextureAtlasFunctions
+    val result = TextureAtlasFunctionsShared
       .groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list)
 
     assertEquals(result.forall(l => l.map(_.size.value).sum <= 256 * 2), true)
@@ -260,7 +260,7 @@ class TextureAtlasTests extends munit.FunSuite {
      */
 
     val result =
-      TextureAtlasFunctions
+      TextureAtlasFunctionsShared
         .groupTexturesIntoAtlasBuckets(PowerOfTwo._512)(list)
 
     // val pretty: String =
@@ -342,7 +342,7 @@ class TextureAtlasTests extends munit.FunSuite {
 
     val max = PowerOfTwo._4096
 
-    assertEquals(TextureAtlasFunctions.mergeTrees(a, b, max), Some(aPlusB))
+    assertEquals(TextureAtlasFunctionsShared.mergeTrees(a, b, max), Some(aPlusB))
 
   }
 
@@ -425,9 +425,9 @@ class TextureAtlasTests extends munit.FunSuite {
 
     val max = PowerOfTwo._4096
 
-    TextureAtlasFunctions.mergeTrees(aPlusB, c, max) match {
+    TextureAtlasFunctionsShared.mergeTrees(aPlusB, c, max) match {
       case Some(aPlusBPlusC) =>
-        assertEquals(TextureAtlasFunctions.mergeTrees(aPlusBPlusC, d, max), Some(expected))
+        assertEquals(TextureAtlasFunctionsShared.mergeTrees(aPlusBPlusC, d, max), Some(expected))
 
       case _ =>
         fail("error")
@@ -439,8 +439,8 @@ class TextureAtlasTests extends munit.FunSuite {
 
     val max = PowerOfTwo._4096
 
-    assertEquals(TextureAtlasFunctions.mergeTrees(a, AtlasQuadEmpty(PowerOfTwo._128), max), Some(a))
-    assertEquals(TextureAtlasFunctions.mergeTrees(AtlasQuadEmpty(PowerOfTwo._128), b, max), Some(b))
+    assertEquals(TextureAtlasFunctionsShared.mergeTrees(a, AtlasQuadEmpty(PowerOfTwo._128), max), Some(a))
+    assertEquals(TextureAtlasFunctionsShared.mergeTrees(AtlasQuadEmpty(PowerOfTwo._128), b, max), Some(b))
 
   }
 
@@ -449,7 +449,7 @@ class TextureAtlasTests extends munit.FunSuite {
     val a = AtlasQuadNode(PowerOfTwo._4, AtlasQuadDivision.empty(PowerOfTwo._2))
     val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef(AssetName("b"), 128, 128, None)))
 
-    assertEquals(TextureAtlasFunctions.mergeTreeBIntoA(a, b), None)
+    assertEquals(TextureAtlasFunctionsShared.mergeTreeBIntoA(a, b), None)
 
   }
 
@@ -470,7 +470,7 @@ class TextureAtlasTests extends munit.FunSuite {
       )
     )
 
-    assertEquals(TextureAtlasFunctions.mergeTreeBIntoA(a, b), expected)
+    assertEquals(TextureAtlasFunctionsShared.mergeTreeBIntoA(a, b), expected)
 
   }
 
@@ -478,7 +478,7 @@ class TextureAtlasTests extends munit.FunSuite {
 
     val max = PowerOfTwo._1024
 
-    assertEquals(TextureAtlasFunctions.mergeTrees(a, b, max), None)
+    assertEquals(TextureAtlasFunctionsShared.mergeTrees(a, b, max), None)
 
   }
 
@@ -491,7 +491,7 @@ class TextureAtlasTests extends munit.FunSuite {
   test("tree manipulation.should be able to fill a small tree (A)") {
 
     val initial: AtlasQuadTree =
-      TextureAtlasFunctions.createEmptyTree(PowerOfTwo._16)
+      TextureAtlasFunctionsShared.createEmptyTree(PowerOfTwo._16)
 
     val quad = (id: AssetName, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1, None)))
 
@@ -502,7 +502,7 @@ class TextureAtlasTests extends munit.FunSuite {
       quad(AssetName("8_4"), PowerOfTwo._8)
     )
 
-    val res = quads.foldLeft(initial)((a, b) => TextureAtlasFunctions.mergeTreeBIntoA(a, b).get)
+    val res = quads.foldLeft(initial)((a, b) => TextureAtlasFunctionsShared.mergeTreeBIntoA(a, b).get)
 
     val expected =
       AtlasQuadNode(

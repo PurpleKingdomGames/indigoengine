@@ -7,19 +7,18 @@ import indigo.render.webgl2.ContextAndSize
 import indigo.render.webgl2.LoadedTextureAsset
 import indigo.render.webgl2.RendererWebGL2
 import indigo.shaders.RawShaderCode
+import indigoengine.shared.collections.Batch
 
-import scala.scalajs.js.JSConverters.*
-
-final class RendererInitialiser() {
+final class RendererInitialiser():
 
   def setup(
       config: EngineConfig,
-      loadedTextureAssets: List[LoadedTextureAsset],
+      loadedTextureAssets: Batch[LoadedTextureAsset],
       context: WebGL2RenderingContext,
       width: Int,
       height: Int,
       shaders: Set[RawShaderCode]
-  ): Renderer = {
+  ): Renderer =
     val cNc = new ContextAndSize(context, width, height)
 
     val r =
@@ -28,6 +27,3 @@ final class RendererInitialiser() {
     r.init(shaders)
     r.resize(width, height)
     r
-  }
-
-}

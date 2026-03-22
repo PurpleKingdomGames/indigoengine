@@ -31,11 +31,13 @@ import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
+import org.scalajs.dom.ImageData
+import org.scalajs.dom.html
 
 import scala.compiletime.uninitialized
 
 final class GameEngine[StartUpData, GameModel](
-    services: IndigoCoreServices,
+    services: IndigoCoreServices[html.Image, ImageData],
     engineConfig: EngineConfig,
     fonts: Set[FontInfo],
     animations: Set[Animation],

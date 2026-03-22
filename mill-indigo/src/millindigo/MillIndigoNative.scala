@@ -41,4 +41,3 @@ trait MillIndigoNative extends ScalaModule:
 
       super.generatedSources() ++ custom
     }
-

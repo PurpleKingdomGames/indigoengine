@@ -5,6 +5,7 @@ import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Msg
 import indigo.platform.IndigoCoreServices
 import indigo.render.facades.WebGL2RenderingContext
+import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 import tyrian.*
 import tyrian.extensions.ExtensionId
@@ -17,7 +18,7 @@ object IndigoActions:
       maybeCanvas: Option[html.Canvas],
       flags: Map[String, String],
       settings: Settings,
-      services: IndigoCoreServices
+      services: IndigoCoreServices[html.Image, ImageData]
   ): Action =
     Action.run {
       maybeCanvas match

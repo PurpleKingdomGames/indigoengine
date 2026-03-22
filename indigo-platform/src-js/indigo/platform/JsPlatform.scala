@@ -21,7 +21,8 @@ import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.render.webgl2.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
-import indigoengine.shared.collections.KVP
+import org.scalajs.dom.ImageData
+import org.scalajs.dom.html
 
 class JsPlatform(
     engineConfig: EngineConfig,
@@ -29,7 +30,7 @@ class JsPlatform(
     initialWidth: Int,
     initialHeight: Int,
     context: WebGL2RenderingContext,
-    imageService: ImageService
+    imageService: ImageService[html.Image, ImageData]
 ) extends Platform {
 
   val rendererInit: RendererInitialiser =
@@ -70,9 +71,9 @@ class JsPlatform(
       )
     )
 
-  def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
+  def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[Batch[LoadedTextureAsset]] =
     Outcome(
-      textureAtlas.atlases.toList
+      textureAtlas.atlases.toBatch
         .map { case (atlasId, atlas) => atlas.imageData.map(data => new LoadedTextureAsset(AtlasId(atlasId), data)) }
         .collect { case Some(s) => s }
     )
@@ -80,27 +81,25 @@ class JsPlatform(
   def setupAssetMapping(textureAtlas: TextureAtlas): Outcome[AssetMapping] =
     Outcome(
       new AssetMapping(
-        mappings = KVP.from(
-          textureAtlas.legend
-            .map { case (name, atlasIndex) =>
-              name -> TextureRefAndOffset(
-                atlasName = atlasIndex.id,
-                atlasSize = textureAtlas.atlases
-                  .get(atlasIndex.id.toString)
-                  .map(_.size.value)
-                  .map(i => Vector2(i.toDouble))
-                  .getOrElse(Vector2.one),
-                offset = atlasIndex.offset.toVector,
-                size = atlasIndex.size.toVector
-              )
-            }
-        )
+        mappings = textureAtlas.legend
+          .map { case (name, atlasIndex) =>
+            name -> TextureRefAndOffset(
+              atlasName = atlasIndex.id,
+              atlasSize = textureAtlas.atlases
+                .get(atlasIndex.id.toString)
+                .map(_.size.value)
+                .map(i => Vector2(i.toDouble))
+                .getOrElse(Vector2.one),
+              offset = atlasIndex.offset.toVector,
+              size = atlasIndex.size.toVector
+            )
+          }
       )
     )
 
   def startRenderer(
       engineConfig: EngineConfig,
-      loadedTextureAssets: List[LoadedTextureAsset],
+      loadedTextureAssets: Batch[LoadedTextureAsset],
       shaders: Set[RawShaderCode]
   ): Outcome[Renderer] =
     Outcome {

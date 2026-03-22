@@ -9,9 +9,9 @@ import org.scalajs.dom.html
 
 object BrowserImageService:
 
-  def apply(): ImageService =
-    new ImageService:
-      def composeImage(width: Int, height: Int, blits: Seq[BlitInstruction]): ImageData =
+  def apply(): ImageService[html.Image, ImageData] =
+    new ImageService[html.Image, ImageData]:
+      def composeImage(width: Int, height: Int, blits: Seq[BlitInstruction[html.Image]]): ImageData =
         val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
         canvas.width = width
         canvas.height = height

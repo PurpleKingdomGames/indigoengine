@@ -2,28 +2,43 @@ package indigo.platform.gameengine
 
 import indigo.core.Outcome
 import indigo.core.animation.*
-import indigo.core.assets.AssetType
+import indigo.core.assets.AssetName
 import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
+import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
+import indigo.platform.IndigoCoreServices
+import indigo.platform.NativePlatform
 import indigo.platform.assets.*
+import indigo.platform.audio.AudioService
+import indigo.platform.events.GlobalEventStream
+import indigo.render.Renderer
+import indigo.render.pipeline.assets.AssetMapping
+import indigo.render.pipeline.sceneprocessing.SceneProcessor
+import indigo.scenegraph.registers.AnimationsRegister
+import indigo.scenegraph.registers.BoundaryLocator
+import indigo.scenegraph.registers.FontRegister
+import indigo.shaders.BlendShader
+import indigo.shaders.EntityShader
 import indigo.shaders.ShaderProgram
+import indigo.shaders.ShaderRegister
+import indigo.shaders.StandardShaders
+import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 
-import scala.annotation.nowarn
-import scala.concurrent.Future
-// import org.scalajs.dom.Element
-// import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
+import scala.compiletime.uninitialized
 
-// import scala.compiletime.uninitialized
-// import scala.concurrent.Future
+// TODO: This is _nearly_ a copy of the JS version - close as I could get it. Can we make them the same?
+//       Is it just 'parametarise the context type?'
 
-@nowarn("msg=unused")
 final class GameEngine[StartUpData, GameModel](
+    services: IndigoCoreServices[TempImageData, Array[Byte]], // Fake types.
+    engineConfig: EngineConfig,
     fonts: Set[FontInfo],
     animations: Set[Animation],
     shaders: Set[ShaderProgram],
@@ -32,360 +47,302 @@ final class GameEngine[StartUpData, GameModel](
     frameProccessor: FrameProcessor[StartUpData, GameModel],
     initialisationEvents: Batch[GlobalEvent]
 ) {
-  // val stepsToLoad = 4
-  // val animationsRegister: AnimationsRegister =
-  //   new AnimationsRegister()
-  // val fontRegister: FontRegister =
-  //   new FontRegister()
-  // val shaderRegister: ShaderRegister =
-  //   new ShaderRegister()
 
-  // val boundaryLocator: BoundaryLocator =
-  //   new BoundaryLocator(animationsRegister, fontRegister)
-  // val sceneProcessor: SceneProcessor =
-  //   new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+  private val animationsRegister: AnimationsRegister = new AnimationsRegister()
+  private val fontRegister: FontRegister             = new FontRegister()
+  private val shaderRegister: ShaderRegister         = new ShaderRegister()
+  private val boundaryLocator: BoundaryLocator       = new BoundaryLocator(animationsRegister, fontRegister)
+  private val sceneProcessor: SceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+  private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream()
+  private[gameengine] val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
+  private[gameengine] val audioService: AudioService               = services.audioService
 
-  // val audioPlayer: AudioPlayer =
-  //   AudioPlayer.init
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private[gameengine] var assetMapping: AssetMapping = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private[gameengine] var renderer: Renderer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private[gameengine] var startUpData: StartUpData = uninitialized
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var platform: NativePlatform = null
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var gameConfig: GameConfig = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var globalEventStream: GlobalEventStream = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var gamepadInputCapture: GamepadInputCapture = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var gameLoop: Double => Double => Unit = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  // var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var assetMapping: AssetMapping = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var renderer: Renderer = null
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  // var startUpData: StartUpData = uninitialized
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  // var platform: JsPlatform = null
-
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
-    //   platform.kill()
-    //   gameLoopInstance.kill()
-    //   animationsRegister.kill()
-    //   fontRegister.kill()
-    //   shaderRegister.kill()
-    //   boundaryLocator.purgeCache()
-    //   sceneProcessor.purgeCaches()
-    //   audioPlayer.kill()
-    //   globalEventStream.kill()
+
+    if platform != null then platform.kill()
+
+    if renderer != null then renderer.dispose()
+
+    animationsRegister.kill()
+    fontRegister.kill()
+    shaderRegister.kill()
+    boundaryLocator.purgeCache()
+    sceneProcessor.purgeCaches()
+    globalEventStream.kill()
+    services.kill()
+
     ()
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
-      //     parentElement: Element,
-      config: EngineConfig,
-      configAsync: Future[Option[EngineConfig]],
-      assets: Set[AssetType],
-      assetsAsync: Future[Set[AssetType]],
+      initialWidth: Int,
+      initialHeight: Int,
+      context: String, // TODO: What is this?
+      assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
-    //   // emit an event to denote that indigo has started loading
-    //   GameEngineStatusEvent.Initiated.dispatch(parentElement)
+    // Intialisation / Boot events
+    initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
+    bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-    //   storage = Storage.default
-    //   globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
-    //   gamepadInputCapture = GamepadInputCaptureImpl()
+    if (engineConfig.autoLoadStandardShaders)
+      StandardShaders.all.foreach(shaderRegister.register)
+    else shaderRegister.register(StandardShaders.NormalBlend)
 
-    //   // Intialisation / Boot events
-    //   initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
-    //   bootEvents.foreach(globalEventStream.pushGlobalEvent)
+    // Arrange config
+    IndigoLogger.info("Configuration: " + engineConfig.asString)
 
-    //   if (config.advanced.autoLoadStandardShaders)
-    //     StandardShaders.all.foreach(shaderRegister.register)
-    //   else shaderRegister.register(StandardShaders.NormalBlend)
+    platform = new NativePlatform(
+      engineConfig,
+      globalEventStream,
+      initialWidth,
+      initialHeight,
+      context,
+      services.imageService
+    )
 
-    //   // Arrange config
-    //   configAsync.map(_.getOrElse(config)).foreach { gc =>
-    //     gameConfig = gc
-
-    //     IndigoLogger.info("Configuration: " + gameConfig.asString)
-
-    //     if ((gameConfig.viewport.width % 2 != 0) || (gameConfig.viewport.height % 2 != 0))
-    //       IndigoLogger.info(
-    //         "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
-    //       )
-
-    //     // Arrange initial asset load
-    //     IndigoLogger.info("Attempting to load assets")
-
-    //     // Start the loading event
-    //     GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", true).dispatch(parentElement)
-
-    //     assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
-    //       IndigoLogger.info("Asset load complete")
-
-    //       rebuildGameLoop(parentElement, true)(assetCollection)
-
-    //       if (gameLoop != null)
-    //         platform.tick(gameLoop(0.0d))
-    //     }
-
-    //   }
+    rebuildGameLoop(true)(assetCollection)(Seconds.zero)
 
     this
   }
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  // def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
-  //   ac => {
-  //     if !firstRun then
-  //       // Emit an event to denote a reload
-  //       GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", false).dispatch(parentElement)
-  //       gameLoopInstance.lock()
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
+    if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
 
-  //     fontRegister.clearRegister()
-  //     boundaryLocator.purgeCache()
-  //     sceneProcessor.purgeCaches()
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
+  def rebuildGameLoop(
+      firstRun: Boolean
+  ): AssetCollection => Seconds => Unit =
+    ac =>
+      runningTime => {
+        if !firstRun then
+          gameLoopInstance.lock()
+          if renderer != null then renderer.dispose()
 
-  //     accumulatedAssetCollection = accumulatedAssetCollection |+| ac
+        fontRegister.clearRegister()
+        boundaryLocator.purgeCache()
+        sceneProcessor.purgeCaches()
 
-  //     audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
+        accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
-  //     val dice = if firstRun then Dice.default else Dice.fromSeed(gameLoopInstance.runningTimeReference.toLong)
+        services.audioService.addAudioAssets(accumulatedAssetCollection.sounds)
 
-  //     if firstRun then platform = new JsPlatform(parentElement, gameConfig, globalEventStream)
+        val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
 
-  //     initialise(accumulatedAssetCollection)(dice) match {
-  //       case oe @ Outcome.Error(error, _) =>
-  //         val msg =
-  //           if (firstRun) "Error during first initialisation - Halting."
-  //           else "Error during re-initialisation - Halting."
+        initialise(accumulatedAssetCollection)(dice) match {
+          case oe @ Outcome.Error(error, _) =>
+            val msg =
+              if (firstRun) "Error during first initialisation - Halting."
+              else "Error during re-initialisation - Halting."
 
-  //         // Emit an event to denote that an error has occurred
-  //         GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
+            IndigoLogger.error(msg)
+            IndigoLogger.error("Crash report:")
+            IndigoLogger.error(oe.reportCrash)
+            throw error
 
-  //         IndigoLogger.error(msg)
-  //         IndigoLogger.error("Crash report:")
-  //         IndigoLogger.error(oe.reportCrash)
-  //         throw error
+          case Outcome.Result(startupData, globalEvents) =>
+            globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-  //       case Outcome.Result(startupData, globalEvents) =>
-  //         globalEvents.foreach(globalEventStream.pushGlobalEvent)
+            GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-  //         GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+            GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-  //         // 25% Loaded - emit an event to denote that indigo has loaded 25%
-  //         GameEngineStatusEvent.Loading(1, stepsToLoad, "fonts", true).dispatch(parentElement)
+            GameEngine.registerShaders(
+              shaderRegister,
+              shaders ++ startupData.additionalShaders,
+              accumulatedAssetCollection
+            )
 
-  //         GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+            def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
+              if (firstRun) initialModel(startUpSuccessData)
+              else Outcome(gameLoopInstance.gameModelState)
 
-  //         // 50% Loaded - emit an event to denote that indigo has loaded 50%
-  //         GameEngineStatusEvent.Loading(2, stepsToLoad, "shaders", true).dispatch(parentElement)
+            val loop: Outcome[Unit] =
+              for {
+                rendererAndAssetMapping <- platform.initialise(
+                  shaderRegister.toSet,
+                  accumulatedAssetCollection
+                )
+                startUpSuccessData <- GameEngine.initialisedGame(startupData)
+                m                  <- modelToUse(startUpSuccessData)
+                initialisedGameLoop <- GameEngine.initialiseGameLoop(
+                  this,
+                  boundaryLocator,
+                  sceneProcessor,
+                  engineConfig,
+                  m,
+                  frameProccessor,
+                  !firstRun, // If this isn't the first run, start with it frame locked.
+                  renderer
+                )
+              } yield {
+                renderer = rendererAndAssetMapping._1
+                assetMapping = rendererAndAssetMapping._2
+                gameLoopInstance = initialisedGameLoop
+                startUpData = startUpSuccessData
+                ()
+              }
 
-  //         GameEngine.registerShaders(
-  //           shaderRegister,
-  //           shaders ++ startupData.additionalShaders,
-  //           accumulatedAssetCollection
-  //         )
+            loop match {
+              case Outcome.Result(_, events) =>
+                IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+                IndigoLogger.info("You may get first occurrence error logs.")
 
-  //         // 75% Loaded - emit an event to denote that indigo has loaded 75%
-  //         GameEngineStatusEvent.Loading(3, stepsToLoad, "models", true).dispatch(parentElement)
+                events.foreach(globalEventStream.pushGlobalEvent)
 
-  //         def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
-  //           if (firstRun) initialModel(startUpSuccessData)
-  //           else Outcome(gameLoopInstance.gameModelState)
+                gameLoopInstance.unlock()
 
-  //         def viewModelToUse(startUpSuccessData: => StartUpData, m: GameModel): Outcome[GameModel => ViewModel] =
-  //           if (firstRun) initialViewModel(startUpSuccessData)(m).map(vm => (_: GameModel) => vm)
-  //           else Outcome((_: GameModel) => gameLoopInstance.viewModelState)
+                ()
 
-  //         val loop: Outcome[Double => Double => Unit] =
-  //           for {
-  //             rendererAndAssetMapping <- platform.initialise(firstRun, shaderRegister.toSet, accumulatedAssetCollection)
-  //             startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-  //             m                       <- modelToUse(startUpSuccessData)
-  //             vm                      <- viewModelToUse(startUpSuccessData, m)
-  //             initialisedGameLoop <- GameEngine.initialiseGameLoop(
-  //               parentElement,
-  //               this,
-  //               boundaryLocator,
-  //               sceneProcessor,
-  //               gameConfig,
-  //               m,
-  //               vm,
-  //               frameProccessor,
-  //               !firstRun, // If this isn't the first run, start with it frame locked.
-  //               renderer
-  //             )
-  //           } yield {
-  //             renderer = rendererAndAssetMapping._1
-  //             assetMapping = rendererAndAssetMapping._2
-  //             gameLoopInstance = initialisedGameLoop
-  //             startUpData = startUpSuccessData
-  //             initialisedGameLoop.loop
-  //           }
+              case oe @ Outcome.Error(e, _) =>
+                val msg =
+                  if (firstRun) "Error during first engine start up - Halting."
+                  else "Error during engine restart - Halting."
 
-  //         loop match {
-  //           case Outcome.Result(firstTick, events) =>
-  //             // 100% Loaded - emit an event to denote that indigo has loaded 100%
-  //             GameEngineStatusEvent.Loading(stepsToLoad, stepsToLoad, "complete", true).dispatch(parentElement)
+                IndigoLogger.error(msg)
+                IndigoLogger.error(oe.reportCrash)
+                throw e
+            }
 
-  //             IndigoLogger.info("Starting main loop, there will be no more info log messages.")
-  //             IndigoLogger.info("You may get first occurrence error logs.")
-
-  //             events.foreach(globalEventStream.pushGlobalEvent)
-
-  //             gameLoop = firstTick
-
-  //             gameLoopInstance.unlock()
-
-  //             // Fire an event to denote that indigo has finished loading
-  //             GameEngineStatusEvent.Loaded(firstRun).dispatch(parentElement)
-
-  //             ()
-
-  //           case oe @ Outcome.Error(e, _) =>
-  //             val msg =
-  //               if (firstRun) "Error during first engine start up - Halting."
-  //               else "Error during engine restart - Halting."
-
-  //             // Emit an event to denote that an error has occurred
-  //             GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
-
-  //             IndigoLogger.error(msg)
-  //             IndigoLogger.error(oe.reportCrash)
-  //             throw e
-  //         }
-
-  //     }
-  //   }
+        }
+      }
 
 }
 
-// object GameEngine {
+object GameEngine {
 
-//   def registerAnimations(animationsRegister: AnimationsRegister, animations: Set[Animation]): Unit =
-//     animations.foreach(animationsRegister.register)
+  def registerAnimations(animationsRegister: AnimationsRegister, animations: Set[Animation]): Unit =
+    animations.foreach(animationsRegister.register)
 
-//   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
-//     fonts.foreach(fontRegister.register)
+  def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
+    fonts.foreach(fontRegister.register)
 
-//   def registerShaders(
-//       shaderRegister: ShaderRegister,
-//       shaders: Set[ShaderProgram],
-//       assetCollection: AssetCollection
-//   ): Unit =
-//     shaders.foreach {
-//       case s: EntityShader.Source =>
-//         shaderRegister.remove(s.id)
-//         shaderRegister.registerEntityShader(s)
+  def registerShaders(
+      shaderRegister: ShaderRegister,
+      shaders: Set[ShaderProgram],
+      assetCollection: AssetCollection
+  ): Unit =
+    shaders.foreach {
+      case s: EntityShader.Source =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerEntityShader(s)
 
-//       case s: EntityShader.External =>
-//         shaderRegister.remove(s.id)
-//         shaderRegister.registerEntityShader(externalEntityShaderToSource(s, assetCollection))
+      case s: EntityShader.External =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerEntityShader(externalEntityShaderToSource(s, assetCollection))
 
-//       case s: BlendShader.Source =>
-//         shaderRegister.remove(s.id)
-//         shaderRegister.registerBlendShader(s)
+      case s: BlendShader.Source =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerBlendShader(s)
 
-//       case s: BlendShader.External =>
-//         shaderRegister.remove(s.id)
-//         shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
+      case s: BlendShader.External =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
 
-//       case s: UltravioletShader =>
-//         shaderRegister.remove(s.id)
-//         shaderRegister.registerUVShader(s)
-//     }
+      case s: UltravioletShader =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerUVShader(s)
+    }
 
-//   def externalEntityShaderToSource(
-//       external: EntityShader.External,
-//       assetCollection: AssetCollection
-//   ): EntityShader.Source =
-//     EntityShader.Source(
-//       id = external.id,
-//       vertex = external.vertex
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-//         .getOrElse(ShaderProgram.defaultVertexProgram),
-//       fragment = external.fragment
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-//         .getOrElse(ShaderProgram.defaultFragmentProgram),
-//       prepare = external.prepare
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-prepare", a))
-//         .getOrElse(ShaderProgram.defaultPrepareProgram),
-//       light = external.light
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-//         .getOrElse(ShaderProgram.defaultLightProgram),
-//       composite = external.composite
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-composite", a))
-//         .getOrElse(ShaderProgram.defaultCompositeProgram)
-//     )
+  def externalEntityShaderToSource(
+      external: EntityShader.External,
+      assetCollection: AssetCollection
+  ): EntityShader.Source =
+    EntityShader.Source(
+      id = external.id,
+      vertex = external.vertex
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
+        .getOrElse(ShaderProgram.defaultVertexProgram),
+      fragment = external.fragment
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
+        .getOrElse(ShaderProgram.defaultFragmentProgram),
+      prepare = external.prepare
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-prepare", a))
+        .getOrElse(ShaderProgram.defaultPrepareProgram),
+      light = external.light
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
+        .getOrElse(ShaderProgram.defaultLightProgram),
+      composite = external.composite
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-composite", a))
+        .getOrElse(ShaderProgram.defaultCompositeProgram)
+    )
 
-//   def externalBlendShaderToSource(
-//       external: BlendShader.External,
-//       assetCollection: AssetCollection
-//   ): BlendShader.Source =
-//     BlendShader.Source(
-//       id = external.id,
-//       vertex = external.vertex
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-//         .getOrElse(ShaderProgram.defaultVertexProgram),
-//       fragment = external.fragment
-//         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-//         .getOrElse(ShaderProgram.defaultFragmentProgram)
-//     )
+  def externalBlendShaderToSource(
+      external: BlendShader.External,
+      assetCollection: AssetCollection
+  ): BlendShader.Source =
+    BlendShader.Source(
+      id = external.id,
+      vertex = external.vertex
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
+        .getOrElse(ShaderProgram.defaultVertexProgram),
+      fragment = external.fragment
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
+        .getOrElse(ShaderProgram.defaultFragmentProgram)
+    )
 
-//   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-//   def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
-//     maybeText.flatMap(s"""//<$tag>[\r\n|\r|\n]((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
-//       case Some(program) =>
-//         program
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
+    maybeText.flatMap(s"""//<$tag>[\r\n|\r|\n]((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
+      case Some(program) =>
+        program
 
-//       case None =>
-//         val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '$assetName' - Halting."
-//         IndigoLogger.error(msg)
-//         throw new Exception(msg)
-//     }
+      case None =>
+        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '$assetName' - Halting."
+        IndigoLogger.error(msg)
+        throw new Exception(msg)
+    }
 
-//   def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
-//     startupData match {
-//       case e: Startup.Failure =>
-//         IndigoLogger.info("Game initialisation failed")
-//         IndigoLogger.info(e.report)
-//         Outcome.raiseError(new Exception("Game aborted due to start up failure"))
+  def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
+    startupData match {
+      case e: Startup.Failure =>
+        IndigoLogger.info("Game initialisation failed")
+        IndigoLogger.info(e.report)
+        Outcome.raiseError(new Exception("Game aborted due to start up failure"))
 
-//       case x: Startup.Success[?] =>
-//         IndigoLogger.info("Game initialisation succeeded")
-//         Outcome(x.success)
-//     }
+      case x: Startup.Success[?] =>
+        IndigoLogger.info("Game initialisation succeeded")
+        Outcome(x.success)
+    }
 
-//   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
-//       parentElement: Element,
-//       gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
-//       boundaryLocator: BoundaryLocator,
-//       sceneProcessor: SceneProcessor,
-//       gameConfig: GameConfig,
-//       initialModel: GameModel,
-//       initialViewModel: GameModel => ViewModel,
-//       frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-//       startFrameLocked: Boolean,
-//       renderer: => Renderer
-//   ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
-//     Outcome(
-//       new GameLoop[StartUpData, GameModel, ViewModel](
-//         gameEngine.rebuildGameLoop(parentElement, false),
-//         boundaryLocator,
-//         sceneProcessor,
-//         gameEngine,
-//         gameConfig,
-//         initialModel,
-//         initialViewModel(initialModel),
-//         frameProccessor,
-//         startFrameLocked,
-//         renderer
-//       )
-//     )
-// }
+  def initialiseGameLoop[StartUpData, GameModel, ViewModel](
+      gameEngine: GameEngine[StartUpData, GameModel],
+      boundaryLocator: BoundaryLocator,
+      sceneProcessor: SceneProcessor,
+      engineConfig: EngineConfig,
+      initialModel: GameModel,
+      frameProccessor: FrameProcessor[StartUpData, GameModel],
+      startFrameLocked: Boolean,
+      renderer: => Renderer
+  ): Outcome[GameLoop[StartUpData, GameModel]] =
+    Outcome(
+      new GameLoop[StartUpData, GameModel](
+        gameEngine.rebuildGameLoop(false),
+        boundaryLocator,
+        sceneProcessor,
+        gameEngine,
+        engineConfig,
+        initialModel,
+        frameProccessor,
+        startFrameLocked,
+        renderer
+      )
+    )
+}

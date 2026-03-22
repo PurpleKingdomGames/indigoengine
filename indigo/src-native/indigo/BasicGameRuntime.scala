@@ -1,10 +1,9 @@
 package indigo
 
 import indigo.*
-import indigo.launchers.GameLauncher
 import tyrian.*
 
-abstract class BasicGameRuntime(game: => Game[?, ?, ?] | GameLauncher[?, ?]) extends App[Unit]:
+abstract class BasicGameRuntime(game: => Game[?, ?, ?]) extends App[Unit]:
 
   def extensions(args: Array[String], model: Unit): Set[Extension] =
     Set(
