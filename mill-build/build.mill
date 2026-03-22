@@ -25,7 +25,7 @@ object `package` extends MillBuildRootModule:
   }
 
   val circeVersion: String = "0.14.14"
-  val osLibVersion: String = "0.11.5"
+  val osLibVersion: String = "0.11.8"
 
   def mvnDeps = Seq(
     mvn"com.lihaoyi::os-lib:$osLibVersion",
