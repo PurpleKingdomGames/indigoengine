@@ -27,9 +27,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
           .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(
-        SandboxAssets.assets ++
-          Shaders.assets ++
-          Archetype.assets
+        SandboxAssets.assets("") ++
+          Shaders.assets("") ++
+          Archetype.assets("")
       ).withFonts(
         Fonts.fontInfo,
         TestFont.fontInfo

@@ -113,10 +113,10 @@ object Archetype:
       .withVertexProgram(vertAsset)
       .withFragmentProgram(fragAsset)
 
-  def assets: Set[AssetType] =
+  def assets(basePath: String): Set[AssetType] =
     Set(
-      AssetType.Text(vertAsset, AssetPath("assets/mutant.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/mutant.frag"))
+      AssetType.Text(vertAsset, AssetPath(basePath + "assets/mutant.vert")),
+      AssetType.Text(fragAsset, AssetPath(basePath + "assets/mutant.frag"))
     )
 
 final case class MutantData(

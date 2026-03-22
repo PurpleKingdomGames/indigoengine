@@ -25,9 +25,10 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
           .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
         SandboxBootData(args.find(_ == "key").getOrElse("No entry for 'key'."))
       ).withAssets(
-        SandboxAssets.assets ++
-          Shaders.assets ++
-          Archetype.assets
+        // TODO: For goodness sake, use the asset listing generator.
+        SandboxAssets.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/") ++
+          Shaders.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/") ++
+          Archetype.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/")
       ).withFonts(
         Fonts.fontInfo,
         TestFont.fontInfo

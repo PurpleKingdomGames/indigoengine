@@ -144,7 +144,6 @@ object Indigo:
       Some(onLaunchFailure)
     )
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def launchAction(
       game: Game[?, ?, ?] | GameLauncher[?, ?],
       args: Array[String]
