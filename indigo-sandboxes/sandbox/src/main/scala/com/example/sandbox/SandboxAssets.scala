@@ -79,33 +79,33 @@ object SandboxAssets {
       .Bitmap(cratesDiffuseName)
       .withLighting(LightingModel.Lit.flat.withNormal(cratesNormalName, 1.0))
 
-  def assets: Set[AssetType] =
+  def assets(basePath: String): Set[AssetType] =
     Set(
-      AssetType.Image(testFont, AssetPath("assets/generated/TestFont.png")),
-      AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
-      AssetType.Image(light, AssetPath("assets/light_texture.png")),
-      AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
-      AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png")),
-      AssetType.Image(dots, AssetPath("assets/" + dots + ".png")),
-      AssetType.Image(captainName, AssetPath("assets/Captain Clown Nose.png")),
+      AssetType.Image(testFont, AssetPath(basePath + "assets/generated/TestFont.png")),
+      AssetType.Image(smallFontName, AssetPath(basePath + "assets/boxy_font.png")),
+      AssetType.Image(light, AssetPath(basePath + "assets/light_texture.png")),
+      AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath(basePath + "assets/" + dudeName + ".json")),
+      AssetType.Image(dudeName, AssetPath(basePath + "assets/" + dudeName + ".png")),
+      AssetType.Image(dots, AssetPath(basePath + "assets/" + dots + ".png")),
+      AssetType.Image(captainName, AssetPath(basePath + "assets/Captain Clown Nose.png")),
       AssetType.Tagged("atlas1")(
-        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
-        AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission + ".png")),
-        AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal + ".png")),
-        AssetType.Image(junctionBoxRoughness, AssetPath("assets/" + junctionBoxRoughness + ".png")),
-        AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName + ".png")),
-        AssetType.Image(foliageName, AssetPath("assets/" + foliageName + ".png")),
-        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName + ".png")),
-        AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName + ".png"))
+        AssetType.Image(junctionBoxAlbedo, AssetPath(basePath + "assets/" + junctionBoxAlbedo + ".png")),
+        AssetType.Image(junctionBoxEmission, AssetPath(basePath + "assets/" + junctionBoxEmission + ".png")),
+        AssetType.Image(junctionBoxNormal, AssetPath(basePath + "assets/" + junctionBoxNormal + ".png")),
+        AssetType.Image(junctionBoxRoughness, AssetPath(basePath + "assets/" + junctionBoxRoughness + ".png")),
+        AssetType.Image(imageLightName, AssetPath(basePath + "assets/" + imageLightName + ".png")),
+        AssetType.Image(foliageName, AssetPath(basePath + "assets/" + foliageName + ".png")),
+        AssetType.Image(smoothBumpName, AssetPath(basePath + "assets/" + smoothBumpName + ".png")),
+        AssetType.Image(normalMapName, AssetPath(basePath + "assets/" + normalMapName + ".png"))
       ),
-      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png")),
-      AssetType.Image(cratesDiffuseName, AssetPath("assets/" + cratesDiffuseName + ".png")),
-      AssetType.Image(cratesNormalName, AssetPath("assets/" + cratesNormalName + ".png")),
-      AssetType.Image(cameraIcon, AssetPath("assets/camera_icon.png")),
-      AssetType.Image(nineSlice, AssetPath("assets/nineslice.png")),
-      AssetType.Image(platform, AssetPath("assets/platform.png")),
-      AssetType.Image(window, AssetPath("assets/window.png")),
-      AssetType.Audio(jumpSound, jumpSoundPath)
+      AssetType.Image(trafficLightsName, AssetPath(basePath + "assets/" + trafficLightsName + ".png")),
+      AssetType.Image(cratesDiffuseName, AssetPath(basePath + "assets/" + cratesDiffuseName + ".png")),
+      AssetType.Image(cratesNormalName, AssetPath(basePath + "assets/" + cratesNormalName + ".png")),
+      AssetType.Image(cameraIcon, AssetPath(basePath + "assets/camera_icon.png")),
+      AssetType.Image(nineSlice, AssetPath(basePath + "assets/nineslice.png")),
+      AssetType.Image(platform, AssetPath(basePath + "assets/platform.png")),
+      AssetType.Image(window, AssetPath(basePath + "assets/window.png")),
+      AssetType.Audio(jumpSound, AssetPath(basePath + jumpSoundPath.show))
     )
 
 }

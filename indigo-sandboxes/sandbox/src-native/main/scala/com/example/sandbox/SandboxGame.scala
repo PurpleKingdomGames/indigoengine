@@ -37,9 +37,10 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         ).noResize,
         SandboxBootData(args.find(_ == "key").getOrElse("No entry for 'key'."), gameViewport)
       ).withAssets(
-        SandboxAssets.assets ++
-          Shaders.assets ++
-          Archetype.assets
+        // TODO: For goodness sake, use the asset listing generator.
+        SandboxAssets.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/") ++
+          Shaders.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/") ++
+          Archetype.assets((os.pwd / "indigo-sandboxes" / "sandbox").toString + "/")
       ).withFonts(
         Fonts.fontInfo,
         TestFont.fontInfo

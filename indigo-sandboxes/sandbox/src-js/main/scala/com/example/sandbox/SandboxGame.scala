@@ -37,9 +37,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         ).noResize,
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(
-        SandboxAssets.assets ++
-          Shaders.assets ++
-          Archetype.assets
+        SandboxAssets.assets("") ++
+          Shaders.assets("") ++
+          Archetype.assets("")
       ).withFonts(
         Fonts.fontInfo,
         TestFont.fontInfo
