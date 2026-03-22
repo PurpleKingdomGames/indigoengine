@@ -26,3 +26,7 @@ object `package` extends Module:
     def moduleDeps = Seq(
       build.`indigo-render`.native
     )
+
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::os-lib::${millbuild.DepVersions.osLibVersion}"
+    )

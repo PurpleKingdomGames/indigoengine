@@ -27,8 +27,6 @@ import tyrian.Action
 import tyrian.Watcher
 
 import scala.annotation.nowarn
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /** A trait representing a game with scene management baked in
   *
@@ -198,7 +196,7 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
         throw e
 
       case Outcome.Result(b, evts) =>
-        indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+        indigoGame(b).start(b.gameConfig, b.assets, evts)
 
 end Game
 

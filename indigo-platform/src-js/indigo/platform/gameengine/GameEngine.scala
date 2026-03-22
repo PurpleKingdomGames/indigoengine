@@ -15,6 +15,7 @@ import indigo.platform.JsPlatform
 import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
+import indigo.platform.events.GlobalEventStreamJS
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.storage.Storage
 import indigo.render.Renderer
@@ -114,7 +115,7 @@ final class GameEngine[StartUpData, GameModel](
     GameEngineStatusEvent.Initiated.dispatch(parentElement)
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStreamJS(audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events

@@ -16,16 +16,15 @@ import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http
 import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
-import indigo.render.EmitGlobalEvent
 import indigoengine.shared.collections.Batch
 
 import scala.collection.mutable
 
-final class GlobalEventStream(
+final class GlobalEventStreamJS(
     audioPlayer: AudioPlayer,
     storage: Storage,
     platform: => PlatformFullScreen
-) extends EmitGlobalEvent {
+) extends GlobalEventStream {
 
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()

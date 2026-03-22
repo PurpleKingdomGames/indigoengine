@@ -69,6 +69,26 @@ trait SharedNative extends Shared, ScalaNativeModule:
   override def releaseMode: T[ReleaseMode]              = Task(ReleaseMode.Debug)
   override def nativeLTO: T[LTO]                        = Task(LTO.None)
 
+  def forkEnv =
+    val os = System.getProperty("os.name").toLowerCase
+    if os.contains("win") then
+      val home   = System.getProperty("user.home").replace('\\', '/')
+      val sdlLib = s"$home/scoop/apps/sdl3/current/lib"
+      val path   = System.getenv("PATH")
+      Map("PATH" -> s"$sdlLib;$path")
+    else Map.empty[String, String]
+
+  def nativeLinkingOptions =
+    val os = System.getProperty("os.name").toLowerCase
+
+    if os.contains("win") then
+      val home = System.getProperty("user.home").replace('\\', '/')
+      Seq(s"-L$home/scoop/apps/sdl3/current/lib", "-lSDL3", "-lopengl32")
+    else if (os.contains("mac"))
+      Seq("-L/opt/homebrew/lib", "-lSDL3", "-framework", "OpenGL")
+    else
+      Seq("-lSDL3", "-lGL")
+
   object test extends ScalaNativeTests, ScalafixModule, ScalafmtModule:
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
