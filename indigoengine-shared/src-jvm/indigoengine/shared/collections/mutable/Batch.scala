@@ -157,6 +157,9 @@ final class Batch[A] private (private val _underlying: ArrayBuffer[A]) extends B
   def toSet[B >: A]: Set[B] =
     _underlying.toSet
 
+  def drop(n: Int): Batch[A] =
+    new Batch(_underlying.drop(n))
+
 object Batch:
   def apply[A](values: A*): Batch[A] =
     new Batch(ArrayBuffer.from(values))
