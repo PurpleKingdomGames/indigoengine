@@ -2,6 +2,9 @@ package indigoplugin.generators
 
 class AssetListingTests extends munit.FunSuite {
 
+  val projectDir  = "/home/some-user/some-project"
+  val projectPath = os.Path(projectDir)
+
   test("should be able to convert file and folder names into something safe (using default)") {
     def toSafeName(name: String) = AssetListing.toDefaultSafeName((n, _) => n)(name, "")
 
@@ -21,20 +24,21 @@ class AssetListingTests extends munit.FunSuite {
       )
 
     val actual =
-      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName((n, _) => n))
+      AssetListing.renderContent(projectPath, paths, AssetListing.toDefaultSafeName((n, _) => n))
 
     val expected =
-      """
+      s"""
   object assets:
     object images:
       val fancyLogo: AssetName               = AssetName("fancy logo!.svg")
       val fancyLogoMaterial: Material.Bitmap = Material.Bitmap(fancyLogo)
 
-      def assetSet(baseUrl: String): Set[AssetType] =
+      def assetSetRelativeTo(basePath: String): Set[AssetType] =
         Set(
-          AssetType.Image(fancyLogo, AssetPath(baseUrl + "assets/images/fancy logo!.svg"), Option(AssetTag("images")))
+          AssetType.Image(fancyLogo, AssetPath(basePath + "assets/images/fancy logo!.svg"), Option(AssetTag("images")))
         )
-      def assetSet: Set[AssetType] = assetSet("./")
+      def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+      def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
       def assetNameSet: Set[AssetName] =
         Set(
@@ -43,11 +47,12 @@ class AssetListingTests extends munit.FunSuite {
 
     val someText: AssetName = AssetName("some_text.txt")
 
-    def assetSet(baseUrl: String): Set[AssetType] =
+    def assetSetRelativeTo(basePath: String): Set[AssetType] =
       Set(
-        AssetType.Text(someText, AssetPath(baseUrl + "assets/some_text.txt"))
+        AssetType.Text(someText, AssetPath(basePath + "assets/some_text.txt"))
       )
-    def assetSet: Set[AssetType] = assetSet("./")
+    def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+    def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
     def assetNameSet: Set[AssetName] =
       Set(
@@ -78,10 +83,10 @@ class AssetListingTests extends munit.FunSuite {
     }
 
     val actual =
-      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName(rename))
+      AssetListing.renderContent(projectPath, paths, AssetListing.toDefaultSafeName(rename))
 
     val expected =
-      """
+      s"""
   object assets:
     object folderA:
       object folderB:
@@ -92,13 +97,14 @@ class AssetListingTests extends munit.FunSuite {
         val d: AssetName               = AssetName("d.jpg")
         val dMaterial: Material.Bitmap = Material.Bitmap(d)
 
-        def assetSet(baseUrl: String): Set[AssetType] =
+        def assetSetRelativeTo(basePath: String): Set[AssetType] =
           Set(
-            AssetType.Image(b, AssetPath(baseUrl + "assets/folderA/folderB/b.png"), Option(AssetTag("folderB"))),
-            AssetType.Image(c, AssetPath(baseUrl + "assets/folderA/folderB/c.png"), Option(AssetTag("folderB"))),
-            AssetType.Image(d, AssetPath(baseUrl + "assets/folderA/folderB/d.jpg"), Option(AssetTag("folderB")))
+            AssetType.Image(b, AssetPath(basePath + "assets/folderA/folderB/b.png"), Option(AssetTag("folderB"))),
+            AssetType.Image(c, AssetPath(basePath + "assets/folderA/folderB/c.png"), Option(AssetTag("folderB"))),
+            AssetType.Image(d, AssetPath(basePath + "assets/folderA/folderB/d.jpg"), Option(AssetTag("folderB")))
           )
-        def assetSet: Set[AssetType] = assetSet("./")
+        def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+        def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
         def assetNameSet: Set[AssetName] =
           Set(
@@ -110,11 +116,12 @@ class AssetListingTests extends munit.FunSuite {
       val ee: AssetName               = AssetName("e.svg")
       val eeMaterial: Material.Bitmap = Material.Bitmap(ee)
 
-      def assetSet(baseUrl: String): Set[AssetType] =
+      def assetSetRelativeTo(basePath: String): Set[AssetType] =
         Set(
-          AssetType.Image(ee, AssetPath(baseUrl + "assets/folderA/e.svg"), Option(AssetTag("folderA")))
+          AssetType.Image(ee, AssetPath(basePath + "assets/folderA/e.svg"), Option(AssetTag("folderA")))
         )
-      def assetSet: Set[AssetType] = assetSet("./")
+      def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+      def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
       def assetNameSet: Set[AssetName] =
         Set(
@@ -126,11 +133,12 @@ class AssetListingTests extends munit.FunSuite {
       val fPlay: PlaySound        = PlaySound(f, Volume.Max)
       val fSceneAudio: SceneAudio = SceneAudio(SceneAudioSource(BindingKey("f.mp3"), PlaybackPattern.SingleTrackLoop(Track(f))))
 
-      def assetSet(baseUrl: String): Set[AssetType] =
+      def assetSetRelativeTo(basePath: String): Set[AssetType] =
         Set(
-          AssetType.Audio(f, AssetPath(baseUrl + "assets/folderC/f.mp3"))
+          AssetType.Audio(f, AssetPath(basePath + "assets/folderC/f.mp3"))
         )
-      def assetSet: Set[AssetType] = assetSet("./")
+      def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+      def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
       def assetNameSet: Set[AssetName] =
         Set(
@@ -139,11 +147,12 @@ class AssetListingTests extends munit.FunSuite {
 
     val a: AssetName = AssetName("a.txt")
 
-    def assetSet(baseUrl: String): Set[AssetType] =
+    def assetSetRelativeTo(basePath: String): Set[AssetType] =
       Set(
-        AssetType.Text(a, AssetPath(baseUrl + "assets/a.txt"))
+        AssetType.Text(a, AssetPath(basePath + "assets/a.txt"))
       )
-    def assetSet: Set[AssetType] = assetSet("./")
+    def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+    def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$projectDir")
 
     def assetNameSet: Set[AssetName] =
       Set(

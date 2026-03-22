@@ -20,7 +20,11 @@ object AssetListing {
     }
 
     val fileContents: String =
-      renderContent(IndigoAssets.listAssetFiles(params.options.assets, params.assetsDirectory), toSafeName)
+      renderContent(
+        params.assetsDirectory / os.RelPath.up,
+        IndigoAssets.listAssetFiles(params.options.assets, params.assetsDirectory),
+        toSafeName
+      )
 
     val wd = params.destination / Generators.OutputDirName
 
@@ -45,9 +49,13 @@ object AssetListing {
     Seq(file)
   }
 
-  def renderContent(paths: List[os.RelPath], toSafeName: (String, String) => String): String = {
+  def renderContent(
+      assetFolderParentPath: os.Path,
+      paths: List[os.RelPath],
+      toSafeName: (String, String) => String
+  ): String = {
     val pathTree = convertPathsToTree(paths)
-    renderTree(0, toSafeName)(pathTree)
+    renderTree(assetFolderParentPath.toString, 0, toSafeName)(pathTree)
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -63,16 +71,18 @@ object AssetListing {
       )
       .sorted
 
-  def renderTree(indent: Int, toSafeName: (String, String) => String)(pathTree: PathTree): String =
+  def renderTree(assetFolderParentPath: String, indent: Int, toSafeName: (String, String) => String)(
+      pathTree: PathTree
+  ): String =
     pathTree match {
       case PathTree.File(_, _, _) =>
         ""
 
       case PathTree.Folder(folderName, children) =>
-        renderFolderContents(folderName, children, indent, toSafeName)
+        renderFolderContents(assetFolderParentPath, folderName, children, indent, toSafeName)
 
       case PathTree.Root(children) =>
-        renderFolderContents("", children, indent, toSafeName)
+        renderFolderContents(assetFolderParentPath, "", children, indent, toSafeName)
     }
 
   def errorOnDuplicates(
@@ -115,6 +125,7 @@ object AssetListing {
   }
 
   def renderFolderContents(
+      assetFolderParentPath: String,
       folderName: String,
       children: List[PathTree],
       indent: Int,
@@ -140,7 +151,7 @@ object AssetListing {
               |${indentSpacesNext}val ${safeName}SceneAudio: SceneAudio = SceneAudio(SceneAudioSource(BindingKey("${name}.${ext}"), PlaybackPattern.SingleTrackLoop(Track(${safeName}))))""".stripMargin
 
             val loadable =
-              s"""${indentSpacesNext}    AssetType.Audio(${safeName}, AssetPath(baseUrl + "${path}"))"""
+              s"""${indentSpacesNext}    AssetType.Audio(${safeName}, AssetPath(basePath + "${path}"))"""
 
             val named =
               s"""${indentSpacesNext}    $safeName"""
@@ -159,7 +170,7 @@ object AssetListing {
               else s"""Option(AssetTag("${safeFolderName}"))"""
 
             val loadable =
-              s"""${indentSpacesNext}    AssetType.Image(${safeName}, AssetPath(baseUrl + "${path}"), ${tag})"""
+              s"""${indentSpacesNext}    AssetType.Image(${safeName}, AssetPath(basePath + "${path}"), ${tag})"""
 
             val named =
               s"""${indentSpacesNext}    $safeName"""
@@ -173,7 +184,7 @@ object AssetListing {
               s"""${indentSpacesNext}val ${safeName}: AssetName = AssetName("${name}.${ext}")"""
 
             val loadable =
-              s"""${indentSpacesNext}    AssetType.Text(${safeName}, AssetPath(baseUrl + "${path}"))"""
+              s"""${indentSpacesNext}    AssetType.Text(${safeName}, AssetPath(basePath + "${path}"))"""
 
             val named =
               s"""${indentSpacesNext}    $safeName"""
@@ -186,11 +197,12 @@ object AssetListing {
       else
         s"""${renderedFiles.map(_._1).mkString("\n")}
         |
-        |${indentSpacesNext}def assetSet(baseUrl: String): Set[AssetType] =
+        |${indentSpacesNext}def assetSetRelativeTo(basePath: String): Set[AssetType] =
         |${indentSpacesNext}  Set(
         |${renderedFiles.map(_._2).mkString(",\n")}
         |${indentSpacesNext}  )
-        |${indentSpacesNext}def assetSet: Set[AssetType] = assetSet("./")
+        |${indentSpacesNext}def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
+        |${indentSpacesNext}def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$assetFolderParentPath")
         |
         |${indentSpacesNext}def assetNameSet: Set[AssetName] =
         |${indentSpacesNext}  Set(
@@ -200,7 +212,7 @@ object AssetListing {
         |""".stripMargin
 
     val contents =
-      s"""${children.map(renderTree(indent + 1, toSafeName)).mkString}""".stripMargin + assetSeq
+      s"""${children.map(renderTree(assetFolderParentPath, indent + 1, toSafeName)).mkString}""".stripMargin + assetSeq
 
     if (safeFolderName.isEmpty) contents
     else

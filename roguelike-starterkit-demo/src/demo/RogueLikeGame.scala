@@ -36,7 +36,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
           Config.config
         )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
-        .withAssets(Assets.assets.assetSet)
+        .withAssets(Assets.assets.assetSetRelative)
         .withShaders(
           indigoextras.ui.shaders.all ++
             roguelikestarterkit.shaders.all ++ Set(
