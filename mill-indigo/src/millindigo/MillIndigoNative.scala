@@ -3,7 +3,6 @@ package indigoplugin
 import indigoplugin.IndigoOptions
 import mill.*
 import mill.scalalib.ScalaModule
-import os.Path
 
 import scala.annotation.nowarn
 
@@ -43,66 +42,3 @@ trait MillIndigoNative extends ScalaModule:
       super.generatedSources() ++ custom
     }
 
-  /** Build a static site for your game using Scala.js's fast linking. */
-  def indigoBuild(): Task.Command[Path] =
-    Task.Command {
-
-      // val scriptPathBase  = fastLinkJS().dest.path
-      // val assetsDirectory = indigoAssets().path
-
-      // IndigoBuildMill.build(
-      //   scriptPathBase,
-      //   indigoOptions(assetsDirectory),
-      //   assetsDirectory,
-      //   Task.dest
-      // )
-
-      Task.dest
-    }
-
-  /** Build a static site for your game using Scala.js's full linking. */
-  def indigoBuildFull(): Task.Command[Path] =
-    Task.Command {
-      val outputDir: Path = Task.dest
-      // val scriptPathBase  = fullLinkJS().dest.path
-      // val assetsDirectory = indigoAssets().path
-
-      // IndigoBuildMill.build(
-      //   scriptPathBase,
-      //   indigoOptions(assetsDirectory),
-      //   assetsDirectory,
-      //   outputDir
-      // )
-
-      outputDir
-    }
-
-  /** Run your game using Electron and Scala.js's fast linking. */
-  def indigoRun(): Task.Command[Unit] =
-    Task.Command {
-      // val outputDir: Path = Task.dest
-      // val buildDir: Path  = indigoBuild()()
-      // val assetsDirectory = indigoAssets().path
-
-      // IndigoRun.run(
-      //   outputDir,
-      //   buildDir,
-      //   indigoOptions(assetsDirectory)
-      // )
-      ()
-    }
-
-  /** Run your game using Electron and Scala.js's full linking. */
-  def indigoRunFull(): Task.Command[Unit] =
-    Task.Command {
-      // val outputDir: Path = Task.dest
-      // val buildDir: Path  = indigoBuildFull()()
-      // val assetsDirectory = indigoAssets().path
-
-      // IndigoRun.run(
-      //   outputDir,
-      //   buildDir,
-      //   indigoOptions(assetsDirectory)
-      // )
-      ()
-    }
