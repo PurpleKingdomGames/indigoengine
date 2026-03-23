@@ -71,9 +71,10 @@
 
 //   // Images
 
-//   def loadImageAsset(imageAsset: AssetType.Image): LoadedImageAsset = {
-//     IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
-//     val p = os.Path(imageAsset.path.show)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  // def loadImageAsset(imageAsset: AssetType.Image): LoadedImageAsset = {
+  //   IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
+  //   val p = os.Path(imageAsset.path.show)
 
 //     if os.exists(p) then
 //       val bytes = os.read.bytes(p)
@@ -106,10 +107,10 @@
 //   val loadAudioAssets: List[AssetType.Audio] => List[LoadedAudioAsset] =
 //     audioAssets => audioAssets.map(loadAudioAsset)
 
-//   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-//   def loadAudioAsset(audioAsset: AssetType.Audio): LoadedAudioAsset = {
-//     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
-//     val p = os.Path(audioAsset.path.show)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  // def loadAudioAsset(audioAsset: AssetType.Audio): LoadedAudioAsset = {
+  //   IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
+  //   val p = os.Path(audioAsset.path.show)
 
 //     if os.exists(p) then
 //       val bytes = os.read.bytes(p)
