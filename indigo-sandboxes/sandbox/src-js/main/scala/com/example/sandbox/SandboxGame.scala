@@ -14,44 +14,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
     Some(WindowsScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
-    NonEmptyBatch(
-      OriginalScene,
-      ShapesScene,
-      LightsScene,
-      RefractionScene,
-      LegacyEffectsScene,
-      BoundsScene,
-      CameraScene,
-      TextureTileScene,
-      ConfettiScene,
-      MutantsScene,
-      CratesScene,
-      ClipScene,
-      TextScene,
-      BoxesScene,
-      ManyEventHandlers,
-      TimelineScene,
-      UltravioletScene,
-      PointersScene,
-      BoundingCircleScene,
-      LineReflectionScene,
-      CameraWithCloneTilesScene,
-      PathFindingScene,
-      CaptureScreenScene,
-      NineSliceScene,
-      SfxScene,
-      ComponentUIScene,
-      ComponentUIScene2,
-      WindowsScene,
-      MeshScene,
-      WaypointScene,
-      ActorPoolScene,
-      ActorPoolPhysicsScene,
-      PerformerScene,
-      PerformerPhysicsScene,
-      ViewportResizeScene,
-      MultiPointScene
-    )
+    ScenesList.scenes
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
@@ -74,9 +37,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         ).noResize,
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(
-        SandboxAssets.assets ++
-          Shaders.assets ++
-          Archetype.assets
+        SandboxAssets.assets("") ++
+          Shaders.assets("") ++
+          Archetype.assets("")
       ).withFonts(
         Fonts.fontInfo,
         TestFont.fontInfo
@@ -152,7 +115,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModel.updateModel(context, model)
+    SandboxModelShared.updateModel(context, model)
 
   def present(
       context: Context[SandboxStartupData],

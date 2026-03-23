@@ -34,7 +34,7 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
         Config.config.viewport.size / 2
       )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
-        .withAssets(Assets.assets.assetSet)
+        .withAssets(Assets.assets.assetSetRelative)
         .withShaders(
           indigoextras.ui.shaders.all ++
             roguelikestarterkit.shaders.all ++ Set(

@@ -1,6 +1,11 @@
 package indigo.platform
 
+import indigo.core.Outcome
 import indigo.core.events.GlobalEvent
+import indigo.platform.assets.AssetCollection
+import indigo.render.Renderer
+import indigo.render.pipeline.assets.AssetMapping
+import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 
 /** Platform abstraction for game engine runtime services.
@@ -12,6 +17,15 @@ import indigoengine.shared.collections.Batch
   *   - Event handling (pushGlobalEvent, collectEvents)
   */
 trait Platform:
+
+  /** Initialise the platform.
+    */
+  def initialise(
+      firstRun: Boolean,
+      shaders: Set[RawShaderCode],
+      assetCollection: AssetCollection
+  ): Outcome[(Renderer, AssetMapping)]
+
   /** Request the next animation frame
     *
     * @param loop

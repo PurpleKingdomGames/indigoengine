@@ -23,7 +23,7 @@ final class IndigoPhysics extends Game[Unit, Unit, Model]:
           FPSCounter(PixelatedFont.fontKey, Assets.assets.generated.PixelatedFont)
             .moveTo(Point(10))
         )
-        .withAssets(Assets.assets.generated.assetSet)
+        .withAssets(Assets.assets.generated.assetSetRelative)
         .withFonts(PixelatedFont.fontInfo)
     )
 

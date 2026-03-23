@@ -138,9 +138,9 @@ object Shaders:
       .External(seaId)
       .withFragmentProgram(seaAsset)
 
-  def assets: Set[AssetType] =
+  def assets(basePath: String): Set[AssetType] =
     Set(
-      AssetType.Text(vertAsset, AssetPath("assets/shader.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/shader.frag")),
-      AssetType.Text(seaAsset, AssetPath("assets/sea.frag"))
+      AssetType.Text(vertAsset, AssetPath(basePath + "assets/shader.vert")),
+      AssetType.Text(fragAsset, AssetPath(basePath + "assets/shader.frag")),
+      AssetType.Text(seaAsset, AssetPath(basePath + "assets/sea.frag"))
     )
