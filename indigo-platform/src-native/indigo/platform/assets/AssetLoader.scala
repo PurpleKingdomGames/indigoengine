@@ -71,6 +71,7 @@ object AssetLoader:
 
   // Images
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def loadImageAsset(imageAsset: AssetType.Image): LoadedImageAsset = {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
     val p = os.Path(imageAsset.path.show)
@@ -106,7 +107,7 @@ object AssetLoader:
   val loadAudioAssets: List[AssetType.Audio] => List[LoadedAudioAsset] =
     audioAssets => audioAssets.map(loadAudioAsset)
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def loadAudioAsset(audioAsset: AssetType.Audio): LoadedAudioAsset = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
     val p = os.Path(audioAsset.path.show)
