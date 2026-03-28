@@ -24,15 +24,17 @@ object `package` extends MillBuildRootModule:
     super.sources() ++ indigoPluginSources() ++ millPluginSources()
   }
 
-  val circeVersion: String = "0.14.14"
-  val osLibVersion: String = "0.11.5"
+  val circeVersion: String         = "0.14.14"
+  val osLibVersion: String         = "0.11.5"
+  val scalacOptionsVersion: String = "0.1.8"
+  val scalafixMillVersion: String  = "0.6.0"
 
   def mvnDeps = Seq(
     mvn"com.lihaoyi::os-lib:$osLibVersion",
     mvn"io.circe::circe-core:$circeVersion",
     mvn"io.circe::circe-parser:$circeVersion",
-    mvn"com.goyeau::mill-scalafix_mill1:0.6.0",
-    mvn"org.typelevel::scalac-options:0.1.8"
+    mvn"org.typelevel::scalac-options:$scalacOptionsVersion",
+    mvn"com.goyeau::mill-scalafix_mill1:$scalafixMillVersion"
   )
 
   def generatedSources = Task {
@@ -44,6 +46,8 @@ object `package` extends MillBuildRootModule:
          |object DepVersions {
          |  def circeVersion: String = "$circeVersion"
          |  def osLibVersion: String = "$osLibVersion"
+         |  def scalacOptionsVersion: String = "$scalacOptionsVersion"
+         |  def scalafixMillVersion: String  = "$scalafixMillVersion"
          |}
       """.stripMargin
     )

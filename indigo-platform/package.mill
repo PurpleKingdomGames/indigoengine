@@ -8,6 +8,7 @@ import mill.scalajslib.*
 import build.SharedNative
 import build.SharedJS
 import build.SharedPublish
+import build.Dependencies
 
 object `package` extends Module:
 
@@ -18,7 +19,7 @@ object `package` extends Module:
     )
 
     def mvnDeps = Seq(
-      mvn"org.scala-js::scala-js-macrotask-executor::1.1.1"
+      mvn"org.scala-js::scala-js-macrotask-executor::${Dependencies.scalajsMacrotaskExecutor}"
     )
 
   object native extends SharedNative, PlatformScalaModule, SharedPublish:

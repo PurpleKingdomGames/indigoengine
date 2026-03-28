@@ -9,6 +9,7 @@ import mill.scalajslib.*
 import build.SharedNative
 import build.SharedJS
 import build.SharedPublish
+import build.Dependencies
 
 object `package` extends Module:
 
@@ -17,8 +18,8 @@ object `package` extends Module:
     def moduleDeps = Seq(build.indigo.js)
 
     def mvnDeps = Seq(
-      mvn"io.circe::circe-core::0.14.13",
-      mvn"io.circe::circe-parser::0.14.13"
+      mvn"io.circe::circe-core::${Dependencies.circe}",
+      mvn"io.circe::circe-parser::${Dependencies.circe}"
     )
 
   object native extends SharedNative, PlatformScalaModule, SharedPublish:
@@ -26,6 +27,6 @@ object `package` extends Module:
     def moduleDeps = Seq(build.indigo.native)
 
     def mvnDeps = Seq(
-      mvn"io.circe::circe-core::0.14.13",
-      mvn"io.circe::circe-parser::0.14.13"
+      mvn"io.circe::circe-core::${Dependencies.circe}",
+      mvn"io.circe::circe-parser::${Dependencies.circe}"
     )

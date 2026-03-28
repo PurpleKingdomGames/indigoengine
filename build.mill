@@ -73,7 +73,7 @@ trait SharedNative extends Shared, ScalaNativeModule:
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
-      mvn"org.typelevel::munit-cats-effect::${Dependencies.Native.munitCatsEffect3}",
+      mvn"org.typelevel::munit-cats-effect::${Dependencies.munitCatsEffect3}",
       mvn"org.typelevel::discipline-munit::${Dependencies.disciplineMUnit}",
       mvn"org.typelevel::cats-laws::${Dependencies.catsLaws}"
     )
@@ -130,27 +130,25 @@ object IndigoVersion:
 
 // --- Dependencies ---
 
-// TODO: Came from Tyrian, usage is inconsistent
 object Dependencies:
 
-  object Native:
-    val catsEffect       = "3.7.0-RC1"
-    val fs2              = "3.13.0-M8"
-    val munitCatsEffect3 = "2.2.0-RC1"
-
-  val catsEffect        = "3.6.3"
-  val circe             = "0.14.15"
-  val fs2               = "3.12.2"
-  val scalajsDomVersion = "2.8.1"
-  val munitCatsEffect3  = "2.1.0"
-  val disciplineMUnit   = "2.0.0"
-  val scalajsSnabbdom   = "0.2.0-M3"
-  val zio               = "2.1.21"
-  val zioInteropCats    = "23.1.0.5"
-  val scalaJavaTime     = "2.6.0"
-  val catsLaws          = "2.13.0"
-  val http4sCirce       = "0.23.30"
-  val http4sDom         = "0.2.11"
-  val http4sServer      = "0.23.32"
-  val scalacheck        = "1.19.0"
-  val munit             = "1.2.2"
+  val catsEffect               = "3.7.0"
+  val circe                    = millbuild.DepVersions.circeVersion
+  val fs2                      = "3.13.0"
+  val scalajsDomVersion        = "2.8.1"
+  val munitCatsEffect3         = "2.2.0"
+  val disciplineMUnit          = "2.0.0"
+  val scalajsSnabbdom          = "0.2.0-M3"
+  val zio                      = "2.1.21"
+  val zioInteropCats           = "23.1.0.5"
+  val scalaJavaTime            = "2.6.0"
+  val catsLaws                 = "2.13.0"
+  val http4sCirce              = "0.23.30"
+  val http4sDom                = "0.2.11"
+  val http4sServer             = "0.23.32"
+  val scalacheck               = "1.19.0"
+  val munit                    = "1.2.2"
+  val oslib                    = millbuild.DepVersions.osLibVersion
+  val scalacOptions: String    = millbuild.DepVersions.scalacOptionsVersion
+  val scalafixMill: String     = millbuild.DepVersions.scalafixMillVersion
+  val scalajsMacrotaskExecutor = "1.1.1"
