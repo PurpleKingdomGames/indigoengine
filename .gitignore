@@ -34,6 +34,7 @@ credentials.sbt
 .dotty-ide-disabled
 *.swp
 .claude/
+.worktrees/
 
 # Scala
 .metals/
