@@ -108,7 +108,7 @@ final case class Indigo(
         case Some(msg) =>
           Result(model)
             .addGlobalMsgs(msg)
-            .log(s"Indigo Extention failed to launch the game after $MaxAttempts attempts.")
+            .log(s"Indigo Extension failed to launch the game after $MaxAttempts attempts.")
 
     case msg =>
       // Push events.
@@ -119,7 +119,7 @@ final case class Indigo(
             .foreach: e =>
               g.events.push(e)
 
-        case g =>
+        case _ =>
           ()
 
       Result(model)
