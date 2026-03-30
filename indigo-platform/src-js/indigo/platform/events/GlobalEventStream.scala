@@ -131,7 +131,7 @@ final class GlobalEventStream(
   def collect: Batch[GlobalEvent] =
     val res = Batch.fromSeq(eventQueue.dequeueAll(_ => true))
 
-    // If a callback listener is register, give it all the dequeued events
+    // If a callback listener is registered, give it all the dequeued events
     callback.foreach: cb =>
       res.foreach(cb)
 
