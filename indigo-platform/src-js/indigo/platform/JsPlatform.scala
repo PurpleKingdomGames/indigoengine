@@ -85,6 +85,12 @@ class JsPlatform(
   def pushGlobalEvent(event: GlobalEvent): Unit =
     globalEventStream.pushGlobalEvent(event)
 
+  def registerEventCallback(cb: GlobalEvent => Unit): Unit =
+    globalEventStream.registerEventCallback(cb)
+
+  def clearEventCallback(): Unit =
+    globalEventStream.clearEventCallback()
+
   def collectEvents: Batch[GlobalEvent] =
     globalEventStream.collect
 

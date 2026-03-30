@@ -46,6 +46,9 @@ final class GameEngine[StartUpData, GameModel](
     frameProccessor: FrameProcessor[StartUpData, GameModel],
     initialisationEvents: Batch[GlobalEvent]
 ) {
+
+  // TODO: A lot of this should probably be marked as private.
+
   val stepsToLoad = 4
   val animationsRegister: AnimationsRegister =
     new AnimationsRegister()

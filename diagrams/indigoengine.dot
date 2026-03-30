@@ -23,7 +23,6 @@ digraph "module-deps" {
   "tyrian (js, native)" ["style"="solid","shape"="box"]
   "tyrian-core (js, jvm, native)" ["style"="solid","shape"="box"]
   "tyrian-htmx (js, jvm)" ["style"="solid","shape"="box"]
-  "tyrian-indigo-bridge (js)" ["style"="solid","shape"="box"]
   "tyrian-io (js, native)" ["style"="solid","shape"="box"]
   "tyrian-platform (js, jvm, native)" ["style"="solid","shape"="box"]
   "tyrian-sandboxes.sandbox (js)" ["style"="solid","shape"="box"]
@@ -39,7 +38,6 @@ digraph "module-deps" {
   "ultraviolet-sandbox (js)" ["style"="solid","shape"="box"]
   "indigo (js, native)" -> "indigo-extras (js, native)"
   "indigo (js, native)" -> "indigo-json-circe (js, native)"
-  "indigo (js, native)" -> "tyrian-indigo-bridge (js)"
   "indigo-core (js, jvm, native)" -> "indigo-shaders (js, jvm, native)"
   "indigo-extras (js, native)" -> "indigo-sandboxes.perf (js)"
   "indigo-extras (js, native)" -> "indigo-sandboxes.physics (js)"
@@ -74,8 +72,6 @@ digraph "module-deps" {
   "tyrian-core (js, jvm, native)" -> "tyrian-platform (js, jvm, native)"
   "tyrian-core (js, jvm, native)" -> "tyrian-tags (js, jvm)"
   "tyrian-htmx (js, jvm)" -> "tyrian-sandboxes.sandbox-ssr (jvm)"
-  "tyrian-indigo-bridge (js)" -> "indigo-sandboxes.tyrian-sandbox (js)"
-  "tyrian-io (js, native)" -> "indigo-sandboxes.tyrian-sandbox (js)"
   "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-io (js)"
   "tyrian-io (js, native)" -> "tyrian-sandboxes.sandbox-native-io (native)"
   "tyrian-platform (js, jvm, native)" -> "tyrian (js, native)"

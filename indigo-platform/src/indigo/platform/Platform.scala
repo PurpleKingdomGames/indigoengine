@@ -38,6 +38,12 @@ trait Platform:
     */
   def pushGlobalEvent(event: GlobalEvent): Unit
 
+  /** Register an event callback that will be called for all events this frame. There is only one global callback. */
+  def registerEventCallback(cb: GlobalEvent => Unit): Unit
+
+  /** Clear the event callback. */
+  def clearEventCallback(): Unit
+
   /** Collect all pending events from the global event stream
     *
     * @return

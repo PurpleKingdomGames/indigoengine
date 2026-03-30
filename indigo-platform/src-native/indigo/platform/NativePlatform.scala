@@ -10,13 +10,23 @@ import indigoengine.shared.collections.Batch
   */
 class NativePlatform extends Platform with PlatformFullScreen:
 
-  def tick(loop: Double => Unit): Unit = ()
+  def tick(loop: Double => Unit): Unit =
+    ()
 
-  def delay(amount: Double, thunk: () => Unit): Unit = ()
+  def delay(amount: Double, thunk: () => Unit): Unit =
+    ()
 
-  def kill(): Unit = ()
+  def kill(): Unit =
+    ()
 
-  def pushGlobalEvent(event: GlobalEvent): Unit = ()
+  def pushGlobalEvent(event: GlobalEvent): Unit =
+    ()
+
+  def registerEventCallback(cb: GlobalEvent => Unit): Unit =
+    ()
+
+  def clearEventCallback(): Unit =
+    ()
 
   def collectEvents: Batch[GlobalEvent] = Batch.empty
 

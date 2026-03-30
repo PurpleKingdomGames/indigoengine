@@ -62,11 +62,6 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
     case KeyboardEvent.KeyUp(Key.PAGE_DOWN) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopNext)
 
-    case BridgeEvent.Receive(MsgData.Log(msg)) =>
-      IndigoLogger.info(msg)
-      Outcome(model)
-        .addGlobalEvents(BridgeEvent.Send(MsgData.Log(s"Indigo says: ${msg.reverse}")))
-
     case SceneEvent.SceneChange(_, _, _) =>
       Outcome(model.copy(pointerOverWindows = Batch.empty))
 
@@ -78,9 +73,6 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
-
-enum MsgData extends BridgeData:
-  case Log(msg: String)
 
 enum GameEvent extends GlobalEvent:
   case NoOp

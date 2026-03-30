@@ -1,7 +1,8 @@
 package indigo
 
-import indigo.bridge.BridgeMsg
+import cats.effect.IO
 import indigo.launchers.GameLauncher
+import indigo.platform.events.GlobalEventCallback
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import tyrian.Action
@@ -9,6 +10,7 @@ import tyrian.GlobalMsg
 import tyrian.HtmlFragment
 import tyrian.Result
 import tyrian.Watcher
+import tyrian.classic.Sub
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
 
@@ -18,7 +20,8 @@ final case class Indigo(
     game: Game[?, ?, ?] | GameLauncher[?, ?],
     find: () => Option[Element],
     onLaunchSuccess: Option[GlobalMsg],
-    onLaunchFailure: Option[GlobalMsg]
+    onLaunchFailure: Option[GlobalMsg],
+    eventMapping: PartialIso[GlobalMsg, GlobalEvent]
 ) extends Extension:
 
   private val MaxAttempts: Int = 10
@@ -53,33 +56,41 @@ final case class Indigo(
   def noLaunchFailureMsg: Indigo =
     this.copy(onLaunchFailure = None)
 
+  def withEventMapping(value: PartialIso[GlobalMsg, GlobalEvent]): Indigo =
+    this.copy(eventMapping = value)
+
   def id: ExtensionId = extensionId
 
   def init: Result[ExtensionModel] =
-    Result(Indigo.ExtensionModel(game, MaxAttempts))
-      .addGlobalMsgs(Indigo.LaunchMsg.AttemptStart)
+    Result(
+      Indigo.ExtensionModel(
+        game,
+        MaxAttempts
+      )
+    )
+      .addGlobalMsgs(Indigo.LaunchMsg.AttemptStart(extensionId))
 
   def update(model: ExtensionModel): GlobalMsg => Result[ExtensionModel] =
-    case Indigo.LaunchMsg.Retry if model.attempts <= 0 =>
+    case Indigo.LaunchMsg.Retry(extId) if extId == extensionId && model.attempts <= 0 =>
       Result(model)
-        .addActions(Action.emit(Indigo.LaunchMsg.Failed))
+        .addActions(Action.emit(Indigo.LaunchMsg.Failed(extId)))
 
-    case Indigo.LaunchMsg.Retry =>
+    case Indigo.LaunchMsg.Retry(extId) if extId == extensionId =>
       val nextDelay =
         val x = MaxAttempts - model.attempts
         Millis(x * x * 100L)
 
       Result(model.copy(attempts = model.attempts - 1))
-        .addActions(Action.emitAfterDelay(Indigo.LaunchMsg.AttemptStart, nextDelay))
+        .addActions(Action.emitAfterDelay(Indigo.LaunchMsg.AttemptStart(extensionId), nextDelay))
         .log(
           s"Indigo Extension failed to find the required container element in the dom, will retry in ${nextDelay.toSeconds.toString()} seconds..."
         )
 
-    case Indigo.LaunchMsg.AttemptStart =>
+    case Indigo.LaunchMsg.AttemptStart(extId) if extId == extensionId =>
       Result(model)
-        .addActions(Indigo.launchAction(model.game, find, flags))
+        .addActions(Indigo.launchAction(extensionId, model.game, find, flags))
 
-    case Indigo.LaunchMsg.Started =>
+    case Indigo.LaunchMsg.Started(extId) if extId == extensionId =>
       onLaunchSuccess match
         case None =>
           Result(model)
@@ -89,7 +100,7 @@ final case class Indigo(
             .addGlobalMsgs(msg)
             .log("Indigo Extension successfully launched the game.")
 
-    case Indigo.LaunchMsg.Failed =>
+    case Indigo.LaunchMsg.Failed(extId) if extId == extensionId =>
       onLaunchFailure match
         case None =>
           Result(model)
@@ -99,16 +110,18 @@ final case class Indigo(
             .addGlobalMsgs(msg)
             .log(s"Indigo Extention failed to launch the game after $MaxAttempts attempts.")
 
-    case BridgeMsg.Send(data) =>
-      game match
-        case _: GameLauncher[?, ?] =>
-          Result(model)
-
+    case msg =>
+      // Push events.
+      model.game match
         case g: Game[?, ?, ?] =>
-          Result(model)
-            .addActions(g.bridge.send(data))
+          eventMapping
+            .to(msg)
+            .foreach: e =>
+              g.events.push(e)
 
-    case _ =>
+        case g =>
+          ()
+
       Result(model)
 
   def view(model: ExtensionModel): HtmlFragment =
@@ -120,7 +133,10 @@ final case class Indigo(
         Batch.empty
 
       case g: Game[?, ?, ?] =>
-        Batch(g.bridge.watch)
+        Batch.fromOption(
+          g.events.eventCallback.map: eventCallback =>
+            Indigo.indigoEventWatcher(extensionId, eventMapping, eventCallback)
+        )
 
 object Indigo:
 
@@ -136,7 +152,8 @@ object Indigo:
       game,
       () => Option(document.getElementById(containerId)),
       None,
-      None
+      None,
+      PartialIso.none
     )
 
   def apply(
@@ -151,7 +168,8 @@ object Indigo:
       game,
       find,
       None,
-      None
+      None,
+      PartialIso.none
     )
 
   def apply(
@@ -168,11 +186,13 @@ object Indigo:
       game,
       find,
       Some(onLaunchSuccess),
-      Some(onLaunchFailure)
+      Some(onLaunchFailure),
+      PartialIso.none
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def launchAction(
+      extensionId: ExtensionId,
       game: Game[?, ?, ?] | GameLauncher[?, ?],
       find: () => Option[Element],
       flags: Map[String, String]
@@ -181,16 +201,35 @@ object Indigo:
       find() match
         case Some(elem) if elem != null =>
           game.launch(elem, flags)
-          Indigo.LaunchMsg.Started
+          Indigo.LaunchMsg.Started(extensionId)
 
         case _ =>
-          Indigo.LaunchMsg.Retry
+          Indigo.LaunchMsg.Retry(extensionId)
     }
 
   enum LaunchMsg extends GlobalMsg:
-    case Retry
-    case AttemptStart
-    case Started
-    case Failed
+    case Retry(extensionId: ExtensionId)
+    case AttemptStart(extensionId: ExtensionId)
+    case Started(extensionId: ExtensionId)
+    case Failed(extensionId: ExtensionId)
 
   final case class ExtensionModel(game: Game[?, ?, ?] | GameLauncher[?, ?], attempts: Int)
+
+  private def indigoEventWatcher(
+      extensionId: ExtensionId,
+      eventMapping: PartialIso[GlobalMsg, GlobalEvent],
+      globalEventStream: GlobalEventCallback
+  ): Watcher =
+    val sub = Sub.Observe[IO, GlobalEvent, GlobalMsg, Unit](
+      id = "indigo-event-exchange-" + extensionId.toString,
+      acquire = (callback: Either[Throwable, GlobalEvent] => Unit) =>
+        IO(
+          globalEventStream.registerEventCallback(event => callback(Right(event)))
+        ),
+      release = (_: Unit) =>
+        IO(
+          globalEventStream.clearEventCallback()
+        ),
+      toMsg = (event: GlobalEvent) => eventMapping.from(event)
+    )
+    Watcher(sub)

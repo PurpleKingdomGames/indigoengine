@@ -42,3 +42,6 @@ object aliases:
 
   type Iso[A, B] = indigoengine.shared.optics.Iso[A, B]
   val Iso: indigoengine.shared.optics.Iso.type = indigoengine.shared.optics.Iso
+
+  type PartialIso[A, B] = indigoengine.shared.optics.PartialIso[A, B]
+  val PartialIso: indigoengine.shared.optics.PartialIso.type = indigoengine.shared.optics.PartialIso

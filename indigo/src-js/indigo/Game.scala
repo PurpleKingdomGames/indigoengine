@@ -1,9 +1,6 @@
 package indigo
 
 import indigo.BootResult
-import indigo.bridge.BridgeData
-import indigo.bridge.BridgeMsg
-import indigo.bridge.TyrianIndigoNextBridge
 import indigo.core.Outcome
 import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
@@ -12,7 +9,9 @@ import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
 import indigo.launchers.MinimalLauncher
 import indigo.platform.assets.AssetCollection
+import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
+import indigo.render.EmitGlobalEvent
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager
@@ -25,8 +24,6 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
-import tyrian.Action
-import tyrian.Watcher
 
 import scala.annotation.nowarn
 import scala.concurrent.Future
@@ -132,31 +129,25 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
     */
   def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
-  object bridge:
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _push: Option[EmitGlobalEvent] = None
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _pull: Option[GlobalEventCallback] = None
 
-    private[indigo] val _bridge: TyrianIndigoNextBridge[Model] =
-      new TyrianIndigoNextBridge
+  object events:
 
-    /** Send events from Tyrian to Indigo
-      */
-    def send(data: BridgeData): Action =
-      Action(_bridge.send(BridgeMsg.Send(data)))
+    def push(event: GlobalEvent): Unit =
+      _push.foreach(_.pushGlobalEvent(event))
 
-    /** Allows Tyrian to watch for messages from Indigo
-      */
-    def watch: Watcher =
-      Watcher(_bridge.subscribe)
-
-  end bridge
+    def eventCallback: Option[GlobalEventCallback] =
+      _pull
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model] = {
 
-    val bridgeSubSystem = bridge._bridge.subSystem
-
-    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems ++ Set(bridgeSubSystem)))
+    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
     val sceneManager: SceneManager[StartUpData, Model] = {
       val s = scenes(bootUp.bootData)
@@ -200,7 +191,13 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
           throw e
 
         case Outcome.Result(b, evts) =>
-          indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+          val engine =
+            indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+
+          _push = Some(engine.globalEventStream)
+          _pull = Some(engine.globalEventStream)
+
+          engine
 
 end Game
 
