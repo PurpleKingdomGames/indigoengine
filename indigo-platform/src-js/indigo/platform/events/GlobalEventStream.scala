@@ -25,10 +25,21 @@ final class GlobalEventStream(
     audioPlayer: AudioPlayer,
     storage: Storage,
     platform: => PlatformFullScreen
-) extends EmitGlobalEvent {
+) extends EmitGlobalEvent
+    with GlobalEventCallback:
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var callback: Option[GlobalEvent => Unit] =
+    None
 
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
+
+  def registerEventCallback(cb: GlobalEvent => Unit): Unit =
+    callback = Some(cb)
+
+  def clearEventCallback(): Unit =
+    callback = None
 
   def kill(): Unit =
     eventQueue.clear()
@@ -118,5 +129,10 @@ final class GlobalEventStream(
   }
 
   def collect: Batch[GlobalEvent] =
-    Batch.fromSeq(eventQueue.dequeueAll(_ => true))
-}
+    val res = Batch.fromSeq(eventQueue.dequeueAll(_ => true))
+
+    // If a callback listener is register, give it all the dequeued events
+    callback.foreach: cb =>
+      res.foreach(cb)
+
+    res

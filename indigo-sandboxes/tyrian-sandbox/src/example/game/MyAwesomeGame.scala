@@ -1,11 +1,9 @@
 package example.game
 
-import cats.effect.IO
+import example.common.ExchangeEvents
 import indigo.*
-import tyrian.bridge.TyrianSubSystem
 
-final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit], clockwise: Boolean)
-    extends Game[Unit, Unit, Unit]:
+final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit, Unit, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
     None
@@ -33,7 +31,6 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
             .withViewport(gameViewport)
             .noResize
         )
-        .withSubSystems(tyrianSubSystem)
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =
@@ -50,11 +47,11 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
       context: Context[Unit],
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
-    case tyrianSubSystem.TyrianEvent.Receive(msg) =>
-      IndigoLogger.consoleLog(s"(Indigo) from tyrian: [${tyrianSubSystem.indigoGameId.getOrElse(" ")}] " + msg)
+    case ExchangeEvents.IndigoToLog(gameId, msg) if gameId == id =>
+      IndigoLogger.consoleLog(s"(Indigo) from tyrian: [$id] " + msg)
       val e =
-        if clockwise then tyrianSubSystem.send(msg.reverse)
-        else tyrianSubSystem.send(msg + "_" + msg)
+        if clockwise then ExchangeEvents.TyrianToLog(msg.reverse)
+        else ExchangeEvents.TyrianToLog(msg + "_" + msg)
 
       Outcome(model)
         .addGlobalEvents(e)

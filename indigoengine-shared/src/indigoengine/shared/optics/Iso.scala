@@ -32,14 +32,24 @@ trait Iso[A, B]:
     *
     * Example, `Recangle` is isomorphic to a tuple of points, you can represent one as the other losslessly. Sometimes
     * it is convenient to modify one, by first converting it to the other, and then converting it back again. Consider
-    * translation:
+    * this example of translating (moving) a Rectangle:
     *
     * ```
-    * val iso: Iso[Rectangle, (Point, Point)] = ???
-    * def move(r: Rectangle, by: Int): Recangle =
-    *   val movePts = (pts: (Point, Point)) => (pts._1.moveBy(by), pts._2.moveBy(by))
-    *   iso.modify(movePts)(r)
+    * val iso: Iso[Rectangle, (Point, Point)] =
+    *   Iso(
+    *     (r: Rectangle) => (r.topLeft, r.bottomRight),
+    *     (t: (Point, Point)) => Rectangle.fromPoints(t._1, t._2)
+    *   )
+    *
+    * def translate(by: Point) =
+    *   (pts: (Point, Point)) => (pts._1.moveBy(by), pts._2.moveBy(by))
+    *
+    * iso.modify(translate(Point(20, 30)))(Rectangle(10, 10, 10, 10))
+    * // Result: Rectangle(30, 40, 10, 10)
     * ```
+    *
+    * First the Rectangle is converted into two points, top left and bottom right, then those points are moved, and then
+    * we turn it back into a Rectangle.
     */
   def modify(f: B => B): A => A =
     a => from(f(to(a)))

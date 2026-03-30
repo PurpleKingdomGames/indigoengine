@@ -1,188 +1,163 @@
 package example
 
 import cats.effect.IO
+import example.common.ExchangeEvents
+import example.common.ExchangeMsgs
 import example.game.MyAwesomeGame
+import indigo.*
 import org.scalajs.dom.document
-import tyrian.bridge.IndigoGameId
-import tyrian.bridge.TyrianIndigoBridge
-import tyrian.classic.*
-import tyrian.classic.Html.*
+import tyrian.*
+import tyrian.Html.*
+import tyrian.classic.Nav
 import tyrian.classic.cmds.Logger
 import tyrian.classic.cmds.Random
 
-import scala.concurrent.duration.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object IndigoSandbox extends TyrianIOApp[Msg, Model]:
+object IndigoSandbox extends App[Model]:
 
-  val gameDivId1: String    = "my-game-1"
-  val gameDivId2: String    = "my-game-2"
-  val gameId1: IndigoGameId = IndigoGameId("reverse")
-  val gameId2: IndigoGameId = IndigoGameId("combine")
+  val gameDivId1: String = "my-game-1"
+  val gameDivId2: String = "my-game-2"
 
   def router: Location => Msg = Routing.externalOnly(Msg.NoOp, Msg.FollowLink(_))
 
-  def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
-    (Model.init, Cmd.Emit(Msg.StartIndigo))
+  def init(flags: Map[String, String]): Result[Model] =
+    Result(Model.init)
 
-  def update(model: Model): Msg => (Model, Cmd[IO, Msg]) =
+  def update(model: Model): GlobalMsg => Result[Model] =
     case Msg.NoOp =>
-      (model, Cmd.None)
+      Result(model)
 
-    case Msg.RegisterGames(game1, game2) =>
-      (model.copy(game1 = Some(game1), game2 = Some(game2)), Cmd.None)
+    case Msg.Log(msg) =>
+      Result(model)
+        .log(msg)
 
     case Msg.HaltGame1 =>
       model.game1.foreach(_.halt())
-      (model.copy(game1 = None), Cmd.None)
+      Result(model)
 
     case Msg.HaltGame2 =>
       model.game2.foreach(_.halt())
-      (model.copy(game2 = None), Cmd.None)
+      Result(model)
 
     case Msg.RemoveGame1 =>
-      val task: IO[Msg] =
-        IO.delay {
-          document.getElementById(gameDivId1 + "-canvas").remove()
-          Msg.NoOp
-        }
-      (model.copy(ensureGame1Div = false), Cmd.Run(task))
+      Result(model.copy(showGame1 = false))
+        .addActions(
+          Action.run {
+            document.getElementById(gameDivId1 + "-canvas").remove()
+            Msg.NoOp
+          }
+        )
 
     case Msg.RemoveGame2 =>
-      val task: IO[Msg] =
-        IO.delay {
-          document.getElementById(gameDivId2 + "-canvas").remove()
-          Msg.NoOp
-        }
-      (model.copy(ensureGame2Div = false), Cmd.Run(task))
+      Result(model.copy(showGame2 = false))
+        .addActions(
+          Action.run {
+            document.getElementById(gameDivId2 + "-canvas").remove()
+            Msg.NoOp
+          }
+        )
 
     case Msg.FollowLink(href) =>
-      (model, Nav.loadUrl(href))
+      Result(model).addCmds(Nav.loadUrl[IO](href))
 
     case Msg.NewRandomInt(i) =>
-      (model.copy(randomNumber = i), Cmd.None)
+      Result(model.copy(randomNumber = i))
 
     case Msg.NewContent(content) =>
-      val cmds: Cmd[IO, Msg] =
-        Logger.info[IO]("New content: " + content) |+|
-          model.bridge.publish(gameId1, content) |+|
-          model.bridge.publish(gameId2, content) |+|
-          Random.int[IO].map(next => Msg.NewRandomInt(next.value))
-
-      (model.copy(field = content), cmds)
+      Result(model.copy(field = content))
+        .addCmds(
+          Logger.info[IO]("New content: " + content) |+|
+            Random.int[IO].map(next => Msg.NewRandomInt(next.value))
+        )
+        .addGlobalMsgs(
+          ExchangeMsgs.IndigoToLog("reverse", content),
+          ExchangeMsgs.IndigoToLog("combine", content)
+        )
 
     case Msg.Insert =>
-      (model.copy(components = Counter.init :: model.components), Cmd.None)
+      Result(model.copy(components = Counter.init :: model.components))
 
     case Msg.Remove =>
-      val cs = model.components match
-        case Nil    => Nil
-        case _ :: t => t
-
-      (model.copy(components = cs), Cmd.None)
+      val cs = model.components.drop(1)
+      Result(model.copy(components = cs))
 
     case Msg.Modify(id, m) =>
       val cs = model.components.zipWithIndex.map { case (c, i) =>
         if i == id then Counter.update(m, c) else c
       }
 
-      (model.copy(components = cs), Cmd.None)
+      Result(model.copy(components = cs))
 
-    case Msg.StartIndigo =>
-      val task: IO[Msg] =
-        IO.delay {
-          if gameDivsExist(gameDivId1, gameDivId2) then
-            println("Indigo container divs ready, launching games.")
-            val game1 =
-              MyAwesomeGame(model.bridge.subSystem(gameId1), true)
+    case ExchangeMsgs.TyrianToLog(msg) =>
+      Result(model)
+        .addCmds(Logger.stdout[IO]("(Tyrian) from indigo: " + msg))
 
-            val element1 = document.getElementById(gameDivId1)
+    case _ =>
+      Result(model)
 
-            game1.launch(
-              element1,
-              Map(
-                "width"  -> "200",
-                "height" -> "200"
-              )
-            )
-
-            val game2 =
-              MyAwesomeGame(model.bridge.subSystem(gameId2), false)
-
-            val element2 = document.getElementById(gameDivId2)
-
-            game2.launch(
-              element2,
-              Map(
-                "width"  -> "200",
-                "height" -> "200"
-              )
-            )
-
-            Msg.RegisterGames(game1, game2)
-          else
-            println("Indigo container divs not ready, retrying...")
-            Msg.RetryIndigo
-        }
-
-      (model, Cmd.Run(task))
-
-    case Msg.RetryIndigo =>
-      (model, Cmd.emitAfterDelay(Msg.StartIndigo, 0.5.seconds))
-
-    case Msg.IndigoReceive(msg) =>
-      (model, Logger.stdout("(Tyrian) from indigo: " + msg))
-
-  def view(model: Model): Html[Msg] =
+  def view(model: Model): HtmlRoot =
     val counters = model.components.zipWithIndex.map { case (c, i) =>
       Counter.view(c).map(msg => Msg.Modify(i, msg))
-    }
+    }.toList
 
     val elems = List(
       button(onClick(Msg.Remove))(text("remove")),
       button(onClick(Msg.Insert))(text("insert"))
     ) ++ counters
 
-    div(
-      List(
-        div(hidden(false))("Random number: " + model.randomNumber.toString),
-        div(
-          a(href := "/another-page")("Internal link (will be ignored)"),
-          br,
-          a(href := "http://tyrian.indigoengine.io/")("Tyrian website")
-        )
-      ) ++
-        (if model.ensureGame1Div then List(div(id := gameDivId1)().setKey("game 1")) else Nil) ++
-        (if model.ensureGame2Div then List(div(id := gameDivId2)().setKey("game 2")) else Nil) ++
-        List(
+    HtmlRoot.div(
+      HtmlFragment(
+        Batch(
+          div(hidden(false))("Random number: " + model.randomNumber.toString),
           div(
-            button(onClick(Msg.HaltGame1))(text("Halt game 1")),
-            button(onClick(Msg.RemoveGame1))(text("Remove game 1"))
-          ),
-          div(
-            button(onClick(Msg.HaltGame2))(text("Halt game 2")),
-            button(onClick(Msg.RemoveGame2))(text("Remove game 2"))
-          ),
-          div(
-            input(placeholder := "Text to reverse", onInput(s => Msg.NewContent(s)), myStyle),
-            div(myStyle)(text(model.field.reverse))
-          ),
-          div(elems)
-        )
+            a(href := "/another-page")("Internal link (will be ignored)"),
+            br,
+            a(href := "http://tyrian.indigoengine.io/")("Tyrian website")
+          )
+        ) ++
+          (if model.showGame1 then Batch(div(id := gameDivId1)().setKey("game 1")) else Batch.empty) ++
+          (if model.showGame2 then Batch(div(id := gameDivId2)().setKey("game 2")) else Batch.empty) ++
+          Batch(
+            div(
+              button(onClick(Msg.HaltGame1))(text("Halt game 1")),
+              button(onClick(Msg.RemoveGame1))(text("Remove game 1"))
+            ),
+            div(
+              button(onClick(Msg.HaltGame2))(text("Halt game 2")),
+              button(onClick(Msg.RemoveGame2))(text("Remove game 2"))
+            ),
+            div(
+              input(placeholder := "Text to reverse", onInput(s => Msg.NewContent(s)), myStyle),
+              div(myStyle)(text(model.field.reverse))
+            ),
+            div(elems)
+          )
+      )
     )
 
-  def subscriptions(model: Model): Sub[IO, Msg] =
-    Sub.Batch(
-      model.bridge.subscribeOpt { case msg =>
-        Some(Msg.IndigoReceive(s"[Any game!] ${msg}"))
-      },
-      model.bridge.subscribeOpt(gameId1) { case msg =>
-        Some(Msg.IndigoReceive(s"[${gameId1.toString}] ${msg}"))
-      },
-      model.bridge.subscribeOpt(gameId2) { case msg =>
-        Some(Msg.IndigoReceive(s"[${gameId2.toString}] ${msg}"))
-      }
+  def watchers(model: Model): Batch[Watcher] =
+    Batch()
+
+  def extensions(flags: Map[String, String], model: Model): Set[Extension] =
+    Set(
+      Indigo(
+        ExtensionId("reverse"),
+        flags,
+        model.game1,
+        () => Option(document.getElementById(gameDivId1)),
+        Msg.Log("Game (1) start success."),
+        Msg.Log("Game (1) start fail.")
+      ).withEventMapping(ExchangeEvents.mapping),
+      Indigo(
+        ExtensionId("combine"),
+        flags,
+        model.game2,
+        () => Option(document.getElementById(gameDivId2)),
+        Msg.Log("Game (2) start success."),
+        Msg.Log("Game (2) start fail.")
+      ).withEventMapping(ExchangeEvents.mapping)
     )
 
   private val myStyle =
@@ -194,19 +169,11 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
       CSS.`text-align`("center")
     )
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  private def gameDivsExist(id1: String, id2: String): Boolean =
-    document.getElementById(id1) != null &&
-      document.getElementById(id2) != null
-
-enum Msg derives CanEqual:
+enum Msg extends GlobalMsg:
   case NewContent(content: String)
   case Insert
   case Remove
   case Modify(i: Int, msg: Counter.Msg)
-  case StartIndigo
-  case RetryIndigo
-  case IndigoReceive(msg: String)
   case NewRandomInt(i: Int)
   case FollowLink(href: String)
   case NoOp
@@ -214,7 +181,7 @@ enum Msg derives CanEqual:
   case HaltGame2
   case RemoveGame1
   case RemoveGame2
-  case RegisterGames(game1: MyAwesomeGame, game2: MyAwesomeGame)
+  case Log(msg: String)
 
 object Counter:
 
@@ -238,15 +205,23 @@ object Counter:
       case Msg.Decrement => model - 1
 
 final case class Model(
-    bridge: TyrianIndigoBridge[IO, String, Unit],
     field: String,
-    components: List[Counter.Model],
+    components: Batch[Counter.Model],
     randomNumber: Int,
-    ensureGame1Div: Boolean,
-    ensureGame2Div: Boolean,
-    game1: Option[MyAwesomeGame],
-    game2: Option[MyAwesomeGame]
+    showGame1: Boolean,
+    showGame2: Boolean,
+    game1: MyAwesomeGame,
+    game2: MyAwesomeGame
 )
 object Model:
+
   val init: Model =
-    Model(TyrianIndigoBridge(), "", Nil, 0, true, true, None, None)
+    Model(
+      "",
+      Batch.empty,
+      0,
+      true,
+      true,
+      MyAwesomeGame("reverse", clockwise = true),
+      MyAwesomeGame("combine", clockwise = false)
+    )

@@ -4,7 +4,6 @@ import indigo.*
 import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
-import tyrian.syntax.*
 
 import scala.scalajs.js.annotation.*
 
@@ -20,16 +19,6 @@ object RogueLikeApp extends App[AppModel]:
     Result(AppModel.init)
 
   def update(model: AppModel): GlobalMsg => Result[AppModel] =
-    case GameMsg.MakeIndigoLog(msg) =>
-      Result(model)
-        .addGlobalMsgs(
-          BridgeMsg.Send(MsgData.Log(msg))
-        )
-
-    case BridgeMsg.Receive(data) =>
-      Result(model)
-        .log("Tyrian got this from Indigo: " + data)
-
     case AppMsg.NoOp =>
       Result(model)
 
@@ -47,12 +36,7 @@ object RogueLikeApp extends App[AppModel]:
     )
 
   def watchers(model: AppModel): Batch[Watcher] =
-    Batch(
-      Watcher.every(
-        5.seconds,
-        t => GameMsg.MakeIndigoLog(s"From Tyrian: ${t}")
-      )
-    )
+    Batch()
 
   def extensions(flags: Map[String, String], model: AppModel): Set[Extension] =
     Set(
@@ -69,9 +53,6 @@ object RogueLikeApp extends App[AppModel]:
 enum AppMsg extends GlobalMsg:
   case NoOp
   case Log(msg: String)
-
-enum GameMsg extends GlobalMsg:
-  case MakeIndigoLog(msg: String)
 
 final case class AppModel(game: RogueLikeGame)
 object AppModel:
