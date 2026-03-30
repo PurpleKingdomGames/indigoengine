@@ -142,6 +142,12 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
     def eventCallback: Option[GlobalEventCallback] =
       _pull
 
+  override def halt(): Unit =
+    super.halt()
+    _push = None
+    _pull = None
+    ()
+
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 

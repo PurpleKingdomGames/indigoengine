@@ -30,7 +30,7 @@ trait Iso[A, B]:
 
   /** Produces a function that modifies A, given a function that modifies B.
     *
-    * Example, `Recangle` is isomorphic to a tuple of points, you can represent one as the other losslessly. Sometimes
+    * Example, `Rectangle` is isomorphic to a tuple of points, you can represent one as the other losslessly. Sometimes
     * it is convenient to modify one, by first converting it to the other, and then converting it back again. Consider
     * this example of translating (moving) a Rectangle:
     *

@@ -34,11 +34,11 @@ object IndigoSandbox extends App[Model]:
         .log(msg)
 
     case Msg.HaltGame1 =>
-      model.game1.foreach(_.halt())
+      model.game1.halt()
       Result(model)
 
     case Msg.HaltGame2 =>
-      model.game2.foreach(_.halt())
+      model.game2.halt()
       Result(model)
 
     case Msg.RemoveGame1 =>

@@ -1,6 +1,6 @@
 package indigoengine.shared.optics
 
-/** Represents an incomplete / illegal `Iso`, where Iso's are total, in a PartialIso the tranformation can fail in
+/** Represents an incomplete / illegal `Iso`, where Iso's are total, in a PartialIso the transformation can fail in
   * either direction.
   *
   * The use-case for a partial iso, is to be able to transform and filter.

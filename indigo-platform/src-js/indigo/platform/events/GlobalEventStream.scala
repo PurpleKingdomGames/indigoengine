@@ -43,6 +43,7 @@ final class GlobalEventStream(
 
   def kill(): Unit =
     eventQueue.clear()
+    clearEventCallback()
     ()
 
   val pushGlobalEvent: GlobalEvent => Unit = {
