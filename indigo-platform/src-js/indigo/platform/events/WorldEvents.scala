@@ -14,7 +14,6 @@ import indigo.core.events.FingerId
 import indigo.core.events.KeyboardEvent
 import indigo.core.events.MouseButton
 import indigo.core.events.MouseEvent
-import indigo.core.events.NetworkEvent
 import indigo.core.events.PenEvent
 import indigo.core.events.PointerEvent
 import indigo.core.events.PointerEvent.*
@@ -72,8 +71,6 @@ final class WorldEvents:
       onPointerCancel: dom.PointerEvent => Unit,
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
-      onOnline: dom.Event => Unit,
-      onOffline: dom.Event => Unit,
       resizeObserver: dom.ResizeObserver,
       clickTimeMs: Long
   ) {
@@ -91,8 +88,6 @@ final class WorldEvents:
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     document.addEventListener("keydown", onKeyDown)
     document.addEventListener("keyup", onKeyUp)
-    window.addEventListener("online", onOnline)
-    window.addEventListener("offline", onOffline)
     resizeObserver.observe(canvas.parentElement)
 
     def unbind(): Unit = {
@@ -110,8 +105,6 @@ final class WorldEvents:
       onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
       document.removeEventListener("keydown", onKeyDown)
       document.removeEventListener("keyup", onKeyUp)
-      window.removeEventListener("online", onOnline)
-      window.removeEventListener("offline", onOffline)
       resizeObserver.disconnect()
       pointerButtons = Map.empty
     }
@@ -776,12 +769,6 @@ final class WorldEvents:
           if e.isWindowTarget then ApplicationLostFocus
           else CanvasLostFocus
         )
-      },
-      onOnline = { _ =>
-        globalEventStream.pushGlobalEvent(NetworkEvent.Online)
-      },
-      onOffline = { _ =>
-        globalEventStream.pushGlobalEvent(NetworkEvent.Offline)
       },
       resizeObserver = new dom.ResizeObserver((entries, _) =>
         entries.foreach { entry =>
