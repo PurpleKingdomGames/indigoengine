@@ -265,50 +265,6 @@ object aliases:
   type PlaySound = indigo.core.events.PlaySound
   val PlaySound: indigo.core.events.PlaySound.type = indigo.core.events.PlaySound
 
-  type NetworkEvent = indigo.core.events.NetworkEvent
-  val NetworkEvent: indigo.core.events.NetworkEvent.type = indigo.core.events.NetworkEvent
-
-  type NetworkSendEvent    = indigo.core.events.NetworkSendEvent
-  type NetworkReceiveEvent = indigo.core.events.NetworkReceiveEvent
-
-  type StorageActionType = indigo.core.events.StorageActionType
-  val StorageActionType: indigo.core.events.StorageActionType.type = indigo.core.events.StorageActionType
-
-  type StorageKey = indigo.core.events.StorageKey
-  val StorageKey: indigo.core.events.StorageKey.type = indigo.core.events.StorageKey
-
-  type StorageEvent = indigo.core.events.StorageEvent
-  val StorageEvent: indigo.core.events.StorageEvent.type = indigo.core.events.StorageEvent
-
-  type StorageEventError = indigo.core.events.StorageEventError
-  val StorageEventError: indigo.core.events.StorageEventError.type = indigo.core.events.StorageEventError
-
-  type FetchKeyAt = indigo.core.events.StorageEvent.FetchKeyAt
-  val FetchKeyAt: indigo.core.events.StorageEvent.FetchKeyAt.type = indigo.core.events.StorageEvent.FetchKeyAt
-
-  type KeyFoundAt = indigo.core.events.StorageEvent.KeyFoundAt
-  val KeyFoundAt: indigo.core.events.StorageEvent.KeyFoundAt.type = indigo.core.events.StorageEvent.KeyFoundAt
-
-  type FetchKeys = indigo.core.events.StorageEvent.FetchKeys
-  val FetchKeys: indigo.core.events.StorageEvent.FetchKeys.type = indigo.core.events.StorageEvent.FetchKeys
-
-  type KeysFound = indigo.core.events.StorageEvent.KeysFound
-  val KeysFound: indigo.core.events.StorageEvent.KeysFound.type = indigo.core.events.StorageEvent.KeysFound
-
-  type Save = indigo.core.events.StorageEvent.Save
-  val Save: indigo.core.events.StorageEvent.Save.type = indigo.core.events.StorageEvent.Save
-
-  type Load = indigo.core.events.StorageEvent.Load
-  val Load: indigo.core.events.StorageEvent.Load.type = indigo.core.events.StorageEvent.Load
-
-  type Delete = indigo.core.events.StorageEvent.Delete
-  val Delete: indigo.core.events.StorageEvent.Delete.type = indigo.core.events.StorageEvent.Delete
-
-  val DeleteAll: indigo.core.events.StorageEvent.DeleteAll.type = indigo.core.events.StorageEvent.DeleteAll
-
-  type Loaded = indigo.core.events.StorageEvent.Loaded
-  val Loaded: indigo.core.events.StorageEvent.Loaded.type = indigo.core.events.StorageEvent.Loaded
-
   type AssetEvent = indigo.core.events.AssetEvent
   val AssetEvent: indigo.core.events.AssetEvent.type = indigo.core.events.AssetEvent
 
@@ -441,36 +397,6 @@ object aliases:
 
   type SubSystemContext[ReferenceData] = shared.subsystems.SubSystemContext[ReferenceData]
   val SubSystemContext: shared.subsystems.SubSystemContext.type = shared.subsystems.SubSystemContext
-
-  // WebSockets
-
-  type WebSocketEvent = shared.networking.WebSocketEvent
-  val WebSocketEvent: shared.networking.WebSocketEvent.type = shared.networking.WebSocketEvent
-
-  type WebSocketConfig = shared.networking.WebSocketConfig
-  val WebSocketConfig: shared.networking.WebSocketConfig.type = shared.networking.WebSocketConfig
-
-  type WebSocketId = shared.networking.WebSocketId
-  val WebSocketId: shared.networking.WebSocketId.type = shared.networking.WebSocketId
-
-  type WebSocketReadyState = shared.networking.WebSocketReadyState
-  val WebSocketReadyState: shared.networking.WebSocketReadyState.type = shared.networking.WebSocketReadyState
-
-  // Http
-
-  val HttpMethod: shared.networking.HttpMethod.type = shared.networking.HttpMethod
-
-  type HttpRequest = shared.networking.HttpRequest
-  val HttpRequest: shared.networking.HttpRequest.type = shared.networking.HttpRequest
-
-  type HttpReceiveEvent = shared.networking.HttpReceiveEvent
-  val HttpReceiveEvent: shared.networking.HttpReceiveEvent.type = shared.networking.HttpReceiveEvent
-
-  val HttpError: shared.networking.HttpReceiveEvent.HttpError.type = shared.networking.HttpReceiveEvent.HttpError
-
-  type HttpResponse = shared.networking.HttpReceiveEvent.HttpResponse
-  val HttpResponse: shared.networking.HttpReceiveEvent.HttpResponse.type =
-    shared.networking.HttpReceiveEvent.HttpResponse
 
   // Scene graph
 

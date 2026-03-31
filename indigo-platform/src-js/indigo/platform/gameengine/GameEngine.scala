@@ -16,7 +16,6 @@ import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.platform.storage.Storage
 import indigo.render.Renderer
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
@@ -68,8 +67,6 @@ final class GameEngine[StartUpData, GameModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameConfig: GameConfig = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var storage: Storage = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gamepadInputCapture: GamepadInputCapture = null
@@ -116,8 +113,7 @@ final class GameEngine[StartUpData, GameModel](
     // emit an event to denote that indigo has started loading
     GameEngineStatusEvent.Initiated.dispatch(parentElement)
 
-    storage = Storage.default
-    globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStream(audioPlayer, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events
