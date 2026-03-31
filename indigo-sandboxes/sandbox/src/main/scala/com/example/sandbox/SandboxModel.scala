@@ -53,8 +53,6 @@ object SandboxModel {
 
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),
-      // SaveLoadPhases.NotStarted,
-      // None,
       ConfettiModel.empty,
       PointersModel.empty,
       InputStateModel.empty,
