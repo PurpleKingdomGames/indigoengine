@@ -47,7 +47,7 @@ trait SharedJVM extends Shared, ScalaModule:
     def testFramework = Task("munit.Framework")
 
 trait SharedJS extends Shared, ScalaJSModule:
-  def scalaJSVersion = Task("1.20.2")
+  def scalaJSVersion = Task("1.21.0")
 
   object test extends ScalaJSTests, ScalafixModule, ScalafmtModule:
     def mvnDeps = Seq(
