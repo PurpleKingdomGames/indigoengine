@@ -25,11 +25,14 @@ object SandboxZIO extends TyrianZIOApp[Msg, Model]:
     )
 
   def init(flags: Map[String, String]): (Model, Cmd[Task, Msg]) =
-    (Model.init, Cmd.None)
+    (Model.init, Connectivity.checkStatus(c => Msg.Log("Online? " + c.isOnline)))
 
   def update(model: Model): Msg => (Model, Cmd[Task, Msg]) =
     case Msg.NoOp =>
       (model, Cmd.None)
+
+    case Msg.Log(msg) =>
+      (model, Logger.info[Task]("Network status update: " + msg))
 
     case Msg.FollowLink(href, openInNewTab) if openInNewTab =>
       (model, Nav.openUrl(href))
@@ -110,7 +113,10 @@ object SandboxZIO extends TyrianZIOApp[Msg, Model]:
     )
 
   def subscriptions(model: Model): Sub[Task, Msg] =
-    Sub.None
+    Connectivity.subscribe[Task, Msg](
+      Msg.Log("Network status change: Online"),
+      Msg.Log("Network status change: Offline")
+    )
 
   private val myStyle =
     styles(
@@ -129,6 +135,7 @@ enum Msg derives CanEqual:
   case NewRandomInt(i: Int)
   case FollowLink(href: String, newTab: Boolean)
   case NoOp
+  case Log(msg: String)
 
 object Counter:
 
