@@ -3,12 +3,12 @@ package indigoplugin
 import scala.util.matching.Regex
 
 // Most to least specific: Boolean, Int, Double, String
-enum DataType(val _nullable: Boolean) derives CanEqual:
-  case BooleanData(value: Boolean, nullable: Boolean) extends DataType(nullable)
-  case IntData(value: Int, nullable: Boolean)         extends DataType(nullable)
-  case DoubleData(value: Double, nullable: Boolean)   extends DataType(nullable)
-  case StringData(value: String, nullable: Boolean)   extends DataType(nullable)
-  case NullData()                                     extends DataType(true)
+enum DataType derives CanEqual:
+  case BooleanData(value: Boolean, nullable: Boolean)
+  case IntData(value: Int, nullable: Boolean)
+  case DoubleData(value: Double, nullable: Boolean)
+  case StringData(value: String, nullable: Boolean)
+  case NullData
 
   def makeOptional: DataType =
     this match
@@ -16,7 +16,7 @@ enum DataType(val _nullable: Boolean) derives CanEqual:
       case d: IntData     => d.copy(nullable = true)
       case d: DoubleData  => d.copy(nullable = true)
       case d: StringData  => d.copy(nullable = true)
-      case d: NullData    => d
+      case NullData       => NullData
 
   def isString: Boolean =
     this match
@@ -40,8 +40,8 @@ enum DataType(val _nullable: Boolean) derives CanEqual:
 
   def isNull: Boolean =
     this match
-      case DataType.NullData() => true
-      case _                   => false
+      case DataType.NullData => true
+      case _                 => false
 
   def toStringData: DataType.StringData =
     this match
@@ -53,7 +53,7 @@ enum DataType(val _nullable: Boolean) derives CanEqual:
       case DataType.DoubleData(value, _)                     => DataType.StringData(value.toString, false)
       case DataType.IntData(value, nullable) if nullable     => DataType.StringData(s"Some(${value.toString})", true)
       case DataType.IntData(value, _)                        => DataType.StringData(value.toString, false)
-      case DataType.NullData()                               => DataType.StringData("None", true)
+      case DataType.NullData                                 => DataType.StringData("None", true)
 
   def asString: String =
     this match
@@ -65,7 +65,7 @@ enum DataType(val _nullable: Boolean) derives CanEqual:
       case DataType.DoubleData(value, _)                     => value.toString
       case DataType.IntData(value, nullable) if nullable     => s"Some(${value.toString})"
       case DataType.IntData(value, _)                        => value.toString
-      case DataType.NullData()                               => "None"
+      case DataType.NullData                                 => "None"
 
   def giveTypeName: String =
     this match
@@ -77,7 +77,7 @@ enum DataType(val _nullable: Boolean) derives CanEqual:
       case _: DataType.DoubleData                => "Double"
       case d: DataType.IntData if d.nullable     => "Option[Int]"
       case _: DataType.IntData                   => "Int"
-      case DataType.NullData()                   => "Option[Any]"
+      case DataType.NullData                     => "Option[Any]"
 
 object DataType:
 
@@ -108,24 +108,24 @@ object DataType:
     case isBoolean(v)     => BooleanData(v.toBoolean, false)
     case isInt(v)         => IntData(v.toInt, false)
     case isDouble(v1, v2) => DoubleData(s"$v1.$v2".toDouble, false)
-    case isNull(_)        => NullData()
+    case isNull(_)        => NullData
     case v                => StringData(v, false)
   }
 
   def sameType(a: DataType, b: DataType): Boolean =
     (a, b) match
       case (_: DataType.StringData, _: DataType.StringData)   => true
-      case (DataType.NullData(), _: DataType.StringData)      => true
-      case (_: DataType.StringData, DataType.NullData())      => true
+      case (DataType.NullData, _: DataType.StringData)        => true
+      case (_: DataType.StringData, DataType.NullData)        => true
       case (_: DataType.BooleanData, _: DataType.BooleanData) => true
-      case (DataType.NullData(), _: DataType.BooleanData)     => true
-      case (_: DataType.BooleanData, DataType.NullData())     => true
+      case (DataType.NullData, _: DataType.BooleanData)       => true
+      case (_: DataType.BooleanData, DataType.NullData)       => true
       case (_: DataType.DoubleData, _: DataType.DoubleData)   => true
-      case (DataType.NullData(), _: DataType.DoubleData)      => true
-      case (_: DataType.DoubleData, DataType.NullData())      => true
+      case (DataType.NullData, _: DataType.DoubleData)        => true
+      case (_: DataType.DoubleData, DataType.NullData)        => true
       case (_: DataType.IntData, _: DataType.IntData)         => true
-      case (DataType.NullData(), _: DataType.IntData)         => true
-      case (_: DataType.IntData, DataType.NullData())         => true
+      case (DataType.NullData, _: DataType.IntData)           => true
+      case (_: DataType.IntData, DataType.NullData)           => true
       case _                                                  => false
 
   def allSameType(l: List[DataType]): Boolean =
@@ -137,7 +137,7 @@ object DataType:
     l.forall(d => d.isDouble || d.isInt || d.isNull)
 
   def hasOptionalValues(l: List[DataType]): Boolean =
-    l.contains(DataType.NullData())
+    l.contains(DataType.NullData)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def convertToBestType(l: List[DataType]): List[DataType] =
@@ -152,14 +152,14 @@ object DataType:
       l.map {
         case v @ DataType.DoubleData(_, _) => v
         case v @ DataType.IntData(_, _)    => v.toDoubleData
-        case DataType.NullData()           => DataType.NullData()
+        case DataType.NullData             => DataType.NullData
         case s => throw new Exception(s"Unexpected non-numeric type '$s'") // Shouldn't get here.
       }
     else
       // Nothing else to do, but make everything a string that isn't null.
       l.map {
-        case DataType.NullData() => DataType.NullData()
-        case d                   => d.toStringData
+        case DataType.NullData => DataType.NullData
+        case d                 => d.toStringData
       }
 
   def matchHeaderRowLength(rows: Array[Array[DataType]]): Array[Array[DataType]] =
@@ -172,7 +172,7 @@ object DataType:
         val res =
           headers :: data.map: r =>
             val diff = l - r.length
-            if diff > 0 then r ++ List.fill(diff)(DataType.NullData())
+            if diff > 0 then r ++ List.fill(diff)(DataType.NullData)
             else r
 
         res.toArray

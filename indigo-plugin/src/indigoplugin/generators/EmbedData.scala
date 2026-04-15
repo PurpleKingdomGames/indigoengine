@@ -91,11 +91,11 @@ object EmbedData:
 
     parse(delimiter)(cleanRow).map(_._1).collect {
       case d @ DataType.StringData(s, _) if s.nonEmpty => d
-      case DataType.StringData(_, _)                   => DataType.NullData()
+      case DataType.StringData(_, _)                   => DataType.NullData
       case d: DataType.BooleanData                     => d
       case d: DataType.DoubleData                      => d
       case d: DataType.IntData                         => d
-      case DataType.NullData()                         => DataType.NullData()
+      case DataType.NullData                           => DataType.NullData
     }
 
   // A parser of things,

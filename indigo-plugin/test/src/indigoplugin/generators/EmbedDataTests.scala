@@ -41,7 +41,7 @@ class EmbedDataTests extends munit.FunSuite {
         ),
         List(
           DataType.StringData("Stan", false),
-          DataType.NullData(),
+          DataType.NullData,
           DataType.DoubleData(-2, false),
           DataType.BooleanData(true, false)
         )
@@ -110,8 +110,8 @@ class EmbedDataTests extends munit.FunSuite {
         DataType.StringData("ghi789"),
         DataType.BooleanData(true),
         DataType.StringData("."),
-        DataType.NullData(),
-        DataType.NullData()
+        DataType.NullData,
+        DataType.NullData
       )
 
     assertEquals(actual, expected)
@@ -242,9 +242,9 @@ class EmbedDataTests extends munit.FunSuite {
         ),
         List(
           DataType.StringData("bob", false),
-          DataType.NullData(),
-          DataType.NullData(),
-          DataType.NullData()
+          DataType.NullData,
+          DataType.NullData,
+          DataType.NullData
         ),
         List(
           DataType.StringData("Fred", false),
@@ -254,9 +254,9 @@ class EmbedDataTests extends munit.FunSuite {
         ),
         List(
           DataType.StringData("Stan", false),
-          DataType.NullData(),
+          DataType.NullData,
           DataType.IntData(-2, false),
-          DataType.NullData()
+          DataType.NullData
         )
       )
 
