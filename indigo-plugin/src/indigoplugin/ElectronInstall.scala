@@ -1,31 +1,21 @@
 package indigoplugin
 
-// TODO: Convert to enum
-sealed trait ElectronInstall {
+enum ElectronInstall derives CanEqual:
+  case Global
+  case Version(version: String)
+  case Latest
+  case PathToExecutable(path: String)
 
   def executable: String =
-    this match {
+    this match
       case ElectronInstall.Global                 => "electron"
       case ElectronInstall.Version(_)             => "npx --no-install electron"
       case ElectronInstall.Latest                 => "npx --no-install electron"
       case ElectronInstall.PathToExecutable(path) => path
-    }
 
   def devDependencies: String =
-    this match {
+    this match
       case ElectronInstall.Global              => ""
       case ElectronInstall.Version(version)    => s""""electron": "${version}""""
       case ElectronInstall.Latest              => ""
       case ElectronInstall.PathToExecutable(_) => ""
-    }
-
-}
-object ElectronInstall {
-
-  given CanEqual[ElectronInstall, ElectronInstall] = CanEqual.derived
-
-  case object Global                              extends ElectronInstall
-  final case class Version(version: String)       extends ElectronInstall
-  case object Latest                              extends ElectronInstall
-  final case class PathToExecutable(path: String) extends ElectronInstall
-}

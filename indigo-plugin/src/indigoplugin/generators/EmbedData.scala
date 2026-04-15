@@ -4,18 +4,12 @@ import indigoplugin.DataType
 import indigoplugin.IndigoGenerators
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-object EmbedData {
+object EmbedData:
 
-  // TODO: Convert to enum
-  sealed trait Mode
-  object Mode {
-
-    given CanEqual[Mode, Mode] = CanEqual.derived
-
-    final case class AsEnum(extendsFrom: Option[String])               extends Mode
-    case object AsMap                                                  extends Mode
-    final case class AsCustom(present: List[List[DataType]] => String) extends Mode
-  }
+  enum Mode derives CanEqual:
+    case AsEnum(extendsFrom: Option[String])
+    case AsMap
+    case AsCustom(present: List[List[DataType]] => String)
 
   // Has a standard format, first row is headers, first column is keys.
   // Strings delimited with single or double quotes preserve the delimited
@@ -32,10 +26,8 @@ object EmbedData {
   ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val lines =
-      if (!os.exists(filePath)) throw new Exception("Path to data file not found: " + filePath.toString())
-      else {
-        os.read.lines(filePath).filter(rowFilter)
-      }
+      if !os.exists(filePath) then throw new Exception("Path to data file not found: " + filePath.toString())
+      else os.read.lines(filePath).filter(rowFilter)
 
     val rows =
       lines.map(row => extractRowData(row, delimiter)).toList
@@ -50,7 +42,7 @@ object EmbedData {
     val file = wd / s"$moduleName.scala"
 
     val contents =
-      embedMode match {
+      embedMode match
         case Mode.AsEnum(extendsFrom) =>
           s"""package $fullyQualifiedPackage
           |
@@ -72,14 +64,12 @@ object EmbedData {
           |${dataFrame.renderCustom(present)}
           |""".stripMargin
 
-      }
-
     os.write.over(file, contents)
 
     Seq(file)
   }
 
-  def extractRowData(row: String, delimiter: String): List[DataType] = {
+  def extractRowData(row: String, delimiter: String): List[DataType] =
 
     val cleanDelimiter: String =
       if (delimiter == "\\|") "|" else delimiter
@@ -101,19 +91,18 @@ object EmbedData {
 
     parse(delimiter)(cleanRow).map(_._1).collect {
       case d @ DataType.StringData(s, _) if s.nonEmpty => d
-      case DataType.StringData(_, _)                   => DataType.NullData
+      case DataType.StringData(_, _)                   => DataType.NullData()
       case d: DataType.BooleanData                     => d
       case d: DataType.DoubleData                      => d
       case d: DataType.IntData                         => d
-      case DataType.NullData                           => DataType.NullData
+      case DataType.NullData()                         => DataType.NullData()
     }
-  }
 
   // A parser of things,
   // is a function from strings,
   // to a list of pairs
   // of things and strings.
-  def parse(delimiter: String): String => List[(DataType, String)] = {
+  def parse(delimiter: String): String => List[(DataType, String)] =
     val takeUpToDelimiter         = s"^(.*?)${delimiter}(.*)".r
     val takeMatchingSingleQuotes  = s"^'(.*?)'${delimiter}(.*)".r
     val takeMatchingDoubleQuotes  = s"""^\"(.*?)\"${delimiter}(.*)""".r
@@ -121,7 +110,7 @@ object EmbedData {
     val takeRemainingDoubleQuotes = s"""^\"(.*?)\"""".r
 
     (in: String) =>
-      in match {
+      in match
         case takeMatchingDoubleQuotes(take, left) =>
           List(DataType.decideType(take.trim) -> left) ++ parse(delimiter)(left.trim)
 
@@ -139,18 +128,15 @@ object EmbedData {
 
         case take =>
           List(DataType.decideType(take.trim) -> "")
-      }
-  }
-}
 
-final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
+final case class DataFrame(data: Array[Array[DataType]], columnCount: Int):
   def headers: Array[DataType.StringData] =
     data.head.map(_.toStringData)
 
   def rows: Array[Array[DataType]] =
     data.drop(1)
 
-  def alignColumnTypes: DataFrame = {
+  def alignColumnTypes: DataFrame =
     val columns =
       DataType.matchHeaderRowLength(rows).transpose
 
@@ -162,11 +148,8 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
 
     val optionalColumns: Array[Array[DataType]] =
       typedColumns.map { col =>
-        if (DataType.hasOptionalValues(col.toList)) {
-          col.map(_.makeOptional)
-        } else {
-          col
-        }
+        if DataType.hasOptionalValues(col.toList) then col.map(_.makeOptional)
+        else col
       }
 
     val cleanedRows: Array[Array[DataType]] =
@@ -175,24 +158,23 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     this.copy(
       data = headers.asInstanceOf[Array[DataType]] +: cleanedRows
     )
-  }
 
   def toSafeName: String => String = { (name: String) =>
-    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
+    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match
       case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
       case l                                    => l.map(_.capitalize).mkString
-    }
+
   }
 
   def toSafeNameCamel: String => String = { (name: String) =>
-    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
+    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match
       case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
       case h :: t                               => (h.toLowerCase :: t.map(_.capitalize)).mkString
       case l                                    => l.map(_.capitalize).mkString
-    }
+
   }
 
-  def renderVars(omitVal: Boolean): String = {
+  def renderVars(omitVal: Boolean): String =
     val names = headers.drop(1).map(_.value)
     val types = rows.head.drop(1).map(_.giveTypeName)
     names
@@ -201,9 +183,8 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
         (if (omitVal) "" else "val ") + s"${toSafeNameCamel(n)}: $t"
       }
       .mkString(", ")
-  }
 
-  def renderEnum(moduleName: String, extendsFrom: Option[String]): String = {
+  def renderEnum(moduleName: String, extendsFrom: Option[String]): String =
     val renderedRows =
       rows
         .map { r =>
@@ -223,9 +204,8 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     |enum $moduleName(${renderVars(false)})$extFrom:
     |${renderedRows}
     |""".stripMargin
-  }
 
-  def renderMap(moduleName: String): String = {
+  def renderMap(moduleName: String): String =
     val renderedRows =
       rows
         .map { r =>
@@ -241,19 +221,18 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     |${renderedRows}
     |    )
     |""".stripMargin
-  }
 
   def renderCustom(present: List[List[DataType]] => String): String =
     present(headers.toList :: rows.map(_.toList).toList)
-}
-object DataFrame {
+
+object DataFrame:
 
   private val standardMessage: String =
     "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys."
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def fromRows(rows: List[List[DataType]]): DataFrame =
-    rows match {
+    rows match
       case Nil =>
         throw new Exception("No data to create. " + standardMessage)
 
@@ -263,13 +242,6 @@ object DataFrame {
       case h :: _ =>
         val len = h.length
 
-        if (len == 0) {
-          throw new Exception("No data to create. " + standardMessage)
-        } else if (len == 1) {
-          throw new Exception("Only one column of data. " + standardMessage)
-        } else {
-          DataFrame(rows.map(_.toArray).toArray, len).alignColumnTypes
-        }
-    }
-
-}
+        if len == 0 then throw new Exception("No data to create. " + standardMessage)
+        else if len == 1 then throw new Exception("Only one column of data. " + standardMessage)
+        else DataFrame(rows.map(_.toArray).toArray, len).alignColumnTypes

@@ -73,6 +73,6 @@ object IndigoElectronOptions {
     IndigoElectronOptions(
       disableFrameRateLimit = false,
       openDevTools = false,
-      electronInstall = indigoplugin.ElectronInstall.Latest
+      electronInstall = ElectronInstall.Latest
     )
 }
