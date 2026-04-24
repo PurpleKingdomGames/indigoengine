@@ -5,6 +5,8 @@ import indigo.*
 
 final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit, Unit, Unit]:
 
+  val gameId: GameId = GameId(id)
+
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 

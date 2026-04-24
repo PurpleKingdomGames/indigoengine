@@ -30,7 +30,6 @@ object ConfigGen {
       |  val config: GameConfig =
       |    GameConfig(
       |      viewport = GameViewport(${indigoOptions.metadata.width}, ${indigoOptions.metadata.height}),
-      |      frameRateLimit = Option(FPS.`60`),
       |      clearColor = ${extractBgColor(indigoOptions.metadata.backgroundColor)},
       |      magnification = 1,
       |      transparentBackground = false,

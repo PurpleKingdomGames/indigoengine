@@ -10,8 +10,10 @@ import indigoextras.subsystems.FPSCounter
 
 final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
+  val gameId: GameId = GameId("sandbox")
+
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(WindowsScene.name)
+    Some(OriginalScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
     NonEmptyBatch(

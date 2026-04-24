@@ -7,7 +7,6 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
-import indigo.launchers.MinimalLauncher
 import indigo.platform.assets.AssetCollection
 import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
@@ -22,6 +21,7 @@ import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
+import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
@@ -42,7 +42,12 @@ import scala.concurrent.Future
   * @tparam Unit
   *   The class type representing your game's view model
   */
-trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Model]:
+trait Game[BootData, StartUpData, Model]:
+
+  def gameId: GameId
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  private var gameInstance: GameEngine[StartUpData, Model] = null
 
   /** A non-empty ordered list of scenes
     *
@@ -142,10 +147,20 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
     def eventCallback: Option[GlobalEventCallback] =
       _pull
 
-  override def halt(): Unit =
-    super.halt()
+  object system:
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
+      if gameInstance != null then gameInstance.tick(runningTime, timeDelta)
+
+  def halt(): Unit =
+    gameInstance.kill()
     _push = None
     _pull = None
+    ()
+
+  def launch(element: Element, flags: Map[String, String]): Unit =
+    gameInstance = ready(flags)(element)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -188,7 +203,7 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model] =
+  def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model] =
     parentElement =>
       boot(flags) match
         case oe @ Outcome.Error(e, _) =>
@@ -204,8 +219,6 @@ trait Game[BootData, StartUpData, Model] extends MinimalLauncher[StartUpData, Mo
           _pull = Some(engine.globalEventStream)
 
           engine
-
-end Game
 
 object Game:
 
@@ -416,5 +429,3 @@ object Game:
         new BlendMaterial:
           def toShaderData: ShaderData =
             ShaderData(shader.id)
-
-end Game

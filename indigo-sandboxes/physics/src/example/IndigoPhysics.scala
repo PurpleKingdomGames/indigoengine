@@ -6,6 +6,8 @@ import indigoextras.subsystems.FPSCounter
 
 final class IndigoPhysics extends Game[Unit, Unit, Model]:
 
+  val gameId: GameId = GameId("physics")
+
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 

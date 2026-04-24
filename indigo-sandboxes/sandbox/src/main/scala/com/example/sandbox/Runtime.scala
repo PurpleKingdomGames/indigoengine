@@ -1,8 +1,14 @@
 package com.example.sandbox
 
-import indigo.BasicGameRuntime
+import indigo.*
 
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object Runtime extends BasicGameRuntime(SandboxGame())
+object Runtime extends BasicGameRuntime:
+
+  def game: Game[?, ?, ?] =
+    SandboxGame()
+
+  def frameRatePolicy: FrameRatePolicy =
+    FrameRatePolicy.Skip(FPS.`60`)

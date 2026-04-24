@@ -89,7 +89,7 @@ object syntax:
       )
 
     /** Creates a watcher that emits messages on each animation frame with elapsed time in seconds. */
-    def animationFrameTick(id: String)(toMsg: Double => GlobalMsg): Watcher =
+    def animationFrameTick(id: String)(toMsg: Seconds => GlobalMsg): Watcher =
       Watcher.fromSub(
-        SubJsOps.animationFrameTick[IO, GlobalMsg](id)(toMsg)
+        SubJsOps.animationFrameTick[IO, GlobalMsg](id)(t => toMsg(Seconds(t)))
       )

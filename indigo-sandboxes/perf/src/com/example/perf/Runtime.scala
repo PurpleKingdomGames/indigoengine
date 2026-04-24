@@ -1,8 +1,14 @@
 package com.example.perf
 
-import indigo.BasicGameRuntime
+import indigo.*
 
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object Runtime extends BasicGameRuntime(PerfGame())
+object Runtime extends BasicGameRuntime:
+
+  def game: Game[?, ?, ?] =
+    PerfGame()
+
+  def frameRatePolicy: FrameRatePolicy =
+    FrameRatePolicy.Unlimited

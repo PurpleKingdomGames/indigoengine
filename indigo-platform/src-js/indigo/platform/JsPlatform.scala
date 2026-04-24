@@ -49,6 +49,7 @@ class JsPlatform(
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @nowarn("msg=mutated")
   private var _running: Boolean         = true
   private val _worldEvents: WorldEvents = new WorldEvents
 
@@ -66,15 +67,6 @@ class JsPlatform(
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
-
-  @nowarn("msg=discarded")
-  def tick(loop: Double => Unit): Unit =
-    if _running then dom.window.requestAnimationFrame(loop)
-    ()
-
-  @nowarn("msg=discarded")
-  def delay(amount: Double, thunk: () => Unit): Unit =
-    dom.window.setTimeout(thunk, amount)
 
   def kill(): Unit =
     _running = false

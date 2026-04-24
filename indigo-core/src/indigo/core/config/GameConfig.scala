@@ -1,18 +1,12 @@
 package indigo.core.config
 
 import indigo.core.datatypes.Rectangle
-import indigo.core.time.FPS
 import indigoengine.shared.datatypes.RGBA
-
-import scala.annotation.targetName
 
 /** All the base settings needed to get a game up and running.
   *
   * @param viewport
   *   How big is the window initially? Defaults to 550 x 400 pixels.
-  * @param frameRateLimit
-  *   Optionally throttles frame rate. By default (`None`), the browser sets the limits, recommended unless you
-  *   specifically need a lower framerate.
   * @param clearColor
   *   Default background colour. Defaults to Black.
   * @param magnification
@@ -26,14 +20,12 @@ import scala.annotation.targetName
   */
 final case class GameConfig(
     viewport: GameViewport,
-    frameRateLimit: Option[FPS],
     clearColor: RGBA,
     magnification: Int,
     resizePolicy: ResizePolicy,
     transparentBackground: Boolean,
     advanced: AdvancedGameConfig
 ) derives CanEqual:
-  lazy val frameRateDeltaMillis: Double = 1000.0d / frameRateLimit.map(_.toDouble).getOrElse(FPS.Default.toDouble)
 
   def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)
@@ -42,8 +34,6 @@ final case class GameConfig(
     s"""
        |Standard settings
        |- Viewpoint:       [${viewport.width.toString()}, ${viewport.height.toString()}]
-       |- Framerate Limit: ${frameRateLimit.map(_.toString()).getOrElse("Unlimited")}
-       |- Framerate Delta: ${frameRateDeltaMillis.toString()}
        |- Clear color:     {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
         .toString()}, alpha: ${clearColor.a.toString()}}
        |- Magnification:   ${magnification.toString()}
@@ -55,14 +45,6 @@ final case class GameConfig(
     this.copy(viewport = GameViewport(width, height))
   def withViewport(newViewport: GameViewport): GameConfig =
     this.copy(viewport = newViewport)
-
-  def withFrameRateLimit(limit: FPS): GameConfig =
-    this.copy(frameRateLimit = Option(limit))
-  @targetName("withFrameRate_Int")
-  def withFrameRateLimit(limit: Int): GameConfig =
-    this.copy(frameRateLimit = Option(FPS(limit)))
-  def noFrameRateLimit: GameConfig =
-    this.copy(frameRateLimit = None)
 
   def withClearColor(clearColor: RGBA): GameConfig =
     this.copy(clearColor = clearColor)
@@ -95,7 +77,6 @@ object GameConfig:
   val default: GameConfig =
     GameConfig(
       viewport = GameViewport(550, 400),
-      frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
@@ -106,7 +87,6 @@ object GameConfig:
   def apply(width: Int, height: Int): GameConfig =
     GameConfig(
       viewport = GameViewport(width, height),
-      frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
@@ -117,7 +97,6 @@ object GameConfig:
   def apply(viewport: GameViewport, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = viewport,
-      frameRateLimit = Option(FPS.`60`),
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,
@@ -128,7 +107,6 @@ object GameConfig:
   def apply(width: Int, height: Int, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = GameViewport(width, height),
-      frameRateLimit = Option(FPS.`60`),
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,

@@ -6,6 +6,8 @@ import indigoextras.subsystems.FPSCounter
 
 final class PerfGame extends Game[Unit, Dude, DudeModel] {
 
+  val gameId: GameId = GameId("perf")
+
   val eventFilters: EventFilters =
     EventFilters {
       case e: FrameTick =>
@@ -27,7 +29,6 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
         .noData(
           GameConfig(
             viewport = GameViewport(PerfGame.viewportWidth, PerfGame.viewportHeight),
-            frameRateLimit = None,
             clearColor = RGBA(0.4, 0.2, 0.5, 1),
             magnification = PerfGame.magnificationLevel,
             resizePolicy = ResizePolicy.NoResize,

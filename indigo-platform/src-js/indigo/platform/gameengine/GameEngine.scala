@@ -30,6 +30,7 @@ import indigo.shaders.StandardShaders
 import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
@@ -70,8 +71,7 @@ final class GameEngine[StartUpData, GameModel](
   var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gamepadInputCapture: GamepadInputCapture = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoop: Double => Double => Unit = null
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -87,7 +87,6 @@ final class GameEngine[StartUpData, GameModel](
 
   def kill(): Unit =
     platform.kill()
-    gameLoopInstance.kill()
     animationsRegister.kill()
     fontRegister.kill()
     shaderRegister.kill()
@@ -98,7 +97,6 @@ final class GameEngine[StartUpData, GameModel](
 
     ()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
       parentElement: Element,
       config: GameConfig,
@@ -144,10 +142,7 @@ final class GameEngine[StartUpData, GameModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(parentElement, true)(assetCollection)
-
-        if (gameLoop != null)
-          platform.tick(gameLoop(0.0d))
+        rebuildGameLoop(parentElement, true)(assetCollection)(Seconds.zero)
       }
 
     }
@@ -155,124 +150,133 @@ final class GameEngine[StartUpData, GameModel](
     this
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
+    if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
-    ac => {
-      if !firstRun then
-        // Emit an event to denote a reload
-        GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", false).dispatch(parentElement)
-        gameLoopInstance.lock()
+  def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Seconds => Unit =
+    ac =>
+      runningTime => {
+        if !firstRun then
+          // Emit an event to denote a reload
+          GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", false).dispatch(parentElement)
+          gameLoopInstance.lock()
 
-      fontRegister.clearRegister()
-      boundaryLocator.purgeCache()
-      sceneProcessor.purgeCaches()
+        fontRegister.clearRegister()
+        boundaryLocator.purgeCache()
+        sceneProcessor.purgeCaches()
 
-      accumulatedAssetCollection = accumulatedAssetCollection |+| ac
+        accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
-      audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
+        audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-      val dice = if firstRun then Dice.default else Dice.fromSeed(gameLoopInstance.runningTimeReference.toLong)
+        val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
 
-      if firstRun then platform = new JsPlatform(parentElement, gameConfig, globalEventStream)
+        if firstRun then platform = new JsPlatform(parentElement, gameConfig, globalEventStream)
 
-      initialise(accumulatedAssetCollection)(dice) match {
-        case oe @ Outcome.Error(error, _) =>
-          val msg =
-            if (firstRun) "Error during first initialisation - Halting."
-            else "Error during re-initialisation - Halting."
+        initialise(accumulatedAssetCollection)(dice) match {
+          case oe @ Outcome.Error(error, _) =>
+            val msg =
+              if (firstRun) "Error during first initialisation - Halting."
+              else "Error during re-initialisation - Halting."
 
-          // Emit an event to denote that an error has occurred
-          GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
+            // Emit an event to denote that an error has occurred
+            GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
 
-          IndigoLogger.error(msg)
-          IndigoLogger.error("Crash report:")
-          IndigoLogger.error(oe.reportCrash)
-          throw error
+            IndigoLogger.error(msg)
+            IndigoLogger.error("Crash report:")
+            IndigoLogger.error(oe.reportCrash)
+            throw error
 
-        case Outcome.Result(startupData, globalEvents) =>
-          globalEvents.foreach(globalEventStream.pushGlobalEvent)
+          case Outcome.Result(startupData, globalEvents) =>
+            globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+            GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-          // 25% Loaded - emit an event to denote that indigo has loaded 25%
-          GameEngineStatusEvent.Loading(1, stepsToLoad, "fonts", true).dispatch(parentElement)
+            // 25% Loaded - emit an event to denote that indigo has loaded 25%
+            GameEngineStatusEvent.Loading(1, stepsToLoad, "fonts", true).dispatch(parentElement)
 
-          GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+            GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-          // 50% Loaded - emit an event to denote that indigo has loaded 50%
-          GameEngineStatusEvent.Loading(2, stepsToLoad, "shaders", true).dispatch(parentElement)
+            // 50% Loaded - emit an event to denote that indigo has loaded 50%
+            GameEngineStatusEvent.Loading(2, stepsToLoad, "shaders", true).dispatch(parentElement)
 
-          GameEngine.registerShaders(
-            shaderRegister,
-            shaders ++ startupData.additionalShaders,
-            accumulatedAssetCollection
-          )
+            GameEngine.registerShaders(
+              shaderRegister,
+              shaders ++ startupData.additionalShaders,
+              accumulatedAssetCollection
+            )
 
-          // 75% Loaded - emit an event to denote that indigo has loaded 75%
-          GameEngineStatusEvent.Loading(3, stepsToLoad, "models", true).dispatch(parentElement)
+            // 75% Loaded - emit an event to denote that indigo has loaded 75%
+            GameEngineStatusEvent.Loading(3, stepsToLoad, "models", true).dispatch(parentElement)
 
-          def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
-            if (firstRun) initialModel(startUpSuccessData)
-            else Outcome(gameLoopInstance.gameModelState)
+            def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
+              if (firstRun) initialModel(startUpSuccessData)
+              else Outcome(gameLoopInstance.gameModelState)
 
-          val loop: Outcome[Double => Double => Unit] =
-            for {
-              rendererAndAssetMapping <- platform.initialise(firstRun, shaderRegister.toSet, accumulatedAssetCollection)
-              startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-              m                       <- modelToUse(startUpSuccessData)
-              initialisedGameLoop <- GameEngine.initialiseGameLoop(
-                parentElement,
-                this,
-                boundaryLocator,
-                sceneProcessor,
-                gameConfig,
-                m,
-                frameProccessor,
-                !firstRun, // If this isn't the first run, start with it frame locked.
-                renderer
-              )
-            } yield {
-              renderer = rendererAndAssetMapping._1
-              assetMapping = rendererAndAssetMapping._2
-              gameLoopInstance = initialisedGameLoop
-              startUpData = startUpSuccessData
-              initialisedGameLoop.loop
+            val loop: Outcome[Unit] =
+              for {
+                rendererAndAssetMapping <- platform.initialise(
+                  firstRun,
+                  shaderRegister.toSet,
+                  accumulatedAssetCollection
+                )
+                startUpSuccessData <- GameEngine.initialisedGame(startupData)
+                m                  <- modelToUse(startUpSuccessData)
+                initialisedGameLoop <- GameEngine.initialiseGameLoop(
+                  parentElement,
+                  this,
+                  boundaryLocator,
+                  sceneProcessor,
+                  gameConfig,
+                  m,
+                  frameProccessor,
+                  !firstRun, // If this isn't the first run, start with it frame locked.
+                  renderer
+                )
+              } yield {
+                renderer = rendererAndAssetMapping._1
+                assetMapping = rendererAndAssetMapping._2
+                gameLoopInstance = initialisedGameLoop
+                startUpData = startUpSuccessData
+                // initialisedGameLoop.loop
+              }
+
+            loop match {
+              case Outcome.Result(firstTick, events) =>
+                // 100% Loaded - emit an event to denote that indigo has loaded 100%
+                GameEngineStatusEvent.Loading(stepsToLoad, stepsToLoad, "complete", true).dispatch(parentElement)
+
+                IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+                IndigoLogger.info("You may get first occurrence error logs.")
+
+                events.foreach(globalEventStream.pushGlobalEvent)
+
+                // gameLoop = firstTick
+
+                gameLoopInstance.unlock()
+
+                // Fire an event to denote that indigo has finished loading
+                GameEngineStatusEvent.Loaded(firstRun).dispatch(parentElement)
+
+                ()
+
+              case oe @ Outcome.Error(e, _) =>
+                val msg =
+                  if (firstRun) "Error during first engine start up - Halting."
+                  else "Error during engine restart - Halting."
+
+                // Emit an event to denote that an error has occurred
+                GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
+
+                IndigoLogger.error(msg)
+                IndigoLogger.error(oe.reportCrash)
+                throw e
             }
 
-          loop match {
-            case Outcome.Result(firstTick, events) =>
-              // 100% Loaded - emit an event to denote that indigo has loaded 100%
-              GameEngineStatusEvent.Loading(stepsToLoad, stepsToLoad, "complete", true).dispatch(parentElement)
-
-              IndigoLogger.info("Starting main loop, there will be no more info log messages.")
-              IndigoLogger.info("You may get first occurrence error logs.")
-
-              events.foreach(globalEventStream.pushGlobalEvent)
-
-              gameLoop = firstTick
-
-              gameLoopInstance.unlock()
-
-              // Fire an event to denote that indigo has finished loading
-              GameEngineStatusEvent.Loaded(firstRun).dispatch(parentElement)
-
-              ()
-
-            case oe @ Outcome.Error(e, _) =>
-              val msg =
-                if (firstRun) "Error during first engine start up - Halting."
-                else "Error during engine restart - Halting."
-
-              // Emit an event to denote that an error has occurred
-              GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
-
-              IndigoLogger.error(msg)
-              IndigoLogger.error(oe.reportCrash)
-              throw e
-          }
-
+        }
       }
-    }
 
 }
 

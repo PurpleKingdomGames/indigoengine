@@ -8,7 +8,9 @@ import scala.annotation.nowarn
 
 final class ShaderGame() extends Game.ShaderPlayground:
 
-  val config: GameConfig          = GameConfig.default.withFrameRateLimit(FPS.`60`).noResize
+  val gameId: GameId = GameId("shader-game")
+
+  val config: GameConfig          = GameConfig.default.noResize
   val assets: Set[AssetType]      = SeascapeShader.assets
   val channel0: Option[AssetPath] = Option(AssetPath("assets/dots.png"))
   val channel1: Option[AssetPath] = None

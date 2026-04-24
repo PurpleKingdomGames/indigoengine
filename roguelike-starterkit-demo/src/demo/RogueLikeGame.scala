@@ -8,6 +8,8 @@ import roguelikestarterkit.*
 
 final class RogueLikeGame() extends Game[Size, Size, GameModel]:
 
+  val gameId: GameId = GameId("roguelike")
+
   def initialScene(bootData: Size): Option[SceneName] =
     Option(TerminalUI.name)
 

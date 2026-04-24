@@ -15,6 +15,8 @@ object SandboxGame:
 
 final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
+  val gameId: GameId = GameId("sandbox")
+
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(NoiseScene.name)
 

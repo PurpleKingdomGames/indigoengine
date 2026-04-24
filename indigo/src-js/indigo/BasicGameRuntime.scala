@@ -1,11 +1,14 @@
 package indigo
 
 import indigo.*
-import indigo.launchers.GameLauncher
 import tyrian.*
 import tyrian.Html.*
 
-abstract class BasicGameRuntime(game: => Game[?, ?, ?] | GameLauncher[?, ?]) extends App[Unit]:
+trait BasicGameRuntime extends App[Unit]:
+
+  def game: Game[?, ?, ?]
+
+  def frameRatePolicy: FrameRatePolicy
 
   val gameContainerId = "indigo-game-container"
 
@@ -16,7 +19,7 @@ abstract class BasicGameRuntime(game: => Game[?, ?, ?] | GameLauncher[?, ?]) ext
         flags,
         game,
         gameContainerId
-      )
+      ).withFrameRatePolicy(frameRatePolicy)
     )
 
   def init(flags: Map[String, String]): Result[Unit] =
@@ -26,7 +29,15 @@ abstract class BasicGameRuntime(game: => Game[?, ?, ?] | GameLauncher[?, ?]) ext
     Routing.none(AppMsg.NoOp)
 
   def update(model: Unit): GlobalMsg => Result[Unit] =
-    _ => Result(model)
+    case m: AppMsg =>
+      handleAppMsg(model)(m)
+
+    case _ =>
+      Result(model)
+
+  def handleAppMsg(model: Unit): AppMsg => Result[Unit] =
+    case AppMsg.NoOp =>
+      Result(model)
 
   def view(model: Unit): HtmlRoot =
     HtmlRoot.div(

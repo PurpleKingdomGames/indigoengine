@@ -41,7 +41,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
 
-    val gameTime = new GameTime(0, 0, None)
+    val gameTime = new GameTime(0, 0)
 
     val actual = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack
 
@@ -56,7 +56,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val jobs                   = Fishing(0) :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobs)
-    val gameTime     = new GameTime(0, 0, None)
+    val gameTime     = new GameTime(0, 0)
 
     workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack.headOption match {
       case Some(Fishing(done)) =>
@@ -76,7 +76,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, None)
+    val gameTime     = new GameTime(0, 0)
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(UnrelatedEvent("ignored!"))
@@ -94,7 +94,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = jobToAllocate :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, None)
+    val gameTime     = new GameTime(0, 0)
 
     val allocationId = bindingKey
 
@@ -113,7 +113,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = WanderTo(100) :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, None)
+    val gameTime     = new GameTime(0, 0)
 
     val allocationId = bindingKey
 
@@ -161,7 +161,7 @@ class WorkScheduleTests extends munit.FunSuite {
     }
   }
 
-  val gameTime = new GameTime(0, 0, None)
+  val gameTime = new GameTime(0, 0)
 
   val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule
 
