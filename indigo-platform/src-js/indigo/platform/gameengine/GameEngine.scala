@@ -240,11 +240,11 @@ final class GameEngine[StartUpData, GameModel](
                 assetMapping = rendererAndAssetMapping._2
                 gameLoopInstance = initialisedGameLoop
                 startUpData = startUpSuccessData
-                // initialisedGameLoop.loop
+                ()
               }
 
             loop match {
-              case Outcome.Result(firstTick, events) =>
+              case Outcome.Result(_, events) =>
                 // 100% Loaded - emit an event to denote that indigo has loaded 100%
                 GameEngineStatusEvent.Loading(stepsToLoad, stepsToLoad, "complete", true).dispatch(parentElement)
 
@@ -252,8 +252,6 @@ final class GameEngine[StartUpData, GameModel](
                 IndigoLogger.info("You may get first occurrence error logs.")
 
                 events.foreach(globalEventStream.pushGlobalEvent)
-
-                // gameLoop = firstTick
 
                 gameLoopInstance.unlock()
 

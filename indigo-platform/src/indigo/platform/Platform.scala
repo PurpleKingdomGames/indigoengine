@@ -4,12 +4,6 @@ import indigo.core.events.GlobalEvent
 import indigoengine.shared.collections.Batch
 
 /** Platform abstraction for game engine runtime services.
-  *
-  * This trait defines the core platform capabilities required by the game engine:
-  *   - Animation frame timing (tick)
-  *   - Delayed execution (delay)
-  *   - Lifecycle management (kill)
-  *   - Event handling (pushGlobalEvent, collectEvents)
   */
 trait Platform:
 

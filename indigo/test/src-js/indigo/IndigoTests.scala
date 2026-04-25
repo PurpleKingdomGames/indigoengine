@@ -19,7 +19,6 @@ class IndigoTests extends munit.FunSuite:
   }
 
   test("processFrameTick - frame update too early") {
-    // Suspiciously quick, but ok for the test. This + the mean is < FPS (0.016)
     val runningTime: Seconds = Seconds(10.001)
 
     val actual =

@@ -1,5 +1,6 @@
 package indigo
 
+/** A simple identifier for your game. During construction, non-alphanumeric characters are converted to hyphens. */
 opaque type GameId = String
 object GameId:
 

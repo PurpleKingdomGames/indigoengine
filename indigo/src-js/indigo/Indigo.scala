@@ -70,31 +70,11 @@ final case class Indigo(
 
   def init: Result[ExtensionModel] =
     Result(Indigo.ExtensionModel(game))
-      .addGlobalMsgs(Indigo.LaunchMsg.AttemptStart(extensionId))
+      .addGlobalMsgs(Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extensionId)))
 
   def update(model: ExtensionModel): GlobalMsg => Result[ExtensionModel] =
-    case m: Indigo.LaunchMsg =>
-      handleLaunchMsg(model)(m)
-
-    case Indigo.GameTick(gameId, runningTime) if game.gameId == gameId =>
-      Indigo
-        .processFrameTick(
-          model.lastUpdated,
-          runningTime,
-          frameRatePolicy
-        )
-        .flatMap {
-          case Indigo.TickUpdateResult.Wait =>
-            Result(model)
-
-          case Indigo.TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-            Result(model.copy(lastUpdated = updatedAt))
-              .addActions(
-                Action.sideEffect {
-                  game.system.tick(updatedAt, timeDelta)
-                }
-              )
-        }
+    case m: Indigo.Msg =>
+      handleMsg(model)(m)
 
     case msg =>
       eventMapping
@@ -104,58 +84,99 @@ final case class Indigo(
 
       Result(model)
 
-  private def handleLaunchMsg(model: Indigo.ExtensionModel): Indigo.LaunchMsg => Result[Indigo.ExtensionModel] =
-    case Indigo.LaunchMsg.Retry(extId) if extId == extensionId && model.attempts <= 0 =>
-      Result(model)
-        .addActions(Action.emit(Indigo.LaunchMsg.Failed(extId)))
+  private def handleMsg(model: Indigo.ExtensionModel): Indigo.Msg => Result[Indigo.ExtensionModel] =
+    case Indigo.Msg.Halt(gameId) =>
+      if game.gameId == gameId then
+        Result(model.copy(running = false))
+          .addActions(
+            Action.sideEffect {
+              game.system.halt()
+            }
+          )
+      else Result(model)
 
-    case Indigo.LaunchMsg.Retry(extId) if extId == extensionId =>
-      val nextDelay =
-        val x = Indigo.MaxStartupAttempts - model.attempts
-        Millis(x * x * 100L)
+    case Indigo.Msg.GameTick(gameId, runningTime) =>
+      if game.gameId == gameId && model.running then
+        Indigo
+          .processFrameTick(
+            model.lastUpdated,
+            runningTime,
+            frameRatePolicy
+          )
+          .flatMap {
+            case Indigo.TickUpdateResult.Wait =>
+              Result(model)
 
-      Result(model.copy(attempts = model.attempts - 1))
-        .addActions(Action.emitAfterDelay(Indigo.LaunchMsg.AttemptStart(extensionId), nextDelay))
-        .log(
-          s"Indigo Extension failed to find the required container element in the dom, will retry in ${nextDelay.toSeconds.toString()} seconds..."
-        )
+            case Indigo.TickUpdateResult.RunNow(timeDelta, updatedAt) =>
+              Result(model.copy(lastUpdated = updatedAt))
+                .addActions(
+                  Action.sideEffect {
+                    game.system.tick(updatedAt, timeDelta)
+                  }
+                )
+          }
+      else Result(model)
 
-    case Indigo.LaunchMsg.AttemptStart(extId) if extId == extensionId =>
-      Result(model)
-        .addActions(Indigo.launchAction(extensionId, model.game, find, flags))
+    case Indigo.Msg.Launch(Indigo.LaunchStatus.Retry(extId)) =>
+      if extId == extensionId && model.attempts <= 0 then
+        Result(model)
+          .addActions(Action.emit(Indigo.Msg.Launch(Indigo.LaunchStatus.Failed(extId))))
+      else if extId == extensionId then
+        val nextDelay =
+          val x = Indigo.MaxStartupAttempts - model.attempts
+          Millis(x * x * 100L)
 
-    case Indigo.LaunchMsg.Started(extId) if extId == extensionId =>
-      onLaunchSuccess match
-        case None =>
-          Result(model)
+        Result(model.copy(attempts = model.attempts - 1))
+          .addActions(
+            Action.emitAfterDelay(Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extensionId)), nextDelay)
+          )
+          .log(
+            s"Indigo Extension failed to find the required container element in the dom, will retry in ${nextDelay.toSeconds.toString()} seconds..."
+          )
+      else Result(model)
 
-        case Some(msg) =>
-          Result(model)
-            .addGlobalMsgs(msg)
-            .log("Indigo Extension successfully launched the game.")
+    case Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extId)) =>
+      if extId == extensionId then
+        Result(model)
+          .addActions(Indigo.launchAction(extensionId, model.game, find, flags))
+      else Result(model)
 
-    case Indigo.LaunchMsg.Failed(extId) if extId == extensionId =>
-      onLaunchFailure match
-        case None =>
-          Result(model)
+    case Indigo.Msg.Launch(Indigo.LaunchStatus.Started(extId)) =>
+      if extId == extensionId then
+        onLaunchSuccess match
+          case None =>
+            Result(model)
 
-        case Some(msg) =>
-          Result(model)
-            .addGlobalMsgs(msg)
-            .log(s"Indigo Extension failed to launch the game after $Indigo.MaxStartupAttempts attempts.")
+          case Some(msg) =>
+            Result(model)
+              .addGlobalMsgs(msg)
+              .log("Indigo Extension successfully launched the game.")
+      else Result(model)
 
-    case _: Indigo.LaunchMsg =>
-      // Msg was not intended to be consumed by this game instance.
-      Result(model)
+    case Indigo.Msg.Launch(Indigo.LaunchStatus.Failed(extId)) =>
+      if extId == extensionId then
+        onLaunchFailure match
+          case None =>
+            Result(model)
+
+          case Some(msg) =>
+            Result(model)
+              .addGlobalMsgs(msg)
+              .log(s"Indigo Extension failed to launch the game after ${Indigo.MaxStartupAttempts} attempts.")
+      else Result(model)
 
   def view(model: ExtensionModel): HtmlFragment =
     HtmlFragment.empty
 
   def watchers(model: ExtensionModel): Batch[Watcher] =
+    val gameTickWatcher =
+      if model.running then Batch(Indigo.tick(game.gameId))
+      else Batch.empty
+
     Batch.fromOption(
       model.game.events.eventCallback.map: eventCallback =>
         Indigo.indigoEventWatcher(extensionId, eventMapping, eventCallback)
-    ) ++ Batch(Indigo.tick(game.gameId))
+    ) ++ gameTickWatcher
 
 object Indigo:
 
@@ -225,29 +246,25 @@ object Indigo:
       find() match
         case Some(elem) if elem != null =>
           game.launch(elem, flags)
-          Indigo.LaunchMsg.Started(extensionId)
+          Indigo.Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>
-          Indigo.LaunchMsg.Retry(extensionId)
+          Indigo.Msg.Launch(LaunchStatus.Retry(extensionId))
     }
-
-  enum LaunchMsg extends GlobalMsg:
-    case Retry(extensionId: ExtensionId)
-    case AttemptStart(extensionId: ExtensionId)
-    case Started(extensionId: ExtensionId)
-    case Failed(extensionId: ExtensionId)
 
   final case class ExtensionModel(
       game: Game[?, ?, ?],
       attempts: Int,
-      lastUpdated: Seconds
+      lastUpdated: Seconds,
+      running: Boolean
   )
   object ExtensionModel:
     def apply(game: Game[?, ?, ?]): ExtensionModel =
       ExtensionModel(
         game,
         MaxStartupAttempts,
-        Seconds.zero
+        Seconds.zero,
+        running = true
       )
 
   private def indigoEventWatcher(
@@ -281,7 +298,7 @@ object Indigo:
         Result(TickUpdateResult.RunNow(timeSinceLastUpdate, runningTime))
 
       case FrameRatePolicy.Skip(target) =>
-        val targetFrameDuration = target.toSeconds // E.g. 16.7ms or 0.016s for 60fps
+        val targetFrameDuration = target.asFrameDuration // E.g. 16.7ms or 0.016s for 60fps
 
         if timeSinceLastUpdate >= targetFrameDuration then
           Result(TickUpdateResult.RunNow(timeSinceLastUpdate, runningTime))
@@ -289,10 +306,19 @@ object Indigo:
 
   def tick(gameId: GameId): Watcher =
     Watcher.animationFrameTick(s"[indigo-tick:${gameId.asString}]") { runningTime =>
-      GameTick(gameId, runningTime)
+      Indigo.Msg.GameTick(gameId, runningTime)
     }
 
-  final case class GameTick(gameId: GameId, runningTime: Seconds) extends GlobalMsg
+  enum LaunchStatus:
+    case Retry(extensionId: ExtensionId)
+    case AttemptStart(extensionId: ExtensionId)
+    case Started(extensionId: ExtensionId)
+    case Failed(extensionId: ExtensionId)
+
+  enum Msg extends GlobalMsg:
+    case GameTick(gameId: GameId, runningTime: Seconds)
+    case Halt(gameId: GameId)
+    case Launch(status: LaunchStatus)
 
   enum TickUpdateResult derives CanEqual:
     case Wait

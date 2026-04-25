@@ -13,11 +13,12 @@ object FPS:
   inline def apply(fps: Int): FPS = fps
 
   extension (fps: FPS)
-    def toInt: Int         = fps
-    def toLong: Long       = fps.toLong
-    def toFloat: Float     = fps.toFloat
-    def toDouble: Double   = fps.toDouble
-    def toSeconds: Seconds = Seconds(1.0d / fps.toDouble)
-    def toMillis: Millis   = toSeconds.toMillis
+    def toInt: Int               = fps
+    def toLong: Long             = fps.toLong
+    def toFloat: Float           = fps.toFloat
+    def toDouble: Double         = fps.toDouble
+    def toSeconds: Seconds       = Seconds(1.0d / fps.toDouble)
+    def toMillis: Millis         = fps.toSeconds.toMillis
+    def asFrameDuration: Seconds = fps.toSeconds
 
   given CanEqual[FPS, FPS] = CanEqual.derived

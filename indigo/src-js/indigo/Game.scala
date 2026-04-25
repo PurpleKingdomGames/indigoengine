@@ -153,11 +153,12 @@ trait Game[BootData, StartUpData, Model]:
     def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
       if gameInstance != null then gameInstance.tick(runningTime, timeDelta)
 
-  def halt(): Unit =
-    gameInstance.kill()
-    _push = None
-    _pull = None
-    ()
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    def halt(): Unit =
+      if gameInstance != null then gameInstance.kill()
+      _push = None
+      _pull = None
+      ()
 
   def launch(element: Element, flags: Map[String, String]): Unit =
     gameInstance = ready(flags)(element)
