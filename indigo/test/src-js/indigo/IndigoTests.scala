@@ -4,7 +4,6 @@ class IndigoTests extends munit.FunSuite:
 
   val lastUpdated: Seconds             = Seconds(10)
   val frameRatePolicy: FrameRatePolicy = FrameRatePolicy.Skip(FPS(60))
-  val tick: Seconds => Unit            = _ => ()
 
   test("processFrameTick - frame update slower than framerate") {
     val runningTime: Seconds = Seconds(10.032) // Two frames worth of time
