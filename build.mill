@@ -35,7 +35,7 @@ trait Shared extends ScalafmtModule, ScalafixModule:
   }
 
 trait SharedJVM extends Shared, ScalaModule:
-  object test extends ScalaTests, ScalafixModule, ScalafmtModule:
+  object test extends ScalaTests:
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
@@ -49,7 +49,7 @@ trait SharedJVM extends Shared, ScalaModule:
 trait SharedJS extends Shared, ScalaJSModule:
   def scalaJSVersion = Task("1.21.0")
 
-  object test extends ScalaJSTests, ScalafixModule, ScalafmtModule:
+  object test extends Shared, ScalaJSTests:
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
@@ -69,7 +69,7 @@ trait SharedNative extends Shared, ScalaNativeModule:
   override def releaseMode: T[ReleaseMode]              = Task(ReleaseMode.Debug)
   override def nativeLTO: T[LTO]                        = Task(LTO.None)
 
-  object test extends ScalaNativeTests, ScalafixModule, ScalafmtModule:
+  object test extends Shared, ScalaNativeTests:
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
