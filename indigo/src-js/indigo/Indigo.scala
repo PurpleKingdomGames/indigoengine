@@ -2,9 +2,12 @@ package indigo
 
 import cats.effect.IO
 import indigo.core.time.FPS
+import indigo.internal.CanvasAndContext
 import indigo.platform.events.GlobalEventCallback
+import indigo.render.facades.WebGL2RenderingContext
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
+import org.scalajs.dom.html
 import tyrian.Action
 import tyrian.GlobalMsg
 import tyrian.HtmlFragment
@@ -245,7 +248,15 @@ object Indigo:
     Action.run {
       find() match
         case Some(elem) if elem != null =>
-          game.launch(elem, flags)
+          val canvas: html.Canvas =
+            CanvasAndContext.setupCanvas(
+              width = 800,  // TODO: Where should this come from?
+              height = 600, // TODO: Where should this come from?
+              parentElement = elem
+            )
+          val context: WebGL2RenderingContext = CanvasAndContext.setupContext(canvas)
+
+          game.launch(canvas, context, flags)
           Indigo.Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>

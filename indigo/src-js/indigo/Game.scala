@@ -11,6 +11,7 @@ import indigo.platform.assets.AssetCollection
 import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
 import indigo.render.EmitGlobalEvent
+import indigo.render.facades.WebGL2RenderingContext
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager
@@ -22,7 +23,7 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
-import org.scalajs.dom.Element
+import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.annotation.nowarn
@@ -160,8 +161,8 @@ trait Game[BootData, StartUpData, Model]:
       _pull = None
       ()
 
-  def launch(element: Element, flags: Map[String, String]): Unit =
-    gameInstance = ready(flags)(element)
+  def launch(canvas: html.Canvas, context: WebGL2RenderingContext, flags: Map[String, String]): Unit =
+    gameInstance = ready(canvas, context, flags)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -204,22 +205,33 @@ trait Game[BootData, StartUpData, Model]:
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model] =
-    parentElement =>
-      boot(flags) match
-        case oe @ Outcome.Error(e, _) =>
-          IndigoLogger.error("Error during boot - Halting")
-          IndigoLogger.error(oe.reportCrash)
-          throw e
+  def ready(
+      canvas: html.Canvas,
+      context: WebGL2RenderingContext,
+      flags: Map[String, String]
+  ): GameEngine[StartUpData, Model] =
+    boot(flags) match
+      case oe @ Outcome.Error(e, _) =>
+        IndigoLogger.error("Error during boot - Halting")
+        IndigoLogger.error(oe.reportCrash)
+        throw e
 
-        case Outcome.Result(b, evts) =>
-          val engine =
-            indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+      case Outcome.Result(b, evts) =>
+        val engine =
+          indigoGame(b).start(
+            canvas,
+            context,
+            b.gameConfig,
+            Future(None),
+            b.assets,
+            Future(Set()),
+            evts
+          )
 
-          _push = Some(engine.globalEventStream)
-          _pull = Some(engine.globalEventStream)
+        _push = Some(engine.globalEventStream)
+        _pull = Some(engine.globalEventStream)
 
-          engine
+        engine
 
 object Game:
 

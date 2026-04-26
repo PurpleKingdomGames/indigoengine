@@ -20,6 +20,7 @@ import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.RendererInitialiser
+import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
@@ -28,7 +29,6 @@ import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
 import org.scalajs.dom
-import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
@@ -37,7 +37,6 @@ import scala.util.Failure
 import scala.util.Success
 
 class JsPlatform(
-    parentElement: Element,
     gameConfig: GameConfig,
     val globalEventStream: GlobalEventStream
 ) extends Platform
@@ -56,15 +55,16 @@ class JsPlatform(
   def initialise(
       firstRun: Boolean,
       shaders: Set[RawShaderCode],
-      assetCollection: AssetCollection
+      assetCollection: AssetCollection,
+      canvas: Canvas,
+      context: WebGL2RenderingContext
   ): Outcome[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      canvas              <- createCanvas(firstRun, parentElement, gameConfig)
       _                   <- listenToWorldEvents(firstRun, canvas, gameConfig, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
+      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, context, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
@@ -123,17 +123,6 @@ class JsPlatform(
       )
     )
 
-  def createCanvas(firstRun: Boolean, parentElement: Element, gameConfig: GameConfig): Outcome[Canvas] =
-    if firstRun then
-      Outcome(
-        rendererInit.createCanvas(
-          gameConfig.viewport.width,
-          gameConfig.viewport.height,
-          parentElement
-        )
-      )
-    else Outcome(_canvas)
-
   def listenToWorldEvents(
       firstRun: Boolean,
       canvas: Canvas,
@@ -159,6 +148,7 @@ class JsPlatform(
       gameConfig: GameConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
       canvas: Canvas,
+      context: WebGL2RenderingContext,
       shaders: Set[RawShaderCode]
   ): Outcome[Renderer] =
     Outcome {
@@ -168,12 +158,11 @@ class JsPlatform(
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
           maxBatchSize = gameConfig.advanced.batchSize,
-          antiAliasing = gameConfig.advanced.antiAliasing,
-          premultipliedAlpha = gameConfig.advanced.premultipliedAlpha,
           transparentBackground = gameConfig.transparentBackground
         ),
         loadedTextureAssets,
         canvas,
+        context,
         shaders
       )
     }

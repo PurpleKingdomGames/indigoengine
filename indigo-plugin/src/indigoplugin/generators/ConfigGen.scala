@@ -34,9 +34,7 @@ object ConfigGen {
       |      magnification = 1,
       |      transparentBackground = false,
       |      resizePolicy = ResizePolicy.Resize,
-      |      advanced = AdvancedGameConfig
-      |            .default
-      |           .withAntiAliasing(${indigoOptions.metadata.antiAliasing.toString})
+      |      advanced = AdvancedGameConfig.default
       |    )
       |""".stripMargin
 

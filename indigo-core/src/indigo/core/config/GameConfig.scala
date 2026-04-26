@@ -19,7 +19,7 @@ import indigoengine.shared.datatypes.RGBA
   *   Additional settings to help tune your game.
   */
 final case class GameConfig(
-    viewport: GameViewport,
+    viewport: GameViewport, // TODO: How does this tie up to Tyrian making the canvas?
     clearColor: RGBA,
     magnification: Int,
     resizePolicy: ResizePolicy,
