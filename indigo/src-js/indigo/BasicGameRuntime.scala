@@ -2,7 +2,6 @@ package indigo
 
 import indigo.*
 import tyrian.*
-import tyrian.Html.*
 
 trait BasicGameRuntime extends App[Unit]:
 
@@ -42,9 +41,7 @@ trait BasicGameRuntime extends App[Unit]:
   def view(model: Unit): HtmlRoot =
     HtmlRoot.div(
       HtmlFragment(
-        div()(
-          Marker(containerMarkerId)
-        )
+        Marker(containerMarkerId)
       )
     )
 
