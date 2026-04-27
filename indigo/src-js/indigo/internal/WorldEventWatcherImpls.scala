@@ -1,6 +1,9 @@
 package indigo.internal
 
 import indigo.Indigo
+import indigo.core.constants.Key
+import indigo.core.constants.KeyCode
+import indigo.core.constants.KeyLocation
 import indigo.core.events.*
 import org.scalajs.dom
 import org.scalajs.dom.html
@@ -591,3 +594,43 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
     e.preventDefault()
 
     Option(Indigo.Msg.WorldEvents(Batch(cancelEvent) ++ events))
+
+  def onKeyDown(e: dom.KeyboardEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(
+      Indigo.Msg.WorldEvents(
+        Batch(
+          KeyboardEvent.KeyDown(
+            Key(
+              KeyCode.fromString(e.code),
+              e.key,
+              KeyLocation.fromInt(e.location)
+            ),
+            e.repeat,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey
+          )
+        )
+      )
+    )
+
+  def onKeyUp(e: dom.KeyboardEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(
+      Indigo.Msg.WorldEvents(
+        Batch(
+          KeyboardEvent.KeyUp(
+            Key(
+              KeyCode.fromString(e.code),
+              e.key,
+              KeyLocation.fromInt(e.location)
+            ),
+            e.repeat,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey
+          )
+        )
+      )
+    )
