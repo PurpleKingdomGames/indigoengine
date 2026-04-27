@@ -5,14 +5,10 @@ import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
-import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import org.scalajs.dom.html
-import tyrian.Action
-import tyrian.GlobalMsg
-import tyrian.HtmlFragment
-import tyrian.Result
-import tyrian.Watcher
+import tyrian.*
+import tyrian.Html.*
 import tyrian.classic.Sub
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
@@ -22,7 +18,7 @@ final case class Indigo(
     extensionId: ExtensionId,
     flags: Map[String, String],
     game: Game[?, ?, ?],
-    find: () => Option[Element],
+    containerMarkerId: MarkerId,
     onLaunchSuccess: Option[GlobalMsg],
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
@@ -39,11 +35,6 @@ final case class Indigo(
 
   def withGame(value: Game[?, ?, ?]): Indigo =
     this.copy(game = value)
-
-  def withFind(value: () => Option[Element]): Indigo =
-    this.copy(find = value)
-  def findById(containerId: String): Indigo =
-    withFind(() => Option(document.getElementById(containerId)))
 
   def withOnLaunchSuccess(value: Option[GlobalMsg]): Indigo =
     this.copy(onLaunchSuccess = value)
@@ -140,8 +131,20 @@ final case class Indigo(
 
     case Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extId)) =>
       if extId == extensionId then
+        val find: () => Option[html.Canvas] =
+          () =>
+            Option(document.getElementById(Indigo.CanvasId))
+              .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
+
         Result(model)
-          .addActions(Indigo.launchAction(extensionId, model.game, find, flags))
+          .addActions(
+            Indigo.launchAction(
+              extensionId,
+              model.game,
+              find,
+              flags
+            )
+          )
       else Result(model)
 
     case Indigo.Msg.Launch(Indigo.LaunchStatus.Started(extId)) =>
@@ -169,7 +172,11 @@ final case class Indigo(
       else Result(model)
 
   def view(model: ExtensionModel): HtmlFragment =
-    HtmlFragment.empty
+    // TODO: Size?
+    HtmlFragment.insert(
+      containerMarkerId,
+      canvas(tyrian.Html.id := Indigo.CanvasId, width := 800, height := 600)()
+    )
 
   def watchers(model: ExtensionModel): Batch[Watcher] =
     val gameTickWatcher =
@@ -183,19 +190,21 @@ final case class Indigo(
 
 object Indigo:
 
+  val CanvasId: String = "indigo-canvas"
+
   val MaxStartupAttempts: Int = 10
 
   def apply(
       extensionId: ExtensionId,
       flags: Map[String, String],
       game: Game[?, ?, ?],
-      containerId: String
+      containerMarkerId: MarkerId
   ): Indigo =
     Indigo(
       extensionId,
       flags,
       game,
-      () => Option(document.getElementById(containerId)),
+      containerMarkerId,
       None,
       None,
       PartialIso.none,
@@ -206,24 +215,7 @@ object Indigo:
       extensionId: ExtensionId,
       flags: Map[String, String],
       game: Game[?, ?, ?],
-      find: () => Option[Element]
-  ): Indigo =
-    Indigo(
-      extensionId,
-      flags,
-      game,
-      find,
-      None,
-      None,
-      PartialIso.none,
-      FrameRatePolicy.Skip(FPS.`60`)
-    )
-
-  def apply(
-      extensionId: ExtensionId,
-      flags: Map[String, String],
-      game: Game[?, ?, ?],
-      find: () => Option[Element],
+      containerMarkerId: MarkerId,
       onLaunchSuccess: GlobalMsg,
       onLaunchFailure: GlobalMsg
   ): Indigo =
@@ -231,7 +223,7 @@ object Indigo:
       extensionId,
       flags,
       game,
-      find,
+      containerMarkerId,
       Some(onLaunchSuccess),
       Some(onLaunchFailure),
       PartialIso.none,
@@ -242,18 +234,12 @@ object Indigo:
   private def launchAction(
       extensionId: ExtensionId,
       game: Game[?, ?, ?],
-      find: () => Option[Element],
+      find: () => Option[html.Canvas],
       flags: Map[String, String]
   ): Action =
     Action.run {
       find() match
-        case Some(elem) if elem != null =>
-          val canvas: html.Canvas =
-            CanvasAndContext.setupCanvas(
-              width = 800,  // TODO: Where should this come from?
-              height = 600, // TODO: Where should this come from?
-              parentElement = elem
-            )
+        case Some(canvas) =>
           val context: WebGL2RenderingContext = CanvasAndContext.setupContext(canvas)
 
           game.launch(canvas, context, flags)

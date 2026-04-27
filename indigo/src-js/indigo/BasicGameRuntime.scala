@@ -10,7 +10,7 @@ trait BasicGameRuntime extends App[Unit]:
 
   def frameRatePolicy: FrameRatePolicy
 
-  val gameContainerId = "indigo-game-container"
+  private val containerMarkerId = MarkerId("indigo-game-container")
 
   def extensions(flags: Map[String, String], model: Unit): Set[Extension] =
     Set(
@@ -18,7 +18,7 @@ trait BasicGameRuntime extends App[Unit]:
         ExtensionId("indigo game"),
         flags,
         game,
-        gameContainerId
+        containerMarkerId
       ).withFrameRatePolicy(frameRatePolicy)
     )
 
@@ -42,7 +42,9 @@ trait BasicGameRuntime extends App[Unit]:
   def view(model: Unit): HtmlRoot =
     HtmlRoot.div(
       HtmlFragment(
-        div(id := gameContainerId)().setKey(gameContainerId)
+        div()(
+          Marker(containerMarkerId)
+        )
       )
     )
 
