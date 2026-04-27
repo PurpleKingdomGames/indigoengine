@@ -1,16 +1,12 @@
 package indigo.platform.events
 
 import indigo.core.config.ResizePolicy
-import indigo.core.constants.Key
-import indigo.core.constants.KeyCode
-import indigo.core.constants.KeyLocation
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Size
 import indigo.core.events.ApplicationGainedFocus
 import indigo.core.events.ApplicationLostFocus
 import indigo.core.events.CanvasGainedFocus
 import indigo.core.events.CanvasLostFocus
-import indigo.core.events.KeyboardEvent
 import indigo.core.events.MouseButton
 import indigo.core.events.MouseEvent
 import indigo.core.events.WheelEvent
@@ -48,8 +44,6 @@ final class WorldEvents:
       canvas: html.Canvas,
       resizePolicy: ResizePolicy,
       onWheel: dom.WheelEvent => Unit,
-      onKeyDown: dom.KeyboardEvent => Unit,
-      onKeyUp: dom.KeyboardEvent => Unit,
       onContextMenu: Option[dom.MouseEvent => Unit],
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
@@ -62,8 +56,6 @@ final class WorldEvents:
     window.addEventListener("focus", onFocus)
     window.addEventListener("blur", onBlur)
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
-    document.addEventListener("keydown", onKeyDown)
-    document.addEventListener("keyup", onKeyUp)
     resizeObserver.observe(canvas.parentElement)
 
     def unbind(): Unit = {
@@ -73,8 +65,6 @@ final class WorldEvents:
       window.removeEventListener("focus", onFocus)
       window.removeEventListener("blur", onBlur)
       onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
-      document.removeEventListener("keydown", onKeyDown)
-      document.removeEventListener("keyup", onKeyUp)
       resizeObserver.disconnect()
     }
   }
@@ -142,38 +132,6 @@ final class WorldEvents:
 
         if (e.deltaZ != 0)
           globalEventStream.pushGlobalEvent(WheelEvent.Depth(e.deltaZ, deltaMode))
-      },
-      onKeyDown = { e =>
-        globalEventStream.pushGlobalEvent(
-          KeyboardEvent.KeyDown(
-            Key(
-              KeyCode.fromString(e.code),
-              e.key,
-              KeyLocation.fromInt(e.location)
-            ),
-            e.repeat,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey
-          )
-        )
-      },
-      onKeyUp = { e =>
-        globalEventStream.pushGlobalEvent(
-          KeyboardEvent.KeyUp(
-            Key(
-              KeyCode.fromString(e.code),
-              e.key,
-              KeyLocation.fromInt(e.location)
-            ),
-            e.repeat,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey
-          )
-        )
       },
       // Prevent right mouse button from popping up the context menu
       onContextMenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None,
