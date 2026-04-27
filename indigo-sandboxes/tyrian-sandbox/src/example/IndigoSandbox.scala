@@ -5,7 +5,6 @@ import example.common.ExchangeEvents
 import example.common.ExchangeMsgs
 import example.game.MyAwesomeGame
 import indigo.*
-import org.scalajs.dom.document
 import tyrian.*
 import tyrian.Html.*
 import tyrian.classic.Nav
@@ -17,8 +16,8 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("TyrianApp")
 object IndigoSandbox extends App[Model]:
 
-  val gameDivId1: String = "my-game-1"
-  val gameDivId2: String = "my-game-2"
+  private val containerMarkerId1 = MarkerId("indigo-game-container-1")
+  private val containerMarkerId2 = MarkerId("indigo-game-container-2")
 
   def router: Location => Msg = Routing.externalOnly(Msg.NoOp, Msg.FollowLink(_))
 
@@ -43,21 +42,9 @@ object IndigoSandbox extends App[Model]:
 
     case Msg.RemoveGame1 =>
       Result(model.copy(showGame1 = false))
-        .addActions(
-          Action.run {
-            document.getElementById(gameDivId1 + "-canvas").remove()
-            Msg.NoOp
-          }
-        )
 
     case Msg.RemoveGame2 =>
       Result(model.copy(showGame2 = false))
-        .addActions(
-          Action.run {
-            document.getElementById(gameDivId2 + "-canvas").remove()
-            Msg.NoOp
-          }
-        )
 
     case Msg.FollowLink(href) =>
       Result(model).addCmds(Nav.loadUrl[IO](href))
@@ -107,6 +94,20 @@ object IndigoSandbox extends App[Model]:
       button(onClick(Msg.Insert))(text("insert"))
     ) ++ counters
 
+    val game1 =
+      if model.showGame1 then
+        Batch(
+          Marker(containerMarkerId1)
+        )
+      else Batch.empty
+
+    val game2 =
+      if model.showGame2 then
+        Batch(
+          Marker(containerMarkerId2)
+        )
+      else Batch.empty
+
     HtmlRoot.div(
       HtmlFragment(
         Batch(
@@ -117,8 +118,8 @@ object IndigoSandbox extends App[Model]:
             a(href := "http://tyrian.indigoengine.io/")("Tyrian website")
           )
         ) ++
-          (if model.showGame1 then Batch(div(id := gameDivId1)().setKey("game 1")) else Batch.empty) ++
-          (if model.showGame2 then Batch(div(id := gameDivId2)().setKey("game 2")) else Batch.empty) ++
+          game1 ++
+          game2 ++
           Batch(
             div(
               button(onClick(Msg.HaltGame1))(text("Halt game 1")),
@@ -146,7 +147,7 @@ object IndigoSandbox extends App[Model]:
         ExtensionId("reverse"),
         flags,
         model.game1,
-        () => Option(document.getElementById(gameDivId1)),
+        containerMarkerId1,
         Msg.Log("Game (1) start success."),
         Msg.Log("Game (1) start fail.")
       ).withEventMapping(ExchangeEvents.mapping),
@@ -154,7 +155,7 @@ object IndigoSandbox extends App[Model]:
         ExtensionId("combine"),
         flags,
         model.game2,
-        () => Option(document.getElementById(gameDivId2)),
+        containerMarkerId2,
         Msg.Log("Game (2) start success."),
         Msg.Log("Game (2) start fail.")
       ).withEventMapping(ExchangeEvents.mapping)
