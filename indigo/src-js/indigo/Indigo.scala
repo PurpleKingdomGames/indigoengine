@@ -142,7 +142,11 @@ final case class Indigo(
           Option(document.getElementById(Indigo.CanvasId))
             .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
 
-        Result(model.copy(_canvas = maybeCanvas))
+        Result(
+          model.copy(
+            _eventWatchers = maybeCanvas.map(WorldEventWatchers.init)
+          )
+        )
           .addActions(
             Indigo.launchAction(
               extensionId,
@@ -190,9 +194,9 @@ final case class Indigo(
       else Batch.empty
 
     val worldEventWatchers =
-      model._canvas match
-        case None         => Batch.empty
-        case Some(canvas) => WorldEventWatchers.watchers(canvas)
+      model._eventWatchers match
+        case None    => Batch.empty
+        case Some(w) => w.watchers
 
     Batch.fromOption(
       model.game.events.eventCallback.map: eventCallback =>
@@ -265,7 +269,7 @@ object Indigo:
       attempts: Int,
       lastUpdated: Seconds,
       running: Boolean,
-      _canvas: Option[html.Canvas]
+      _eventWatchers: Option[WorldEventWatchers]
   )
   object ExtensionModel:
     def apply(game: Game[?, ?, ?]): ExtensionModel =
