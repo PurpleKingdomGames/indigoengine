@@ -15,7 +15,6 @@ import indigo.core.events.KeyboardEvent
 import indigo.core.events.MouseButton
 import indigo.core.events.MouseEvent
 import indigo.core.events.PenEvent
-import indigo.core.events.PointerEvent
 import indigo.core.events.PointerEvent.*
 import indigo.core.events.PointerId
 import indigo.core.events.PointerType
@@ -67,7 +66,6 @@ final class WorldEvents:
       onPointerLeave: dom.PointerEvent => Unit,
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
-      onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
@@ -79,7 +77,6 @@ final class WorldEvents:
     canvas.addEventListener("pointerleave", onPointerLeave)
     canvas.addEventListener("pointerdown", onPointerDown)
     canvas.addEventListener("pointerup", onPointerUp)
-    canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
     canvas.addEventListener("focus", onFocus)
     canvas.addEventListener("blur", onBlur)
@@ -96,7 +93,6 @@ final class WorldEvents:
       canvas.removeEventListener("pointerleave", onPointerLeave)
       canvas.removeEventListener("pointerdown", onPointerDown)
       canvas.removeEventListener("pointerup", onPointerUp)
-      canvas.removeEventListener("pointermove", onPointerMove)
       canvas.removeEventListener("pointercancel", onPointerCancel)
       canvas.removeEventListener("focus", onFocus)
       canvas.removeEventListener("blur", onBlur)
@@ -618,76 +614,6 @@ final class WorldEvents:
                 movementPosition,
                 e.pressure,
                 MouseButton.fromOrdinalOpt(button)
-              )
-            )
-
-          case PointerType.Unknown => ()
-        }
-        e.preventDefault()
-      },
-      onPointerMove = { e =>
-        val position         = e.position(magnification, canvas)
-        val buttons          = e.indigoButtons
-        val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.toPointerType
-
-        globalEventStream.pushGlobalEvent(
-          PointerEvent.Move(
-            PointerId(e.pointerId),
-            position,
-            buttons,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey,
-            movementPosition,
-            e.width(magnification),
-            e.height(magnification),
-            e.pressure,
-            e.tangentialPressure,
-            Radians.fromDegrees(Degrees(e.tiltX)),
-            Radians.fromDegrees(Degrees(e.tiltY)),
-            Radians.fromDegrees(Degrees(e.twist)),
-            pointerType,
-            e.isPrimary
-          )
-        )
-
-        pointerType match {
-          case PointerType.Mouse =>
-            @nowarn("msg=deprecated")
-            val event =
-              MouseEvent.Move(
-                PointerId(e.pointerId),
-                position,
-                buttons,
-                e.altKey,
-                e.ctrlKey,
-                e.metaKey,
-                e.shiftKey,
-                movementPosition
-              )
-
-            globalEventStream.pushGlobalEvent(event)
-
-          case PointerType.Touch =>
-            globalEventStream.pushGlobalEvent(
-              TouchEvent.Move(
-                PointerId(e.pointerId),
-                FingerId(e.pointerId),
-                position,
-                movementPosition,
-                e.pressure
-              )
-            )
-
-          case PointerType.Pen =>
-            globalEventStream.pushGlobalEvent(
-              PenEvent.Move(
-                PointerId(e.pointerId),
-                position,
-                movementPosition,
-                e.pressure
               )
             )
 
