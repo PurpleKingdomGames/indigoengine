@@ -1,16 +1,14 @@
 package demo
 
 import indigo.*
-import org.scalajs.dom.document
 import tyrian.*
-import tyrian.Html.*
 
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
 object RogueLikeApp extends App[AppModel]:
 
-  def gameDivId: String = Constants.gameDivId
+  private val containerMarkerId = MarkerId("indigo-game-container")
 
   def router: Location => GlobalMsg =
     Routing.none(AppMsg.NoOp)
@@ -31,7 +29,7 @@ object RogueLikeApp extends App[AppModel]:
   def view(model: AppModel): HtmlRoot =
     HtmlRoot.div(
       HtmlFragment(
-        div(id := gameDivId)().setKey(gameDivId)
+        Marker(containerMarkerId)
       )
     )
 
@@ -44,7 +42,7 @@ object RogueLikeApp extends App[AppModel]:
         ExtensionId("rogue game"),
         flags,
         model.game,
-        () => Option(document.getElementById(gameDivId)),
+        containerMarkerId,
         AppMsg.Log("Game start success."),
         AppMsg.Log("Game start fail.")
       )
