@@ -163,7 +163,7 @@ object TerminalText:
             abs(color.z - env.MASK.z) < 0.001f &&
             abs(color.w - env.MASK.w) < 0.001f
 
-        def isForgroundColor(color: vec4): Boolean =
+        def isForegroundColor(color: vec4): Boolean =
           abs(color.x - env.MASK.x) > 0.001f ||
             abs(color.y - env.MASK.y) > 0.001f ||
             abs(color.z - env.MASK.z) > 0.001f ||
@@ -173,7 +173,7 @@ object TerminalText:
           val isBackground: Boolean = isBackgroundColor(env.CHANNEL_0)
 
           val isShadow: Boolean =
-            isBackground && isForgroundColor(texture2D(env.SRC_CHANNEL, v_shadowLookupCoord))
+            isBackground && isForegroundColor(texture2D(env.SRC_CHANNEL, v_shadowLookupCoord))
 
           if isShadow then vec4(env.SHADOW.rgb * env.SHADOW.a, env.SHADOW.a)
           else if isBackground then vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
