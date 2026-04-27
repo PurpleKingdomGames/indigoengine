@@ -3,6 +3,7 @@ package indigo
 import cats.effect.IO
 import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
+import indigo.internal.WorldEventWatchers
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
 import org.scalajs.dom.document
@@ -79,6 +80,12 @@ final case class Indigo(
       Result(model)
 
   private def handleMsg(model: Indigo.ExtensionModel): Indigo.Msg => Result[Indigo.ExtensionModel] =
+    case Indigo.Msg.WorldEvents(events) =>
+      events.foreach: e =>
+        model.game.events.push(e)
+
+      Result(model)
+
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
         Result(model.copy(running = false))
@@ -131,17 +138,16 @@ final case class Indigo(
 
     case Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extId)) =>
       if extId == extensionId then
-        val find: () => Option[html.Canvas] =
-          () =>
-            Option(document.getElementById(Indigo.CanvasId))
-              .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
+        val maybeCanvas =
+          Option(document.getElementById(Indigo.CanvasId))
+            .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
 
-        Result(model)
+        Result(model.copy(_canvas = maybeCanvas))
           .addActions(
             Indigo.launchAction(
               extensionId,
               model.game,
-              find,
+              maybeCanvas,
               flags
             )
           )
@@ -183,10 +189,16 @@ final case class Indigo(
       if model.running then Batch(Indigo.tick(game.gameId))
       else Batch.empty
 
+    val worldEventWatchers =
+      model._canvas match
+        case None         => Batch.empty
+        case Some(canvas) => WorldEventWatchers.watchers(canvas)
+
     Batch.fromOption(
       model.game.events.eventCallback.map: eventCallback =>
         Indigo.indigoEventWatcher(extensionId, eventMapping, eventCallback)
-    ) ++ gameTickWatcher
+    ) ++
+      gameTickWatcher ++ worldEventWatchers
 
 object Indigo:
 
@@ -230,15 +242,14 @@ object Indigo:
       FrameRatePolicy.Skip(FPS.`60`)
     )
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def launchAction(
       extensionId: ExtensionId,
       game: Game[?, ?, ?],
-      find: () => Option[html.Canvas],
+      maybeCanvas: Option[html.Canvas],
       flags: Map[String, String]
   ): Action =
     Action.run {
-      find() match
+      maybeCanvas match
         case Some(canvas) =>
           val context: WebGL2RenderingContext = CanvasAndContext.setupContext(canvas)
 
@@ -253,7 +264,8 @@ object Indigo:
       game: Game[?, ?, ?],
       attempts: Int,
       lastUpdated: Seconds,
-      running: Boolean
+      running: Boolean,
+      _canvas: Option[html.Canvas]
   )
   object ExtensionModel:
     def apply(game: Game[?, ?, ?]): ExtensionModel =
@@ -261,7 +273,8 @@ object Indigo:
         game,
         MaxStartupAttempts,
         Seconds.zero,
-        running = true
+        running = true,
+        None
       )
 
   private def indigoEventWatcher(
@@ -316,6 +329,7 @@ object Indigo:
     case GameTick(gameId: GameId, runningTime: Seconds)
     case Halt(gameId: GameId)
     case Launch(status: LaunchStatus)
+    case WorldEvents(events: Batch[GlobalEvent])
 
   enum TickUpdateResult derives CanEqual:
     case Wait
