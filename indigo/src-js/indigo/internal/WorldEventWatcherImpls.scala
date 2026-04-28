@@ -20,9 +20,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
 
-  // TODO: Default previously lived in AdvancedGameConfig
-  private val clickTimeMs: Long = 250L
-
   def onPointerMove(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
@@ -358,7 +355,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
     Option(Indigo.Msg.WorldEvents(Batch(downEvent) ++ events))
 
-  def onPointerUp(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerUp(clickTimeMs: Long)(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
     val position         = e.position(canvas)
     val pointerType      = e.toPointerType
     val buttons          = e.indigoButtons

@@ -1,5 +1,6 @@
 package indigo.internal
 
+import indigoengine.shared.datatypes.Millis
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
@@ -7,7 +8,7 @@ import org.scalajs.dom.window
 import tyrian.*
 import tyrian.syntax.*
 
-final class WorldEventWatchers(canvas: html.Canvas):
+final class WorldEventWatchers(canvas: html.Canvas, clickTime: Millis):
 
   private val impls = new WorldEventWatcherImpls(canvas)
 
@@ -17,7 +18,7 @@ final class WorldEventWatchers(canvas: html.Canvas):
       Watcher.fromEvent[dom.PointerEvent]("pointerenter", canvas)(impls.onPointerEnter),
       Watcher.fromEvent[dom.PointerEvent]("pointerleave", canvas)(impls.onPointerLeave),
       Watcher.fromEvent[dom.PointerEvent]("pointerdown", canvas)(impls.onPointerDown),
-      Watcher.fromEvent[dom.PointerEvent]("pointerup", canvas)(impls.onPointerUp),
+      Watcher.fromEvent[dom.PointerEvent]("pointerup", canvas)(impls.onPointerUp(clickTime.toLong)),
       Watcher.fromEvent[dom.PointerEvent]("pointercancel", canvas)(impls.onPointerCancel),
       Watcher.fromEvent[dom.KeyboardEvent]("keydown", document)(impls.onKeyDown),
       Watcher.fromEvent[dom.KeyboardEvent]("keyup", document)(impls.onKeyUp),
@@ -30,5 +31,5 @@ final class WorldEventWatchers(canvas: html.Canvas):
 
 object WorldEventWatchers:
 
-  def init(canvas: html.Canvas): WorldEventWatchers =
-    new WorldEventWatchers(canvas)
+  def init(canvas: html.Canvas, clickTime: Millis): WorldEventWatchers =
+    new WorldEventWatchers(canvas, clickTime)

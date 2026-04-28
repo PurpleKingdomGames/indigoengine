@@ -137,8 +137,7 @@ class JsPlatform(
           gameConfig.resizePolicy,
           gameConfig.magnification,
           gameConfig.advanced.disableContextMenu,
-          globalEventStream,
-          gameConfig.advanced.clickTime.toLong
+          globalEventStream
         )
         GamepadInputCaptureImpl.init()
       else IndigoLogger.info("Re-using existing world events")

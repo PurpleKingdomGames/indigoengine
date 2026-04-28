@@ -13,8 +13,7 @@ final class WorldEvents:
       canvas: html.Canvas,
       resizePolicy: ResizePolicy,
       onContextMenu: Option[dom.MouseEvent => Unit],
-      resizeObserver: dom.ResizeObserver,
-      clickTimeMs: Long
+      resizeObserver: dom.ResizeObserver
   ) {
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     resizeObserver.observe(canvas.parentElement)
@@ -32,8 +31,7 @@ final class WorldEvents:
         resizePolicy: ResizePolicy,
         magnification: Int,
         disableContextMenu: Boolean,
-        globalEventStream: GlobalEventStream,
-        clickTimeMs: Long
+        globalEventStream: GlobalEventStream
     ): Handlers = Handlers(
       canvas = canvas,
       resizePolicy,
@@ -92,8 +90,7 @@ final class WorldEvents:
             }
           }
         }
-      ),
-      clickTimeMs
+      )
     )
   }
 
@@ -105,12 +102,11 @@ final class WorldEvents:
       resizePolicy: ResizePolicy,
       magnification: Int,
       disableContextMenu: Boolean,
-      globalEventStream: GlobalEventStream,
-      clickTimeMs: Long
+      globalEventStream: GlobalEventStream
   ): Unit =
     if (_handlers.isEmpty)
       _handlers = Some(
-        Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream, clickTimeMs)
+        Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream)
       )
 
   def kill(): Unit = _handlers.foreach { x =>

@@ -1,11 +1,7 @@
 package indigo.core.config
 
-import indigoengine.shared.datatypes.Millis
-
 /** Additional settings to help tune aspects of your game's performance.
   *
-  * @param renderingTechnology
-  *   Use WebGL 1.0 or 2.0? Defaults to 2.0 with fallback to 1.0.
   * @param batchSize
   *   How many scene nodes to batch together between draws, defaults to 256.
   * @param autoLoadStandardShaders
@@ -17,8 +13,7 @@ import indigoengine.shared.datatypes.Millis
 final case class AdvancedGameConfig(
     batchSize: Int,
     autoLoadStandardShaders: Boolean,
-    disableContextMenu: Boolean,
-    clickTime: Millis
+    disableContextMenu: Boolean
 ) derives CanEqual {
 
   def withBatchSize(size: Int): AdvancedGameConfig =
@@ -32,16 +27,12 @@ final case class AdvancedGameConfig(
   def noContextMenu: AdvancedGameConfig =
     this.copy(disableContextMenu = true)
 
-  def withClickTime(millis: Millis): AdvancedGameConfig =
-    this.copy(clickTime = millis)
-
   val asString: String =
     s"""
        |Advanced settings
        |- Render batch size:           ${batchSize.toString}
        |- Auto-Load Shaders:           ${autoLoadStandardShaders.toString}
        |- Disable Context Menu:        ${disableContextMenu.toString}
-       |- Click Time (ms):             ${clickTime.toString}
        |""".stripMargin
 }
 
@@ -50,7 +41,6 @@ object AdvancedGameConfig {
     AdvancedGameConfig(
       batchSize = 256,
       autoLoadStandardShaders = true,
-      disableContextMenu = true,
-      clickTime = Millis(250)
+      disableContextMenu = true
     )
 }

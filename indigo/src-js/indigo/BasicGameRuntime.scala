@@ -7,7 +7,7 @@ trait BasicGameRuntime extends App[Unit]:
 
   def game: Game[?, ?, ?]
 
-  def frameRatePolicy: FrameRatePolicy
+  def settings: Indigo.Settings
 
   private val containerMarkerId = MarkerId("indigo-game-container")
 
@@ -18,7 +18,7 @@ trait BasicGameRuntime extends App[Unit]:
         flags,
         game,
         containerMarkerId
-      ).withFrameRatePolicy(frameRatePolicy)
+      ).withSettings(settings)
     )
 
   def init(flags: Map[String, String]): Result[Unit] =

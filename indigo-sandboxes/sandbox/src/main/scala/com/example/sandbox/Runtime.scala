@@ -10,5 +10,6 @@ object Runtime extends BasicGameRuntime:
   def game: Game[?, ?, ?] =
     SandboxGame()
 
-  def frameRatePolicy: FrameRatePolicy =
-    FrameRatePolicy.Skip(FPS.`60`)
+  def settings: Indigo.Settings =
+    Indigo.Settings.default
+      .withFrameRatePolicy(FrameRatePolicy.Skip(FPS.`60`))

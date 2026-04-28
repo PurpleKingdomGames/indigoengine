@@ -10,12 +10,12 @@ import scala.scalajs.js.Dynamic
 
 object CanvasAndContext:
 
-  def setupContext(canvas: html.Canvas): WebGL2RenderingContext =
-    // TODO: These should come from somewhere.
-    val antiAliasing: Boolean          = false
-    val premultipliedAlpha: Boolean    = true
-    val transparentBackground: Boolean = true
-
+  def setupContext(
+      canvas: html.Canvas,
+      premultipliedAlpha: Boolean,
+      transparentBackground: Boolean,
+      antiAliasing: Boolean
+  ): WebGL2RenderingContext =
     val args =
       Dynamic.literal(
         "premultipliedAlpha" -> premultipliedAlpha,
