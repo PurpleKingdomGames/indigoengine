@@ -10,5 +10,6 @@ object Runtime extends BasicGameRuntime:
   def game: Game[?, ?, ?] =
     IndigoPhysics()
 
-  def frameRatePolicy: FrameRatePolicy =
-    FrameRatePolicy.Unlimited
+  def settings: Indigo.Settings =
+    Indigo.Settings.default
+      .withFrameRatePolicy(FrameRatePolicy.Unlimited)

@@ -23,7 +23,7 @@ final case class Indigo(
     onLaunchSuccess: Option[GlobalMsg],
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
-    frameRatePolicy: FrameRatePolicy
+    settings: Indigo.Settings
 ) extends Extension:
 
   type ExtensionModel = Indigo.ExtensionModel
@@ -54,12 +54,8 @@ final case class Indigo(
   def withEventMapping(value: PartialIso[GlobalMsg, GlobalEvent]): Indigo =
     this.copy(eventMapping = value)
 
-  def withFrameRatePolicy(value: FrameRatePolicy): Indigo =
-    this.copy(frameRatePolicy = value)
-  def unlimitedFrameRate: Indigo =
-    withFrameRatePolicy(FrameRatePolicy.Unlimited)
-  def targetFrameRate(target: FPS): Indigo =
-    withFrameRatePolicy(FrameRatePolicy.Skip(target))
+  def withSettings(value: Indigo.Settings): Indigo =
+    this.copy(settings = value)
 
   def id: ExtensionId = extensionId
 
@@ -102,7 +98,7 @@ final case class Indigo(
           .processFrameTick(
             model.lastUpdated,
             runningTime,
-            frameRatePolicy
+            settings.frameRatePolicy
           )
           .flatMap {
             case Indigo.TickUpdateResult.Wait =>
@@ -144,7 +140,7 @@ final case class Indigo(
 
         Result(
           model.copy(
-            _eventWatchers = maybeCanvas.map(WorldEventWatchers.init)
+            _eventWatchers = maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime))
           )
         )
           .addActions(
@@ -152,7 +148,8 @@ final case class Indigo(
               extensionId,
               model.game,
               maybeCanvas,
-              flags
+              flags,
+              settings
             )
           )
       else Result(model)
@@ -224,7 +221,7 @@ object Indigo:
       None,
       None,
       PartialIso.none,
-      FrameRatePolicy.Skip(FPS.`60`)
+      Settings.default
     )
 
   def apply(
@@ -243,19 +240,26 @@ object Indigo:
       Some(onLaunchSuccess),
       Some(onLaunchFailure),
       PartialIso.none,
-      FrameRatePolicy.Skip(FPS.`60`)
+      Settings.default
     )
 
   private def launchAction(
       extensionId: ExtensionId,
       game: Game[?, ?, ?],
       maybeCanvas: Option[html.Canvas],
-      flags: Map[String, String]
+      flags: Map[String, String],
+      settings: Indigo.Settings
   ): Action =
     Action.run {
       maybeCanvas match
         case Some(canvas) =>
-          val context: WebGL2RenderingContext = CanvasAndContext.setupContext(canvas)
+          val context: WebGL2RenderingContext =
+            CanvasAndContext.setupContext(
+              canvas,
+              settings.premultipliedAlpha,
+              settings.transparentBackground,
+              settings.antiAliasing
+            )
 
           game.launch(canvas, context, flags)
           Indigo.Msg.Launch(LaunchStatus.Started(extensionId))
@@ -338,3 +342,54 @@ object Indigo:
   enum TickUpdateResult derives CanEqual:
     case Wait
     case RunNow(timeDelta: Seconds, updatedAt: Seconds)
+
+  final case class Settings(
+      frameRatePolicy: FrameRatePolicy,
+      antiAliasing: Boolean,
+      premultipliedAlpha: Boolean,
+      // TODO: This used to live in generated config - move back?
+      transparentBackground: Boolean,
+      clickTime: Millis
+  ):
+
+    def withFrameRatePolicy(value: FrameRatePolicy): Settings =
+      this.copy(frameRatePolicy = value)
+    def unlimitedFrameRate: Settings =
+      withFrameRatePolicy(FrameRatePolicy.Unlimited)
+    def targetFrameRate(target: FPS): Settings =
+      withFrameRatePolicy(FrameRatePolicy.Skip(target))
+
+    def withAntiAliasing(enabled: Boolean): Settings =
+      this.copy(antiAliasing = enabled)
+    def useAntiAliasing: Settings =
+      withAntiAliasing(true)
+    def noAntiAliasing: Settings =
+      withAntiAliasing(false)
+
+    def withPremultipliedAlpha(enabled: Boolean): Settings =
+      this.copy(premultipliedAlpha = enabled)
+    def usePremultipliedAlpha: Settings =
+      withPremultipliedAlpha(true)
+    def noPremultipliedAlpha: Settings =
+      withPremultipliedAlpha(false)
+
+    def withTransparentBackground(enabled: Boolean): Settings =
+      this.copy(transparentBackground = enabled)
+    def useTransparentBackground: Settings =
+      withTransparentBackground(true)
+    def noTransparentBackground: Settings =
+      withTransparentBackground(false)
+
+    def withClickTime(millis: Millis): Settings =
+      this.copy(clickTime = millis)
+
+  object Settings:
+
+    val default: Settings =
+      Settings(
+        FrameRatePolicy.Skip(FPS.`60`),
+        antiAliasing = false,
+        premultipliedAlpha = true,
+        transparentBackground = true,
+        clickTime = Millis(250)
+      )
