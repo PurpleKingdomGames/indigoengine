@@ -20,6 +20,8 @@ object DomEventSyntax:
         case _       => PointerType.Unknown
       }
 
+  extension (e: dom.MouseEvent)
+
     def position(canvas: html.Canvas): Point =
       val rect = canvas.getBoundingClientRect()
 

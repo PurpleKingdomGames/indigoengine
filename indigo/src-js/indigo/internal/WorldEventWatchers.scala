@@ -3,6 +3,7 @@ package indigo.internal
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
+import org.scalajs.dom.window
 import tyrian.*
 import tyrian.syntax.*
 
@@ -19,7 +20,12 @@ final class WorldEventWatchers(canvas: html.Canvas):
       Watcher.fromEvent[dom.PointerEvent]("pointerup", canvas)(impls.onPointerUp),
       Watcher.fromEvent[dom.PointerEvent]("pointercancel", canvas)(impls.onPointerCancel),
       Watcher.fromEvent[dom.KeyboardEvent]("keydown", document)(impls.onKeyDown),
-      Watcher.fromEvent[dom.KeyboardEvent]("keyup", document)(impls.onKeyUp)
+      Watcher.fromEvent[dom.KeyboardEvent]("keyup", document)(impls.onKeyUp),
+      Watcher.fromEvent[dom.WheelEvent]("wheel", canvas)(impls.onWheel),
+      Watcher.fromEvent[dom.FocusEvent]("focus", canvas)(impls.onCanvasFocus),
+      Watcher.fromEvent[dom.FocusEvent]("blur", canvas)(impls.onCanvasBlur),
+      Watcher.fromEvent[dom.FocusEvent]("focus", window)(impls.onWindowFocus),
+      Watcher.fromEvent[dom.FocusEvent]("blur", window)(impls.onWindowBlur)
     )
 
 object WorldEventWatchers:

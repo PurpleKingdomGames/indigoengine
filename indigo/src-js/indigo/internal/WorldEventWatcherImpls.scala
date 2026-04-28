@@ -634,3 +634,57 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         )
       )
     )
+
+  def onWheel(e: dom.WheelEvent): Option[Indigo.Msg.WorldEvents] =
+    val position         = e.position(canvas)
+    val buttons          = e.indigoButtons
+    val movementPosition = e.movementPosition
+
+    @nowarn("msg=deprecated")
+    val wheel =
+      MouseEvent.Wheel(
+        position,
+        buttons,
+        e.altKey,
+        e.ctrlKey,
+        e.metaKey,
+        e.shiftKey,
+        movementPosition,
+        e.deltaX,
+        e.deltaY,
+        e.deltaZ
+      )
+
+    val deltaMode =
+      e.deltaMode match
+        case dom.WheelEvent.DOM_DELTA_PIXEL => WheelEvent.DeltaMode.Pixel
+        case dom.WheelEvent.DOM_DELTA_LINE  => WheelEvent.DeltaMode.Line
+        case dom.WheelEvent.DOM_DELTA_PAGE  => WheelEvent.DeltaMode.Page
+        case _                              => WheelEvent.DeltaMode.Page
+
+    val move =
+      WheelEvent.Move(e.deltaX, e.deltaY, e.deltaZ, deltaMode)
+
+    val axisEvents: Batch[GlobalEvent] =
+      val xs = if e.deltaX != 0 then Batch(WheelEvent.Horizontal(e.deltaX, deltaMode)) else Batch.empty
+      val ys = if e.deltaY != 0 then Batch(WheelEvent.Vertical(e.deltaY, deltaMode)) else Batch.empty
+      val zs = if e.deltaZ != 0 then Batch(WheelEvent.Depth(e.deltaZ, deltaMode)) else Batch.empty
+      xs ++ ys ++ zs
+
+    Option(Indigo.Msg.WorldEvents(Batch(wheel, move) ++ axisEvents))
+
+  @nowarn("msg=unused")
+  def onCanvasFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(Indigo.Msg.WorldEvents(Batch(CanvasGainedFocus)))
+
+  @nowarn("msg=unused")
+  def onCanvasBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(Indigo.Msg.WorldEvents(Batch(CanvasLostFocus)))
+
+  @nowarn("msg=unused")
+  def onWindowFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(Indigo.Msg.WorldEvents(Batch(ApplicationGainedFocus)))
+
+  @nowarn("msg=unused")
+  def onWindowBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
+    Option(Indigo.Msg.WorldEvents(Batch(ApplicationLostFocus)))
