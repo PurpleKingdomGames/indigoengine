@@ -5,6 +5,7 @@ import indigo.core.datatypes.Size
 import org.scalajs.dom
 import org.scalajs.dom.html
 
+// TODO: Change the way resize is handled and remove this class.
 final class WorldEvents:
 
   final case class Handlers(
