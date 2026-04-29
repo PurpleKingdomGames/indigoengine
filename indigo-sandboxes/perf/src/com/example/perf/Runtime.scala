@@ -13,3 +13,4 @@ object Runtime extends BasicGameRuntime:
   def settings: Indigo.Settings =
     Indigo.Settings.default
       .withFrameRatePolicy(FrameRatePolicy.Unlimited)
+      .allowContextMenu

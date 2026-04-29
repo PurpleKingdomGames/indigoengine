@@ -36,7 +36,6 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
             advanced = AdvancedGameConfig.default
               .withBatchSize(512)
               .withAutoLoadStandardShaders(false)
-              .withContextMenu
           ).noResize
         )
         .withAssets(PerfAssets.assets)

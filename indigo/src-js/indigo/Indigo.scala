@@ -140,7 +140,8 @@ final case class Indigo(
 
         Result(
           model.copy(
-            _eventWatchers = maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime))
+            _eventWatchers =
+              maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime, settings.disableContextMenu))
           )
         )
           .addActions(
@@ -349,7 +350,8 @@ object Indigo:
       premultipliedAlpha: Boolean,
       // TODO: This used to live in generated config - move back?
       transparentBackground: Boolean,
-      clickTime: Millis
+      clickTime: Millis,
+      disableContextMenu: Boolean
   ):
 
     def withFrameRatePolicy(value: FrameRatePolicy): Settings =
@@ -383,6 +385,13 @@ object Indigo:
     def withClickTime(millis: Millis): Settings =
       this.copy(clickTime = millis)
 
+    def withDisableContextMenu(disabled: Boolean): Settings =
+      this.copy(disableContextMenu = disabled)
+    def noContextMenu: Settings =
+      withDisableContextMenu(true)
+    def allowContextMenu: Settings =
+      withDisableContextMenu(false)
+
   object Settings:
 
     val default: Settings =
@@ -391,5 +400,6 @@ object Indigo:
         antiAliasing = false,
         premultipliedAlpha = true,
         transparentBackground = true,
-        clickTime = Millis(250)
+        clickTime = Millis(250),
+        disableContextMenu = true
       )

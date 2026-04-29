@@ -685,3 +685,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
   @nowarn("msg=unused")
   def onWindowBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
     Option(Indigo.Msg.WorldEvents(Batch(ApplicationLostFocus)))
+
+  def onContextMenu(e: dom.MouseEvent): Option[Indigo.Msg.WorldEvents] =
+    e.preventDefault()
+    None

@@ -5,38 +5,26 @@ import indigo.core.datatypes.Size
 import org.scalajs.dom
 import org.scalajs.dom.html
 
-import scala.annotation.nowarn
-
 final class WorldEvents:
 
   final case class Handlers(
       canvas: html.Canvas,
       resizePolicy: ResizePolicy,
-      onContextMenu: Option[dom.MouseEvent => Unit],
       resizeObserver: dom.ResizeObserver
   ) {
-    onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     resizeObserver.observe(canvas.parentElement)
 
-    def unbind(): Unit = {
-      onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
+    def unbind(): Unit =
       resizeObserver.disconnect()
-    }
   }
 
   object Handlers {
-    @nowarn("msg=unused")
     def apply(
         canvas: html.Canvas,
-        resizePolicy: ResizePolicy,
-        magnification: Int,
-        disableContextMenu: Boolean,
-        globalEventStream: GlobalEventStream
+        resizePolicy: ResizePolicy
     ): Handlers = Handlers(
       canvas = canvas,
       resizePolicy,
-      // Prevent right mouse button from popping up the context menu
-      onContextMenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None,
       resizeObserver = new dom.ResizeObserver((entries, _) =>
         entries.foreach { entry =>
           entry.target.childNodes.foreach { child =>
@@ -99,14 +87,11 @@ final class WorldEvents:
 
   def init(
       canvas: html.Canvas,
-      resizePolicy: ResizePolicy,
-      magnification: Int,
-      disableContextMenu: Boolean,
-      globalEventStream: GlobalEventStream
+      resizePolicy: ResizePolicy
   ): Unit =
     if (_handlers.isEmpty)
       _handlers = Some(
-        Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream)
+        Handlers(canvas, resizePolicy)
       )
 
   def kill(): Unit = _handlers.foreach { x =>

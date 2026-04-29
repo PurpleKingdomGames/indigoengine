@@ -63,7 +63,7 @@ class JsPlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      _                   <- listenToWorldEvents(firstRun, canvas, gameConfig, globalEventStream)
+      _                   <- listenToWorldEvents(firstRun, canvas, gameConfig)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, context, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
@@ -126,18 +126,14 @@ class JsPlatform(
   def listenToWorldEvents(
       firstRun: Boolean,
       canvas: Canvas,
-      gameConfig: GameConfig,
-      globalEventStream: GlobalEventStream
+      gameConfig: GameConfig
   ): Outcome[Unit] =
     Outcome {
       if firstRun then
         IndigoLogger.info("Starting world events")
         _worldEvents.init(
           canvas,
-          gameConfig.resizePolicy,
-          gameConfig.magnification,
-          gameConfig.advanced.disableContextMenu,
-          globalEventStream
+          gameConfig.resizePolicy
         )
         GamepadInputCaptureImpl.init()
       else IndigoLogger.info("Re-using existing world events")
