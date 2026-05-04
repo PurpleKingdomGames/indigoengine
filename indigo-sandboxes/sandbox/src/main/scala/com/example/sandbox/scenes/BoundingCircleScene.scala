@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -46,9 +47,9 @@ object BoundingCircleScene extends Scene[SandboxStartupData, SandboxGameModel]:
         Math.cos(Radians.fromSeconds((context.sceneRunning * timeMultiplier) + timeOffset).toDouble) * radius
       )
 
-    val vtxA = context.startUpData.viewportCenter.toVertex + makeVertex(0.2, 0.0, 50.0)
-    val vtxB = context.startUpData.viewportCenter.toVertex + makeVertex(0.1, 0.5, 55.0)
-    val vtxC = context.startUpData.viewportCenter.toVertex + makeVertex(0.3, 1.5, 45.0)
+    val vtxA = SandboxGame.screenCenter.toVertex + makeVertex(0.2, 0.0, 50.0)
+    val vtxB = SandboxGame.screenCenter.toVertex + makeVertex(0.1, 0.5, 55.0)
+    val vtxC = SandboxGame.screenCenter.toVertex + makeVertex(0.3, 1.5, 45.0)
 
     val circle = BoundingCircle.fromThreeVertices(vtxA, vtxB, vtxC).getOrElse(BoundingCircle(0, 0, 10))
 

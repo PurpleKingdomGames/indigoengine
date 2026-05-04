@@ -6,14 +6,14 @@ import indigo.*
 import indigoextras.subsystems.FPSCounter
 import roguelikestarterkit.*
 
-final class RogueLikeGame() extends Game[Size, Size, GameModel]:
+final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
 
   val gameId: GameId = GameId("roguelike")
 
-  def initialScene(bootData: Size): Option[SceneName] =
+  def initialScene(bootData: Unit): Option[SceneName] =
     Option(TerminalUI.name)
 
-  def scenes(bootData: Size): NonEmptyBatch[Scene[Size, GameModel]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, GameModel]] =
     NonEmptyBatch(
       NoTerminalUI,
       ColourWindowScene,
@@ -29,12 +29,12 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Size, GameModel]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit, GameModel]] =
     Outcome(
-      BootResult(
-        Config.config.withMagnification(Constants.magnification).noResize,
-        Config.config.viewport.size / 2
-      )
+      BootResult
+        .noData(
+          Config.config
+        )
         .withFonts(RoguelikeTiles.Size10x10.Fonts.fontInfo)
         .withAssets(Assets.assets.assetSet)
         .withShaders(
@@ -51,13 +51,13 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
         )
     )
 
-  def initialModel(startupData: Size): Outcome[GameModel] =
+  def initialModel(startupData: Unit): Outcome[GameModel] =
     Outcome(GameModel.initial)
 
-  def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(bootData))
 
-  def updateModel(context: Context[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: Context[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopPrevious)
 
@@ -67,11 +67,14 @@ final class RogueLikeGame() extends Game[Size, Size, GameModel]:
     case SceneEvent.SceneChange(_, _, _) =>
       Outcome(model.copy(pointerOverWindows = Batch.empty))
 
+    case ViewportResize(size) =>
+      Outcome(model.copy(viewportSize = size))
+
     case _ =>
       Outcome(model)
 
   def present(
-      context: Context[Size],
+      context: Context[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

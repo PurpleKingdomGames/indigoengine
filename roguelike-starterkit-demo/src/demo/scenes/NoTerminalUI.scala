@@ -12,7 +12,7 @@ import indigoextras.ui.syntax.*
 import roguelikestarterkit.RoguelikeTiles
 import roguelikestarterkit.TerminalMaterial
 
-object NoTerminalUI extends Scene[Size, GameModel]:
+object NoTerminalUI extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -29,7 +29,7 @@ object NoTerminalUI extends Scene[Size, GameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case ChangeValue(value) =>
@@ -43,7 +43,7 @@ object NoTerminalUI extends Scene[Size, GameModel]:
       }
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     model.components

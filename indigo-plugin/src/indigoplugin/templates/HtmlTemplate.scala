@@ -22,15 +22,6 @@ object HtmlTemplate {
       |        overflow-y: hidden;
       |        background-color: $backgroundColor;
       |      }
-      |      #indigo-container {
-      |        display: flex;
-      |        align-items: center;
-      |        justify-content: center;
-      |        padding:0px;
-      |        margin:0px;
-      |        width: 100vw;
-      |        height: 100vh;
-      |      }
       |      #indigo-container canvas {
       |        ${
         if (!showCursor) "cursor: none;" else ""

@@ -111,10 +111,9 @@ object Image:
       alt := image.alt
     )
 
-    val sizeAttributes = List(
-      image.width.map(w => width := w.toCSSValue).toList,
-      image.height.map(h => height := h.toCSSValue).toList
-    ).flatten
+    val sizeStyles =
+      image.width.map(w => Style("width", w.toCSSValue)).getOrElse(Style.empty) |+|
+        image.height.map(h => Style("height", h.toCSSValue)).getOrElse(Style.empty)
 
     val imageStyles =
       theme match
@@ -125,7 +124,7 @@ object Image:
           tt.elements.image.toStyle
 
     val styles =
-      image.fit.toStyle |+| imageStyles
+      image.fit.toStyle |+| imageStyles |+| sizeStyles
 
     val classAttribute =
       if image.classNames.isEmpty then EmptyAttribute
@@ -134,6 +133,10 @@ object Image:
     val idAttribute =
       image.id.fold(EmptyAttribute)(id.:=.apply)
 
-    val allAttributes = baseAttributes ++ sizeAttributes ++ List(style(styles), classAttribute, idAttribute)
+    val styleAttr =
+      if styles.isEmpty then Nil
+      else List(style(styles))
+
+    val allAttributes = baseAttributes ++ styleAttr ++ List(classAttribute, idAttribute)
 
     img(allAttributes*)

@@ -2,6 +2,7 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -39,7 +40,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
     val graphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 40, 40), BoundsAssets.junctionBoxMaterialOff)
-        .moveTo(context.startUpData.viewportCenter)
+        .moveTo(SandboxGame.screenCenter)
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))
 
     val text: Text[Material.ImageEffects] =

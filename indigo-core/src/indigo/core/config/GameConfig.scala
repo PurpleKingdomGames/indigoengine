@@ -1,60 +1,41 @@
 package indigo.core.config
 
-import indigo.core.datatypes.Rectangle
 import indigoengine.shared.datatypes.RGBA
+
+// TODO: Is this just RenderConfig now? There is something called that, but it's a little different.
 
 /** All the base settings needed to get a game up and running.
   *
-  * @param viewport
-  *   How big is the window initially? Defaults to 550 x 400 pixels.
   * @param clearColor
   *   Default background colour. Defaults to Black.
-  * @param magnification
-  *   Pixel magnification level. Defaults to 1.
-  * @param resizePolicy
-  *   Sets the policy for how Indigo games should resize themselves.
   * @param transparentBackground
   *   Make the canvas background transparent.
-  * @param advanced
-  *   Additional settings to help tune your game.
+  * @param batchSize
+  *   How many scene nodes to batch together between draws, defaults to 256.
+  * @param autoLoadStandardShaders
+  *   Should all the standard shaders be made available by default? They can be added individually / manually if you
+  *   prefer. Defaults to true, to include them.
   */
 final case class GameConfig(
-    viewport: GameViewport, // TODO: How does this tie up to Tyrian making the canvas?
     clearColor: RGBA,
-    magnification: Int,
-    resizePolicy: ResizePolicy,
     transparentBackground: Boolean,
-    advanced: AdvancedGameConfig
+    batchSize: Int,
+    autoLoadStandardShaders: Boolean
 ) derives CanEqual:
-
-  def screenDimensions: Rectangle =
-    viewport.giveDimensions(magnification)
 
   lazy val asString: String =
     s"""
        |Standard settings
-       |- Viewpoint:       [${viewport.width.toString()}, ${viewport.height.toString()}]
-       |- Clear color:     {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
+       |- Clear color:             {red: ${clearColor.r.toString()}, green: ${clearColor.g
+        .toString()}, blue: ${clearColor.b
         .toString()}, alpha: ${clearColor.a.toString()}}
-       |- Magnification:   ${magnification.toString()}
-       |- Resize Policy:   ${resizePolicy.toString()}
-       |${advanced.asString}
+       |- Transparent background:  ${transparentBackground.toString}
+       |- Render batch size:       ${batchSize.toString}
+       |- Auto-Load Shaders:       ${autoLoadStandardShaders.toString}
        |""".stripMargin
-
-  def withViewport(width: Int, height: Int): GameConfig =
-    this.copy(viewport = GameViewport(width, height))
-  def withViewport(newViewport: GameViewport): GameConfig =
-    this.copy(viewport = newViewport)
 
   def withClearColor(clearColor: RGBA): GameConfig =
     this.copy(clearColor = clearColor)
-  def withMagnification(magnification: Int): GameConfig =
-    this.copy(magnification = magnification)
-
-  def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig =
-    this.copy(advanced = advanced)
-  def modifyAdvancedSettings(modify: AdvancedGameConfig => AdvancedGameConfig): GameConfig =
-    this.copy(advanced = modify(advanced))
 
   def withTransparentBackground(enabled: Boolean): GameConfig =
     this.copy(transparentBackground = enabled)
@@ -63,58 +44,18 @@ final case class GameConfig(
   def noTransparentBackground: GameConfig =
     withTransparentBackground(false)
 
-  def withResizePolicy(resizePolicy: ResizePolicy): GameConfig =
-    this.copy(resizePolicy = resizePolicy)
-  def noResize: GameConfig =
-    withResizePolicy(ResizePolicy.NoResize)
-  def autoResize: GameConfig =
-    withResizePolicy(ResizePolicy.Resize)
-  def autoResizePreserveAspect: GameConfig =
-    withResizePolicy(ResizePolicy.ResizePreserveAspect)
+  def withBatchSize(size: Int): GameConfig =
+    this.copy(batchSize = size)
+
+  def withAutoLoadStandardShaders(autoLoad: Boolean): GameConfig =
+    this.copy(autoLoadStandardShaders = autoLoad)
 
 object GameConfig:
 
   val default: GameConfig =
     GameConfig(
-      viewport = GameViewport(550, 400),
       clearColor = RGBA.Black,
-      magnification = 1,
       transparentBackground = false,
-      resizePolicy = ResizePolicy.Resize,
-      advanced = AdvancedGameConfig.default
+      batchSize = 256,
+      autoLoadStandardShaders = true
     )
-
-  def apply(width: Int, height: Int): GameConfig =
-    GameConfig(
-      viewport = GameViewport(width, height),
-      clearColor = RGBA.Black,
-      magnification = 1,
-      transparentBackground = false,
-      resizePolicy = ResizePolicy.Resize,
-      advanced = AdvancedGameConfig.default
-    )
-
-  def apply(viewport: GameViewport, clearColor: RGBA, magnification: Int): GameConfig =
-    GameConfig(
-      viewport = viewport,
-      clearColor = clearColor,
-      magnification = magnification,
-      transparentBackground = false,
-      resizePolicy = ResizePolicy.Resize,
-      advanced = AdvancedGameConfig.default
-    )
-
-  def apply(width: Int, height: Int, clearColor: RGBA, magnification: Int): GameConfig =
-    GameConfig(
-      viewport = GameViewport(width, height),
-      clearColor = clearColor,
-      magnification = magnification,
-      transparentBackground = false,
-      resizePolicy = ResizePolicy.Resize,
-      advanced = AdvancedGameConfig.default
-    )
-
-/** ResizePolicy instructs Indigo on how you would like the game to handle a change in viewport size.
-  */
-enum ResizePolicy derives CanEqual:
-  case NoResize, Resize, ResizePreserveAspect

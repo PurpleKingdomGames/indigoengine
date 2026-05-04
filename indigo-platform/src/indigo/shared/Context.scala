@@ -1,7 +1,6 @@
 package indigo.shared
 
 import indigo.core.assets.AssetType
-import indigo.core.config.GameViewport
 import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
@@ -67,8 +66,7 @@ object Context:
       gameTime: GameTime,
       dice: Dice,
       inputState: InputState,
-      viewport: GameViewport,
-      globalMagnification: Int,
+      viewport: Size,
       boundaryLocator: BoundaryLocator,
       startUpData: StartUpData,
       _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
@@ -79,8 +77,7 @@ object Context:
         dice,
         gameTime,
         inputState,
-        viewport,
-        globalMagnification
+        viewport
       ),
       Services(
         boundaryLocator,
@@ -95,44 +92,34 @@ object Context:
       val dice: Dice,
       val time: GameTime,
       val input: InputState,
-      val viewport: GameViewport,
-      val globalMagnification: Int
+      val viewport: Size
   ):
     /** Provides the unscaled viewport size, which is the available screen space in pixels
-      */
-    val screenSize: Size =
-      viewport.bounds.size
-
-    /** Provides the scaled viewport size using the global magnification value, which is the magnified screen size in
-      * pixels.
       *
       * If your layer sets a custom magnification, then you will need to use
       * `context.frame.viewport.giveDimenstions(<custom magnification>)`, instead.
       */
-    val viewportSize: Size =
-      viewport.giveDimensions(globalMagnification).size
+    val screenSize: Size =
+      viewport
 
     def withDice(newDice: Dice): Frame =
-      new Frame(newDice, time, input, viewport, globalMagnification)
+      new Frame(newDice, time, input, viewport)
 
     def withTime(newTime: GameTime): Frame =
-      new Frame(dice, newTime, input, viewport, globalMagnification)
+      new Frame(dice, newTime, input, viewport)
 
     def withInput(newInput: InputState): Frame =
-      new Frame(dice, time, newInput, viewport, globalMagnification)
+      new Frame(dice, time, newInput, viewport)
 
-    def withViewport(newViewport: GameViewport): Frame =
-      new Frame(dice, time, input, newViewport, globalMagnification)
-
-    def withGlobalMagnification(newGlobalMagnification: Int): Frame =
-      new Frame(dice, time, input, viewport, newGlobalMagnification)
+    def withViewport(newViewport: Size): Frame =
+      new Frame(dice, time, input, newViewport)
 
   object Frame:
-    def apply(dice: Dice, time: GameTime, input: InputState, viewport: GameViewport, globalMagnification: Int): Frame =
-      new Frame(dice, time, input, viewport, globalMagnification)
+    def apply(dice: Dice, time: GameTime, input: InputState, viewport: Size): Frame =
+      new Frame(dice, time, input, viewport)
 
     val initial: Frame =
-      new Frame(Dice.default, GameTime.zero, InputState.default, GameViewport(Size.zero), 1)
+      new Frame(Dice.default, GameTime.zero, InputState.default, Size.zero)
 
   /** The services that are available to the game, such as the ability to capture the screen, measure text, find the
     * bounds of anything on screen, or access a long running Random instance. Services are side-effecting, long running,

@@ -15,7 +15,6 @@ import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.events.WorldEvents
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.render.Renderer
 import indigo.render.RendererConfig
@@ -43,14 +42,13 @@ class JsPlatform(
     with PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
-    new RendererInitialiser(globalEventStream)
+    new RendererInitialiser()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   @nowarn("msg=mutated")
-  private var _running: Boolean         = true
-  private val _worldEvents: WorldEvents = new WorldEvents
+  private var _running: Boolean = true
 
   def initialise(
       firstRun: Boolean,
@@ -63,14 +61,13 @@ class JsPlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      _                   <- listenToWorldEvents(firstRun, canvas, gameConfig)
+      _                   <- listenToWorldEvents(firstRun)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, context, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
     _running = false
-    _worldEvents.kill()
     GamepadInputCaptureImpl.kill()
     ()
 
@@ -124,19 +121,13 @@ class JsPlatform(
     )
 
   def listenToWorldEvents(
-      firstRun: Boolean,
-      canvas: Canvas,
-      gameConfig: GameConfig
+      firstRun: Boolean
   ): Outcome[Unit] =
     Outcome {
       if firstRun then
-        IndigoLogger.info("Starting world events")
-        _worldEvents.init(
-          canvas,
-          gameConfig.resizePolicy
-        )
+        IndigoLogger.info("Starting gamepad event capture")
         GamepadInputCaptureImpl.init()
-      else IndigoLogger.info("Re-using existing world events")
+      else IndigoLogger.info("Re-using existing gamepad event capture")
     }
 
   def startRenderer(
@@ -151,8 +142,7 @@ class JsPlatform(
       rendererInit.setup(
         new RendererConfig(
           clearColor = gameConfig.clearColor,
-          magnification = gameConfig.magnification,
-          maxBatchSize = gameConfig.advanced.batchSize,
+          maxBatchSize = gameConfig.batchSize,
           transparentBackground = gameConfig.transparentBackground
         ),
         loadedTextureAssets,

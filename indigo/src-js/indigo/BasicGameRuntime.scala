@@ -2,6 +2,7 @@ package indigo
 
 import indigo.*
 import tyrian.*
+import tyrian.ui.*
 
 trait BasicGameRuntime extends App[Unit]:
 
@@ -10,6 +11,7 @@ trait BasicGameRuntime extends App[Unit]:
   def settings: Indigo.Settings
 
   private val containerMarkerId = MarkerId("indigo-game-container")
+  private given Theme           = Theme.None
 
   def extensions(flags: Map[String, String], model: Unit): Set[Extension] =
     Set(
@@ -39,11 +41,30 @@ trait BasicGameRuntime extends App[Unit]:
       Result(model)
 
   def view(model: Unit): HtmlRoot =
-    HtmlRoot.div(
+    val surround: Batch[Elem[GlobalMsg]] => Html[GlobalMsg] =
+      elems =>
+        elems.headOption match
+          case Some(elem) =>
+            Container(
+              HtmlElement.of(elem)
+            )
+              .withSize(
+                Extent.CSS("100vw"),
+                Extent.CSS("100vh")
+              )
+              .toHtml
+
+          case None =>
+            Container(
+              TextBlock("No canvas element was built by the Indigo extension.")
+            ).toHtml
+
+    val fragment: HtmlFragment =
       HtmlFragment(
         Marker(containerMarkerId)
       )
-    )
+
+    HtmlRoot(surround, fragment)
 
   def watchers(model: Unit): Batch[Watcher] =
     Batch.empty

@@ -40,7 +40,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel]:
 
     case e =>
       val ctx =
-        UIContext(context.toContext, context.frame.globalMagnification)
+        UIContext(context.toContext)
           .withReferenceData(4)
           .withMagnification(2)
 
@@ -55,7 +55,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
 
     val ctx =
-      UIContext(context.toContext, context.frame.globalMagnification)
+      UIContext(context.toContext)
         .withReferenceData(4)
         .moveParentTo(50, 10)
 

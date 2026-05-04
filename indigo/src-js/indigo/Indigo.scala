@@ -6,14 +6,19 @@ import indigo.internal.CanvasAndContext
 import indigo.internal.WorldEventWatchers
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
+import org.scalajs.dom.HTMLElement
+import org.scalajs.dom.ResizeObserver
 import org.scalajs.dom.document
 import org.scalajs.dom.html
+import org.scalajs.dom.window
 import tyrian.*
-import tyrian.Html.*
 import tyrian.classic.Sub
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
 import tyrian.syntax.*
+import tyrian.ui.Canvas
+import tyrian.ui.Extent
+import tyrian.ui.theme.Theme
 
 final case class Indigo(
     extensionId: ExtensionId,
@@ -82,6 +87,11 @@ final case class Indigo(
 
       Result(model)
 
+    case Indigo.Msg.CanvasResize(w, h) =>
+      model.game.events.push(ViewportResize(Size(w, h)))
+
+      Result(model)
+
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
         Result(model.copy(running = false))
@@ -141,7 +151,9 @@ final case class Indigo(
         Result(
           model.copy(
             _eventWatchers =
-              maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime, settings.disableContextMenu))
+              maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime, settings.disableContextMenu)),
+            _canvas = maybeCanvas,
+            _container = maybeCanvas.map(_.parentElement)
           )
         )
           .addActions(
@@ -179,17 +191,33 @@ final case class Indigo(
               .log(s"Indigo Extension failed to launch the game after ${Indigo.MaxStartupAttempts} attempts.")
       else Result(model)
 
+  private given Theme = Theme.None
+
   def view(model: ExtensionModel): HtmlFragment =
-    // TODO: Size?
     HtmlFragment.insert(
       containerMarkerId,
-      canvas(tyrian.Html.id := Indigo.CanvasId, width := 800, height := 600)()
+      Canvas(
+        width = Extent.Fill,
+        height = Extent.Fill
+      )
+        .withId(Indigo.CanvasId)
+        .toElem
+
+      // canvas(tyrian.Html.id := Indigo.CanvasId, width := "100%", height := "100%")()
     )
 
   def watchers(model: ExtensionModel): Batch[Watcher] =
     val gameTickWatcher =
       if model.running then Batch(Indigo.tick(game.gameId))
       else Batch.empty
+
+    val resizeWatcher =
+      (model._canvas, model._container) match
+        case (Some(cvs), Some(con)) =>
+          Batch(Indigo.resize(game.gameId, cvs, con))
+
+        case _ =>
+          Batch.empty
 
     val worldEventWatchers =
       model._eventWatchers match
@@ -200,7 +228,7 @@ final case class Indigo(
       model.game.events.eventCallback.map: eventCallback =>
         Indigo.indigoEventWatcher(extensionId, eventMapping, eventCallback)
     ) ++
-      gameTickWatcher ++ worldEventWatchers
+      gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
 
 object Indigo:
 
@@ -274,7 +302,9 @@ object Indigo:
       attempts: Int,
       lastUpdated: Seconds,
       running: Boolean,
-      _eventWatchers: Option[WorldEventWatchers]
+      _eventWatchers: Option[WorldEventWatchers],
+      _canvas: Option[html.Canvas],
+      _container: Option[HTMLElement]
   )
   object ExtensionModel:
     def apply(game: Game[?, ?, ?]): ExtensionModel =
@@ -283,6 +313,8 @@ object Indigo:
         MaxStartupAttempts,
         Seconds.zero,
         running = true,
+        None,
+        None,
         None
       )
 
@@ -328,6 +360,31 @@ object Indigo:
       Indigo.Msg.GameTick(gameId, runningTime)
     }
 
+  def resize(gameId: GameId, canvas: html.Canvas, container: HTMLElement): Watcher = {
+    val toMsg: ((Double, Double)) => Option[GlobalMsg] =
+      dimensions => Some(Indigo.Msg.CanvasResize(dimensions._1.toInt, dimensions._2.toInt))
+
+    val sub: Sub[IO, GlobalMsg] =
+      Sub.make[IO, (Double, Double), GlobalMsg, ResizeObserver](s"[indigo-resize:${gameId.asString}]") { callback =>
+        val ro =
+          new ResizeObserver((_, _) => {
+            val bounds = container.getBoundingClientRect()
+            val dpr    = Option(window.devicePixelRatio).getOrElse(1d)
+
+            canvas.width = (bounds.width.toDouble * dpr).toInt
+            canvas.height = (bounds.height.toDouble * dpr).toInt
+
+            callback(Right((bounds.width, bounds.height)))
+          })
+
+        ro.observe(container)
+
+        IO(ro)
+      }(ro => IO(ro.disconnect()))(toMsg)
+
+    Watcher.fromSub(sub)
+  }
+
   enum LaunchStatus:
     case Retry(extensionId: ExtensionId)
     case AttemptStart(extensionId: ExtensionId)
@@ -339,6 +396,7 @@ object Indigo:
     case Halt(gameId: GameId)
     case Launch(status: LaunchStatus)
     case WorldEvents(events: Batch[GlobalEvent])
+    case CanvasResize(width: Int, height: Int)
 
   enum TickUpdateResult derives CanEqual:
     case Wait

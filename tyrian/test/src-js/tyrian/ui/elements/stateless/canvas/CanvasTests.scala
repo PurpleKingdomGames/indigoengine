@@ -37,7 +37,7 @@ class CanvasTests extends munit.FunSuite {
       Canvas(Extent.px(800), Extent.px(600)).toElem.toString
 
     val expected =
-      """<canvas width="800px" height="600px"></canvas>"""
+      """<canvas style="width:800px;height:600px;"></canvas>"""
 
     assertEquals(actual, expected)
   }

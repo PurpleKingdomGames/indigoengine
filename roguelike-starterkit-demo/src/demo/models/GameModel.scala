@@ -12,7 +12,8 @@ final case class GameModel(
     pointerOverWindows: Batch[WindowId],
     num: Int,
     components: ComponentGroup[Int],
-    button: Button[Unit]
+    button: Button[Unit],
+    viewportSize: Size
 )
 
 object GameModel:
@@ -30,7 +31,8 @@ object GameModel:
       Batch.empty,
       0,
       NoTerminalUIComponents.components,
-      TerminalUIComponents.customButton
+      TerminalUIComponents.customButton,
+      Size.one
     )
 
 final case class ChangeValue(value: Int) extends GlobalEvent

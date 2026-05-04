@@ -4,7 +4,7 @@ import indigo.*
 import indigo.json.Json
 import indigoextras.subsystems.FPSCounter
 
-final class PerfGame extends Game[Unit, Dude, DudeModel] {
+final class PerfGame extends Game[Unit, Dude, DudeModel]:
 
   val gameId: GameId = GameId("perf")
 
@@ -27,16 +27,11 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
     Outcome {
       BootResult
         .noData(
-          GameConfig(
-            viewport = GameViewport(PerfGame.viewportWidth, PerfGame.viewportHeight),
-            clearColor = RGBA(0.4, 0.2, 0.5, 1),
-            magnification = PerfGame.magnificationLevel,
-            resizePolicy = ResizePolicy.NoResize,
-            transparentBackground = false,
-            advanced = AdvancedGameConfig.default
-              .withBatchSize(512)
-              .withAutoLoadStandardShaders(false)
-          ).noResize
+          GameConfig.default
+            .withClearColor(RGBA(0.4, 0.2, 0.5, 1))
+            .withTransparentBackground(false)
+            .withBatchSize(512)
+            .withAutoLoadStandardShaders(false)
         )
         .withAssets(PerfAssets.assets)
         .withFonts(Fonts.fontInfo)
@@ -70,8 +65,8 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
             spriteAndAnimations.sprite
               .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
               .moveTo(
-                PerfGame.viewportWidth / 2 / PerfGame.magnificationLevel,
-                PerfGame.viewportHeight / 2 / PerfGame.magnificationLevel
+                PerfGame.viewportWidth,
+                PerfGame.viewportHeight
               ) // Also place him in the middle of the screen initially
           )
         )
@@ -92,12 +87,9 @@ final class PerfGame extends Game[Unit, Dude, DudeModel] {
   def present(context: Context[Dude], model: DudeModel): Outcome[SceneUpdateFragment] =
     Outcome(PerfView.updateView(model))
 
-}
-
 object PerfGame:
 
-  val viewportWidth: Int      = 800
-  val viewportHeight: Int     = 600
-  val magnificationLevel: Int = 1
+  val viewportWidth: Int  = 800
+  val viewportHeight: Int = 600
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite[?])

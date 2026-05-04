@@ -12,7 +12,7 @@ object WindowView:
   ): Outcome[Layer] =
     model.component
       .present(
-        context.withParentBounds(model.bounds(context.frame.viewport.toSize, context.magnification)),
+        context.withParentBounds(model.bounds(context.frame.viewport, context.magnification)),
         model.content
       )
       .flatMap {

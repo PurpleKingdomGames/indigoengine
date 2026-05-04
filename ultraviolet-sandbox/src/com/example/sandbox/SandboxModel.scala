@@ -6,6 +6,7 @@ object SandboxModel {
 
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxGameModel(
+      Size.one,
       DudeModel(startupData.dude, DudeIdle),
       SandboxViewModel(
         Point.zero,
@@ -65,6 +66,13 @@ object SandboxModel {
         )
       )
 
+    case ViewportResize(size) =>
+      Outcome(
+        state.copy(
+          viewportSize = size
+        )
+      )
+
     case e =>
       updateViewModel(context, state.viewModel)(e).map { updated =>
         state.copy(viewModel = updated)
@@ -120,6 +128,7 @@ object SandboxModel {
 }
 
 final case class SandboxGameModel(
+    viewportSize: Size,
     dude: DudeModel,
     viewModel: SandboxViewModel
 )

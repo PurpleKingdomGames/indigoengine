@@ -41,7 +41,7 @@ object WindowViewModel:
 
     case PointerEvent.Move(pt)
         if viewModel.pointerIsOver && !model
-          .bounds(context.frame.viewport.toSize, context.magnification)
+          .bounds(context.frame.viewport, context.magnification)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = false))
@@ -49,7 +49,7 @@ object WindowViewModel:
 
     case PointerEvent.Move(pt)
         if !viewModel.pointerIsOver && model
-          .bounds(context.frame.viewport.toSize, context.magnification)
+          .bounds(context.frame.viewport, context.magnification)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = true))
@@ -59,7 +59,6 @@ object WindowViewModel:
       Outcome(viewModel)
 
   private def redraw[A, ReferenceData](
-      // context: UIContext[ReferenceData],
       model: Window[A, ReferenceData],
       viewModel: WindowViewModel[ReferenceData]
   ): WindowViewModel[ReferenceData] =

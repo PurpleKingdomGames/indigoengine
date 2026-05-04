@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.Constants
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -62,7 +63,7 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel]:
         Signal.SmoothPulse
           .affectTime(2.0)
           .flatMap { d =>
-            Signal.Orbit(context.startUpData.viewportCenter, (100 * d) + 25)
+            Signal.Orbit(SandboxGame.screenCenter, (100 * d) + 25)
           }
           .at(context.frame.time.running * 0.5)
           .toPoint

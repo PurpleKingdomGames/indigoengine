@@ -4,7 +4,6 @@ import indigoengine.shared.datatypes.RGBA
 
 final class RendererConfig(
     val clearColor: RGBA,
-    val magnification: Int,
     val maxBatchSize: Int,
     val transparentBackground: Boolean
 )

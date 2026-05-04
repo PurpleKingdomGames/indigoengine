@@ -7,7 +7,7 @@ import roguelikestarterkit.*
 
 import scala.annotation.nowarn
 
-object TerminalTextScene extends Scene[Size, GameModel]:
+object TerminalTextScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -23,7 +23,7 @@ object TerminalTextScene extends Scene[Size, GameModel]:
   val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: SceneContext[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
 
@@ -37,7 +37,7 @@ object TerminalTextScene extends Scene[Size, GameModel]:
     |""".stripMargin
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

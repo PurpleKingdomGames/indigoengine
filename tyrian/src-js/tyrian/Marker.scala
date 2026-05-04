@@ -5,8 +5,12 @@ import tyrian.Elem
 
 import scala.annotation.nowarn
 
-/** A marker in the Html for Tyrian to latch onto, that is never seen by the VirtualDom. */
-final case class Marker(id: MarkerId, children: List[Elem[GlobalMsg]]) extends CustomElem[GlobalMsg]:
+/** A marker in the Html for Tyrian to latch onto, that is never seen by the VirtualDom.
+  *
+  * This is a slightly odd type that is really intended for the modern version of Tyrian, but accomodates Tyrian
+  * classic.
+  */
+final case class Marker(id: MarkerId, children: Batch[Elem[GlobalMsg]]) extends CustomElem[GlobalMsg]:
 
   @nowarn
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -19,7 +23,7 @@ final case class Marker(id: MarkerId, children: List[Elem[GlobalMsg]]) extends C
        CustomElem[GlobalMsg].
      */
     children.map(_.map(f)) match
-      case cs: List[Elem[GlobalMsg]] =>
+      case cs: Batch[Elem[GlobalMsg]] =>
         this
           .copy(children = cs)
           .asInstanceOf[CustomElem[N]]
@@ -29,13 +33,17 @@ final case class Marker(id: MarkerId, children: List[Elem[GlobalMsg]]) extends C
 
   /** Extract the child elements from the marker. */
   def toElems: List[Elem[GlobalMsg]] =
-    children
+    children.toList
 
 object Marker:
   /** Creates a marker without child elements. */
   def apply(id: MarkerId): Marker =
-    Marker(id, Nil)
+    Marker(id, Batch.empty)
 
   /** Creates a marker with child elements. */
   def apply(id: MarkerId, children: Elem[GlobalMsg]*): Marker =
-    Marker(id, children.toList)
+    Marker(id, Batch.fromSeq(children))
+
+  /** Creates a marker with a list of child elements (aides Tyrian classic). */
+  def apply(id: MarkerId, children: List[Elem[GlobalMsg]]): Marker =
+    Marker(id, Batch.fromList(children))

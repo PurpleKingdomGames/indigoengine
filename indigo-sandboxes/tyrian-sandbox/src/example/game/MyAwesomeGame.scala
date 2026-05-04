@@ -17,22 +17,8 @@ final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit
     EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Unit]] =
-    val gameViewport =
-      (flags.get("width"), flags.get("height")) match {
-        case (Some(w), Some(h)) =>
-          GameViewport(w.toInt, h.toInt)
-
-        case _ =>
-          GameViewport(300, 300)
-      }
-
     Outcome(
-      BootResult
-        .noData(
-          GameConfig.default
-            .withViewport(gameViewport)
-            .noResize
-        )
+      BootResult.noData(GameConfig.default)
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =

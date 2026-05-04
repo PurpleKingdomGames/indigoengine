@@ -8,7 +8,7 @@ import demo.windows.MenuWindow
 import indigo.*
 import indigoextras.ui.*
 
-object MultipleWindowsScene extends Scene[Size, GameModel]:
+object MultipleWindowsScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -53,7 +53,7 @@ object MultipleWindowsScene extends Scene[Size, GameModel]:
     )
 
   def updateModel(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case WindowEvent.PointerOver(id) =>
@@ -78,7 +78,7 @@ object MultipleWindowsScene extends Scene[Size, GameModel]:
       Outcome(model)
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

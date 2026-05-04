@@ -93,7 +93,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     val screenshotScale = 0.3
-    val viewPort        = context.startUpData.gameViewport.size / SandboxGame.magnificationLevel
+    val viewPort        = Size(SandboxGame.viewportWidth, SandboxGame.viewportHeight)
     val bigRect         = Rectangle((viewPort.width * screenshotScale).toInt, (viewPort.height * screenshotScale).toInt)
     val smallRect = Rectangle(
       0,

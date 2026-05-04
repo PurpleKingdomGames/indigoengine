@@ -36,7 +36,8 @@ final case class SandboxGameModel(
     performerSceneModel: PerformerSceneModel,
     performerPhysicsSceneModel: PerformerPhysicsSceneModel,
     viewModel: SandboxViewModel,
-    captureScreenScene: CaptureScreenScene.Model
+    captureScreenScene: CaptureScreenScene.Model,
+    viewportSize: Size
 )
 
 object SandboxModel {
@@ -76,7 +77,8 @@ object SandboxModel {
         Point.zero,
         true
       ),
-      CaptureScreenScene.Model(None, None, Point.zero)
+      CaptureScreenScene.Model(None, None, Point.zero),
+      Size.one
     )
 
   val customButton: Button[Int] =
@@ -393,6 +395,13 @@ object SandboxModel {
       Outcome(
         state.copy(
           dude = state.dude.idle
+        )
+      )
+
+    case ViewportResize(size) =>
+      Outcome(
+        state.copy(
+          viewportSize = size
         )
       )
 

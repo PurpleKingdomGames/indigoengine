@@ -5,7 +5,7 @@ import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
 
-object TerminalEmulatorScene extends Scene[Size, GameModel]:
+object TerminalEmulatorScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -21,7 +21,7 @@ object TerminalEmulatorScene extends Scene[Size, GameModel]:
   val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: SceneContext[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
 
@@ -41,7 +41,7 @@ object TerminalEmulatorScene extends Scene[Size, GameModel]:
       )
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val tiles =

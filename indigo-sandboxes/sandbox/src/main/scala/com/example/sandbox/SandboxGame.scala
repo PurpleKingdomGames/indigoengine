@@ -13,7 +13,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(NineSliceScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
     NonEmptyBatch(
@@ -57,24 +57,12 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
-    val gameViewport =
-      (flags.get("width"), flags.get("height")) match {
-        case (Some(w), Some(h)) =>
-          GameViewport(w.toInt, h.toInt)
-
-        case _ =>
-          GameViewport(SandboxGame.viewportWidth, SandboxGame.viewportHeight)
-      }
-
+  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] =
     Outcome(
       BootResult(
-        GameConfig(
-          viewport = gameViewport,
-          clearColor = RGBA(0.4, 0.2, 0.5, 1),
-          magnification = SandboxGame.magnificationLevel
-        ).noResize,
-        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
+        GameConfig.default
+          .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
+        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(
         SandboxAssets.assets ++
           Shaders.assets ++
@@ -103,7 +91,6 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       ).addShaders(Refraction.shaders)
         .addShaders(indigoextras.ui.shaders.all)
     )
-  }
 
   def setup(
       bootData: SandboxBootData,
@@ -111,9 +98,6 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       dice: Dice
   ): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
-
-    val screenCenter: Point =
-      bootData.gameViewport.giveDimensions(SandboxGame.magnificationLevel).center
 
     def makeStartupData(
         aseprite: Aseprite,
@@ -126,13 +110,11 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
-                .moveTo(screenCenter) // Also place him in the middle of the screen initially
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .moveTo(SandboxGame.screenCenter) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips
-            ),
-            screenCenter,
-            bootData.gameViewport
+            )
           )
         )
         .addAnimations(spriteAndAnimations.animations)
@@ -174,19 +156,20 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
 object SandboxGame:
 
-  val magnificationLevel: Int = 2
-  val gameWidth: Int          = 228
-  val gameHeight: Int         = 128
-  val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
-  val viewportHeight: Int     = gameHeight * magnificationLevel // 256
+  val gameWidth: Int      = 228
+  val gameHeight: Int     = 128
+  val viewportWidth: Int  = gameWidth * 2  // 456
+  val viewportHeight: Int = gameHeight * 2 // 256
+  val screenCenter: Point =
+    Point(viewportWidth, viewportHeight) / 2
 
 final case class Dude(
     aseprite: Aseprite,
     sprite: Sprite[Material.ImageEffects],
     clips: Map[CycleLabel, Clip[Material.Bitmap]]
 )
-final case class SandboxBootData(message: String, gameViewport: GameViewport)
-final case class SandboxStartupData(dude: Dude, viewportCenter: Point, gameViewport: GameViewport)
+final case class SandboxBootData(message: String)
+final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(
     offset: Point,
     useLightingLayer: Boolean

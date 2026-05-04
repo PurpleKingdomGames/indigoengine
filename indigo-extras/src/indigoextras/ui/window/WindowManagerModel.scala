@@ -54,7 +54,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       windows.reverse.find { w =>
         w.isOpen &&
         w.activeCheck(context).isActive &&
-        w.bounds(context.frame.viewport.toSize, context.magnification).contains(coords)
+        w.bounds(context.frame.viewport, context.magnification).contains(coords)
       } match
         case None =>
           windows.map(_.blur)

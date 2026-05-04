@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.Constants
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -48,9 +49,9 @@ object PerformerPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]
           val dice = Dice.fromSeed(i.toLong)
 
           val x =
-            dice.roll(context.startUpData.gameViewport.width / 2)
+            dice.roll(SandboxGame.viewportWidth / 2)
           val y =
-            dice.roll(context.startUpData.gameViewport.height / 2)
+            dice.roll(SandboxGame.viewportHeight / 2)
 
           val acceleration: Double = dice.roll(40) + 10
 

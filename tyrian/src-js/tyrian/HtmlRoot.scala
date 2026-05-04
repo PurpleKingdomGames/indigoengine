@@ -82,35 +82,35 @@ object HtmlRoot:
       target: Elem[GlobalMsg],
       inserts: Map[MarkerId, Batch[Elem[GlobalMsg]]]
   ): Batch[Elem[GlobalMsg]] =
-    def rec(target: Elem[GlobalMsg]): List[Elem[GlobalMsg]] =
+    def rec(target: Elem[GlobalMsg]): Batch[Elem[GlobalMsg]] =
       target match
         case m: Marker =>
           inserts.get(m.id) match
             case None =>
-              m.children.flatMap(rec(_).toList)
+              m.children.flatMap(rec(_))
 
             case Some(toAppend) =>
-              (m.children ++ toAppend.toList).flatMap(rec(_).toList)
+              (m.children ++ toAppend).flatMap(rec(_))
 
         case t: Tag[GlobalMsg] =>
-          List(t.copy(children = t.children.flatMap(rec(_))))
+          Batch(t.copy(children = Batch.fromList(t.children).flatMap(rec(_)).toList))
 
         case Empty =>
-          List(Empty)
+          Batch(Empty)
 
         case t: Text =>
-          List(t)
+          Batch(t)
 
         case c: CustomElem[GlobalMsg] =>
-          List(c)
+          Batch(c)
 
         case r: RawTag[GlobalMsg] =>
-          List(r)
+          Batch(r)
 
         case c: CustomHtml[GlobalMsg] =>
-          List(c)
+          Batch(c)
 
         case e: HtmlEntity =>
-          List(e)
+          Batch(e)
 
-    Batch.fromList(rec(target))
+    rec(target)

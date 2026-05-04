@@ -2,6 +2,7 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -31,7 +32,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel]:
   ): GlobalEvent => Outcome[ConfettiModel] =
 
     case FrameTick =>
-      val pos = Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.frame.time.running * 0.5).toPoint
+      val pos = Signal.Orbit(SandboxGame.screenCenter * 2, 100).at(context.frame.time.running * 0.5).toPoint
       Outcome(
         model
           .spawn(

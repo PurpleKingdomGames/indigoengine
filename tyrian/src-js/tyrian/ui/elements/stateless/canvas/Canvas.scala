@@ -71,10 +71,9 @@ object Canvas:
     )
 
   def toHtml(c: Canvas)(using theme: Theme): tyrian.Elem[GlobalMsg] =
-    val sizeAttributes = List(
-      c.width.map(w => width := w.toCSSValue).toList,
-      c.height.map(h => height := h.toCSSValue).toList
-    ).flatten
+    val sizeStyles =
+      c.width.map(w => Style("width", w.toCSSValue)).getOrElse(Style.empty) |+|
+        c.height.map(h => Style("height", h.toCSSValue)).getOrElse(Style.empty)
 
     val canvasStyles =
       theme match
@@ -84,8 +83,12 @@ object Canvas:
         case tt: Theme.Default =>
           tt.elements.canvas.toStyle
 
+    val combinedStyles=
+      canvasStyles |+| sizeStyles
+
     val styles =
-      if canvasStyles.isEmpty then Nil else List(style(canvasStyles))
+      if combinedStyles.isEmpty then List()
+      else List(style(combinedStyles))
 
     val classAttribute =
       if c.classNames.isEmpty then EmptyAttribute
@@ -95,6 +98,6 @@ object Canvas:
       c.id.fold(EmptyAttribute)(id.:=.apply)
 
     val allAttributes =
-      sizeAttributes ++ styles ++ List(classAttribute, idAttribute)
+      styles ++ List(classAttribute, idAttribute)
 
     canvas(allAttributes*)()

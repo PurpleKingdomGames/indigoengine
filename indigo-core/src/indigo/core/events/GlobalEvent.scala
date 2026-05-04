@@ -4,10 +4,10 @@ import indigo.core.assets.AssetName
 import indigo.core.assets.AssetType
 import indigo.core.audio.PlaybackPolicy
 import indigo.core.audio.Volume
-import indigo.core.config.GameViewport
 import indigo.core.constants.Key
 import indigo.core.datatypes.BindingKey
 import indigo.core.datatypes.Point
+import indigo.core.datatypes.Size
 import indigo.core.events.MouseEvent.Move
 import indigo.core.events.MouseEvent.Wheel
 import indigoengine.shared.collections.Batch
@@ -50,7 +50,7 @@ case object FrameTick extends GlobalEvent
   * @param gameViewPort
   *   The actual size in pixels, you can ask it to apply magnification.
   */
-final case class ViewportResize(gameViewPort: GameViewport) extends ViewEvent
+final case class ViewportResize(newSize: Size) extends ViewEvent
 
 /** Attempt to enter or exit full screen mode
   */

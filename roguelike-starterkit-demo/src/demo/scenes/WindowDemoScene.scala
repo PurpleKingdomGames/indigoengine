@@ -6,7 +6,7 @@ import demo.windows.DemoWindow
 import indigo.*
 import indigoextras.ui.*
 
-object WindowDemoScene extends Scene[Size, GameModel]:
+object WindowDemoScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -34,7 +34,7 @@ object WindowDemoScene extends Scene[Size, GameModel]:
     )
 
   def updateModel(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case WindowEvent.Closed(id) =>
@@ -46,7 +46,7 @@ object WindowDemoScene extends Scene[Size, GameModel]:
       Outcome(model)
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

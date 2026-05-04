@@ -5,8 +5,7 @@ import org.scalajs.dom.html
 
 final class ContextAndCanvas(
     val context: WebGLRenderingContext,
-    val canvas: html.Canvas,
-    val magnification: Int
+    val canvas: html.Canvas
 ) {
   val width  = canvas.width
   val height = canvas.height

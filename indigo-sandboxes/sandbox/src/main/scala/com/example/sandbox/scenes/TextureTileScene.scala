@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -43,8 +44,8 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel] {
           Layer(
             Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots))
               .withRef(16, 16)
-              .moveTo(context.startUpData.viewportCenter)
-              .scaleBy(fit(Vector2(32, 32), (context.startUpData.viewportCenter * 2).toVector))
+              .moveTo(SandboxGame.screenCenter)
+              .scaleBy(fit(Vector2(32, 32), (SandboxGame.screenCenter * 2).toVector))
               .modifyMaterial(_.withAlpha(0.2)),
             Graphic(64, 64, Material.Bitmap(SandboxAssets.dots).normal).moveTo(10, 90),
             Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),

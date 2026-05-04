@@ -29,12 +29,10 @@ object ConfigGen {
       |
       |  val config: GameConfig =
       |    GameConfig(
-      |      viewport = GameViewport(${indigoOptions.metadata.width}, ${indigoOptions.metadata.height}),
       |      clearColor = ${extractBgColor(indigoOptions.metadata.backgroundColor)},
-      |      magnification = 1,
       |      transparentBackground = false,
-      |      resizePolicy = ResizePolicy.Resize,
-      |      advanced = AdvancedGameConfig.default
+      |      batchSize = 256,
+      |      autoLoadStandardShaders = true
       |    )
       |""".stripMargin
 

@@ -9,7 +9,7 @@ import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
-object TerminalUI extends Scene[Size, GameModel]:
+object TerminalUI extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -26,7 +26,7 @@ object TerminalUI extends Scene[Size, GameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case GameEvent.Log(message) =>
@@ -34,7 +34,7 @@ object TerminalUI extends Scene[Size, GameModel]:
       Outcome(model)
 
     case e =>
-      val ctx = UIContext(context.toContext, context.frame.globalMagnification)
+      val ctx = UIContext(context.toContext, 1)
         .withSnapGrid(TerminalUIComponents.charSheet.size)
         .moveParentBy(Coords(5, 5))
 
@@ -43,10 +43,10 @@ object TerminalUI extends Scene[Size, GameModel]:
       }
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
-    val ctx = UIContext(context.toContext, context.frame.globalMagnification)
+    val ctx = UIContext(context.toContext, 1)
       .withSnapGrid(TerminalUIComponents.charSheet.size)
       .moveParentBy(Coords(5, 5))
 

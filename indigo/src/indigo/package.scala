@@ -340,17 +340,8 @@ object aliases:
   type AssetType = indigo.core.assets.AssetType
   val AssetType: indigo.core.assets.AssetType.type = indigo.core.assets.AssetType
 
-  type ResizePolicy = indigo.core.config.ResizePolicy
-  val ResizePolicy: indigo.core.config.ResizePolicy.type = indigo.core.config.ResizePolicy
-
   type GameConfig = indigo.core.config.GameConfig
   val GameConfig: indigo.core.config.GameConfig.type = indigo.core.config.GameConfig
-
-  type GameViewport = indigo.core.config.GameViewport
-  val GameViewport: indigo.core.config.GameViewport.type = indigo.core.config.GameViewport
-
-  type AdvancedGameConfig = indigo.core.config.AdvancedGameConfig
-  val AdvancedGameConfig: indigo.core.config.AdvancedGameConfig.type = indigo.core.config.AdvancedGameConfig
 
   val IndigoLogger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 

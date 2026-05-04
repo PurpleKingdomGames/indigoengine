@@ -1,6 +1,5 @@
 package indigo.render
 
-import indigo.render.EmitGlobalEvent
 import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.facades.WebGL2RenderingContext
@@ -12,9 +11,7 @@ import org.scalajs.dom.html
 
 import scala.scalajs.js.JSConverters.*
 
-final class RendererInitialiser(
-    globalEventStream: EmitGlobalEvent
-) {
+final class RendererInitialiser() {
 
   def setup(
       config: RendererConfig,
@@ -25,12 +22,11 @@ final class RendererInitialiser(
   ): Renderer = {
     val cNc = new ContextAndCanvas(
       context,
-      canvas,
-      config.magnification
+      canvas
     )
 
     val r =
-      new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
+      new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc)
 
     r.init(shaders)
     r

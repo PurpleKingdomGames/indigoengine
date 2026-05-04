@@ -5,14 +5,6 @@ import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.json.Json
 
-object SandboxGame:
-
-  val magnificationLevel: Int = 2
-  val gameWidth: Int          = 228
-  val gameHeight: Int         = 128
-  val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
-  val viewportHeight: Int     = gameHeight * magnificationLevel // 256
-
 final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, SandboxGameModel]:
 
   val gameId: GameId = GameId("sandbox")
@@ -33,26 +25,13 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
   def boot(
       flags: Map[String, String]
-  ): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
-    val gameViewport =
-      (flags.get("width"), flags.get("height")) match {
-        case (Some(w), Some(h)) =>
-          GameViewport(w.toInt, h.toInt)
-
-        case _ =>
-          GameViewport(SandboxGame.viewportWidth, SandboxGame.viewportHeight)
-      }
-
+  ): Outcome[BootResult[SandboxBootData, SandboxGameModel]] =
     Outcome(
       BootResult(
-        GameConfig(
-          viewport = gameViewport,
-          clearColor = RGBA(0.4, 0.2, 0.5, 1),
-          magnification = SandboxGame.magnificationLevel
-        ).noResize,
+        GameConfig.default
+          .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
         SandboxBootData(
-          flags.getOrElse("key", "No entry for 'key'."),
-          gameViewport
+          flags.getOrElse("key", "No entry for 'key'.")
         )
       ).withAssets(
         SandboxAssets.assets ++
@@ -75,7 +54,6 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
           WhiteNoiseShader.shader
         )
     )
-  }
 
   def setup(
       bootData: SandboxBootData,
@@ -83,9 +61,6 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       dice: Dice
   ): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
-
-    val screenCenter: Point =
-      bootData.gameViewport.giveDimensions(SandboxGame.magnificationLevel).center
 
     def makeStartupData(
         aseprite: Aseprite,
@@ -99,13 +74,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
               aseprite,
               spriteAndAnimations.sprite
                 .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
-                .moveTo(
-                  screenCenter
-                ) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips
-            ),
-            screenCenter
+            )
           )
         )
         .addAnimations(spriteAndAnimations.animations)
@@ -147,8 +118,8 @@ final case class Dude(
     sprite: Sprite[Material.ImageEffects],
     clips: Map[CycleLabel, Clip[Material.Bitmap]]
 )
-final case class SandboxBootData(message: String, gameViewport: GameViewport)
-final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
+final case class SandboxBootData(message: String)
+final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(
     offset: Point,
     useLightingLayer: Boolean

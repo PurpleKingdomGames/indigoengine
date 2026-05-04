@@ -78,6 +78,9 @@ final case class Container(
     this.copy(themeOverride = value)
 
   def view: Theme ?=> tyrian.Elem[GlobalMsg] =
+    Container.toElem(this)
+
+  def toHtml: Theme ?=> tyrian.Html[GlobalMsg] =
     Container.toHtml(this)
 
 object Container:
@@ -98,7 +101,7 @@ object Container:
       themeOverride = ThemeOverride.NoOverride
     )
 
-  def toHtml(container: Container)(using theme: Theme): tyrian.Elem[GlobalMsg] =
+  def toHtml(container: Container)(using theme: Theme): tyrian.Html[GlobalMsg] =
     val baseStyles =
       Style(
         "display"         -> "flex",
@@ -115,10 +118,9 @@ object Container:
         case tt: Theme.Default =>
           tt.elements.container.toStyle
 
-    val sizeAttributes = List(
-      container.width.map(w => width := w.toCSSValue).toList,
-      container.height.map(h => height := h.toCSSValue).toList
-    ).flatten
+    val sizeStyles =
+      container.width.map(w => Style("width", w.toCSSValue)).getOrElse(Style.empty) |+|
+        container.height.map(h => Style("height", h.toCSSValue)).getOrElse(Style.empty)
 
     val classAttribute =
       if container.classNames.isEmpty then EmptyAttribute
@@ -127,6 +129,9 @@ object Container:
     val idAttribute =
       container.id.fold(EmptyAttribute)(id.:=.apply)
 
-    div(style(baseStyles |+| containerThemeStyles) :: classAttribute :: idAttribute :: sizeAttributes)(
+    div(style(baseStyles |+| containerThemeStyles |+| sizeStyles) :: classAttribute :: List(idAttribute))(
       container.child.toElem
     )
+
+  def toElem(container: Container)(using Theme): tyrian.Elem[GlobalMsg] =
+    toHtml(container)

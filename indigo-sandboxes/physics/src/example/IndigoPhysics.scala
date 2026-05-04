@@ -20,7 +20,7 @@ final class IndigoPhysics extends Game[Unit, Unit, Model]:
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Model]] =
     Outcome(
       BootResult
-        .noData(Config.config.noResize)
+        .noData(Config.config)
         .withSubSystems(
           FPSCounter(PixelatedFont.fontKey, Assets.assets.generated.PixelatedFont)
             .moveTo(Point(10))

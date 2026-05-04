@@ -5,7 +5,7 @@ import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
 
-object RogueTerminalEmulatorScene extends Scene[Size, GameModel]:
+object RogueTerminalEmulatorScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -21,7 +21,7 @@ object RogueTerminalEmulatorScene extends Scene[Size, GameModel]:
   val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Size], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: SceneContext[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
 
@@ -37,7 +37,7 @@ object RogueTerminalEmulatorScene extends Scene[Size, GameModel]:
       .put(Point(5, 5), MapTile(Tile.`@`, RGBA.Cyan))
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val tiles =

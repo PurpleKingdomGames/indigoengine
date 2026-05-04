@@ -117,7 +117,7 @@ final class GameEngine[StartUpData, GameModel](
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
     bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-    if (config.advanced.autoLoadStandardShaders)
+    if (config.autoLoadStandardShaders)
       StandardShaders.all.foreach(shaderRegister.register)
     else shaderRegister.register(StandardShaders.NormalBlend)
 
@@ -126,11 +126,6 @@ final class GameEngine[StartUpData, GameModel](
       gameConfig = gc
 
       IndigoLogger.info("Configuration: " + gameConfig.asString)
-
-      if ((gameConfig.viewport.width % 2 != 0) || (gameConfig.viewport.height % 2 != 0))
-        IndigoLogger.info(
-          "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
-        )
 
       // Arrange initial asset load
       IndigoLogger.info("Attempting to load assets")

@@ -2,7 +2,7 @@ package indigo.platform.gameengine
 
 import indigo.core.Outcome
 import indigo.core.config.GameConfig
-import indigo.core.config.GameViewport
+import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
 import indigo.core.events.InputEvent
@@ -86,8 +86,7 @@ final class GameLoop[StartUpData, GameModel](
           Dice.fromSeconds(gameTime.running),
           gameTime,
           _inputState,
-          GameViewport(renderer.screenWidth, renderer.screenHeight),
-          gameConfig.magnification
+          Size(renderer.screenWidth, renderer.screenHeight)
         ),
         _services
       )
@@ -123,7 +122,7 @@ final class GameLoop[StartUpData, GameModel](
       gameTime,
       scene,
       gameEngine.assetMapping,
-      gameConfig.advanced.batchSize,
+      gameConfig.batchSize,
       events,
       gameEngine.globalEventStream.pushGlobalEvent
     )

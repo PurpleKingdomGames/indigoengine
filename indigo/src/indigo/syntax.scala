@@ -48,8 +48,6 @@ object syntax:
   extension [A](l: List[Outcome[A]]) def sequence: Outcome[List[A]]                   = Outcome.sequenceList(l)
   extension [A](l: NonEmptyList[Outcome[A]]) def sequence: Outcome[NonEmptyList[A]]   = Outcome.sequenceNonEmptyList(l)
 
-  extension (s: Size) def toGameViewport: GameViewport = GameViewport(s)
-
   extension (fill: Fill)
     def toUniformData(prefix: String): Batch[(Uniform, ShaderPrimitive)] =
       UniformDataHelpers.fillToUniformData(fill, prefix)

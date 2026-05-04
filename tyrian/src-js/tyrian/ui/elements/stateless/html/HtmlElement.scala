@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateless.html
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.GlobalMsg
 import tyrian.ui.UIElement
@@ -7,15 +8,15 @@ import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
 
 final case class HtmlElement(
-    html: tyrian.Elem[GlobalMsg]
+    elem: tyrian.Elem[GlobalMsg]
 ) extends UIElement[HtmlElement, Unit]:
 
   val classNames: Set[String]            = Set()
   val id: Option[String]                 = None
   val themeOverride: ThemeOverride[Unit] = ThemeOverride.NoOverride
 
-  def withHtml(html: tyrian.Elem[GlobalMsg]): HtmlElement =
-    this.copy(html = html)
+  def withElem(elem: tyrian.Elem[GlobalMsg]): HtmlElement =
+    this.copy(elem = elem)
 
   def withClassNames(classes: Set[String]): HtmlElement =
     this
@@ -37,10 +38,16 @@ object HtmlElement:
   import tyrian.Html.*
 
   def raw(htmlString: String): HtmlElement =
-    HtmlElement(html = div().innerHtml(htmlString))
+    HtmlElement(elem = div().innerHtml(htmlString))
 
   def text(content: String): HtmlElement =
-    HtmlElement(html = span(content))
+    HtmlElement(elem = span(content))
 
   def toHtml(element: HtmlElement): tyrian.Elem[GlobalMsg] =
-    element.html
+    element.elem
+
+  def of(elem: tyrian.Elem[GlobalMsg]): HtmlElement =
+    HtmlElement(elem)
+
+  def many(elems: Batch[tyrian.Elem[GlobalMsg]]): Batch[HtmlElement] =
+    elems.map(of)

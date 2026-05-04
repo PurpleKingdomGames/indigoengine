@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -40,7 +41,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel] {
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter + Point(0, -25)
+    val viewCenter: Point = SandboxGame.screenCenter + Point(0, -25)
 
     Outcome(
       SceneUpdateFragment(

@@ -235,7 +235,7 @@ trait Game[BootData, StartUpData, Model]:
 
 object Game:
 
-  trait ShaderPlayground extends Game[ShaderPlayground.Model, ShaderPlayground.Model, ShaderPlayground.Model]:
+  trait ShaderPlayground extends Game[ShaderPlayground.Channels, ShaderPlayground.Channels, ShaderPlayground.Model]:
 
     given [A](using toUBO: ToUniformBlock[A]): Conversion[A, UniformBlock] with
       def apply(value: A): UniformBlock = toUBO.toUniformBlock(value)
@@ -300,22 +300,26 @@ object Game:
       */
     def shader: ShaderProgram
 
-    def scenes(bootData: ShaderPlayground.Model): NonEmptyBatch[Scene[ShaderPlayground.Model, ShaderPlayground.Model]] =
-      NonEmptyBatch(Scene.empty[ShaderPlayground.Model, ShaderPlayground.Model])
+    def scenes(
+        bootData: ShaderPlayground.Channels
+    ): NonEmptyBatch[Scene[ShaderPlayground.Channels, ShaderPlayground.Model]] =
+      NonEmptyBatch(Scene.empty[ShaderPlayground.Channels, ShaderPlayground.Model])
 
-    def initialScene(bootData: ShaderPlayground.Model): Option[SceneName] =
+    def initialScene(bootData: ShaderPlayground.Channels): Option[SceneName] =
       None
 
     def eventFilters: EventFilters =
-      EventFilters.BlockAll
+      EventFilters {
+        case e: ViewportResize      => Some(e)
+        case e: KeyboardEvent.KeyUp => Some(e)
+        case _                      => None
+      }
 
-    final def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Model, ShaderPlayground.Model]] =
-      val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
-      val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
-      val c0     = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
-      val c1     = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
-      val c2     = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
-      val c3     = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
+    final def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Channels, ShaderPlayground.Model]] =
+      val c0 = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
+      val c1 = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
+      val c2 = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
+      val c3 = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
 
       val channelAssets: Set[AssetType] =
         (c0.toSet.map(Channel0Name -> _) ++
@@ -327,14 +331,10 @@ object Game:
 
       val configWithOverrides =
         config
-          .withViewport(width, height)
-          .modifyAdvancedSettings(
-            _.withAutoLoadStandardShaders(false)
-          )
+          .withAutoLoadStandardShaders(false)
 
       val bootData =
-        ShaderPlayground.Model(
-          Size(width, height),
+        ShaderPlayground.Channels(
           c0.map(_ => AssetName(Channel0Name)),
           c1.map(_ => AssetName(Channel1Name)),
           c2.map(_ => AssetName(Channel2Name)),
@@ -354,25 +354,30 @@ object Game:
       )
 
     final def setup(
-        bootData: ShaderPlayground.Model,
+        channels: ShaderPlayground.Channels,
         assetCollection: AssetCollection,
         dice: Dice
-    ): Outcome[Startup[ShaderPlayground.Model]] =
+    ): Outcome[Startup[ShaderPlayground.Channels]] =
       Outcome(
         Startup.Success(
-          bootData
+          channels
         )
       )
 
-    final def initialModel(startupData: ShaderPlayground.Model): Outcome[ShaderPlayground.Model] =
-      Outcome(startupData)
+    final def initialModel(channels: ShaderPlayground.Channels): Outcome[ShaderPlayground.Model] =
+      Outcome(
+        ShaderPlayground.Model(
+          Size.one,
+          channels
+        )
+      )
 
     final def updateModel(
-        context: Context[ShaderPlayground.Model],
+        context: Context[ShaderPlayground.Channels],
         model: ShaderPlayground.Model
     ): GlobalEvent => Outcome[ShaderPlayground.Model] = {
-      case ViewportResize(vp) =>
-        Outcome(model.copy(viewport = vp.size))
+      case ViewportResize(size) =>
+        Outcome(model.copy(viewport = size))
 
       case KeyboardEvent.KeyUp(Key.KEY_F) =>
         Outcome(model, Batch(ToggleFullScreen))
@@ -382,7 +387,7 @@ object Game:
     }
 
     final def present(
-        context: Context[ShaderPlayground.Model],
+        context: Context[ShaderPlayground.Channels],
         model: ShaderPlayground.Model
     ): Outcome[SceneUpdateFragment] =
       Outcome(
@@ -393,10 +398,10 @@ object Game:
               ShaderData(
                 shader.id,
                 uniformBlocks,
-                model.channel0,
-                model.channel1,
-                model.channel2,
-                model.channel3
+                model.channels.channel0,
+                model.channels.channel1,
+                model.channels.channel2,
+                model.channels.channel3
               )
             )
           ).withBlendMaterial(ShaderPlayground.SceneBlendShader.material)
@@ -405,12 +410,16 @@ object Game:
 
   object ShaderPlayground:
 
-    final case class Model(
-        viewport: Size,
+    final case class Channels(
         channel0: Option[AssetName],
         channel1: Option[AssetName],
         channel2: Option[AssetName],
         channel3: Option[AssetName]
+    )
+
+    final case class Model(
+        viewport: Size,
+        channels: Channels
     )
 
     object SceneBlendShader:

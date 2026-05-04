@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -55,7 +56,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel] {
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter
+    val viewCenter: Point = SandboxGame.screenCenter
 
     Outcome(
       SceneUpdateFragment.empty

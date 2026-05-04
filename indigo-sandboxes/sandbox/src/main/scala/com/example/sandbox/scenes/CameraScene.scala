@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -44,14 +45,14 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel] {
       SceneUpdateFragment(
         Layer(
           Graphic(
-            Rectangle(Point.zero, (context.startUpData.viewportCenter * 4).toSize),
+            Rectangle(Point.zero, (SandboxGame.screenCenter * 4).toSize),
             SandboxAssets.foliageMaterial
           ),
           Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-16, -16)
         ).withMagnification(1),
         Layer(
           Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots).withAlpha(0.4))
-            .moveTo(context.startUpData.viewportCenter - Point(16))
+            .moveTo(SandboxGame.screenCenter - Point(16))
         ).withCamera(Camera.default) // Override scene camera, so this layer doesn't move.
       ).modifyCamera {
         case c: Camera.Fixed =>

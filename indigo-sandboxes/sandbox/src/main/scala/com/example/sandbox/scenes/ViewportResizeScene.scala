@@ -37,7 +37,7 @@ object ViewportResizeScene extends Scene[SandboxStartupData, SandboxGameModel] {
         .addLayers(
           Layer(
             Graphic(
-              context.frame.viewportSize,
+              model.viewportSize,
               Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
             )
           )

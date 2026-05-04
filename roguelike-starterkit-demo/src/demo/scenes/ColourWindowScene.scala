@@ -8,7 +8,7 @@ import indigo.*
 import indigoextras.ui.*
 import roguelikestarterkit.*
 
-object ColourWindowScene extends Scene[Size, GameModel]:
+object ColourWindowScene extends Scene[Unit, GameModel]:
 
   type SceneModel = GameModel
 
@@ -40,7 +40,7 @@ object ColourWindowScene extends Scene[Size, GameModel]:
     )
 
   def updateModel(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
@@ -78,7 +78,7 @@ object ColourWindowScene extends Scene[Size, GameModel]:
     )
 
   def present(
-      context: SceneContext[Size],
+      context: SceneContext[Unit],
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

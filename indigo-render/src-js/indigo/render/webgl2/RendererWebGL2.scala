@@ -3,14 +3,11 @@ package indigo.render.webgl2
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
-import indigo.core.config.GameViewport
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
-import indigo.core.events.ViewportResize
 import indigo.core.utils.QuickCache
-import indigo.render.EmitGlobalEvent
 import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.ScreenCaptureConfig
@@ -37,8 +34,7 @@ import scala.scalajs.js.typedarray.Float32Array
 final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
-    cNc: ContextAndCanvas,
-    globalEventStream: EmitGlobalEvent
+    cNc: ContextAndCanvas
 ) extends Renderer {
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
@@ -46,7 +42,6 @@ final class RendererWebGL2(
   private val gl: WebGLRenderingContext =
     cNc.context
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private val gl2: WebGL2RenderingContext =
     gl.asInstanceOf[WebGL2RenderingContext]
 
@@ -226,7 +221,7 @@ final class RendererWebGL2(
           val ctx2d =
             canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
           val magnifiedClip = option.croppingRect match {
-            case Some(rect) => rect * cNc.magnification
+            case Some(rect) => rect
             case None       => Rectangle(0, 0, screenWidth, screenHeight)
           }
           val imageSize = Size(
@@ -284,7 +279,7 @@ final class RendererWebGL2(
 
     gl2.bindVertexArray(vao)
 
-    resize(cNc.canvas, cNc.magnification)
+    resize(cNc.canvas)
 
     val frameData = scalajs.js.Array[Float](runningTime.toFloat, 0.0f, lastWidth.toFloat, lastHeight.toFloat)
     WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
@@ -306,7 +301,7 @@ final class RendererWebGL2(
                 lastWidth.toDouble,
                 lastHeight.toDouble,
                 1.0d, // Layers aren't magnified during rendering.
-                layer.magnification.map(_.toDouble).getOrElse(cNc.magnification),
+                layer.magnification.map(_.toDouble).getOrElse(1),
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
@@ -435,7 +430,8 @@ final class RendererWebGL2(
     gl2.clear(COLOR_BUFFER_BIT)
   }
 
-  def resize(canvas: html.Canvas, magnification: Int): Unit = {
+  // TODO: Maybe this should now be _listening_ to the ViewportResize event?
+  def resize(canvas: html.Canvas): Unit = {
     val (actualWidth, actualHeight) = (canvas.width, canvas.height)
 
     if (!resizeRun || (lastWidth != actualWidth) || (lastHeight != actualHeight)) {
@@ -443,8 +439,7 @@ final class RendererWebGL2(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix =
-        CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat)
       defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toJSArray
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toJSArray
       orthographicProjectionMatrixNoMagFlipped =
@@ -457,8 +452,6 @@ final class RendererWebGL2(
       emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
-
-      globalEventStream.pushGlobalEvent(ViewportResize(GameViewport(actualWidth, actualHeight)))
 
       ()
     }

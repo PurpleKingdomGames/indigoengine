@@ -1,5 +1,6 @@
 package tyrian.ui.layout
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.EmptyAttribute
 import tyrian.GlobalMsg
@@ -14,7 +15,7 @@ import tyrian.ui.theme.ThemeOverride
 
 final case class Layout(
     direction: LayoutDirection,
-    children: List[UIElement[?, ?]],
+    children: Batch[UIElement[?, ?]],
     spacing: Spacing,
     spaceAlignment: SpaceAlignment,
     ratio: Ratio,
@@ -41,15 +42,15 @@ final case class Layout(
     this.copy(ratio = value)
   // Is this the nicest way to express this?
   def ratio1: Layout  = withRatio(Ratio.one)
-  def ratio2: Layout  = withRatio(Ratio.one)
-  def ratio3: Layout  = withRatio(Ratio.one)
-  def ratio4: Layout  = withRatio(Ratio.one)
-  def ratio5: Layout  = withRatio(Ratio.one)
-  def ratio6: Layout  = withRatio(Ratio.one)
-  def ratio7: Layout  = withRatio(Ratio.one)
-  def ratio8: Layout  = withRatio(Ratio.one)
-  def ratio9: Layout  = withRatio(Ratio.one)
-  def ratio10: Layout = withRatio(Ratio.one)
+  def ratio2: Layout  = withRatio(Ratio(2))
+  def ratio3: Layout  = withRatio(Ratio(3))
+  def ratio4: Layout  = withRatio(Ratio(4))
+  def ratio5: Layout  = withRatio(Ratio(5))
+  def ratio6: Layout  = withRatio(Ratio(6))
+  def ratio7: Layout  = withRatio(Ratio(7))
+  def ratio8: Layout  = withRatio(Ratio(8))
+  def ratio9: Layout  = withRatio(Ratio(9))
+  def ratio10: Layout = withRatio(Ratio(10))
 
   def withWrapping(value: Wrapping): Layout =
     this.copy(wrapping = value)
@@ -93,9 +94,9 @@ object Layout:
   import tyrian.Style
 
   def apply(children: UIElement[?, ?]*): Layout =
-    Layout(LayoutDirection.Row, children.toList)
+    Layout(LayoutDirection.Row, Batch.fromSeq(children))
 
-  def apply(direction: LayoutDirection, children: List[UIElement[?, ?]]): Layout =
+  def apply(direction: LayoutDirection, children: Batch[UIElement[?, ?]]): Layout =
     Layout(
       direction = direction,
       children = children,
@@ -109,13 +110,13 @@ object Layout:
     )
 
   def apply(direction: LayoutDirection, children: UIElement[?, ?]*): Layout =
-    Layout(direction, children.toList)
+    Layout(direction, Batch.fromSeq(children))
 
   def row(children: UIElement[?, ?]*): Layout =
-    Layout(LayoutDirection.Row, children.toList)
+    Layout(LayoutDirection.Row, Batch.fromSeq(children))
 
   def column(children: UIElement[?, ?]*): Layout =
-    Layout(LayoutDirection.Column, children.toList)
+    Layout(LayoutDirection.Column, Batch.fromSeq(children))
 
   def toHtml(layout: Layout)(using theme: Theme): tyrian.Elem[GlobalMsg] =
     val baseStyles = Style(
@@ -135,4 +136,4 @@ object Layout:
 
     val childrenHtml = layout.children.map(_.toElem)
 
-    div(style(baseStyles), classAttribute, idAttribute)(childrenHtml*)
+    div(style(baseStyles), classAttribute, idAttribute)(childrenHtml.toList*)

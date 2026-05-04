@@ -38,7 +38,7 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
     case e =>
       val ctx =
-        UIContext.fromContext(context.toContext, model.num, context.frame.globalMagnification)
+        UIContext.fromContext(context.toContext, model.num, 1)
 
       model.components.update(ctx)(e).map { cl =>
         model.copy(components = cl)
@@ -49,7 +49,7 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     model.components
-      .present(UIContext.fromContext(context.toContext, model.num, context.frame.globalMagnification))
+      .present(UIContext.fromContext(context.toContext, model.num, 1))
       .map {
         case l: Layer.Stack =>
           SceneUpdateFragment(

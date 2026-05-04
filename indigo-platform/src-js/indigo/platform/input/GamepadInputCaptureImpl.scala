@@ -9,6 +9,7 @@ import indigo.core.input.GamepadInputCapture
 import org.scalajs.dom.Gamepad as GamepadJS
 import org.scalajs.dom.window
 
+// TODO. Needs to move to Tyrian.
 object GamepadInputCaptureImpl {
 
   def apply(): GamepadInputCapture =

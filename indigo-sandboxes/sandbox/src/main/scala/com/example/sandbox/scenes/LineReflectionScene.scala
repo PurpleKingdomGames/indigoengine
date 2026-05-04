@@ -2,6 +2,7 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
@@ -65,8 +66,8 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
         Math.cos(rotation.toDouble + offset) * radius
       )
 
-    val vtxA = context.startUpData.viewportCenter.toVertex + makeVertex(0.0, 50.0)
-    val vtxB = context.startUpData.viewportCenter.toVertex + makeVertex(Math.PI, 50.0)
+    val vtxA = SandboxGame.screenCenter.toVertex + makeVertex(0.0, 50.0)
+    val vtxB = SandboxGame.screenCenter.toVertex + makeVertex(Math.PI, 50.0)
 
     val surface = LineSegment(vtxA, vtxB)
 
@@ -150,7 +151,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
             .withMagnification(1)
             .withCamera(
               Camera
-                .Fixed(context.startUpData.viewportCenter * 2)
+                .Fixed(SandboxGame.screenCenter * 2)
                 .withZoom(Zoom.x05)
             )
         )

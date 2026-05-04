@@ -121,7 +121,7 @@ final case class Window[A, ReferenceData](
   def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
     this.copy(
       content = component.refresh(
-        context.withParentBounds(bounds(context.frame.viewport.toSize, context.magnification)),
+        context.withParentBounds(bounds(context.frame.viewport, context.magnification)),
         content
       )
     )
@@ -197,7 +197,7 @@ object Window:
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
     case e =>
       val bounds =
-        window.bounds(context.frame.viewport.toSize, context.magnification)
+        window.bounds(context.frame.viewport, context.magnification)
       val minBounds =
         bounds.withDimensions(bounds.dimensions.max(window.minSize))
 

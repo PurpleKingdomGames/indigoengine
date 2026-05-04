@@ -130,6 +130,11 @@ val Placeholder: layout.Placeholder.type = layout.Placeholder
 
 // ---- Stateless elements ----
 
+// Canvas
+
+type Canvas = elements.stateless.canvas.Canvas
+val Canvas: elements.stateless.canvas.Canvas.type = elements.stateless.canvas.Canvas
+
 // Button
 
 type Button = elements.stateless.button.Button

@@ -20,7 +20,7 @@ object WindowContext:
   ): WindowContext[ReferenceData] =
     WindowContext(
       context,
-      model.bounds(context.frame.viewport.toSize, context.magnification),
+      model.bounds(context.frame.viewport, context.magnification),
       model.hasFocus,
       viewModel.pointerIsOver,
       viewModel.magnification
