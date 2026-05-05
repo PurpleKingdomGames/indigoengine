@@ -10,7 +10,6 @@ import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.ResizeObserver
 import org.scalajs.dom.document
 import org.scalajs.dom.html
-import org.scalajs.dom.window
 import tyrian.*
 import tyrian.classic.Sub
 import tyrian.extensions.Extension
@@ -366,11 +365,25 @@ object Indigo:
       Sub.make[IO, (Double, Double), GlobalMsg, ResizeObserver](s"[indigo-resize:${gameId.asString}]") { callback =>
         val ro =
           new ResizeObserver((_, _) => {
-            val bounds = container.getBoundingClientRect()
+            /*
+            This process does not currently respect `devicePixelRatio`, i.e.:
+            
+            ```
             val dpr    = Option(window.devicePixelRatio).getOrElse(1d)
-
             canvas.width = (bounds.width.toDouble * dpr).toInt
             canvas.height = (bounds.height.toDouble * dpr).toInt
+            ```
+            This keeps it consistent with the renderer. If the renderer
+            stops reading the canvas directly, then we could bring this back.
+            
+            In theory, without accounting for device pixel ratio we could see
+            blurry pixels on devices with high physical to css pixel ratios.
+            */
+            
+            val bounds = container.getBoundingClientRect()
+
+            canvas.width = bounds.width.toDouble.toInt
+            canvas.height = bounds.height.toDouble.toInt
 
             callback(Right((bounds.width, bounds.height)))
           })
