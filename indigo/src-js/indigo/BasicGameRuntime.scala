@@ -4,6 +4,9 @@ import indigo.*
 import tyrian.*
 import tyrian.ui.*
 
+/** Provides a no-frills Tyrian runtime for a single running Indigo game. For anything more complicated, you'll want to
+  * build your own.
+  */
 trait BasicGameRuntime extends App[Unit]:
 
   def game: Game[?, ?, ?]
@@ -43,21 +46,16 @@ trait BasicGameRuntime extends App[Unit]:
   def view(model: Unit): HtmlRoot =
     val surround: Batch[Elem[GlobalMsg]] => Html[GlobalMsg] =
       elems =>
-        elems.headOption match
-          case Some(elem) =>
-            Container(
-              HtmlElement.of(elem)
-            )
-              .withSize(
-                Extent.CSS("100vw"),
-                Extent.CSS("100vh")
-              )
-              .toHtml
-
-          case None =>
-            Container(
-              TextBlock("No canvas element was built by the Indigo extension.")
-            ).toHtml
+        Container(
+          Column(
+            HtmlElement.many(elems)
+          ).fillWidth.fillHeight
+        )
+          .withSize(
+            Extent.CSS("100vw"),
+            Extent.CSS("100vh")
+          )
+          .toHtml
 
     val fragment: HtmlFragment =
       HtmlFragment(
