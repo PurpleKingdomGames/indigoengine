@@ -94,13 +94,6 @@ object Context:
       val input: InputState,
       val viewport: Size
   ):
-    /** Provides the unscaled viewport size, which is the available screen space in pixels
-      *
-      * If your layer sets a custom magnification, then you will need to use
-      * `context.frame.viewport.giveDimenstions(<custom magnification>)`, instead.
-      */
-    val screenSize: Size =
-      viewport
 
     def withDice(newDice: Dice): Frame =
       new Frame(newDice, time, input, viewport)
