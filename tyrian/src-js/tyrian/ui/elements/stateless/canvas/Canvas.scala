@@ -83,7 +83,7 @@ object Canvas:
         case tt: Theme.Default =>
           tt.elements.canvas.toStyle
 
-    val combinedStyles=
+    val combinedStyles =
       canvasStyles |+| sizeStyles
 
     val styles =

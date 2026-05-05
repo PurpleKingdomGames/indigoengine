@@ -139,7 +139,7 @@ object Layout:
     val sizeStyles =
       layout.width.map(w => Style("width", w.toCSSValue)).getOrElse(Style.empty) |+|
         layout.height.map(h => Style("height", h.toCSSValue)).getOrElse(Style.empty)
-        
+
     val baseStyles = Style(
       "display"         -> "flex",
       "justify-content" -> layout.spaceAlignment.toCSSValue,

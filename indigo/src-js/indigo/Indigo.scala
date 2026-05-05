@@ -367,7 +367,7 @@ object Indigo:
           new ResizeObserver((_, _) => {
             /*
             This process does not currently respect `devicePixelRatio`, i.e.:
-            
+
             ```
             val dpr    = Option(window.devicePixelRatio).getOrElse(1d)
             canvas.width = (bounds.width.toDouble * dpr).toInt
@@ -375,11 +375,11 @@ object Indigo:
             ```
             This keeps it consistent with the renderer. If the renderer
             stops reading the canvas directly, then we could bring this back.
-            
+
             In theory, without accounting for device pixel ratio we could see
             blurry pixels on devices with high physical to css pixel ratios.
-            */
-            
+             */
+
             val bounds = container.getBoundingClientRect()
 
             canvas.width = bounds.width.toDouble.toInt
