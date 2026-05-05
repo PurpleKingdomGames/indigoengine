@@ -202,8 +202,6 @@ final case class Indigo(
       )
         .withId(Indigo.CanvasId)
         .toElem
-
-      // canvas(tyrian.Html.id := Indigo.CanvasId, width := "100%", height := "100%")()
     )
 
   def watchers(model: ExtensionModel): Batch[Watcher] =
