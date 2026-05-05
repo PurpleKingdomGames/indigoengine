@@ -4,6 +4,7 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.EmptyAttribute
 import tyrian.GlobalMsg
+import tyrian.ui.Extent
 import tyrian.ui.UIElement
 import tyrian.ui.datatypes.LayoutDirection
 import tyrian.ui.datatypes.Ratio
@@ -12,7 +13,6 @@ import tyrian.ui.datatypes.Spacing
 import tyrian.ui.datatypes.Wrapping
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
-import tyrian.ui.Extent
 
 final case class Layout(
     direction: LayoutDirection,

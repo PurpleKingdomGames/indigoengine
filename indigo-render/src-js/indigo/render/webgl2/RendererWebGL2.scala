@@ -209,6 +209,7 @@ final class RendererWebGL2(
     }
   }
 
+  // TODO: Should move down to Tyrian, it's a platform job.
   def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
     _prevSceneData match {
       case null => captureOptions.map(_ => Left("No scene data to capture"))
