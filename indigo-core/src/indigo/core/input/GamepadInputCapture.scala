@@ -1,5 +1,4 @@
 package indigo.core.input
 
-trait GamepadInputCapture {
+trait GamepadInputCapture:
   def giveGamepadState: Gamepad
-}
