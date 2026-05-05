@@ -93,6 +93,9 @@ object HtmlRoot:
               (m.children ++ toAppend).flatMap(rec(_))
 
         case t: Tag[GlobalMsg] =>
+          // This is unfortunate. Tyrian classic works on List, where Tyrian uses Batch.
+          // HtmlRoot is really for use with UIElements but supports the classic tags as
+          // a bit of a second class citizen.
           Batch(t.copy(children = Batch.fromList(t.children).flatMap(rec(_)).toList))
 
         case Empty =>
