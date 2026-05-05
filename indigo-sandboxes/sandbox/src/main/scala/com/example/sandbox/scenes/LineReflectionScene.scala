@@ -66,8 +66,8 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
         Math.cos(rotation.toDouble + offset) * radius
       )
 
-    val vtxA = SandboxGame.screenCenter.toVertex + makeVertex(0.0, 50.0)
-    val vtxB = SandboxGame.screenCenter.toVertex + makeVertex(Math.PI, 50.0)
+    val vtxA = SandboxGame.screenCenter.toVertex + makeVertex(0.0, 100.0)
+    val vtxB = SandboxGame.screenCenter.toVertex + makeVertex(Math.PI, 100.0)
 
     val surface = LineSegment(vtxA, vtxB)
 
