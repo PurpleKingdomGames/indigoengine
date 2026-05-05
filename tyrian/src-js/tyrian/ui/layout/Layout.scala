@@ -12,6 +12,7 @@ import tyrian.ui.datatypes.Spacing
 import tyrian.ui.datatypes.Wrapping
 import tyrian.ui.theme.Theme
 import tyrian.ui.theme.ThemeOverride
+import tyrian.ui.Extent
 
 final case class Layout(
     direction: LayoutDirection,
@@ -20,6 +21,8 @@ final case class Layout(
     spaceAlignment: SpaceAlignment,
     ratio: Ratio,
     wrapping: Wrapping,
+    width: Option[Extent],
+    height: Option[Extent],
     classNames: Set[String],
     id: Option[String],
     themeOverride: ThemeOverride[Unit]
@@ -73,6 +76,18 @@ final case class Layout(
   def stretch: Layout =
     withSpaceAlignment(SpaceAlignment.Stretch)
 
+  def withWidth(width: Extent): Layout =
+    this.copy(width = Some(width))
+  def fillWidth: Layout = withWidth(Extent.Fill)
+
+  def withHeight(height: Extent): Layout =
+    this.copy(height = Some(height))
+  def fillHeight: Layout = withHeight(Extent.Fill)
+
+  def withSize(width: Extent, height: Extent): Layout =
+    this.copy(width = Some(width), height = Some(height))
+  def fillContainer: Layout = withSize(Extent.Fill, Extent.Fill)
+
   def withClassNames(classes: Set[String]): Layout =
     this.copy(classNames = classes)
 
@@ -104,6 +119,8 @@ object Layout:
       spaceAlignment = SpaceAlignment.Stretch,
       ratio = Ratio.default,
       wrapping = Wrapping.NoWrap,
+      width = None,
+      height = None,
       classNames = Set(),
       id = None,
       themeOverride = ThemeOverride.NoOverride
@@ -119,13 +136,17 @@ object Layout:
     Layout(LayoutDirection.Column, Batch.fromSeq(children))
 
   def toHtml(layout: Layout)(using theme: Theme): tyrian.Elem[GlobalMsg] =
+    val sizeStyles =
+      layout.width.map(w => Style("width", w.toCSSValue)).getOrElse(Style.empty) |+|
+        layout.height.map(h => Style("height", h.toCSSValue)).getOrElse(Style.empty)
+        
     val baseStyles = Style(
       "display"         -> "flex",
       "justify-content" -> layout.spaceAlignment.toCSSValue,
       "align-items"     -> "stretch",
       "gap"             -> layout.spacing.toCSSValue,
       "flex-wrap"       -> layout.wrapping.toFlexCSSValue
-    ) |+| layout.direction.toStyle |+| layout.ratio.toStyle
+    ) |+| layout.direction.toStyle |+| layout.ratio.toStyle |+| sizeStyles
 
     val classAttribute =
       if layout.classNames.isEmpty then EmptyAttribute
