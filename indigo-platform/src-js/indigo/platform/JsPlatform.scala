@@ -15,7 +15,6 @@ import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.render.Renderer
 import indigo.render.RendererConfig
 import indigo.render.RendererInitialiser
@@ -31,7 +30,6 @@ import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
-import scala.annotation.nowarn
 import scala.util.Failure
 import scala.util.Success
 
@@ -46,12 +44,8 @@ class JsPlatform(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  @nowarn("msg=mutated")
-  private var _running: Boolean = true
 
   def initialise(
-      firstRun: Boolean,
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection,
       canvas: Canvas,
@@ -61,14 +55,11 @@ class JsPlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      _                   <- listenToWorldEvents(firstRun)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, context, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
-    _running = false
-    GamepadInputCaptureImpl.kill()
     ()
 
   def pushGlobalEvent(event: GlobalEvent): Unit =
@@ -120,16 +111,6 @@ class JsPlatform(
       )
     )
 
-  def listenToWorldEvents(
-      firstRun: Boolean
-  ): Outcome[Unit] =
-    Outcome {
-      if firstRun then
-        IndigoLogger.info("Starting gamepad event capture")
-        GamepadInputCaptureImpl.init()
-      else IndigoLogger.info("Re-using existing gamepad event capture")
-    }
-
   def startRenderer(
       gameConfig: GameConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
@@ -152,12 +133,14 @@ class JsPlatform(
       )
     }
 
+  // TODO: Move to Tyrian
   def toggleFullScreen(): Unit =
     if (Option(dom.document.fullscreenElement).isEmpty)
       enterFullScreen()
     else
       exitFullScreen()
 
+  // TODO: Move to Tyrian
   def enterFullScreen(): Unit =
     _canvas.requestFullscreen().toFuture.onComplete {
       case Success(()) =>
@@ -167,6 +150,7 @@ class JsPlatform(
         globalEventStream.pushGlobalEvent(FullScreenEnterError)
     }
 
+  // TODO: Move to Tyrian
   def exitFullScreen(): Unit =
     dom.document.exitFullscreen().toFuture.onComplete {
       case Success(()) =>

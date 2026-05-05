@@ -7,6 +7,7 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
+import indigo.platform.IndigoCoreServices
 import indigo.platform.assets.AssetCollection
 import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
@@ -161,8 +162,13 @@ trait Game[BootData, StartUpData, Model]:
       _pull = None
       ()
 
-  def launch(canvas: html.Canvas, context: WebGL2RenderingContext, flags: Map[String, String]): Unit =
-    gameInstance = ready(canvas, context, flags)
+  def launch(
+      canvas: html.Canvas,
+      context: WebGL2RenderingContext,
+      flags: Map[String, String],
+      services: IndigoCoreServices
+  ): Unit =
+    gameInstance = ready(canvas, context, flags, services)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -208,7 +214,8 @@ trait Game[BootData, StartUpData, Model]:
   def ready(
       canvas: html.Canvas,
       context: WebGL2RenderingContext,
-      flags: Map[String, String]
+      flags: Map[String, String],
+      services: IndigoCoreServices
   ): GameEngine[StartUpData, Model] =
     boot(flags) match
       case oe @ Outcome.Error(e, _) =>
@@ -225,7 +232,8 @@ trait Game[BootData, StartUpData, Model]:
             Future(None),
             b.assets,
             Future(Set()),
-            evts
+            evts,
+            services
           )
 
         _push = Some(engine.globalEventStream)

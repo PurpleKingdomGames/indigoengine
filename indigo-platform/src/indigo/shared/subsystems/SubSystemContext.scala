@@ -2,7 +2,7 @@ package indigo.shared.subsystems
 
 import indigo.shared.Context
 
-/** Similar to a regular `Context` but without access to start up data. The `SubSystemContext`` is the context in which
+/** Similar to a regular `Context` but without access to start up data. The `SubSystemContext` is the context in which
   * the current frame will be processed by a sub-system. It includes values that are unique to this frame, and also
   * globally available services.
   */

@@ -4,6 +4,8 @@ import cats.effect.IO
 import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
 import indigo.internal.WorldEventWatchers
+import indigo.internal.services.BrowserGamepadInputService
+import indigo.platform.IndigoCoreServices
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
 import org.scalajs.dom.HTMLElement
@@ -161,7 +163,10 @@ final case class Indigo(
               model.game,
               maybeCanvas,
               flags,
-              settings
+              settings,
+              IndigoCoreServices(
+                BrowserGamepadInputService()
+              )
             )
           )
       else Result(model)
@@ -274,7 +279,8 @@ object Indigo:
       game: Game[?, ?, ?],
       maybeCanvas: Option[html.Canvas],
       flags: Map[String, String],
-      settings: Indigo.Settings
+      settings: Indigo.Settings,
+      services: IndigoCoreServices
   ): Action =
     Action.run {
       maybeCanvas match
@@ -287,7 +293,7 @@ object Indigo:
               settings.antiAliasing
             )
 
-          game.launch(canvas, context, flags)
+          game.launch(canvas, context, flags, services)
           Indigo.Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>

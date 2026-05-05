@@ -11,11 +11,11 @@ import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
+import indigo.platform.IndigoCoreServices
 import indigo.platform.JsPlatform
 import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.render.Renderer
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.assets.AssetMapping
@@ -105,13 +105,14 @@ final class GameEngine[StartUpData, GameModel](
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
-      bootEvents: Batch[GlobalEvent]
+      bootEvents: Batch[GlobalEvent],
+      services: IndigoCoreServices
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
     globalEventStream = new GlobalEventStream(audioPlayer, platform)
-    gamepadInputCapture = GamepadInputCaptureImpl()
+    gamepadInputCapture = services.gamepadInputCapture
 
     // Intialisation / Boot events
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -202,7 +203,6 @@ final class GameEngine[StartUpData, GameModel](
             val loop: Outcome[Unit] =
               for {
                 rendererAndAssetMapping <- platform.initialise(
-                  firstRun,
                   shaderRegister.toSet,
                   accumulatedAssetCollection,
                   canvas,
