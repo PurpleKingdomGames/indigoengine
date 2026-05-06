@@ -47,17 +47,22 @@ object SandboxModel {
         )
       )
 
+    // Left commented out so they can be brought back for testing
+    // but otherwise don't interfere with keyboard input tests.
     // case KeyboardEvent.KeyUp(Key.KEY_F) =>
     //   println("Toggle full screen mode...")
-    //   Outcome(state, List(ToggleFullScreen))
+    //   Outcome(state)
+    //     .addGlobalEvents(ToggleFullScreen)
 
     // case KeyboardEvent.KeyUp(Key.KEY_E) =>
     //   println("Enter full screen mode...")
-    //   Outcome(state, List(EnterFullScreen))
+    //   Outcome(state)
+    //     .addGlobalEvents(EnterFullScreen)
 
     // case KeyboardEvent.KeyUp(Key.KEY_X) =>
     //   println("Exit full screen mode...")
-    //   Outcome(state, List(ExitFullScreen))
+    //   Outcome(state)
+    //     .addGlobalEvents(ExitFullScreen)
 
     case KeyboardEvent.KeyUp(_) =>
       Outcome(

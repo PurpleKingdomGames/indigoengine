@@ -4,10 +4,6 @@ import indigo.core.Outcome
 import indigo.core.assets.AssetName
 import indigo.core.config.EngineConfig
 import indigo.core.datatypes.Vector2
-import indigo.core.events.FullScreenEnterError
-import indigo.core.events.FullScreenEntered
-import indigo.core.events.FullScreenExitError
-import indigo.core.events.FullScreenExited
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
@@ -25,24 +21,15 @@ import indigo.render.webgl2.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
-import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
-
-import scala.util.Failure
-import scala.util.Success
 
 class JsPlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream
-) extends Platform
-    with PlatformFullScreen {
+) extends Platform {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser()
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
-  private var _canvas: Canvas = null
 
   def initialise(
       shaders: Set[RawShaderCode],
@@ -55,7 +42,6 @@ class JsPlatform(
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
       renderer            <- startRenderer(engineConfig, loadedTextureAssets, canvas, context, shaders)
-      _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
@@ -126,32 +112,5 @@ class JsPlatform(
         context,
         shaders
       )
-    }
-
-  // TODO: Move to Tyrian
-  def toggleFullScreen(): Unit =
-    if (Option(dom.document.fullscreenElement).isEmpty)
-      enterFullScreen()
-    else
-      exitFullScreen()
-
-  // TODO: Move to Tyrian
-  def enterFullScreen(): Unit =
-    _canvas.requestFullscreen().toFuture.onComplete {
-      case Success(()) =>
-        globalEventStream.pushGlobalEvent(FullScreenEntered)
-
-      case Failure(_) =>
-        globalEventStream.pushGlobalEvent(FullScreenEnterError)
-    }
-
-  // TODO: Move to Tyrian
-  def exitFullScreen(): Unit =
-    dom.document.exitFullscreen().toFuture.onComplete {
-      case Success(()) =>
-        globalEventStream.pushGlobalEvent(FullScreenExited)
-
-      case Failure(_) =>
-        globalEventStream.pushGlobalEvent(FullScreenExitError)
     }
 }

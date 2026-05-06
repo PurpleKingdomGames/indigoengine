@@ -1,12 +1,8 @@
 package indigo.platform.events
 
 import indigo.core.events.AssetEvent
-import indigo.core.events.EnterFullScreen
-import indigo.core.events.ExitFullScreen
 import indigo.core.events.GlobalEvent
 import indigo.core.events.PlaySound
-import indigo.core.events.ToggleFullScreen
-import indigo.platform.PlatformFullScreen
 import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.render.EmitGlobalEvent
@@ -15,8 +11,7 @@ import indigoengine.shared.collections.Batch
 import scala.collection.mutable
 
 final class GlobalEventStream(
-    audioPlayer: AudioPlayer,
-    platform: => PlatformFullScreen
+    audioPlayer: AudioPlayer
 ) extends EmitGlobalEvent
     with GlobalEventCallback:
 
@@ -49,16 +44,6 @@ final class GlobalEventStream(
 
     case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
       AssetLoader.backgroundLoadAssets(this, Set(asset), key, makeAvailable)
-
-    // Fullscreen
-    case ToggleFullScreen =>
-      platform.toggleFullScreen()
-
-    case EnterFullScreen =>
-      platform.enterFullScreen()
-
-    case ExitFullScreen =>
-      platform.exitFullScreen()
 
     // Default
     case e =>

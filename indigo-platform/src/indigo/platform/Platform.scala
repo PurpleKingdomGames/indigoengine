@@ -29,14 +29,3 @@ trait Platform:
     *   A batch of pending events
     */
   def collectEvents: Batch[GlobalEvent]
-
-/** Platform abstraction for fullscreen management */
-trait PlatformFullScreen:
-  /** Toggle fullscreen mode */
-  def toggleFullScreen(): Unit
-
-  /** Enter fullscreen mode */
-  def enterFullScreen(): Unit
-
-  /** Exit fullscreen mode */
-  def exitFullScreen(): Unit

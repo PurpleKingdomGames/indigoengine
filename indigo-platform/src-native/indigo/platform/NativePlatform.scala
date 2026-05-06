@@ -8,7 +8,7 @@ import indigoengine.shared.collections.Batch
   * This is a placeholder implementation to validate that the platform abstraction architecture compiles against native
   * platforms. All methods are no-ops and this should not be used for actual game execution.
   */
-class NativePlatform extends Platform with PlatformFullScreen:
+class NativePlatform extends Platform:
 
   def tick(loop: Double => Unit): Unit =
     ()
@@ -29,9 +29,3 @@ class NativePlatform extends Platform with PlatformFullScreen:
     ()
 
   def collectEvents: Batch[GlobalEvent] = Batch.empty
-
-  def toggleFullScreen(): Unit = ()
-
-  def enterFullScreen(): Unit = ()
-
-  def exitFullScreen(): Unit = ()

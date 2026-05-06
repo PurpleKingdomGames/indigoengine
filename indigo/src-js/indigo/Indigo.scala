@@ -21,6 +21,9 @@ import tyrian.ui.Canvas
 import tyrian.ui.Extent
 import tyrian.ui.theme.Theme
 
+import scala.util.Failure
+import scala.util.Success
+
 final case class Indigo(
     extensionId: ExtensionId,
     flags: Map[String, String],
@@ -92,6 +95,15 @@ final case class Indigo(
       model.game.events.push(ViewportResize(Size(w, h)))
 
       Result(model)
+
+    case Indigo.Msg.FullScreen(request) =>
+      model._canvas match
+        case None =>
+          Result(model)
+
+        case Some(canvas) =>
+          Result(model)
+            .addActions(Action.sideEffect(Indigo.runFullScreen(canvas, model.game, request)))
 
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
@@ -326,6 +338,20 @@ object Indigo:
       eventMapping: PartialIso[GlobalMsg, GlobalEvent],
       globalEventStream: GlobalEventCallback
   ): Watcher =
+    val toMsgHandler: GlobalEvent => Option[GlobalMsg] = {
+      case EnterFullScreen =>
+        Some(Indigo.Msg.FullScreen(FullScreenRequest.Enter))
+
+      case ExitFullScreen =>
+        Some(Indigo.Msg.FullScreen(FullScreenRequest.Exit))
+
+      case ToggleFullScreen =>
+        Some(Indigo.Msg.FullScreen(FullScreenRequest.Toggle))
+
+      case event =>
+        eventMapping.from(event)
+    }
+    
     val sub = Sub.Observe[IO, GlobalEvent, GlobalMsg, Unit](
       id = "indigo-event-exchange-" + extensionId.toString,
       acquire = (callback: Either[Throwable, GlobalEvent] => Unit) =>
@@ -336,7 +362,7 @@ object Indigo:
         IO(
           globalEventStream.clearEventCallback()
         ),
-      toMsg = (event: GlobalEvent) => eventMapping.from(event)
+      toMsg = toMsgHandler
     )
     Watcher(sub)
 
@@ -414,6 +440,37 @@ object Indigo:
     case Launch(status: LaunchStatus)
     case WorldEvents(events: Batch[GlobalEvent])
     case CanvasResize(width: Int, height: Int)
+    case FullScreen(request: FullScreenRequest)
+
+  enum FullScreenRequest derives CanEqual:
+    case Enter, Exit, Toggle
+
+  // Running as a cheeky Future, might be worth revisiting sometime...
+  private def runFullScreen(canvas: html.Canvas, game: Game[?, ?, ?], request: FullScreenRequest): Unit =
+    import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
+    
+    request match
+      case FullScreenRequest.Enter =>
+        canvas.requestFullscreen().toFuture.onComplete {
+          case Success(_) =>
+            game.events.push(FullScreenEntered)
+            
+          case Failure(_) =>
+            game.events.push(FullScreenEnterError)
+        }
+
+      case FullScreenRequest.Exit =>
+        document.exitFullscreen().toFuture.onComplete {
+          case Success(_) =>
+            game.events.push(FullScreenExited)
+            
+          case Failure(_) =>
+            game.events.push(FullScreenExitError)
+        }
+
+      case FullScreenRequest.Toggle =>
+        if Option(document.fullscreenElement).isEmpty then runFullScreen(canvas, game, FullScreenRequest.Enter)
+        else runFullScreen(canvas, game, FullScreenRequest.Exit)
 
   enum TickUpdateResult derives CanEqual:
     case Wait

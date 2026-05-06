@@ -111,7 +111,7 @@ final class GameEngine[StartUpData, GameModel](
 
     IndigoLogger.info("Starting Indigo")
 
-    globalEventStream = new GlobalEventStream(audioPlayer, platform)
+    globalEventStream = new GlobalEventStream(audioPlayer)
     gamepadInputCapture = services.gamepadInputCapture
 
     // Intialisation / Boot events
