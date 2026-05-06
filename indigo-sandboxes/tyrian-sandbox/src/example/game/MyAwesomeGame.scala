@@ -18,7 +18,7 @@ final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Unit]] =
     Outcome(
-      BootResult.noData(GameConfig.default)
+      BootResult.noData(EngineConfig.default)
     )
 
   def initialModel(startupData: Unit): Outcome[Unit] =

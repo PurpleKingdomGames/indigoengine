@@ -138,18 +138,6 @@ object aliases:
   type SubSystemId = shared.subsystems.SubSystemId
   val SubSystemId: shared.subsystems.SubSystemId.type = shared.subsystems.SubSystemId
 
-  /** defaultGameConfig Provides a useful default config set up:
-    *   - Game Viewport = 550 x 400
-    *   - FPS = 30
-    *   - Clear color = Black
-    *   - Magnification = 1
-    *   - No advanced settings enabled
-    * @return
-    *   A GameConfig instance
-    */
-  val defaultGameConfig: indigo.core.config.GameConfig =
-    indigo.core.config.GameConfig.default
-
   /** noRender Convenience value, alias for SceneUpdateFragment.empty
     * @return
     *   An Empty SceneUpdateFragment
@@ -340,8 +328,8 @@ object aliases:
   type AssetType = indigo.core.assets.AssetType
   val AssetType: indigo.core.assets.AssetType.type = indigo.core.assets.AssetType
 
-  type GameConfig = indigo.core.config.GameConfig
-  val GameConfig: indigo.core.config.GameConfig.type = indigo.core.config.GameConfig
+  type EngineConfig = indigo.core.config.EngineConfig
+  val EngineConfig: indigo.core.config.EngineConfig.type = indigo.core.config.EngineConfig
 
   val IndigoLogger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 

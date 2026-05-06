@@ -228,7 +228,7 @@ trait Game[BootData, StartUpData, Model]:
           indigoGame(b).start(
             canvas,
             context,
-            b.gameConfig,
+            b.engineConfig,
             Future(None),
             b.assets,
             Future(Set()),
@@ -255,7 +255,7 @@ object Game:
 
     /** Your shader's default configuration settings, values like the viewport size can be overriden with flags.
       */
-    def config: GameConfig
+    def config: EngineConfig
 
     /** A fixed set of assets that will be loaded before the game starts, typically for loading an external shader file.
       */

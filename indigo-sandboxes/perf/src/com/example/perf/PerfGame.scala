@@ -27,7 +27,7 @@ final class PerfGame extends Game[Unit, Dude, DudeModel]:
     Outcome {
       BootResult
         .noData(
-          GameConfig.default
+          EngineConfig.default
             .withClearColor(RGBA(0.4, 0.2, 0.5, 1))
             .withTransparentBackground(false)
             .withBatchSize(512)

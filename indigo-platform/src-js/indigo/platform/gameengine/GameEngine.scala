@@ -4,7 +4,7 @@ import indigo.core.Outcome
 import indigo.core.animation.*
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetType
-import indigo.core.config.GameConfig
+import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
@@ -67,7 +67,7 @@ final class GameEngine[StartUpData, GameModel](
     AudioPlayer.init
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameConfig: GameConfig = null
+  var engineConfig: EngineConfig = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -101,8 +101,8 @@ final class GameEngine[StartUpData, GameModel](
   def start(
       canvas: html.Canvas,
       context: WebGL2RenderingContext,
-      config: GameConfig,
-      configAsync: Future[Option[GameConfig]],
+      config: EngineConfig,
+      configAsync: Future[Option[EngineConfig]],
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       bootEvents: Batch[GlobalEvent],
@@ -124,9 +124,9 @@ final class GameEngine[StartUpData, GameModel](
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
-      gameConfig = gc
+      engineConfig = gc
 
-      IndigoLogger.info("Configuration: " + gameConfig.asString)
+      IndigoLogger.info("Configuration: " + engineConfig.asString)
 
       // Arrange initial asset load
       IndigoLogger.info("Attempting to load assets")
@@ -168,7 +168,7 @@ final class GameEngine[StartUpData, GameModel](
 
         if firstRun then
           platform = new JsPlatform(
-            gameConfig,
+            engineConfig,
             globalEventStream
           )
 
@@ -216,7 +216,7 @@ final class GameEngine[StartUpData, GameModel](
                   this,
                   boundaryLocator,
                   sceneProcessor,
-                  gameConfig,
+                  engineConfig,
                   m,
                   frameProccessor,
                   !firstRun, // If this isn't the first run, start with it frame locked.
@@ -358,7 +358,7 @@ object GameEngine {
       gameEngine: GameEngine[StartUpData, GameModel],
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
-      gameConfig: GameConfig,
+      engineConfig: EngineConfig,
       initialModel: GameModel,
       frameProccessor: FrameProcessor[StartUpData, GameModel],
       startFrameLocked: Boolean,
@@ -370,7 +370,7 @@ object GameEngine {
         boundaryLocator,
         sceneProcessor,
         gameEngine,
-        gameConfig,
+        engineConfig,
         initialModel,
         frameProccessor,
         startFrameLocked,

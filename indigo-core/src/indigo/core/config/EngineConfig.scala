@@ -2,9 +2,7 @@ package indigo.core.config
 
 import indigoengine.shared.datatypes.RGBA
 
-// TODO: Is this just RenderConfig now? There is something called that, but it's a little different.
-
-/** All the base settings needed to get a game up and running.
+/** The knobs and dials of the engine - render-time settings, batching, and shader bootstrapping.
   *
   * @param clearColor
   *   Default background colour. Defaults to Black.
@@ -16,7 +14,7 @@ import indigoengine.shared.datatypes.RGBA
   *   Should all the standard shaders be made available by default? They can be added individually / manually if you
   *   prefer. Defaults to true, to include them.
   */
-final case class GameConfig(
+final case class EngineConfig(
     clearColor: RGBA,
     transparentBackground: Boolean,
     batchSize: Int,
@@ -25,7 +23,7 @@ final case class GameConfig(
 
   lazy val asString: String =
     s"""
-       |Standard settings
+       |Engine settings
        |- Clear color:             {red: ${clearColor.r.toString()}, green: ${clearColor.g
         .toString()}, blue: ${clearColor.b
         .toString()}, alpha: ${clearColor.a.toString()}}
@@ -34,26 +32,26 @@ final case class GameConfig(
        |- Auto-Load Shaders:       ${autoLoadStandardShaders.toString}
        |""".stripMargin
 
-  def withClearColor(clearColor: RGBA): GameConfig =
+  def withClearColor(clearColor: RGBA): EngineConfig =
     this.copy(clearColor = clearColor)
 
-  def withTransparentBackground(enabled: Boolean): GameConfig =
+  def withTransparentBackground(enabled: Boolean): EngineConfig =
     this.copy(transparentBackground = enabled)
-  def useTransparentBackground: GameConfig =
+  def useTransparentBackground: EngineConfig =
     withTransparentBackground(true)
-  def noTransparentBackground: GameConfig =
+  def noTransparentBackground: EngineConfig =
     withTransparentBackground(false)
 
-  def withBatchSize(size: Int): GameConfig =
+  def withBatchSize(size: Int): EngineConfig =
     this.copy(batchSize = size)
 
-  def withAutoLoadStandardShaders(autoLoad: Boolean): GameConfig =
+  def withAutoLoadStandardShaders(autoLoad: Boolean): EngineConfig =
     this.copy(autoLoadStandardShaders = autoLoad)
 
-object GameConfig:
+object EngineConfig:
 
-  val default: GameConfig =
-    GameConfig(
+  val default: EngineConfig =
+    EngineConfig(
       clearColor = RGBA.Black,
       transparentBackground = false,
       batchSize = 256,

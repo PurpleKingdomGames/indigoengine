@@ -2,7 +2,7 @@ package indigo
 
 import indigo.core.animation.Animation
 import indigo.core.assets.AssetType
-import indigo.core.config.GameConfig
+import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
 import indigo.shaders.ShaderProgram
 import indigo.shared.subsystems.SubSystem
@@ -14,7 +14,7 @@ import indigo.shared.subsystems.SubSystem
   * phase.
   */
 final case class BootResult[BootData, Model](
-    gameConfig: GameConfig,
+    engineConfig: EngineConfig,
     bootData: BootData,
     animations: Set[Animation],
     assets: Set[AssetType],
@@ -69,13 +69,15 @@ final case class BootResult[BootData, Model](
     withShaders(newShaders.toSet)
 
 object BootResult:
-  def apply[BootData, Model](gameConfig: GameConfig, bootData: BootData): BootResult[BootData, Model] =
-    new BootResult[BootData, Model](gameConfig, bootData, Set(), Set(), Set(), Set(), Set())
+  def apply[BootData, Model](engineConfig: EngineConfig, bootData: BootData): BootResult[BootData, Model] =
+    new BootResult[BootData, Model](engineConfig, bootData, Set(), Set(), Set(), Set(), Set())
 
-  def noData[Model](gameConfig: GameConfig): BootResult[Unit, Model] =
-    apply(gameConfig, ())
-  def configOnly[Model](gameConfig: GameConfig): BootResult[Unit, Model] =
-    noData(gameConfig)
+  def noData[Model](engineConfig: EngineConfig): BootResult[Unit, Model] =
+    apply(engineConfig, ())
+  def configOnly[Model](engineConfig: EngineConfig): BootResult[Unit, Model] =
+    noData(engineConfig)
 
   def default[Model]: BootResult[Unit, Model] =
-    noData(GameConfig.default)
+    noData(EngineConfig.default)
+  def empty[Model]: BootResult[Unit, Model] =
+    noData(EngineConfig.default)

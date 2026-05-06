@@ -60,7 +60,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] =
     Outcome(
       BootResult(
-        GameConfig.default
+        EngineConfig.default
           .withClearColor(RGBA(0.4, 0.2, 0.5, 1)),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(

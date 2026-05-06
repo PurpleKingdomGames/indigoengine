@@ -2,7 +2,7 @@ package indigo.platform
 
 import indigo.core.Outcome
 import indigo.core.assets.AssetName
-import indigo.core.config.GameConfig
+import indigo.core.config.EngineConfig
 import indigo.core.datatypes.Vector2
 import indigo.core.events.FullScreenEnterError
 import indigo.core.events.FullScreenEntered
@@ -16,7 +16,6 @@ import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.render.Renderer
-import indigo.render.RendererConfig
 import indigo.render.RendererInitialiser
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.assets.AssetMapping
@@ -34,7 +33,7 @@ import scala.util.Failure
 import scala.util.Success
 
 class JsPlatform(
-    gameConfig: GameConfig,
+    engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream
 ) extends Platform
     with PlatformFullScreen {
@@ -55,7 +54,7 @@ class JsPlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, context, shaders)
+      renderer            <- startRenderer(engineConfig, loadedTextureAssets, canvas, context, shaders)
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
@@ -112,7 +111,7 @@ class JsPlatform(
     )
 
   def startRenderer(
-      gameConfig: GameConfig,
+      engineConfig: EngineConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
       canvas: Canvas,
       context: WebGL2RenderingContext,
@@ -121,11 +120,7 @@ class JsPlatform(
     Outcome {
       IndigoLogger.info("Starting renderer")
       rendererInit.setup(
-        new RendererConfig(
-          clearColor = gameConfig.clearColor,
-          maxBatchSize = gameConfig.batchSize,
-          transparentBackground = gameConfig.transparentBackground
-        ),
+        engineConfig,
         loadedTextureAssets,
         canvas,
         context,

@@ -1,7 +1,7 @@
 package indigo.render
 
+import indigo.core.config.EngineConfig
 import indigo.render.Renderer
-import indigo.render.RendererConfig
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.webgl2.ContextAndCanvas
 import indigo.render.webgl2.LoadedTextureAsset
@@ -14,7 +14,7 @@ import scala.scalajs.js.JSConverters.*
 final class RendererInitialiser() {
 
   def setup(
-      config: RendererConfig,
+      config: EngineConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
       canvas: html.Canvas,
       context: WebGL2RenderingContext,

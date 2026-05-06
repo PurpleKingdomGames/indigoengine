@@ -1,7 +1,7 @@
 package indigo.platform.gameengine
 
 import indigo.core.Outcome
-import indigo.core.config.GameConfig
+import indigo.core.config.EngineConfig
 import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
@@ -27,7 +27,7 @@ final class GameLoop[StartUpData, GameModel](
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[StartUpData, GameModel],
-    gameConfig: GameConfig,
+    engineConfig: EngineConfig,
     initialModel: GameModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
@@ -122,7 +122,7 @@ final class GameLoop[StartUpData, GameModel](
       gameTime,
       scene,
       gameEngine.assetMapping,
-      gameConfig.batchSize,
+      engineConfig.batchSize,
       events,
       gameEngine.globalEventStream.pushGlobalEvent
     )

@@ -3,13 +3,13 @@ package indigo.render.webgl2
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
+import indigo.core.config.EngineConfig
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.utils.QuickCache
 import indigo.render.Renderer
-import indigo.render.RendererConfig
 import indigo.render.ScreenCaptureConfig
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.datatypes.ProcessedSceneData
@@ -32,7 +32,7 @@ import scala.scalajs.js.typedarray.Float32Array
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
-    config: RendererConfig,
+    config: EngineConfig,
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
     cNc: ContextAndCanvas
 ) extends Renderer {
@@ -97,7 +97,7 @@ final class RendererWebGL2(
     new LayerRenderer(
       gl2,
       textureLocations,
-      config.maxBatchSize,
+      config.batchSize,
       projectionUBOBuffer,
       frameDataUBOBuffer,
       cloneReferenceUBOBuffer,

@@ -191,7 +191,7 @@ final case class IndigoGenerators private (
         )
     )
 
-  /** Generate a module that provides a default `GameConfig` instance that is synchronised with your build settings.
+  /** Generate a module that provides a default `EngineConfig` instance that is synchronised with your build settings.
     *
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
