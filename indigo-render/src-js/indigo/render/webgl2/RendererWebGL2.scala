@@ -280,8 +280,6 @@ final class RendererWebGL2(
 
     gl2.bindVertexArray(vao)
 
-    resize(cNc.canvas)
-
     val frameData = scalajs.js.Array[Float](runningTime.toFloat, 0.0f, lastWidth.toFloat, lastHeight.toFloat)
     WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
 
@@ -431,31 +429,27 @@ final class RendererWebGL2(
     gl2.clear(COLOR_BUFFER_BIT)
   }
 
-  // TODO: Maybe this should now be _listening_ to the ViewportResize event?
-  def resize(canvas: html.Canvas): Unit = {
-    val (actualWidth, actualHeight) = (canvas.width, canvas.height)
-
-    if (!resizeRun || (lastWidth != actualWidth) || (lastHeight != actualHeight)) {
+  def resize(width: Int, height: Int): Unit =
+    if (!resizeRun || (lastWidth != width) || (lastHeight != height)) {
       resizeRun = true
-      lastWidth = actualWidth
-      lastHeight = actualHeight
+      lastWidth = width
+      lastHeight = height
 
-      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat)
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(width.toFloat, height.toFloat)
       defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toJSArray
-      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toJSArray
+      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(width.toFloat, height.toFloat).toJSArray
       orthographicProjectionMatrixNoMagFlipped =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toJSArray
+        CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
 
-      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
 
-      gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
+      gl.viewport(0, 0, width.toDouble, height.toDouble)
 
       ()
     }
-  }
 
 }

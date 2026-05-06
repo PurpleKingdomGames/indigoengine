@@ -7,6 +7,7 @@ import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
 import indigo.core.events.InputEvent
 import indigo.core.events.InputState
+import indigo.core.events.ViewportResize
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
@@ -126,6 +127,11 @@ final class GameLoop[StartUpData, GameModel](
       events,
       gameEngine.globalEventStream.pushGlobalEvent
     )
+
+    // Apply any viewport resize (Tyrian pushes ViewportResize when the canvas is resized)
+    events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
+      gameEngine.renderer.resize(e.newSize.width, e.newSize.height)
+    }
 
     // Render scene
     gameEngine.renderer.drawScene(sceneData, gameTime.running)
