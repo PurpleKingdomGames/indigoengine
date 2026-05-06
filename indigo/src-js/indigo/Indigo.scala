@@ -351,7 +351,7 @@ object Indigo:
       case event =>
         eventMapping.from(event)
     }
-    
+
     val sub = Sub.Observe[IO, GlobalEvent, GlobalMsg, Unit](
       id = "indigo-event-exchange-" + extensionId.toString,
       acquire = (callback: Either[Throwable, GlobalEvent] => Unit) =>
@@ -448,13 +448,13 @@ object Indigo:
   // Running as a cheeky Future, might be worth revisiting sometime...
   private def runFullScreen(canvas: html.Canvas, game: Game[?, ?, ?], request: FullScreenRequest): Unit =
     import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
-    
+
     request match
       case FullScreenRequest.Enter =>
         canvas.requestFullscreen().toFuture.onComplete {
           case Success(_) =>
             game.events.push(FullScreenEntered)
-            
+
           case Failure(_) =>
             game.events.push(FullScreenEnterError)
         }
@@ -463,7 +463,7 @@ object Indigo:
         document.exitFullscreen().toFuture.onComplete {
           case Success(_) =>
             game.events.push(FullScreenExited)
-            
+
           case Failure(_) =>
             game.events.push(FullScreenExitError)
         }
