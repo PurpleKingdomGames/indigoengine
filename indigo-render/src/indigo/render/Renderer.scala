@@ -13,6 +13,7 @@ trait Renderer:
   def orthographicProjectionMatrix: CheapMatrix4
 
   def init(shaders: Set[RawShaderCode]): Unit
+  def resize(width: Int, height: Int): Unit
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
 
   /** Capture the screen as a number of images, each with the specified configuration
@@ -33,6 +34,7 @@ object Renderer:
       def orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
       def init(shaders: Set[RawShaderCode]): Unit                              = ()
+      def resize(width: Int, height: Int): Unit                                = ()
       def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
       def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] = Batch(
         Left("No renderer available")
