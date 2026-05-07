@@ -29,7 +29,6 @@ import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.annotation.nowarn
-import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 
@@ -177,7 +176,10 @@ trait Game[BootData, StartUpData, Model]:
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
-  private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model] = {
+  private def indigoGame(
+      bootUp: BootResult[BootData, Model],
+      services: IndigoCoreServices
+  ): GameEngine[StartUpData, Model] = {
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
@@ -203,6 +205,8 @@ trait Game[BootData, StartUpData, Model]:
       )
 
     new GameEngine[StartUpData, Model](
+      services,
+      bootUp.engineConfig,
       bootUp.fonts,
       bootUp.animations,
       bootUp.shaders,
@@ -227,7 +231,7 @@ trait Game[BootData, StartUpData, Model]:
         throw e
 
       case Outcome.Result(b, evts) =>
-        val engine = indigoGame(b)
+        val engine = indigoGame(b, services)
 
         _push = Some(engine.globalEventStream)
         _pull = Some(engine.globalEventStream)
@@ -237,11 +241,8 @@ trait Game[BootData, StartUpData, Model]:
             engine.start(
               canvas,
               context,
-              b.engineConfig,
-              Future(None),
               ac,
-              evts,
-              services
+              evts
             )
 
           case Failure(e) =>
