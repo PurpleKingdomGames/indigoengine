@@ -1,51 +1,20 @@
-package indigo.platform.assets
+package indigo.internal.assets
 
 import indigo.core.assets.AssetType
-import indigo.core.datatypes.BindingKey
-import indigo.core.events.AssetEvent
 import indigo.core.utils.IndigoLogger
-import indigo.platform.IndigoSystemEvent
+import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.LoadedAudioAsset
+import indigo.platform.assets.LoadedImageAsset
+import indigo.platform.assets.LoadedTextAsset
 import indigo.platform.audio.AudioPlayer
-import indigo.platform.events.GlobalEventStream
 import org.scalajs.dom
 import org.scalajs.dom.*
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.scalajs.js
-import scala.util.Failure
-import scala.util.Success
 
 object AssetLoader:
-
-  def backgroundLoadAssets(
-      globalEventStream: GlobalEventStream,
-      assets: Set[AssetType],
-      key: BindingKey,
-      makeAvailable: Boolean
-  ): Unit = {
-    val assetList: List[AssetType] =
-      assets.toList.flatMap(_.toList)
-
-    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: $key")
-
-    loadAssets(assets)
-      .onComplete {
-        case Success(ac) if makeAvailable =>
-          globalEventStream.pushGlobalEvent(
-            IndigoSystemEvent.Rebuild(ac, AssetEvent.AssetBatchLoaded(key, assets, true))
-          )
-
-        case Success(_) =>
-          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, assets, false))
-
-        case Failure(e) =>
-          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key, e.getMessage()))
-      }
-
-    ()
-  }
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     val assetList: List[AssetType] =
@@ -135,7 +104,6 @@ object AssetLoader:
   val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
     audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
 

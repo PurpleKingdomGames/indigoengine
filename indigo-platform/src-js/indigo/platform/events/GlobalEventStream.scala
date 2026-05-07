@@ -1,9 +1,7 @@
 package indigo.platform.events
 
-import indigo.core.events.AssetEvent
 import indigo.core.events.GlobalEvent
 import indigo.core.events.PlaySound
-import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.render.EmitGlobalEvent
 import indigoengine.shared.collections.Batch
@@ -37,13 +35,6 @@ final class GlobalEventStream(
     // Audio
     case PlaySound(assetName, volume, switch) =>
       audioPlayer.playSound(assetName, volume, switch)
-
-    // Assets
-    case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
-      AssetLoader.backgroundLoadAssets(this, batch, key, makeAvailable)
-
-    case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
-      AssetLoader.backgroundLoadAssets(this, Set(asset), key, makeAvailable)
 
     // Default
     case e =>

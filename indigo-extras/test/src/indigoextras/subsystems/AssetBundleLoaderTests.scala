@@ -31,7 +31,9 @@ class AssetBundleLoaderTests extends munit.FunSuite {
     assertEquals(defaultAssets.length + 1, loadOutcome.unsafeGlobalEvents.length)
     assertEquals(
       defaultAssets.forall { asset =>
-        loadOutcome.unsafeGlobalEvents.contains(AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
+        loadOutcome.unsafeGlobalEvents.contains(
+          AssetEvent.LoadAssets(Set(asset), BindingKey(asset.path.toString), false)
+        )
       },
       true
     )
@@ -73,7 +75,7 @@ class AssetBundleLoaderTests extends munit.FunSuite {
     assertEquals(nextLoader3.unsafeGlobalEvents.length, 2)
     assertEquals(nextLoader3.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)), true)
     assertEquals(
-      nextLoader3.unsafeGlobalEvents.contains(AssetEvent.LoadAssetBatch(defaultAssets.toSet, key, true)),
+      nextLoader3.unsafeGlobalEvents.contains(AssetEvent.LoadAssets(defaultAssets.toSet, key, true)),
       true
     )
     // Once the whole bundle has finished, a completion event is emitted.
@@ -105,7 +107,9 @@ class AssetBundleLoaderTests extends munit.FunSuite {
     assertEquals(defaultAssets.length + 1, loadOutcome.unsafeGlobalEvents.length)
     assertEquals(
       defaultAssets.forall { asset =>
-        loadOutcome.unsafeGlobalEvents.contains(AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
+        loadOutcome.unsafeGlobalEvents.contains(
+          AssetEvent.LoadAssets(Set(asset), BindingKey(asset.path.toString), false)
+        )
       },
       true
     )

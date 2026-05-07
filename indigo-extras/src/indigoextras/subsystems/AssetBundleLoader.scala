@@ -89,7 +89,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
     val events: Batch[GlobalEvent] =
       Batch.fromList(
         assetPrimitives
-          .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
+          .map(asset => AssetEvent.LoadAssets(Set(asset), BindingKey(asset.path.toString), false))
       )
 
     Outcome(
@@ -112,7 +112,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
             case AssetBundleStatus.LoadComplete(completed, count) =>
               List(
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
-                AssetEvent.LoadAssetBatch(bundle.giveAssetSet, bundle.key, true)
+                AssetEvent.LoadAssets(bundle.giveAssetSet, bundle.key, true)
               )
 
             case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
