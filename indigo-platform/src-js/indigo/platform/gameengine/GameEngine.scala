@@ -32,12 +32,12 @@ import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom.html
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.compiletime.uninitialized
-import scala.concurrent.Future
 
 final class GameEngine[StartUpData, GameModel](
+    services: IndigoCoreServices,
+    engineConfig: EngineConfig,
     fonts: Set[FontInfo],
     animations: Set[Animation],
     shaders: Set[ShaderProgram],
@@ -68,10 +68,7 @@ final class GameEngine[StartUpData, GameModel](
   val globalEventStream: GlobalEventStream =
     new GlobalEventStream(audioPlayer)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var engineConfig: EngineConfig = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gamepadInputCapture: GamepadInputCapture = null
+  val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
@@ -98,37 +95,27 @@ final class GameEngine[StartUpData, GameModel](
 
     ()
 
-  // TODO: Can we remove configAsync?
   def start(
       canvas: html.Canvas,
       context: WebGL2RenderingContext,
-      config: EngineConfig,
-      configAsync: Future[Option[EngineConfig]],
       assetCollection: AssetCollection,
-      bootEvents: Batch[GlobalEvent],
-      services: IndigoCoreServices
+      bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
-
-    gamepadInputCapture = services.gamepadInputCapture
 
     // Intialisation / Boot events
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
     bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-    if (config.autoLoadStandardShaders)
+    if (engineConfig.autoLoadStandardShaders)
       StandardShaders.all.foreach(shaderRegister.register)
     else shaderRegister.register(StandardShaders.NormalBlend)
 
     // Arrange config
-    configAsync.map(_.getOrElse(config)).foreach { gc =>
-      engineConfig = gc
+    IndigoLogger.info("Configuration: " + engineConfig.asString)
 
-      IndigoLogger.info("Configuration: " + engineConfig.asString)
-
-      rebuildGameLoop(canvas, context, true)(assetCollection)(Seconds.zero)
-    }
+    rebuildGameLoop(canvas, context, true)(assetCollection)(Seconds.zero)
 
     this
   }
