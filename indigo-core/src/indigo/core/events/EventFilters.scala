@@ -21,16 +21,17 @@ final case class EventFilters(
 
 object EventFilters {
   private def fromAccessControl(ac: AccessControl): GlobalEvent => Option[GlobalEvent] = {
-    case FrameTick         => Option.when(ac.allowFrameTick)(FrameTick)
-    case e: KeyboardEvent  => Option.when(ac.allowKeyboardEvents)(e)
-    case e: MouseEvent     => Option.when(ac.allowMouseEvents)(e)
-    case e: PointerEvent   => Option.when(ac.allowPointerEvents)(e)
-    case e: PenEvent       => Option.when(ac.allowPenEvents)(e)
-    case e: TouchEvent     => Option.when(ac.allowTouchEvents)(e)
-    case e: SubSystemEvent => Option.when(ac.allowSubSystemEvents)(e)
-    case e: ViewEvent      => Option.when(ac.allowViewEvents)(e)
-    case e: AssetEvent     => Option.when(ac.allowAssetEvents)(e)
-    case e                 => Option.when(ac.allowCustomEvents)(e)
+    case FrameTick          => Option.when(ac.allowFrameTick)(FrameTick)
+    case e: KeyboardEvent   => Option.when(ac.allowKeyboardEvents)(e)
+    case e: MouseEvent      => Option.when(ac.allowMouseEvents)(e)
+    case e: PointerEvent    => Option.when(ac.allowPointerEvents)(e)
+    case e: PenEvent        => Option.when(ac.allowPenEvents)(e)
+    case e: TouchEvent      => Option.when(ac.allowTouchEvents)(e)
+    case e: SubSystemEvent  => Option.when(ac.allowSubSystemEvents)(e)
+    case e: ViewportResize  => Option.when(ac.allowViewEvents)(e)
+    case e: FullScreenEvent => Option.when(ac.allowViewEvents)(e)
+    case e: AssetEvent      => Option.when(ac.allowAssetEvents)(e)
+    case e                  => Option.when(ac.allowCustomEvents)(e)
   }
 
   /** Access controlled event filters are a convienient way to have explicit control which events arrive at which
@@ -77,7 +78,10 @@ object EventFilters {
       case _: SubSystemEvent =>
         None
 
-      case _: ViewEvent =>
+      case _: ViewportResize =>
+        None
+
+      case _: FullScreenEvent =>
         None
 
       case e =>

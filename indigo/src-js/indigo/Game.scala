@@ -400,7 +400,7 @@ object Game:
         Outcome(model.copy(viewport = size))
 
       case KeyboardEvent.KeyUp(Key.KEY_F) =>
-        Outcome(model, Batch(ToggleFullScreen))
+        Outcome(model, Batch(FullScreenEvent.Toggle))
 
       case _ =>
         Outcome(model)

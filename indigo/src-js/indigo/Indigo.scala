@@ -348,13 +348,13 @@ object Indigo:
       globalEventStream: GlobalEventCallback
   ): Watcher =
     val toMsgHandler: GlobalEvent => Option[GlobalMsg] = {
-      case EnterFullScreen =>
+      case FullScreenEvent.Enter =>
         Some(Indigo.Msg.FullScreen(FullScreenRequest.Enter))
 
-      case ExitFullScreen =>
+      case FullScreenEvent.Exit =>
         Some(Indigo.Msg.FullScreen(FullScreenRequest.Exit))
 
-      case ToggleFullScreen =>
+      case FullScreenEvent.Toggle =>
         Some(Indigo.Msg.FullScreen(FullScreenRequest.Toggle))
 
       case AssetEvent.LoadAssets(batch, key, makeAvailable) =>
@@ -466,19 +466,19 @@ object Indigo:
       case FullScreenRequest.Enter =>
         canvas.requestFullscreen().toFuture.onComplete {
           case Success(_) =>
-            game.events.push(FullScreenEntered)
+            game.events.push(FullScreenEvent.Entered)
 
           case Failure(_) =>
-            game.events.push(FullScreenEnterError)
+            game.events.push(FullScreenEvent.EnterError)
         }
 
       case FullScreenRequest.Exit =>
         document.exitFullscreen().toFuture.onComplete {
           case Success(_) =>
-            game.events.push(FullScreenExited)
+            game.events.push(FullScreenEvent.Exited)
 
           case Failure(_) =>
-            game.events.push(FullScreenExitError)
+            game.events.push(FullScreenEvent.ExitError)
         }
 
       case FullScreenRequest.Toggle =>

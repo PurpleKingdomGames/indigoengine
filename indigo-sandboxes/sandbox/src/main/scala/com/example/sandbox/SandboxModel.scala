@@ -384,17 +384,17 @@ object SandboxModel {
     // case KeyboardEvent.KeyUp(Key.KEY_F) =>
     //   println("Toggle full screen mode...")
     //   Outcome(state)
-    //     .addGlobalEvents(ToggleFullScreen)
+    //     .addGlobalEvents(FullScreenEvent.Toggle)
 
     // case KeyboardEvent.KeyUp(Key.KEY_E) =>
     //   println("Enter full screen mode...")
     //   Outcome(state)
-    //     .addGlobalEvents(EnterFullScreen)
+    //     .addGlobalEvents(FullScreenEvent.Enter)
 
     // case KeyboardEvent.KeyUp(Key.KEY_X) =>
     //   println("Exit full screen mode...")
     //   Outcome(state)
-    //     .addGlobalEvents(ExitFullScreen)
+    //     .addGlobalEvents(FullScreenEvent.Exit)
 
     case KeyboardEvent.KeyUp(_) =>
       Outcome(
@@ -441,11 +441,11 @@ object SandboxModel {
 
       Outcome(viewModel.copy(offset = updateOffset))
 
-    case FullScreenEntered =>
+    case FullScreenEvent.Entered =>
       println("Entered full screen mode")
       Outcome(viewModel)
 
-    case FullScreenExited =>
+    case FullScreenEvent.Exited =>
       println("Exited full screen mode")
       Outcome(viewModel)
 

@@ -149,7 +149,6 @@ object aliases:
 
   type GlobalEvent    = indigo.core.events.GlobalEvent
   type SubSystemEvent = indigo.core.events.SubSystemEvent
-  type ViewEvent      = indigo.core.events.ViewEvent
   type InputEvent     = indigo.core.events.InputEvent
 
   type EventFilters = indigo.core.events.EventFilters
@@ -161,17 +160,11 @@ object aliases:
   type ViewportResize = indigo.core.events.ViewportResize
   val ViewportResize: indigo.core.events.ViewportResize.type = indigo.core.events.ViewportResize
 
-  val ToggleFullScreen: indigo.core.events.ToggleFullScreen.type             = indigo.core.events.ToggleFullScreen
-  val EnterFullScreen: indigo.core.events.EnterFullScreen.type               = indigo.core.events.EnterFullScreen
-  val ExitFullScreen: indigo.core.events.ExitFullScreen.type                 = indigo.core.events.ExitFullScreen
-  val FullScreenEntered: indigo.core.events.FullScreenEntered.type           = indigo.core.events.FullScreenEntered
-  val FullScreenEnterError: indigo.core.events.FullScreenEnterError.type     = indigo.core.events.FullScreenEnterError
-  val FullScreenExited: indigo.core.events.FullScreenExited.type             = indigo.core.events.FullScreenExited
-  val FullScreenExitError: indigo.core.events.FullScreenExitError.type       = indigo.core.events.FullScreenExitError
-  val ApplicationGainedFocus: indigo.core.events.ApplicationGainedFocus.type = indigo.core.events.ApplicationGainedFocus
-  val CanvasGainedFocus: indigo.core.events.CanvasGainedFocus.type           = indigo.core.events.CanvasGainedFocus
-  val ApplicationLostFocus: indigo.core.events.ApplicationLostFocus.type     = indigo.core.events.ApplicationLostFocus
-  val CanvasLostFocus: indigo.core.events.CanvasLostFocus.type               = indigo.core.events.CanvasLostFocus
+  type FullScreenEvent = indigo.core.events.FullScreenEvent
+  val FullScreenEvent: indigo.core.events.FullScreenEvent.type = indigo.core.events.FullScreenEvent
+
+  type FocusEvent = indigo.core.events.FocusEvent
+  val FocusEvent: indigo.core.events.FocusEvent.type = indigo.core.events.FocusEvent
 
   type InputState = indigo.core.events.InputState
   val InputState: indigo.core.events.InputState.type = indigo.core.events.InputState
