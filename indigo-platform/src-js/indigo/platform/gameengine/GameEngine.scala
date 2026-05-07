@@ -3,7 +3,6 @@ package indigo.platform.gameengine
 import indigo.core.Outcome
 import indigo.core.animation.*
 import indigo.core.assets.AssetName
-import indigo.core.assets.AssetType
 import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
 import indigo.core.dice.Dice
@@ -66,10 +65,11 @@ final class GameEngine[StartUpData, GameModel](
   val audioPlayer: AudioPlayer =
     AudioPlayer.init
 
+  val globalEventStream: GlobalEventStream =
+    new GlobalEventStream(audioPlayer)
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var engineConfig: EngineConfig = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gamepadInputCapture: GamepadInputCapture = null
 
@@ -98,20 +98,19 @@ final class GameEngine[StartUpData, GameModel](
 
     ()
 
+  // TODO: Can we remove configAsync?
   def start(
       canvas: html.Canvas,
       context: WebGL2RenderingContext,
       config: EngineConfig,
       configAsync: Future[Option[EngineConfig]],
-      assets: Set[AssetType],
-      assetsAsync: Future[Set[AssetType]],
+      assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent],
       services: IndigoCoreServices
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
-    globalEventStream = new GlobalEventStream(audioPlayer)
     gamepadInputCapture = services.gamepadInputCapture
 
     // Intialisation / Boot events
@@ -128,15 +127,7 @@ final class GameEngine[StartUpData, GameModel](
 
       IndigoLogger.info("Configuration: " + engineConfig.asString)
 
-      // Arrange initial asset load
-      IndigoLogger.info("Attempting to load assets")
-
-      assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
-        IndigoLogger.info("Asset load complete")
-
-        rebuildGameLoop(canvas, context, true)(assetCollection)(Seconds.zero)
-      }
-
+      rebuildGameLoop(canvas, context, true)(assetCollection)(Seconds.zero)
     }
 
     this

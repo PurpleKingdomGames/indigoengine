@@ -256,11 +256,8 @@ object aliases:
   type AssetEvent = indigo.core.events.AssetEvent
   val AssetEvent: indigo.core.events.AssetEvent.type = indigo.core.events.AssetEvent
 
-  type LoadAsset = indigo.core.events.AssetEvent.LoadAsset
-  val LoadAsset: indigo.core.events.AssetEvent.LoadAsset.type = indigo.core.events.AssetEvent.LoadAsset
-
-  type LoadAssetBatch = indigo.core.events.AssetEvent.LoadAssetBatch
-  val LoadAssetBatch: indigo.core.events.AssetEvent.LoadAssetBatch.type = indigo.core.events.AssetEvent.LoadAssetBatch
+  type LoadAssetBatch = indigo.core.events.AssetEvent.LoadAssets
+  val LoadAssetBatch: indigo.core.events.AssetEvent.LoadAssets.type = indigo.core.events.AssetEvent.LoadAssets
 
   type AssetBatchLoaded = indigo.core.events.AssetEvent.AssetBatchLoaded
   val AssetBatchLoaded: indigo.core.events.AssetEvent.AssetBatchLoaded.type =

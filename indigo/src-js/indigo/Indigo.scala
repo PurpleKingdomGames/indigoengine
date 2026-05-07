@@ -1,13 +1,18 @@
 package indigo
 
 import cats.effect.IO
+import indigo.core.assets.AssetType
+import indigo.core.datatypes.BindingKey
+import indigo.core.events.AssetEvent
 import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
 import indigo.internal.WorldEventWatchers
+import indigo.internal.assets.AssetLoader
 import indigo.internal.services.BrowserGamepadInputService
 import indigo.platform.IndigoCoreServices
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
+import indigo.shared.IndigoSystemEvent
 import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.ResizeObserver
 import org.scalajs.dom.document
@@ -104,6 +109,10 @@ final case class Indigo(
         case Some(canvas) =>
           Result(model)
             .addActions(Action.sideEffect(Indigo.runFullScreen(canvas, model.game, request)))
+
+    case Indigo.Msg.LoadAssets(assets, key, makeAvailable) =>
+      Result(model)
+        .addActions(Action.sideEffect(Indigo.runLoadAssets(model.game, assets, key, makeAvailable)))
 
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
@@ -348,6 +357,9 @@ object Indigo:
       case ToggleFullScreen =>
         Some(Indigo.Msg.FullScreen(FullScreenRequest.Toggle))
 
+      case AssetEvent.LoadAssets(batch, key, makeAvailable) =>
+        Some(Indigo.Msg.LoadAssets(batch, key, makeAvailable))
+
       case event =>
         eventMapping.from(event)
     }
@@ -441,6 +453,7 @@ object Indigo:
     case WorldEvents(events: Batch[GlobalEvent])
     case CanvasResize(width: Int, height: Int)
     case FullScreen(request: FullScreenRequest)
+    case LoadAssets(assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean)
 
   enum FullScreenRequest derives CanEqual:
     case Enter, Exit, Toggle
@@ -471,6 +484,25 @@ object Indigo:
       case FullScreenRequest.Toggle =>
         if Option(document.fullscreenElement).isEmpty then runFullScreen(canvas, game, FullScreenRequest.Enter)
         else runFullScreen(canvas, game, FullScreenRequest.Exit)
+
+  private def runLoadAssets(
+      game: Game[?, ?, ?],
+      assets: Set[AssetType],
+      key: BindingKey,
+      makeAvailable: Boolean
+  ): Unit =
+    import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
+
+    AssetLoader.loadAssets(assets).onComplete {
+      case Success(ac) if makeAvailable =>
+        game.events.push(IndigoSystemEvent.Rebuild(ac, AssetEvent.AssetBatchLoaded(key, assets, true)))
+
+      case Success(_) =>
+        game.events.push(AssetEvent.AssetBatchLoaded(key, assets, false))
+
+      case Failure(e) =>
+        game.events.push(AssetEvent.AssetBatchLoadError(key, e.getMessage))
+    }
 
   enum TickUpdateResult derives CanEqual:
     case Wait

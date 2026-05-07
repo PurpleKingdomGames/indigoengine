@@ -15,6 +15,9 @@ import indigoengine.shared.datatypes.Radians
 
 import scala.annotation.nowarn
 
+// TODO: Break this file up into individual files for each event type.
+//       Global event was once upon a time a sealed trait, but no longer.
+
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
   */
 trait GlobalEvent
@@ -1848,23 +1851,6 @@ object PlaySound:
 sealed trait AssetEvent extends GlobalEvent
 object AssetEvent {
 
-  /** Load a single asset (alias for `LoadAssetBatch`)
-    *
-    * You can load assets without a key if you just want them in the asset pool for future use, or you can specify a key
-    * so that you can track them as they come in.
-    *
-    * You can also decide whether to force the assets to be available or not. If they are available, then on load
-    * they're immediately added to the asset registers. If not then they are downloaded locally cached, but not added.
-    *
-    * @param asset
-    *   `AssetType` information
-    * @param key
-    *   A tracking key.
-    * @param makeAvailable
-    *   Make the asset available to the game, or just download it to local cache.
-    */
-  final case class LoadAsset(asset: AssetType, key: BindingKey, makeAvailable: Boolean) extends AssetEvent
-
   /** Load a batch of assets
     *
     * You can load assets without a key if you just want them in the asset pool for future use, or you can specify a key
@@ -1880,7 +1866,7 @@ object AssetEvent {
     * @param makeAvailable
     *   Make the asset available to the game, or just download it to local cache.
     */
-  final case class LoadAssetBatch(assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean) extends AssetEvent
+  final case class LoadAssets(assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean) extends AssetEvent
 
   /** The response event to `LoadAsset` or `LoadAssetBatch`.
     *

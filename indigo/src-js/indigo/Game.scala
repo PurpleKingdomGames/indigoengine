@@ -7,6 +7,7 @@ import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
 import indigo.frameprocessors.GameFrameProcessor
+import indigo.internal.assets.AssetLoader
 import indigo.platform.IndigoCoreServices
 import indigo.platform.assets.AssetCollection
 import indigo.platform.events.GlobalEventCallback
@@ -29,6 +30,8 @@ import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.annotation.nowarn
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Success
 
 /** A trait representing a game with scene management baked in
   *
@@ -224,20 +227,28 @@ trait Game[BootData, StartUpData, Model]:
         throw e
 
       case Outcome.Result(b, evts) =>
-        val engine =
-          indigoGame(b).start(
-            canvas,
-            context,
-            b.engineConfig,
-            Future(None),
-            b.assets,
-            Future(Set()),
-            evts,
-            services
-          )
+        val engine = indigoGame(b)
 
         _push = Some(engine.globalEventStream)
         _pull = Some(engine.globalEventStream)
+
+        AssetLoader.loadAssets(b.assets).onComplete {
+          case Success(ac) =>
+            engine.start(
+              canvas,
+              context,
+              b.engineConfig,
+              Future(None),
+              ac,
+              evts,
+              services
+            )
+
+          case Failure(e) =>
+            IndigoLogger.error("Error during asset load - Halting")
+            IndigoLogger.error(e.getMessage)
+            throw e
+        }
 
         engine
 

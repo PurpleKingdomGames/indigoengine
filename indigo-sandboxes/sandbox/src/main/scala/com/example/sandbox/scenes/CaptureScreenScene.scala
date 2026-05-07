@@ -67,7 +67,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
       Outcome(model)
         .addGlobalEvents(
-          AssetEvent.LoadAssetBatch(screenshots, BindingKey("captureScreen"), true)
+          AssetEvent.LoadAssets(screenshots, BindingKey("captureScreen"), true)
         )
 
     case AssetEvent.AssetBatchLoaded(key, assets, loaded) if key == BindingKey("captureScreen") && loaded =>
