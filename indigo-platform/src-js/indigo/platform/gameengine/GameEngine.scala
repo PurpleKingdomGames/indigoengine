@@ -47,41 +47,27 @@ final class GameEngine[StartUpData, GameModel](
     initialisationEvents: Batch[GlobalEvent]
 ) {
 
-  // TODO: A lot of this should probably be marked as private.
-
-  val stepsToLoad = 4
-  val animationsRegister: AnimationsRegister =
-    new AnimationsRegister()
-  val fontRegister: FontRegister =
-    new FontRegister()
-  val shaderRegister: ShaderRegister =
-    new ShaderRegister()
-
-  val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(animationsRegister, fontRegister)
-  val sceneProcessor: SceneProcessor =
-    new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
-
-  val audioPlayer: AudioPlayer =
-    AudioPlayer.init
-
-  val globalEventStream: GlobalEventStream =
-    new GlobalEventStream(audioPlayer)
-
-  val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
+  private val animationsRegister: AnimationsRegister = new AnimationsRegister()
+  private val fontRegister: FontRegister             = new FontRegister()
+  private val shaderRegister: ShaderRegister         = new ShaderRegister()
+  private val boundaryLocator: BoundaryLocator       = new BoundaryLocator(animationsRegister, fontRegister)
+  private val sceneProcessor: SceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+  private[gameengine] val audioPlayer: AudioPlayer                 = AudioPlayer.init
+  private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream(audioPlayer)
+  private[gameengine] val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
+  private var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
+  private var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var assetMapping: AssetMapping = null
+  private[gameengine] var assetMapping: AssetMapping = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var renderer: Renderer = null
+  private[gameengine] var renderer: Renderer = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var startUpData: StartUpData = uninitialized
+  private[gameengine] var startUpData: StartUpData = uninitialized
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var platform: JsPlatform = null
+  private var platform: JsPlatform = null
 
   def kill(): Unit =
     platform.kill()
