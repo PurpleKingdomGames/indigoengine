@@ -51,8 +51,6 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
-  val globalMagnificationLevel = 2
-
   def present(
       context: SceneContext[SandboxStartupData],
       model: PointersModel
@@ -66,13 +64,13 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
           ) ++ model.paint.map { point =>
             Shape.Circle(
               // Related: https://github.com/PurpleKingdomGames/indigo/issues/113
-              center = point * globalMagnificationLevel,
+              center = point,
               radius = 20,
               fill = Fill.Color(RGBA.Tomato),
               stroke = Stroke.None
             )
           }
-        ).withMagnification(1)
+        )
       )
     )
 
