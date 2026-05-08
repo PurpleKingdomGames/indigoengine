@@ -7,7 +7,7 @@ import indigoengine.shared.datatypes.RGBA
   * @param clearColor
   *   Default background colour. Defaults to Black.
   * @param transparentBackground
-  *   Make the canvas background transparent.
+  *   Make the background transparent.
   * @param batchSize
   *   How many scene nodes to batch together between draws, defaults to 256.
   * @param autoLoadStandardShaders

@@ -371,7 +371,6 @@ final class RendererWebGL2(
       ()
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def dispose(): Unit = {
     // Reset GL bindings on the shared context so nothing this renderer touched
     // remains live for whatever instance comes next.
