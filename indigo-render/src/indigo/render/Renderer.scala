@@ -1,10 +1,8 @@
 package indigo.render
 
-import indigo.core.assets.AssetType
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.shaders.RawShaderCode
-import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 trait Renderer:
@@ -15,15 +13,6 @@ trait Renderer:
   def init(shaders: Set[RawShaderCode]): Unit
   def resize(width: Int, height: Int): Unit
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
-
-  /** Capture the screen as a number of images, each with the specified configuration
-    *
-    * @param captureConfig
-    *   The configurations to use when capturing the screen
-    * @return
-    *   A batch containing either the captured images, or error messages
-    */
-  def captureScreen(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]]
 
 object Renderer:
 
@@ -36,7 +25,4 @@ object Renderer:
       def init(shaders: Set[RawShaderCode]): Unit                              = ()
       def resize(width: Int, height: Int): Unit                                = ()
       def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
-      def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] = Batch(
-        Left("No renderer available")
-      )
     }

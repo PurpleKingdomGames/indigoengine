@@ -4,6 +4,7 @@ import indigo.core.Outcome
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.Fill
 import indigo.core.datatypes.FontKey
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
@@ -11,7 +12,6 @@ import indigo.core.events.FrameTick
 import indigo.core.events.GlobalEvent
 import indigo.core.time.FPS
 import indigo.scenegraph.Layer
-import indigo.scenegraph.LayerKey
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.Shape
 import indigo.scenegraph.Text

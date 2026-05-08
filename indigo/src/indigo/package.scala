@@ -17,8 +17,8 @@ object aliases:
 
   export indigoengine.shared.aliases.*
 
-  type ScreenCaptureConfig = render.ScreenCaptureConfig
-  val ScreenCaptureConfig: render.ScreenCaptureConfig.type = render.ScreenCaptureConfig
+  type ScreenCaptureConfig = indigo.core.render.ScreenCaptureConfig
+  val ScreenCaptureConfig: indigo.core.render.ScreenCaptureConfig.type = indigo.core.render.ScreenCaptureConfig
 
   val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
@@ -384,8 +384,8 @@ object aliases:
   type LayerEntry = indigo.scenegraph.LayerEntry
   val LayerEntry: indigo.scenegraph.LayerEntry.type = indigo.scenegraph.LayerEntry
 
-  type LayerKey = indigo.scenegraph.LayerKey
-  val LayerKey: indigo.scenegraph.LayerKey.type = indigo.scenegraph.LayerKey
+  type LayerKey = indigo.core.datatypes.LayerKey
+  val LayerKey: indigo.core.datatypes.LayerKey.type = indigo.core.datatypes.LayerKey
 
   type Blending = indigo.scenegraph.Blending
   val Blending: indigo.scenegraph.Blending.type = indigo.scenegraph.Blending

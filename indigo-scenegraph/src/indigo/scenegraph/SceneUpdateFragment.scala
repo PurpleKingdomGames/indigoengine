@@ -1,5 +1,6 @@
 package indigo.scenegraph
 
+import indigo.core.datatypes.LayerKey
 import indigo.scenegraph.materials.BlendMaterial
 import indigoengine.shared.collections.Batch
 

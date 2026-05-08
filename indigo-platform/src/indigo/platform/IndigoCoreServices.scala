@@ -12,7 +12,6 @@ trait IndigoCoreServices:
   /*
   TODO, missing services:
     - Image service, for copying image data from one image to another
-    - Screen Capture service
    */
 
 object IndigoCoreServices:

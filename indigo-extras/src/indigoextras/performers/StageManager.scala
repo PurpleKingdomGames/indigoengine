@@ -1,12 +1,12 @@
 package indigoextras.performers
 
 import indigo.core.Outcome
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Vector2
 import indigo.core.events.FrameTick
 import indigo.core.events.GlobalEvent
 import indigo.physics.*
 import indigo.scenegraph.Layer
-import indigo.scenegraph.LayerKey
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem

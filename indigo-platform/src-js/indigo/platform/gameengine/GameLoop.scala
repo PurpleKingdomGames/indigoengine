@@ -48,7 +48,7 @@ final class GameLoop[StartUpData, GameModel](
   private val _randomInstance: scala.util.Random = new scala.util.Random()
 
   private lazy val _services: Context.Services =
-    Context.Services(boundaryLocator, _randomInstance, renderer.captureScreen)
+    Context.Services(boundaryLocator, _randomInstance)
 
   def gameModelState: GameModel = _gameModelState
   def lock(): Unit              = _frameLocked = true

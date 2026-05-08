@@ -1,6 +1,7 @@
 package indigoextras.subsystems
 
 import indigo.core.Outcome
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.dice.Dice
 import indigo.core.events.FrameTick

@@ -10,7 +10,7 @@ import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import indigo.*
-import indigo.core.assets.AssetTypePrimitive
+import indigo.core.events.ScreenCaptureEvent
 import indigo.scenegraph.Shape
 import indigo.scenegraph.Shape.Box
 import indigo.scenes.*
@@ -19,10 +19,12 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 
-  val uiKey        = LayerKey("ui")
-  val defaultKey   = LayerKey("default")
-  val dudeCloneId  = CloneId("Dude")
-  val clippingRect = Rectangle(25, 25, 150, 100)
+  val uiKey          = LayerKey("ui")
+  val defaultKey     = LayerKey("default")
+  val dudeCloneId    = CloneId("Dude")
+  val clippingRect   = Rectangle(25, 25, 150, 100)
+  val screenshot1Key = BindingKey("screenshot1")
+  val screenshot2Key = BindingKey("screenshot2")
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
@@ -41,49 +43,45 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     case PointerEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
-      val screenshots: Set[AssetType] =
-        // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
-        // These are reduced by 0.125 so that it sits a quarter size of the real screen without further scaling
-        context.services.screen
-          .capture(
-            Batch(
-              // Get the full screen and scale it
-              ScreenCaptureConfig.default
-                .withName("screenshot1")
-                .withScale(0.5)
-                .withExcludeLayers(Batch(uiKey)),
-              // Get the screen inside the clipping rectangle and scale it. We don't remove the UI layer here
-              ScreenCaptureConfig.default
-                .withName("screenshot2")
-                .withScale(0.5)
-                .withCrop(clippingRect)
-            )
-          )
-          .collect { case Right(image) => image }
-          .toSet
-
-      // Output each image data URL to the console
-      screenshots.foreach(a => IndigoLogger.info(a.asInstanceOf[AssetType.Image].path.toString()))
-
       Outcome(model)
         .addGlobalEvents(
-          AssetEvent.LoadAssets(screenshots, BindingKey("captureScreen"), true)
+          // Get the full screen and scale it down
+          ScreenCaptureEvent.Capture(
+            ScreenCaptureConfig.default
+              .withName("screenshot1")
+              .withScale(0.5),
+            screenshot1Key
+          ),
+          // Get the screen inside the clipping rectangle and scale it. We don't remove the UI layer here
+          ScreenCaptureEvent.Capture(
+            ScreenCaptureConfig.default
+              .withName("screenshot2")
+              .withScale(0.5)
+              .withCrop(clippingRect),
+            screenshot2Key
+          )
         )
 
-    case AssetEvent.AssetBatchLoaded(key, assets, loaded) if key == BindingKey("captureScreen") && loaded =>
-      (assets.headOption, assets.drop(1).headOption) match
-        case (Some(image1: AssetTypePrimitive), Some(image2: AssetTypePrimitive)) =>
-          Outcome(
-            model.copy(
-              captureScreenScene = model.captureScreenScene.copy(
-                screenshot1 = Some(image1.name),
-                screenshot2 = Some(image2.name)
-              )
-            )
-          )
+    case ScreenCaptureEvent.Captured(key, image) =>
+      IndigoLogger.info(image.path.toString())
 
-        case _ =>
-          Outcome(model)
+      if key == screenshot1Key then
+        Outcome(
+          model.copy(
+            captureScreenScene = model.captureScreenScene.copy(screenshot1 = Some(image.name))
+          )
+        )
+      else if key == screenshot2Key then
+        Outcome(
+          model.copy(
+            captureScreenScene = model.captureScreenScene.copy(screenshot2 = Some(image.name))
+          )
+        )
+      else Outcome(model)
+
+    case ScreenCaptureEvent.CaptureError(_, message) =>
+      IndigoLogger.error(s"Screen capture failed: $message")
+      Outcome(model)
 
     case _ =>
       Outcome(model)

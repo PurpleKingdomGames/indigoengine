@@ -1,13 +1,13 @@
 package indigoextras.subsystems
 
 import indigo.core.assets.AssetName
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.temporal.Signal
 import indigo.core.temporal.SignalReader
 import indigo.scenegraph.Graphic
-import indigo.scenegraph.LayerKey
 import indigo.scenegraph.RenderNode
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.materials.Material

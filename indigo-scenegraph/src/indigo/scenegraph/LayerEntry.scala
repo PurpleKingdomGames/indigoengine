@@ -1,5 +1,6 @@
 package indigo.scenegraph
 
+import indigo.core.datatypes.LayerKey
 import indigoengine.shared.collections.Batch
 
 /** Layer entries are holders for Layers, that can either be tagged or untagged. If a layer entry is tagged with a
