@@ -103,6 +103,11 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null)
 
+  def dispose(): Unit =
+    gl2.deleteBuffer(displayObjectUBOBuffer)
+    customDataUBOBuffers.values.foreach(gl2.deleteBuffer)
+    customDataUBOBuffers.clear()
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def setupActiveShader(
       projection: scalajs.js.Array[Float],

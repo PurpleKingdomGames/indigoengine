@@ -96,6 +96,11 @@ object FrameBufferFunctions {
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
   }
+
+  def deleteFrameBufferSingle(gl: WebGLRenderingContext, fb: FrameBufferComponents.SingleOutput): Unit = {
+    gl.deleteTexture(fb.diffuse)
+    gl.deleteFramebuffer(fb.frameBuffer)
+  }
 }
 
 sealed trait FrameBufferComponents {

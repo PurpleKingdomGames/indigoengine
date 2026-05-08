@@ -13,6 +13,7 @@ trait Renderer:
   def init(shaders: Set[RawShaderCode]): Unit
   def resize(width: Int, height: Int): Unit
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
+  def dispose(): Unit
 
 object Renderer:
 
@@ -25,4 +26,5 @@ object Renderer:
       def init(shaders: Set[RawShaderCode]): Unit                              = ()
       def resize(width: Int, height: Int): Unit                                = ()
       def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
+      def dispose(): Unit                                                      = ()
     }

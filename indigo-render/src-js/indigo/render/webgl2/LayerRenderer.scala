@@ -166,6 +166,17 @@ class LayerRenderer(
 
     this
 
+  def dispose(): Unit =
+    gl2.deleteBuffer(translateScaleInstanceArray)
+    gl2.deleteBuffer(refFlipInstanceArray)
+    gl2.deleteBuffer(sizeAndFrameScaleInstanceArray)
+    gl2.deleteBuffer(channelOffsets01InstanceArray)
+    gl2.deleteBuffer(channelOffsets23InstanceArray)
+    gl2.deleteBuffer(textureSizeAtlasSizeInstanceArray)
+    gl2.deleteBuffer(rotationInstanceArray)
+    customDataUBOBuffers.values.foreach(gl2.deleteBuffer)
+    customDataUBOBuffers.clear()
+
   def requiresContextChange(
       d: DisplayObject,
       atlasName: Option[AtlasId],

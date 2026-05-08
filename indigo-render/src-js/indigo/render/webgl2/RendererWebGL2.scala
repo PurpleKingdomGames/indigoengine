@@ -354,6 +354,12 @@ final class RendererWebGL2(
       orthographicProjectionMatrixNoMagFlipped =
         CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
 
+      FrameBufferFunctions.deleteFrameBufferSingle(gl, layerEntityFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl, scalingFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl, greenDstFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl, blueDstFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl, emptyFrameBuffer)
+
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
@@ -364,5 +370,49 @@ final class RendererWebGL2(
 
       ()
     }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def dispose(): Unit = {
+    // Reset GL bindings on the shared context so nothing this renderer touched
+    // remains live for whatever instance comes next.
+    gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, null)
+    gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, null)
+    gl.bindFramebuffer(FRAMEBUFFER, null)
+
+    // Unbind the texture units used by LayerRenderer / LayerMergeRenderer (0 and 1).
+    gl.activeTexture(TEXTURE0)
+    gl.bindTexture(TEXTURE_2D, null)
+    gl.activeTexture(TEXTURE1)
+    gl.bindTexture(TEXTURE_2D, null)
+    gl.activeTexture(TEXTURE0)
+
+    gl2.bindVertexArray(null)
+    gl.bindBuffer(ARRAY_BUFFER, null)
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null)
+    gl.useProgram(null)
+
+    // Delete the GPU resources owned by this renderer.
+    FrameBufferFunctions.deleteFrameBufferSingle(gl, layerEntityFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl, scalingFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl, greenDstFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl, blueDstFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl, emptyFrameBuffer)
+
+    gl.deleteBuffer(vertexAndTextureCoordsBuffer)
+    gl.deleteBuffer(projectionUBOBuffer)
+    gl.deleteBuffer(frameDataUBOBuffer)
+    gl.deleteBuffer(cloneReferenceUBOBuffer)
+    gl.deleteBuffer(lightDataUBOBuffer)
+
+    gl2.deleteVertexArray(vao)
+
+    customShaders.values.foreach(gl.deleteProgram)
+    customShaders.clear()
+
+    textureLocations.foreach(t => gl.deleteTexture(t.texture))
+
+    layerRenderInstance.dispose()
+    layerMergeRenderInstance.dispose()
+  }
 
 }

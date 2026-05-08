@@ -110,7 +110,7 @@ final class GameEngine[StartUpData, GameModel](
   def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
     if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
   def rebuildGameLoop(
       canvas: html.Canvas,
       context: WebGL2RenderingContext,
@@ -118,7 +118,9 @@ final class GameEngine[StartUpData, GameModel](
   ): AssetCollection => Seconds => Unit =
     ac =>
       runningTime => {
-        if !firstRun then gameLoopInstance.lock()
+        if !firstRun then
+          gameLoopInstance.lock()
+          if renderer != null then renderer.dispose()
 
         fontRegister.clearRegister()
         boundaryLocator.purgeCache()

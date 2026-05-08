@@ -29,6 +29,7 @@ final class RendererInitialiser() {
       new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc)
 
     r.init(shaders)
+    r.resize(canvas.width, canvas.height)
     r
   }
 

@@ -93,6 +93,9 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   def bindVertexArray(vertexArray: WebGLVertexArrayObject): Unit =
     js.native
 
+  def deleteVertexArray(vertexArray: WebGLVertexArrayObject): Unit =
+    js.native
+
   def drawBuffers(buffers: scalajs.js.Array[Int]): Unit =
     js.native
 
