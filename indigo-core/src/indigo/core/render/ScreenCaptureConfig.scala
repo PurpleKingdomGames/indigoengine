@@ -1,10 +1,8 @@
-package indigo.render
+package indigo.core.render
 
 import indigo.core.datatypes.ImageType
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
-import indigo.scenegraph.LayerKey
-import indigoengine.shared.collections.Batch
 
 /** Configuration for a screen capture
   *
@@ -14,8 +12,6 @@ import indigoengine.shared.collections.Batch
   *   The rectangle to crop the capture to
   * @param scale
   *   The scale to apply to the capture
-  * @param excludeLayers
-  *   The layers to exclude from the capture
   * @param imageType
   *   The type of image to capture
   */
@@ -23,7 +19,6 @@ final case class ScreenCaptureConfig(
     name: Option[String],
     croppingRect: Option[Rectangle],
     scale: Option[Vector2],
-    excludeLayers: Batch[LayerKey],
     imageType: ImageType
 ) {
 
@@ -66,30 +61,6 @@ final case class ScreenCaptureConfig(
     */
   def withImageType(imageType: ImageType): ScreenCaptureConfig =
     this.copy(imageType = imageType)
-
-  /** Set the layers to exclude from the capture
-    *
-    * @param excludeLayers
-    * @return
-    */
-  def withExcludeLayers(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
-    this.copy(excludeLayers = excludeLayers)
-
-  /** Add a layer to exclude from the capture
-    *
-    * @param excludeLayer
-    * @return
-    */
-  def addExcludeLayer(excludeLayer: LayerKey): ScreenCaptureConfig =
-    this.copy(excludeLayers = excludeLayers :+ excludeLayer)
-
-  /** Add layers to exclude from the capture
-    *
-    * @param excludeLayers
-    * @return
-    */
-  def addExcludeLayers(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
-    this.copy(excludeLayers = this.excludeLayers ++ excludeLayers)
 }
 
 object ScreenCaptureConfig {
@@ -97,7 +68,7 @@ object ScreenCaptureConfig {
   /** Default configuration
     */
   val default: ScreenCaptureConfig =
-    ScreenCaptureConfig(None, None, None, Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(None, None, None, ImageType.WEBP)
 
   /** Create a configuration with a name
     *
@@ -105,7 +76,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(name: String): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), None, None, Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(Some(name), None, None, ImageType.WEBP)
 
   /** Create a configuration with a name and cropping rectangle
     *
@@ -114,7 +85,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(name: String, croppingRect: Rectangle): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), Some(croppingRect), None, Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(Some(name), Some(croppingRect), None, ImageType.WEBP)
 
   /** Create a configuration with a name and scale
     *
@@ -123,7 +94,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(name: String, scale: Double): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), None, Some(Vector2(scale, scale)), Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(Some(name), None, Some(Vector2(scale, scale)), ImageType.WEBP)
 
   /** Create a configuration with a name and scale
     *
@@ -132,16 +103,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(name: String, scale: Vector2): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), None, Some(scale), Batch.empty, ImageType.WEBP)
-
-  /** Create a configuration with a name and excluded layers
-    *
-    * @param name
-    * @param excludeLayers
-    * @return
-    */
-  def apply(name: String, excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), None, None, excludeLayers, ImageType.WEBP)
+    ScreenCaptureConfig(Some(name), None, Some(scale), ImageType.WEBP)
 
   /** Create a configuration with a name and image type
     *
@@ -150,7 +112,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(name: String, imageType: ImageType): ScreenCaptureConfig =
-    ScreenCaptureConfig(Some(name), None, None, Batch.empty, imageType)
+    ScreenCaptureConfig(Some(name), None, None, imageType)
 
   /** Create a configuration with a cropping rectangle
     *
@@ -158,7 +120,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(croppingRect: Rectangle): ScreenCaptureConfig =
-    ScreenCaptureConfig(None, Some(croppingRect), None, Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(None, Some(croppingRect), None, ImageType.WEBP)
 
   /** Create a configuration with a scale
     *
@@ -166,7 +128,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(scale: Double): ScreenCaptureConfig =
-    ScreenCaptureConfig(None, None, Some(Vector2(scale, scale)), Batch.empty, ImageType.WEBP)
+    ScreenCaptureConfig(None, None, Some(Vector2(scale, scale)), ImageType.WEBP)
 
   /** Create a configuration with a scale
     *
@@ -174,15 +136,7 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(scale: Vector2): ScreenCaptureConfig =
-    ScreenCaptureConfig(None, None, Some(scale), Batch.empty, ImageType.WEBP)
-
-  /** Create a configuration with excluded layers
-    *
-    * @param excludeLayers
-    * @return
-    */
-  def apply(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
-    ScreenCaptureConfig(None, None, None, excludeLayers, ImageType.WEBP)
+    ScreenCaptureConfig(None, None, Some(scale), ImageType.WEBP)
 
   /** Create a configuration with an image type
     *
@@ -190,5 +144,5 @@ object ScreenCaptureConfig {
     * @return
     */
   def apply(imageType: ImageType): ScreenCaptureConfig =
-    ScreenCaptureConfig(None, None, None, Batch.empty, imageType)
+    ScreenCaptureConfig(None, None, None, imageType)
 }

@@ -1,8 +1,8 @@
 package indigo.render.pipeline.datatypes
 
+import indigo.core.datatypes.LayerKey
 import indigo.scenegraph.Blend
 import indigo.scenegraph.Camera
-import indigo.scenegraph.LayerKey
 import indigo.shaders.ShaderId
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA

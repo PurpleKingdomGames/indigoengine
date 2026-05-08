@@ -1,32 +1,22 @@
 package indigo.render.webgl2
 
-import indigo.core.assets.AssetName
-import indigo.core.assets.AssetPath
-import indigo.core.assets.AssetType
 import indigo.core.config.EngineConfig
-import indigo.core.datatypes.Rectangle
-import indigo.core.datatypes.Size
-import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.utils.QuickCache
 import indigo.render.Renderer
-import indigo.render.ScreenCaptureConfig
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.scenegraph.Blend
 import indigo.scenegraph.BlendFactor
 import indigo.shaders.RawShaderCode
-import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Radians
 import indigoengine.shared.datatypes.Seconds
-import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext.*
-import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -83,12 +73,6 @@ final class RendererWebGL2(
   var orthographicProjectionMatrixNoMag: scalajs.js.Array[Float] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMagFlipped: scalajs.js.Array[Float] = null
-
-  // Store previous data in order to take screenshots
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var _prevSceneData: ProcessedSceneData = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var _prevGameRuntime: Seconds = Seconds.zero
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
@@ -208,73 +192,6 @@ final class RendererWebGL2(
       WebGLHelper.setBlendFunc(gl, blend.src, blend.dst)
     }
   }
-
-  // TODO: Should move down to Tyrian, it's a platform job.
-  def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
-    _prevSceneData match {
-      case null => captureOptions.map(_ => Left("No scene data to capture"))
-      case _ =>
-        val prevSceneData   = _prevSceneData
-        val prevGameRuntime = _prevGameRuntime
-
-        captureOptions.map(option =>
-          val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-          val ctx2d =
-            canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
-          val magnifiedClip = option.croppingRect match {
-            case Some(rect) => rect
-            case None       => Rectangle(0, 0, screenWidth, screenHeight)
-          }
-          val imageSize = Size(
-            (magnifiedClip.width * option.scale.getOrElse(Vector2.one).x).toInt,
-            (magnifiedClip.height * option.scale.getOrElse(Vector2.one).y).toInt
-          )
-
-          canvas.width = imageSize.width
-          canvas.height = imageSize.height
-          ctx2d.imageSmoothingEnabled = false
-
-          drawScene(
-            ProcessedSceneData(
-              _prevSceneData.layers.filter(l =>
-                l.layerKey match {
-                  case Some(key) => option.excludeLayers.exists(_ == key) == false
-                  case None      => true
-                }
-              ),
-              _prevSceneData.cloneBlankDisplayObjects,
-              _prevSceneData.shaderId,
-              _prevSceneData.shaderUniformData,
-              _prevSceneData.camera
-            ),
-            _prevGameRuntime
-          )
-
-          _prevSceneData = prevSceneData
-          _prevGameRuntime = prevGameRuntime
-
-          ctx2d.drawImage(
-            cNc.canvas,
-            magnifiedClip.x,
-            magnifiedClip.y,
-            magnifiedClip.width,
-            magnifiedClip.height,
-            0,
-            0,
-            imageSize.width,
-            imageSize.height
-          )
-          val dataUrl = canvas.toDataURL(option.imageType.toString())
-          canvas.remove()
-
-          Right(
-            AssetType.Image(
-              AssetName(option.name.getOrElse(s"capture-${System.currentTimeMillis()}")),
-              AssetPath(dataUrl)
-            )
-          )
-        )
-    }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
@@ -412,10 +329,6 @@ final class RendererWebGL2(
     clearBuffer(blueDstFrameBuffer.frameBuffer)
     clearBuffer(greenDstFrameBuffer.frameBuffer)
     clearBuffer(emptyFrameBuffer.frameBuffer)
-
-    // Store the data for screenshots
-    _prevSceneData = sceneData
-    _prevGameRuntime = runningTime
   }
 
   def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {

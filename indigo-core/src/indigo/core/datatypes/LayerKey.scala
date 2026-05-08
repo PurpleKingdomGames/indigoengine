@@ -1,4 +1,4 @@
-package indigo.scenegraph
+package indigo.core.datatypes
 
 import indigo.core.dice.Dice
 

@@ -1,9 +1,15 @@
 package indigo
 
 import cats.effect.IO
+import indigo.core.assets.AssetName
+import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
 import indigo.core.datatypes.BindingKey
+import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Vector2
 import indigo.core.events.AssetEvent
+import indigo.core.events.ScreenCaptureEvent
+import indigo.core.render.ScreenCaptureConfig
 import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
 import indigo.internal.WorldEventWatchers
@@ -13,6 +19,7 @@ import indigo.platform.IndigoCoreServices
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
 import indigo.shared.IndigoSystemEvent
+import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.ResizeObserver
 import org.scalajs.dom.document
@@ -28,6 +35,7 @@ import tyrian.ui.theme.Theme
 
 import scala.util.Failure
 import scala.util.Success
+import scala.annotation.nowarn
 
 final case class Indigo(
     extensionId: ExtensionId,
@@ -113,6 +121,16 @@ final case class Indigo(
     case Indigo.Msg.LoadAssets(assets, key, makeAvailable) =>
       Result(model)
         .addActions(Action.sideEffect(Indigo.runLoadAssets(model.game, assets, key, makeAvailable)))
+
+    case Indigo.Msg.CaptureScreen(config, key) =>
+      model._canvas match
+        case None =>
+          model.game.events.push(ScreenCaptureEvent.CaptureError(key, "No canvas available"))
+          Result(model)
+
+        case Some(canvas) =>
+          Result(model)
+            .addActions(Action.sideEffect(Indigo.runCaptureScreen(model.game, canvas, config, key)))
 
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
@@ -360,6 +378,9 @@ object Indigo:
       case AssetEvent.LoadAssets(batch, key, makeAvailable) =>
         Some(Indigo.Msg.LoadAssets(batch, key, makeAvailable))
 
+      case ScreenCaptureEvent.Capture(config, key) =>
+        Some(Indigo.Msg.CaptureScreen(config, key))
+
       case event =>
         eventMapping.from(event)
     }
@@ -454,6 +475,7 @@ object Indigo:
     case CanvasResize(width: Int, height: Int)
     case FullScreen(request: FullScreenRequest)
     case LoadAssets(assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean)
+    case CaptureScreen(config: ScreenCaptureConfig, key: BindingKey)
 
   enum FullScreenRequest derives CanEqual:
     case Enter, Exit, Toggle
@@ -503,6 +525,49 @@ object Indigo:
       case Failure(e) =>
         game.events.push(AssetEvent.AssetBatchLoadError(key, e.getMessage))
     }
+
+  @nowarn
+  private def runCaptureScreen(
+      game: Game[?, ?, ?],
+      sourceCanvas: html.Canvas,
+      config: ScreenCaptureConfig,
+      key: BindingKey
+  ): Unit =
+    import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
+
+    val image = captureCanvasToImage(sourceCanvas, config)
+
+    AssetLoader.loadAssets(Set(image)).onComplete {
+      case Success(ac) =>
+        game.events.push(IndigoSystemEvent.Rebuild(ac, ScreenCaptureEvent.Captured(key, image)))
+
+      case Failure(e) =>
+        game.events.push(ScreenCaptureEvent.CaptureError(key, e.getMessage))
+    }
+
+  @nowarn
+  private def captureCanvasToImage(
+      sourceCanvas: html.Canvas,
+      config: ScreenCaptureConfig
+  ): AssetType.Image =
+    val crop  = config.croppingRect.getOrElse(Rectangle(0, 0, sourceCanvas.width, sourceCanvas.height))
+    val scale = config.scale.getOrElse(Vector2.one)
+    val outW  = (crop.width * scale.x).toInt
+    val outH  = (crop.height * scale.y).toInt
+
+    val tmp = document.createElement("canvas").asInstanceOf[html.Canvas]
+    tmp.width = outW
+    tmp.height = outH
+    val ctx2d = tmp.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+    ctx2d.imageSmoothingEnabled = false
+    ctx2d.drawImage(sourceCanvas, crop.x, crop.y, crop.width, crop.height, 0, 0, outW, outH)
+    val dataUrl = tmp.toDataURL(config.imageType.toString)
+    tmp.remove()
+
+    AssetType.Image(
+      AssetName(config.name.getOrElse(s"capture-${System.currentTimeMillis()}")),
+      AssetPath(dataUrl)
+    )
 
   enum TickUpdateResult derives CanEqual:
     case Wait

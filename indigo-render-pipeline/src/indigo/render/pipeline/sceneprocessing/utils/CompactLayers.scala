@@ -1,8 +1,8 @@
 package indigo.render.pipeline.sceneprocessing.utils
 
+import indigo.core.datatypes.LayerKey
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
-import indigo.scenegraph.LayerKey
 import indigoengine.shared.collections.Batch
 
 import scala.annotation.tailrec

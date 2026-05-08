@@ -1,12 +1,12 @@
 package indigo.render.pipeline.sceneprocessing.utils
 
 import indigo.core.datatypes.Fill
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.scenegraph.Camera
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
-import indigo.scenegraph.LayerKey
 import indigo.scenegraph.Shape
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA

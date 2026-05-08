@@ -1,13 +1,11 @@
 package indigo.shared
 
-import indigo.core.assets.AssetType
 import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.InputState
 import indigo.core.time.GameTime
-import indigo.render.ScreenCaptureConfig
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.TextLine
 import indigo.scenegraph.registers.BoundaryLocator
@@ -21,9 +19,9 @@ import indigoengine.shared.collections.Batch
   *   2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
   *      random number generated seeded on the game's running time at the beginning of the frame), and if only frame
   *      values are used, then calls to functions like `updateModel` can be considered referentially transparent.
-  *   3. Services: The services that are available to the game, such as the ability to capture the screen, measure text,
-  *      find the bounds of on-screen elements, or access a long running Random instance. Services are side-effecting,
-  *      long running, and / or stateful.
+  *   3. Services: The services that are available to the game, such as measuring text, finding the bounds of on-screen
+  *      elements, or accessing a long running Random instance. Services are side-effecting, long running, and / or
+  *      stateful.
   */
 final class Context[StartUpData](
     _startUpData: => StartUpData,
@@ -68,8 +66,7 @@ object Context:
       inputState: InputState,
       viewport: Size,
       boundaryLocator: BoundaryLocator,
-      startUpData: StartUpData,
-      _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
+      startUpData: StartUpData
   ): Context[StartUpData] =
     new Context(
       startUpData,
@@ -81,8 +78,7 @@ object Context:
       ),
       Services(
         boundaryLocator,
-        scala.util.Random(Dice.DefaultSeed),
-        _captureScreen
+        scala.util.Random(Dice.DefaultSeed)
       )
     )
 
@@ -114,32 +110,27 @@ object Context:
     val initial: Frame =
       new Frame(Dice.default, GameTime.zero, InputState.default, Size.zero)
 
-  /** The services that are available to the game, such as the ability to capture the screen, measure text, find the
-    * bounds of anything on screen, or access a long running Random instance. Services are side-effecting, long running,
-    * and / or stateful.
+  /** The services that are available to the game, such as measuring text, finding the bounds of anything on screen, or
+    * accessing a long running Random instance. Services are side-effecting, long running, and / or stateful.
     */
   trait Services:
     def bounds: Services.Bounds
     def random: Services.Random
-    def screen: Services.Screen
 
   object Services:
 
     def apply(
         boundaryLocator: BoundaryLocator,
-        _random: scala.util.Random,
-        _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
+        _random: scala.util.Random
     ): Services =
       new Services:
         def bounds: Services.Bounds = Bounds(boundaryLocator)
         def random: Services.Random = Random(_random)
-        def screen: Services.Screen = Screen(_captureScreen)
 
     def noop: Services =
       new Services:
         def bounds: Bounds = Bounds.noop
         def random: Random = Random.noop
-        def screen: Screen = Screen.noop
 
     trait Bounds:
       /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly
@@ -239,44 +230,3 @@ object Context:
           def shuffle[A](xs: List[A]): List[A]                            = xs
           def shuffle[A](xs: Batch[A]): Batch[A]                          = xs
           def alphanumeric(take: Int): List[Char]                         = List.fill(take)(' ')
-
-    trait Screen:
-      /** Capture the screen as a number of images, each with the specified configuration
-        *
-        * @param captureConfig
-        *   The configurations to use when capturing the screen
-        * @return
-        *   A batch containing either the captured images, or error messages
-        */
-      def capture(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]]
-
-      /** Capture the screen as an image, with the specified configuration
-        *
-        * @param captureConfig
-        *   The configuration to use when capturing the screen
-        * @return
-        *   The captured image, or an error message
-        */
-      def capture(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image]
-
-    object Screen:
-
-      def apply(
-          _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
-      ): Screen =
-        new Screen:
-          def capture(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
-            _captureScreen(captureConfig)
-
-          def capture(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image] =
-            capture(Batch(captureConfig)).headOption match {
-              case Some(v) => v
-              case None    => Left("Could not capture image")
-            }
-
-      val noop: Screen =
-        new Screen:
-          def capture(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
-            Batch.empty
-          def capture(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image] =
-            Left("Screen capture not supported in noop implementation")
