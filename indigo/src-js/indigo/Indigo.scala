@@ -33,9 +33,9 @@ import tyrian.ui.Canvas
 import tyrian.ui.Extent
 import tyrian.ui.theme.Theme
 
+import scala.annotation.nowarn
 import scala.util.Failure
 import scala.util.Success
-import scala.annotation.nowarn
 
 final case class Indigo(
     extensionId: ExtensionId,
