@@ -22,6 +22,10 @@ object IndigoActions:
     Action.run {
       maybeCanvas match
         case Some(canvas) =>
+          val bounds = canvas.parentElement.getBoundingClientRect()
+          canvas.width = bounds.width.toInt
+          canvas.height = bounds.height.toInt
+
           val context: WebGL2RenderingContext =
             CanvasAndContext.setupContext(
               canvas,
