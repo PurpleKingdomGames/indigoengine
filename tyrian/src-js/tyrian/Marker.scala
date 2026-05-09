@@ -7,7 +7,7 @@ import scala.annotation.nowarn
 
 /** A marker in the Html for Tyrian to latch onto, that is never seen by the VirtualDom.
   *
-  * This is a slightly odd type that is really intended for the modern version of Tyrian, but accomodates Tyrian
+  * This is a slightly odd type that is really intended for the modern version of Tyrian, but accommodates Tyrian
   * classic.
   */
 final case class Marker(id: MarkerId, children: Batch[Elem[GlobalMsg]]) extends CustomElem[GlobalMsg]:
