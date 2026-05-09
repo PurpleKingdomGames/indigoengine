@@ -21,11 +21,13 @@ import indigo.render.webgl2.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.KVP
-import org.scalajs.dom.html.Canvas
 
 class JsPlatform(
     engineConfig: EngineConfig,
-    val globalEventStream: GlobalEventStream
+    val globalEventStream: GlobalEventStream,
+    initialWidth: Int,
+    initialHeight: Int,
+    context: WebGL2RenderingContext
 ) extends Platform {
 
   val rendererInit: RendererInitialiser =
@@ -33,15 +35,13 @@ class JsPlatform(
 
   def initialise(
       shaders: Set[RawShaderCode],
-      assetCollection: AssetCollection,
-      canvas: Canvas,
-      context: WebGL2RenderingContext
+      assetCollection: AssetCollection
   ): Outcome[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      renderer            <- startRenderer(engineConfig, loadedTextureAssets, canvas, context, shaders)
+      renderer            <- startRenderer(engineConfig, loadedTextureAssets, shaders)
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
@@ -99,8 +99,6 @@ class JsPlatform(
   def startRenderer(
       engineConfig: EngineConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
-      canvas: Canvas,
-      context: WebGL2RenderingContext,
       shaders: Set[RawShaderCode]
   ): Outcome[Renderer] =
     Outcome {
@@ -108,8 +106,9 @@ class JsPlatform(
       rendererInit.setup(
         engineConfig,
         loadedTextureAssets,
-        canvas,
         context,
+        initialWidth,
+        initialHeight,
         shaders
       )
     }

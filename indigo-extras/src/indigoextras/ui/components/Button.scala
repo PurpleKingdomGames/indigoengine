@@ -263,7 +263,7 @@ object Button:
           else Batch.empty
         )
 
-      case FocusEvent.CanvasLostFocus | FocusEvent.ApplicationLostFocus =>
+      case FocusEvent.LostFocus | FocusEvent.ApplicationLostFocus =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
 
       case _: PointerEvent.Click
