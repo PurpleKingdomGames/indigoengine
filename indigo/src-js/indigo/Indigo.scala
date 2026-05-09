@@ -332,7 +332,7 @@ object Indigo:
               settings.antiAliasing
             )
 
-          game.launch(canvas, context, flags, services)
+          game.launch(canvas.width, canvas.height, context, flags, services)
           Indigo.Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>

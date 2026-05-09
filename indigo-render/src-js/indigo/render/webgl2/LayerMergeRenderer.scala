@@ -72,7 +72,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     draw()
   }
 
-  def mergeToCanvas(
+  def mergeToDefaultFramebuffer(
       projection: scalajs.js.Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
@@ -83,7 +83,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
   ): Unit = {
 
-    FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+    FrameBufferFunctions.switchToDefaultFramebuffer(gl2, clearColor)
 
     // Switch and reference shader
     val activeShader: WebGLProgram =

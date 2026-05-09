@@ -7,7 +7,7 @@ enum FocusEvent extends GlobalEvent:
 
   /** The game has received focus
     */
-  case CanvasGainedFocus
+  case GainedFocus
 
   /** The application has lost focus
     */
@@ -15,4 +15,4 @@ enum FocusEvent extends GlobalEvent:
 
   /** The game has lost focus
     */
-  case CanvasLostFocus
+  case LostFocus

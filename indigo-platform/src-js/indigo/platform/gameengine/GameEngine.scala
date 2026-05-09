@@ -31,7 +31,6 @@ import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
-import org.scalajs.dom.html
 
 import scala.compiletime.uninitialized
 
@@ -82,7 +81,8 @@ final class GameEngine[StartUpData, GameModel](
     ()
 
   def start(
-      canvas: html.Canvas,
+      initialWidth: Int,
+      initialHeight: Int,
       context: WebGL2RenderingContext,
       assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent]
@@ -101,7 +101,15 @@ final class GameEngine[StartUpData, GameModel](
     // Arrange config
     IndigoLogger.info("Configuration: " + engineConfig.asString)
 
-    rebuildGameLoop(canvas, context, true)(assetCollection)(Seconds.zero)
+    platform = new JsPlatform(
+      engineConfig,
+      globalEventStream,
+      initialWidth,
+      initialHeight,
+      context
+    )
+
+    rebuildGameLoop(true)(assetCollection)(Seconds.zero)
 
     this
   }
@@ -112,8 +120,6 @@ final class GameEngine[StartUpData, GameModel](
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
   def rebuildGameLoop(
-      canvas: html.Canvas,
-      context: WebGL2RenderingContext,
       firstRun: Boolean
   ): AssetCollection => Seconds => Unit =
     ac =>
@@ -131,12 +137,6 @@ final class GameEngine[StartUpData, GameModel](
         audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
         val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
-
-        if firstRun then
-          platform = new JsPlatform(
-            engineConfig,
-            globalEventStream
-          )
 
         initialise(accumulatedAssetCollection)(dice) match {
           case oe @ Outcome.Error(error, _) =>
@@ -170,15 +170,11 @@ final class GameEngine[StartUpData, GameModel](
               for {
                 rendererAndAssetMapping <- platform.initialise(
                   shaderRegister.toSet,
-                  accumulatedAssetCollection,
-                  canvas,
-                  context
+                  accumulatedAssetCollection
                 )
                 startUpSuccessData <- GameEngine.initialisedGame(startupData)
                 m                  <- modelToUse(startUpSuccessData)
                 initialisedGameLoop <- GameEngine.initialiseGameLoop(
-                  canvas,
-                  context,
                   this,
                   boundaryLocator,
                   sceneProcessor,
@@ -319,8 +315,6 @@ object GameEngine {
     }
 
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
-      canvas: html.Canvas,
-      context: WebGL2RenderingContext,
       gameEngine: GameEngine[StartUpData, GameModel],
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
@@ -332,7 +326,7 @@ object GameEngine {
   ): Outcome[GameLoop[StartUpData, GameModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel](
-        gameEngine.rebuildGameLoop(canvas, context, false),
+        gameEngine.rebuildGameLoop(false),
         boundaryLocator,
         sceneProcessor,
         gameEngine,

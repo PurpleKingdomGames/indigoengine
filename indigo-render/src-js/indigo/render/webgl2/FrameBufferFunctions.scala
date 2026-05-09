@@ -91,7 +91,7 @@ object FrameBufferFunctions {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def switchToCanvas(gl: WebGLRenderingContext, clearColor: RGBA): Unit = {
+  def switchToDefaultFramebuffer(gl: WebGLRenderingContext, clearColor: RGBA): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, null)
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)

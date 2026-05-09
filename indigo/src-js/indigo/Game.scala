@@ -25,7 +25,6 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
-import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.annotation.nowarn
@@ -165,12 +164,13 @@ trait Game[BootData, StartUpData, Model]:
       ()
 
   def launch(
-      canvas: html.Canvas,
+      initialWidth: Int,
+      initialHeight: Int,
       context: WebGL2RenderingContext,
       flags: Map[String, String],
       services: IndigoCoreServices
   ): Unit =
-    gameInstance = ready(canvas, context, flags, services)
+    gameInstance = ready(initialWidth, initialHeight, context, flags, services)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -219,7 +219,8 @@ trait Game[BootData, StartUpData, Model]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def ready(
-      canvas: html.Canvas,
+      initialWidth: Int,
+      initialHeight: Int,
       context: WebGL2RenderingContext,
       flags: Map[String, String],
       services: IndigoCoreServices
@@ -239,7 +240,8 @@ trait Game[BootData, StartUpData, Model]:
         AssetLoader.loadAssets(b.assets).onComplete {
           case Success(ac) =>
             engine.start(
-              canvas,
+              initialWidth,
+              initialHeight,
               context,
               ac,
               evts

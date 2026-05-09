@@ -672,11 +672,11 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
   @nowarn("msg=unused")
   def onCanvasFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.CanvasGainedFocus)))
+    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.GainedFocus)))
 
   @nowarn("msg=unused")
   def onCanvasBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.CanvasLostFocus)))
+    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.LostFocus)))
 
   @nowarn("msg=unused")
   def onWindowFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =

@@ -24,7 +24,7 @@ import scala.scalajs.js.typedarray.Float32Array
 final class RendererWebGL2(
     config: EngineConfig,
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
-    cNc: ContextAndCanvas
+    cNc: ContextAndSize
 ) extends Renderer {
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
@@ -312,10 +312,10 @@ final class RendererWebGL2(
       )
     }
 
-    // transfer the back buffer to the canvas
+    // transfer the back buffer to the default framebuffer
     WebGLHelper.setNormalBlend(gl)
 
-    layerMergeRenderInstance.mergeToCanvas(
+    layerMergeRenderInstance.mergeToDefaultFramebuffer(
       orthographicProjectionMatrixNoMagFlipped,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
       lastWidth,
