@@ -5,10 +5,10 @@ import indigo.core.assets.AssetTag
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.PowerOfTwo
 import indigo.core.utils.IndigoLogger
+import indigo.platform.imaging.BlitInstruction
+import indigo.platform.imaging.ImageService
 import indigo.render.pipeline.assets.AtlasId
-import org.scalajs.dom
 import org.scalajs.dom.ImageData
-import org.scalajs.dom.html
 
 import scala.annotation.tailrec
 
@@ -166,34 +166,27 @@ object TextureAtlasFunctions {
       }
     }
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  private def createCanvas(width: Int, height: Int): html.Canvas = {
-    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    // Handy if you want to draw the atlas to the page...
-    // dom.document.body.appendChild(canvas)
-    canvas.width = width
-    canvas.height = height
+  def createAtlasData(
+      imageService: ImageService
+  ): (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas =
+    (textureMap, lookupByName) =>
+      val blits =
+        textureMap.textureCoords.flatMap { tex =>
+          lookupByName(tex.imageRef.name).map { img =>
+            BlitInstruction(
+              img.data,
+              tex.coords.x,
+              tex.coords.y,
+              tex.imageRef.width,
+              tex.imageRef.height
+            )
+          }
+        }
 
-    canvas
-  }
+      val imageData: ImageData =
+        imageService.composeImage(textureMap.size.value, textureMap.size.value, blits)
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  val createAtlasData: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
-    val canvas: html.Canvas = createCanvas(textureMap.size.value, textureMap.size.value)
-    val ctx                 = canvas.getContext("2d")
-
-    textureMap.textureCoords.foreach { tex =>
-      lookupByName(tex.imageRef.name).foreach { img =>
-        ctx.drawImage(img.data, tex.coords.x, tex.coords.y, tex.imageRef.width, tex.imageRef.height)
-      }
-
-    }
-
-    val imageData: ImageData =
-      ctx.getImageData(0, 0, textureMap.size.value, textureMap.size.value).asInstanceOf[ImageData]
-
-    new Atlas(textureMap.size, Option(imageData))
-  }
+      new Atlas(textureMap.size, Option(imageData))
 
   val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails =>
     AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
