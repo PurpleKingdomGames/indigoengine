@@ -65,8 +65,8 @@ final class PerfGame extends Game[Unit, Dude, DudeModel]:
             spriteAndAnimations.sprite
               .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
               .moveTo(
-                PerfGame.viewportWidth,
-                PerfGame.viewportHeight
+                PerfGame.viewportWidth / 2,
+                PerfGame.viewportHeight / 2
               ) // Also place him in the middle of the screen initially
           )
         )
