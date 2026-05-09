@@ -68,6 +68,7 @@ final class GameEngine[StartUpData, GameModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var platform: JsPlatform = null
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
 
     if platform != null then platform.kill()

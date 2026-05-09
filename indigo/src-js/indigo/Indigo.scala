@@ -55,6 +55,8 @@ final case class Indigo(
 
   type ExtensionModel = Indigo.ExtensionModel
 
+  private val canvasId: String = s"${game.gameId.asString}-canvas"
+
   def withExtensionId(value: ExtensionId): Indigo =
     this.copy(extensionId = value)
 
@@ -194,7 +196,7 @@ final case class Indigo(
     case Indigo.Msg.Launch(Indigo.LaunchStatus.AttemptStart(extId)) =>
       if extId == extensionId then
         val maybeCanvas =
-          Option(document.getElementById(Indigo.CanvasId))
+          Option(document.getElementById(canvasId))
             .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
 
         Result(
@@ -254,7 +256,7 @@ final case class Indigo(
         width = Extent.Fill,
         height = Extent.Fill
       )
-        .withId(Indigo.CanvasId)
+        .withId(canvasId)
         .toElem
     )
 
@@ -283,8 +285,6 @@ final case class Indigo(
       gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
 
 object Indigo:
-
-  val CanvasId: String = "indigo-canvas"
 
   val MaxStartupAttempts: Int = 10
 
