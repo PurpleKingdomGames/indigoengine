@@ -19,6 +19,7 @@ import indigo.internal.WorldEventWatchers
 import indigo.internal.assets.AssetLoader
 import indigo.internal.services.AudioPlayer
 import indigo.internal.services.BrowserGamepadInputService
+import indigo.internal.services.BrowserImageService
 import indigo.platform.IndigoCoreServices
 import indigo.platform.events.GlobalEventCallback
 import indigo.render.facades.WebGL2RenderingContext
@@ -213,7 +214,8 @@ final case class Indigo(
               settings,
               IndigoCoreServices(
                 BrowserGamepadInputService(),
-                model._audioPlayer
+                model._audioPlayer,
+                BrowserImageService()
               )
             )
           )

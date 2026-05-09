@@ -11,6 +11,7 @@ import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
+import indigo.platform.imaging.ImageService
 import indigo.render.Renderer
 import indigo.render.RendererInitialiser
 import indigo.render.facades.WebGL2RenderingContext
@@ -27,7 +28,8 @@ class JsPlatform(
     val globalEventStream: GlobalEventStream,
     initialWidth: Int,
     initialHeight: Int,
-    context: WebGL2RenderingContext
+    context: WebGL2RenderingContext,
+    imageService: ImageService
 ) extends Platform {
 
   val rendererInit: RendererInitialiser =
@@ -64,7 +66,7 @@ class JsPlatform(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag)).toList,
         (name: AssetName) => assetCollection.images.find(_.name == name),
-        TextureAtlasFunctions.createAtlasData
+        TextureAtlasFunctions.createAtlasData(imageService)
       )
     )
 

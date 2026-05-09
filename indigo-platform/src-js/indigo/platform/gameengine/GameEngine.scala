@@ -106,7 +106,8 @@ final class GameEngine[StartUpData, GameModel](
       globalEventStream,
       initialWidth,
       initialHeight,
-      context
+      context,
+      services.imageService
     )
 
     rebuildGameLoop(true)(assetCollection)(Seconds.zero)
