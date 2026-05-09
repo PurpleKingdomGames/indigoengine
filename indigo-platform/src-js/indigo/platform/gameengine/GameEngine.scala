@@ -69,14 +69,18 @@ final class GameEngine[StartUpData, GameModel](
   private var platform: JsPlatform = null
 
   def kill(): Unit =
-    platform.kill()
+
+    if platform != null then platform.kill()
+
+    if renderer != null then renderer.dispose()
+
     animationsRegister.kill()
     fontRegister.kill()
     shaderRegister.kill()
     boundaryLocator.purgeCache()
     sceneProcessor.purgeCaches()
-    services.kill()
     globalEventStream.kill()
+    services.kill()
 
     ()
 
