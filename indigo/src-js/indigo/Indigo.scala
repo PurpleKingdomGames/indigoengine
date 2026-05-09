@@ -4,16 +4,20 @@ import cats.effect.IO
 import indigo.core.assets.AssetName
 import indigo.core.assets.AssetPath
 import indigo.core.assets.AssetType
+import indigo.core.audio.PlaybackPolicy
+import indigo.core.audio.Volume
 import indigo.core.datatypes.BindingKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Vector2
 import indigo.core.events.AssetEvent
+import indigo.core.events.PlaySound
 import indigo.core.events.ScreenCaptureEvent
 import indigo.core.render.ScreenCaptureConfig
 import indigo.core.time.FPS
 import indigo.internal.CanvasAndContext
 import indigo.internal.WorldEventWatchers
 import indigo.internal.assets.AssetLoader
+import indigo.internal.services.AudioPlayer
 import indigo.internal.services.BrowserGamepadInputService
 import indigo.platform.IndigoCoreServices
 import indigo.platform.events.GlobalEventCallback
@@ -132,6 +136,10 @@ final case class Indigo(
           Result(model)
             .addActions(Action.sideEffect(Indigo.runCaptureScreen(model.game, canvas, config, key)))
 
+    case Indigo.Msg.PlaySound(assetName, volume, policy) =>
+      Result(model)
+        .addActions(Action.sideEffect(model._audioPlayer.playSound(assetName, volume, policy)))
+
     case Indigo.Msg.Halt(gameId) =>
       if game.gameId == gameId then
         Result(model.copy(running = false))
@@ -204,7 +212,8 @@ final case class Indigo(
               flags,
               settings,
               IndigoCoreServices(
-                BrowserGamepadInputService()
+                BrowserGamepadInputService(),
+                model._audioPlayer
               )
             )
           )
@@ -346,7 +355,8 @@ object Indigo:
       running: Boolean,
       _eventWatchers: Option[WorldEventWatchers],
       _canvas: Option[html.Canvas],
-      _container: Option[HTMLElement]
+      _container: Option[HTMLElement],
+      _audioPlayer: AudioPlayer
   )
   object ExtensionModel:
     def apply(game: Game[?, ?, ?]): ExtensionModel =
@@ -357,7 +367,8 @@ object Indigo:
         running = true,
         None,
         None,
-        None
+        None,
+        AudioPlayer.init
       )
 
   private def indigoEventWatcher(
@@ -380,6 +391,9 @@ object Indigo:
 
       case ScreenCaptureEvent.Capture(config, key) =>
         Some(Indigo.Msg.CaptureScreen(config, key))
+
+      case PlaySound(assetName, volume, policy) =>
+        Some(Indigo.Msg.PlaySound(assetName, volume, policy))
 
       case event =>
         eventMapping.from(event)
@@ -476,6 +490,7 @@ object Indigo:
     case FullScreen(request: FullScreenRequest)
     case LoadAssets(assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean)
     case CaptureScreen(config: ScreenCaptureConfig, key: BindingKey)
+    case PlaySound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy)
 
   enum FullScreenRequest derives CanEqual:
     case Enter, Exit, Toggle

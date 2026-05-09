@@ -116,7 +116,7 @@ final class GameLoop[StartUpData, GameModel](
           sceneUpdateFragment
 
     // Play audio
-    gameEngine.audioPlayer.playAudio(scene.audio)
+    gameEngine.audioService.playAudio(scene.audio)
 
     // Prepare scene
     val sceneData = sceneProcessor.processScene(

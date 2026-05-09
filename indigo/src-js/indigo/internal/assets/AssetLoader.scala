@@ -2,11 +2,11 @@ package indigo.internal.assets
 
 import indigo.core.assets.AssetType
 import indigo.core.utils.IndigoLogger
+import indigo.internal.services.AudioPlayer
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.LoadedAudioAsset
 import indigo.platform.assets.LoadedImageAsset
 import indigo.platform.assets.LoadedTextAsset
-import indigo.platform.audio.AudioPlayer
 import org.scalajs.dom
 import org.scalajs.dom.*
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*

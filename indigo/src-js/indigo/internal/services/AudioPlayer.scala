@@ -1,10 +1,11 @@
-package indigo.platform.audio
+package indigo.internal.services
 
 import indigo.core.assets.AssetName
 import indigo.core.audio.PlaybackPolicy
 import indigo.core.audio.Volume
 import indigo.core.datatypes.BindingKey
 import indigo.platform.assets.LoadedAudioAsset
+import indigo.platform.audio.AudioService
 import indigo.scenegraph.PlaybackPattern
 import indigo.scenegraph.SceneAudio
 import indigo.scenegraph.SceneAudioSource
@@ -92,10 +93,13 @@ object AudioContextProxy:
     val destination: AudioDestinationNode =
       context.destination.asInstanceOf[AudioDestinationNode]
 
-final class AudioPlayer(context: AudioContextProxy):
+final class AudioPlayer(context: AudioContextProxy) extends AudioService:
 
+  // Is there a better place for this state?
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var soundAssets: Set[LoadedAudioAsset] = Set()
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var hasErrored: Boolean = false
 
   def addAudioAssets(audioAssets: Set[LoadedAudioAsset]): Unit =
     soundAssets = soundAssets ++ audioAssets
@@ -211,7 +215,16 @@ final class AudioPlayer(context: AudioContextProxy):
                 findAudioDataByName(track.assetName)
                   .map(asset => setupNodes(asset, volume, loop = true))
                   .getOrElse {
-                    throw new Exception("Failed to find audio for track with name: " + track.assetName)
+                    val msg = s"Failed to find audio for track with name: ${track.assetName}"
+
+                    // Crude mechanism to tell the user that an error has occurred somewhere.
+                    // The Indigo extension currently swallows exceptions thrown here.
+                    // Needs a rethink.
+                    if !hasErrored then
+                      hasErrored = true
+                      println("Audio error: " + msg)
+
+                    throw new Exception(msg)
                   }
 
               nodes.audioBufferSourceNode.start()

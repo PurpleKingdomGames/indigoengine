@@ -4,7 +4,14 @@ import indigo.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.RefractionEntity
 
-object SandboxAssets {
+object SandboxAssets:
+
+  val bgMusic: AssetName     = AssetName("bgmusic")
+  val bgMusicPath: AssetPath = AssetPath("assets/bgmusic.mp3")
+  val bgMusicPlay: PlaySound = PlaySound(bgMusic, Volume.Max)
+  val bgMusicSceneAudio: SceneAudio = SceneAudio(
+    SceneAudioSource(BindingKey("bgmusic.mp3"), PlaybackPattern.SingleTrackLoop(Track(bgMusic)))
+  )
 
   val jumpSound: AssetName     = AssetName("jump")
   val jumpSoundPath: AssetPath = AssetPath("assets/jump.mp3")
@@ -105,12 +112,11 @@ object SandboxAssets {
       AssetType.Image(nineSlice, AssetPath("assets/nineslice.png")),
       AssetType.Image(platform, AssetPath("assets/platform.png")),
       AssetType.Image(window, AssetPath("assets/window.png")),
-      AssetType.Audio(jumpSound, jumpSoundPath)
+      AssetType.Audio(jumpSound, jumpSoundPath),
+      AssetType.Audio(bgMusic, bgMusicPath)
     )
 
-}
-
-object Fonts {
+object Fonts:
 
   val fontKey: FontKey = FontKey("Sandbox font")
 
@@ -157,5 +163,3 @@ object Fonts {
       .addChar(FontChar(".", 286, 0, 15, 23))
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
-
-}

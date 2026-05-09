@@ -13,7 +13,7 @@ import indigo.gameengine.FrameProcessor
 import indigo.platform.IndigoCoreServices
 import indigo.platform.JsPlatform
 import indigo.platform.assets.*
-import indigo.platform.audio.AudioPlayer
+import indigo.platform.audio.AudioService
 import indigo.platform.events.GlobalEventStream
 import indigo.render.Renderer
 import indigo.render.facades.WebGL2RenderingContext
@@ -51,9 +51,9 @@ final class GameEngine[StartUpData, GameModel](
   private val shaderRegister: ShaderRegister         = new ShaderRegister()
   private val boundaryLocator: BoundaryLocator       = new BoundaryLocator(animationsRegister, fontRegister)
   private val sceneProcessor: SceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
-  private[gameengine] val audioPlayer: AudioPlayer                 = AudioPlayer.init
-  private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream(audioPlayer)
+  private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream()
   private[gameengine] val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
+  private[gameengine] val audioService: AudioService               = services.audioService
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var gameLoopInstance: GameLoop[StartUpData, GameModel] = null
@@ -75,7 +75,7 @@ final class GameEngine[StartUpData, GameModel](
     shaderRegister.kill()
     boundaryLocator.purgeCache()
     sceneProcessor.purgeCaches()
-    audioPlayer.kill()
+    services.kill()
     globalEventStream.kill()
 
     ()
@@ -134,7 +134,7 @@ final class GameEngine[StartUpData, GameModel](
 
         accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
-        audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
+        services.audioService.addAudioAssets(accumulatedAssetCollection.sounds)
 
         val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
 
