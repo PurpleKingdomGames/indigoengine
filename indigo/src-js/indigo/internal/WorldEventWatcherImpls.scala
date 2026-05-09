@@ -1,10 +1,10 @@
 package indigo.internal
 
-import indigo.Indigo
 import indigo.core.constants.Key
 import indigo.core.constants.KeyCode
 import indigo.core.constants.KeyLocation
 import indigo.core.events.*
+import indigo.internal.models.Msg
 import org.scalajs.dom
 import org.scalajs.dom.html
 import tyrian.*
@@ -16,11 +16,11 @@ import DomEventSyntax.*
 
 final class WorldEventWatcherImpls(canvas: html.Canvas):
 
-  // TODO: Consider tracking pointer button state in the ExtensionModel
+  // Consider tracking pointer button state in the ExtensionModel
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
 
-  def onPointerMove(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerMove(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
@@ -89,9 +89,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
     e.preventDefault()
 
-    Option(Indigo.Msg.WorldEvents(Batch(pointerMoveEvent) ++ events))
+    Option(Msg.WorldEvents(Batch(pointerMoveEvent) ++ events))
 
-  def onPointerEnter(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerEnter(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
@@ -160,9 +160,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Unknown =>
           Batch.empty
 
-    Option(Indigo.Msg.WorldEvents(Batch(enterEvent) ++ events))
+    Option(Msg.WorldEvents(Batch(enterEvent) ++ events))
 
-  def onPointerLeave(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerLeave(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
@@ -253,9 +253,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Unknown =>
           Batch.empty
 
-    Option(Indigo.Msg.WorldEvents(Batch(leaveEvent, outEvent) ++ events))
+    Option(Msg.WorldEvents(Batch(leaveEvent, outEvent) ++ events))
 
-  def onPointerDown(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerDown(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val pointerType      = e.toPointerType
     val buttons          = e.indigoButtons
@@ -353,9 +353,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
     e.preventDefault()
 
-    Option(Indigo.Msg.WorldEvents(Batch(downEvent) ++ events))
+    Option(Msg.WorldEvents(Batch(downEvent) ++ events))
 
-  def onPointerUp(clickTimeMs: Long)(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerUp(clickTimeMs: Long)(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val pointerType      = e.toPointerType
     val buttons          = e.indigoButtons
@@ -524,9 +524,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
     e.preventDefault()
 
-    Option(Indigo.Msg.WorldEvents(clickEvents ++ Batch(upEvent) ++ typedUpEvents))
+    Option(Msg.WorldEvents(clickEvents ++ Batch(upEvent) ++ typedUpEvents))
 
-  def onPointerCancel(e: dom.PointerEvent): Option[Indigo.Msg.WorldEvents] =
+  def onPointerCancel(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
@@ -590,11 +590,11 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
     e.preventDefault()
 
-    Option(Indigo.Msg.WorldEvents(Batch(cancelEvent) ++ events))
+    Option(Msg.WorldEvents(Batch(cancelEvent) ++ events))
 
-  def onKeyDown(e: dom.KeyboardEvent): Option[Indigo.Msg.WorldEvents] =
+  def onKeyDown(e: dom.KeyboardEvent): Option[Msg.WorldEvents] =
     Option(
-      Indigo.Msg.WorldEvents(
+      Msg.WorldEvents(
         Batch(
           KeyboardEvent.KeyDown(
             Key(
@@ -612,9 +612,9 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       )
     )
 
-  def onKeyUp(e: dom.KeyboardEvent): Option[Indigo.Msg.WorldEvents] =
+  def onKeyUp(e: dom.KeyboardEvent): Option[Msg.WorldEvents] =
     Option(
-      Indigo.Msg.WorldEvents(
+      Msg.WorldEvents(
         Batch(
           KeyboardEvent.KeyUp(
             Key(
@@ -632,7 +632,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       )
     )
 
-  def onWheel(e: dom.WheelEvent): Option[Indigo.Msg.WorldEvents] =
+  def onWheel(e: dom.WheelEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
@@ -668,24 +668,24 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       val zs = if e.deltaZ != 0 then Batch(WheelEvent.Depth(e.deltaZ, deltaMode)) else Batch.empty
       xs ++ ys ++ zs
 
-    Option(Indigo.Msg.WorldEvents(Batch(wheel, move) ++ axisEvents))
+    Option(Msg.WorldEvents(Batch(wheel, move) ++ axisEvents))
 
   @nowarn("msg=unused")
-  def onCanvasFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.GainedFocus)))
+  def onCanvasFocus(e: dom.FocusEvent): Option[Msg.WorldEvents] =
+    Option(Msg.WorldEvents(Batch(FocusEvent.GainedFocus)))
 
   @nowarn("msg=unused")
-  def onCanvasBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.LostFocus)))
+  def onCanvasBlur(e: dom.FocusEvent): Option[Msg.WorldEvents] =
+    Option(Msg.WorldEvents(Batch(FocusEvent.LostFocus)))
 
   @nowarn("msg=unused")
-  def onWindowFocus(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.ApplicationGainedFocus)))
+  def onWindowFocus(e: dom.FocusEvent): Option[Msg.WorldEvents] =
+    Option(Msg.WorldEvents(Batch(FocusEvent.ApplicationGainedFocus)))
 
   @nowarn("msg=unused")
-  def onWindowBlur(e: dom.FocusEvent): Option[Indigo.Msg.WorldEvents] =
-    Option(Indigo.Msg.WorldEvents(Batch(FocusEvent.ApplicationLostFocus)))
+  def onWindowBlur(e: dom.FocusEvent): Option[Msg.WorldEvents] =
+    Option(Msg.WorldEvents(Batch(FocusEvent.ApplicationLostFocus)))
 
-  def onContextMenu(e: dom.MouseEvent): Option[Indigo.Msg.WorldEvents] =
+  def onContextMenu(e: dom.MouseEvent): Option[Msg.WorldEvents] =
     e.preventDefault()
     None

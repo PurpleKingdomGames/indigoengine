@@ -11,7 +11,7 @@ trait BasicGameRuntime extends App[Unit]:
 
   def game: Game[?, ?, ?]
 
-  def settings: Indigo.Settings
+  def settings: Settings
 
   private val containerMarkerId = MarkerId("indigo-game-container")
   private given Theme           = Theme.None
