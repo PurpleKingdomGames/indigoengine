@@ -1,0 +1,13 @@
+package build.`tyrian-sdl`
+
+import mill.*
+import mill.scalalib.*
+
+import build.SharedNative
+import build.SharedPublish
+
+object `package` extends Module:
+
+  object native extends SharedNative, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(build.tyrian.native)
