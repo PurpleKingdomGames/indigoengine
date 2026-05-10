@@ -63,7 +63,7 @@ trait SharedJS extends Shared, ScalaJSModule:
     def testFramework = Task("munit.Framework")
 
 trait SharedNative extends Shared, ScalaNativeModule:
-  def scalaNativeVersion = Task("0.5.10")
+  def scalaNativeVersion = Task("0.5.11")
 
   override def nativeIncrementalCompilation: T[Boolean] = Task(true)
   override def releaseMode: T[ReleaseMode]              = Task(ReleaseMode.Debug)
