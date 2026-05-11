@@ -1,29 +1,22 @@
 package sandbox
 
-import scala.scalanative.unsafe.*
-import scala.scalanative.unsigned.*
-
 import cats.effect.IO
-
 import indigoengine.shared.collections.Batch
-
 import tyrian.GlobalMsg
+import tyrian.SDLApp
+import tyrian.SDLContext
+import tyrian.SDLMsg
 import tyrian.Watcher
 import tyrian.platform.Cmd
-import tyrian.sdl.SdlApp
-import tyrian.sdl.SdlContext
-import tyrian.sdl.SdlMsg
 import tyrian.sdl.facades.gl.GL.*
 import tyrian.sdl.facades.gl.GLConstants.*
 import tyrian.syntax.*
 
-final case class SandboxModel(program: UInt, vao: UInt, ticks: Long)
+import scala.scalanative.unsafe.*
+import scala.scalanative.unsigned.*
+import tyrian.extensions.Extension
 
-enum Msg extends GlobalMsg derives CanEqual:
-  case Tick
-  case NoOp
-
-object SandboxNativeSdl extends SdlApp[SandboxModel]:
+object SandboxNativeSDL extends SDLApp[SandboxModel]:
 
   override def title: String = "Tyrian SDL Sandbox"
   override def width: Int    = 400
@@ -34,6 +27,7 @@ object SandboxNativeSdl extends SdlApp[SandboxModel]:
     val vao     = makeVao()
     val cmd: Cmd[IO, GlobalMsg] =
       Cmd.SideEffect(IO.println("Tyrian SDL sandbox starting"))
+
     (SandboxModel(program, vao, 0L), cmd)
 
   def update(model: SandboxModel): GlobalMsg => (SandboxModel, Cmd[IO, GlobalMsg]) =
@@ -46,19 +40,26 @@ object SandboxNativeSdl extends SdlApp[SandboxModel]:
     case Msg.NoOp =>
       (model, Cmd.None)
 
-    case SdlMsg.Quit =>
+    case SDLMsg.Quit =>
       (model, Cmd.SideEffect(IO.println("SDL quit received")))
 
-    case SdlMsg.Other(_) =>
+    case SDLMsg.Other(_) =>
       (model, Cmd.None)
 
     case _ =>
       (model, Cmd.None)
 
-  override def watchers(model: SandboxModel): Batch[Watcher] =
+  def watchers(model: SandboxModel): Batch[Watcher] =
     Batch(Watcher.every(1.second, _ => Msg.Tick))
 
-  def render(model: SandboxModel, ctx: SdlContext): Unit =
+  def extensions(
+      args: Array[String],
+      model: SandboxModel,
+      ctx: SDLContext
+  ): Set[Extension] =
+    Set()
+
+  def render(model: SandboxModel, ctx: SDLContext): Unit =
     val phase = ((model.ticks % 6L).toFloat) / 6.0f
     glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)
     glClear(GL_COLOR_BUFFER_BIT)
@@ -72,3 +73,9 @@ object SandboxNativeSdl extends SdlApp[SandboxModel]:
     val vaoId = !vaoPtr
     glBindVertexArray(vaoId)
     vaoId
+
+final case class SandboxModel(program: UInt, vao: UInt, ticks: Long)
+
+enum Msg extends GlobalMsg derives CanEqual:
+  case Tick
+  case NoOp

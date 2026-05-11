@@ -1,12 +1,12 @@
-package tyrian.sdl
-
-import scala.scalanative.unsafe.*
+package tyrian
 
 import tyrian.sdl.facades.gl.GL.*
 import tyrian.sdl.facades.sdl.SDL.*
 import tyrian.sdl.facades.sdl.SDLConstants.*
 
-final class SdlContext private (
+import scala.scalanative.unsafe.*
+
+final class SDLContext private (
     val window: SDL_Window,
     val glCtx: SDL_GLContext,
     val width: Int,
@@ -18,12 +18,12 @@ final class SdlContext private (
     SDL_DestroyWindow(window)
     SDL_Quit()
 
-object SdlContext:
+object SDLContext:
 
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null")
   )
-  def create(title: String, width: Int, height: Int): SdlContext =
+  def create(title: String, width: Int, height: Int): SDLContext =
     if !SDL_Init(SDL_INIT_VIDEO) then
       val err = fromCString(SDL_GetError())
       throw new RuntimeException(s"SDL_Init failed: $err")
@@ -35,7 +35,7 @@ object SdlContext:
     val _c: CInt = SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE)
     val _d: CInt = SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG)
     val _e: CInt = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
-    val _      = (_a, _b, _c, _d, _e)
+    val _        = (_a, _b, _c, _d, _e)
 
     val window =
       Zone { (z: Zone) ?=>
@@ -57,4 +57,4 @@ object SdlContext:
     glViewport(0, 0, width, height)
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
 
-    new SdlContext(window, glCtx, width, height)
+    new SDLContext(window, glCtx, width, height)

@@ -1,10 +1,10 @@
 package sandbox
 
-import scala.scalanative.unsafe.*
-import scala.scalanative.unsigned.*
-
 import tyrian.sdl.facades.gl.GL.*
 import tyrian.sdl.facades.gl.GLConstants.*
+
+import scala.scalanative.unsafe.*
+import scala.scalanative.unsigned.*
 
 object Shaders:
 

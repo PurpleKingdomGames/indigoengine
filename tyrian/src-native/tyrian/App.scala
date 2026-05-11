@@ -10,6 +10,8 @@ import tyrian.extensions.ExtensionRegister
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 
+// TODO: Look at making the JS and Native App's common. There are differences, but there's a lot of similarity too.
+
 trait App[Model]:
 
   /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
@@ -27,7 +29,7 @@ trait App[Model]:
     */
   def update(model: Model): GlobalMsg => Result[Model]
 
-  /** Used to render your current model into an HTML view.
+  /** Used to render your current model into a view.
     */
   def view(model: Model): TerminalFragment
 
