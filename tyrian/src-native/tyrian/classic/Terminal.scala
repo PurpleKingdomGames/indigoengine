@@ -48,5 +48,7 @@ object Terminal:
         router: Location => Option[Msg]
     )(using F: Async[F], clock: Clock[F]): F[Unit] =
       F.map(model.get) { m =>
-        println(view(m).draw)
+        val out = view(m).draw.trim
+
+        if out.nonEmpty then println(out)
       }

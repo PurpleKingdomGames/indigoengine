@@ -1,10 +1,11 @@
-package tyrian.sdl.facades.gl
+package indigoengine.sdl.facades.gl
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
 @extern
 object GL:
+  // Viewport
   def glClearColor(r: CFloat, g: CFloat, b: CFloat, a: CFloat): Unit = extern
   def glClear(mask: UInt): Unit                                      = extern
   def glViewport(x: CInt, y: CInt, width: CInt, height: CInt): Unit  = extern
@@ -23,17 +24,9 @@ object GL:
   def glUseProgram(program: UInt): Unit                                                                = extern
   def glDeleteShader(shader: UInt): Unit                                                               = extern
 
-  // VAO (required in Core Profile even without vertex attributes)
+  // VAO
   def glGenVertexArrays(n: CInt, arrays: Ptr[UInt]): Unit = extern
   def glBindVertexArray(array: UInt): Unit                = extern
 
   // Drawing
   def glDrawArrays(mode: UInt, first: CInt, count: CInt): Unit = extern
-
-object GLConstants:
-  val GL_COLOR_BUFFER_BIT: UInt = 0x00004000.toUInt
-  val GL_TRIANGLE_STRIP: UInt   = 0x0005.toUInt
-  val GL_VERTEX_SHADER: UInt    = 0x8b31.toUInt
-  val GL_FRAGMENT_SHADER: UInt  = 0x8b30.toUInt
-  val GL_COMPILE_STATUS: UInt   = 0x8b81.toUInt
-  val GL_LINK_STATUS: UInt      = 0x8b82.toUInt

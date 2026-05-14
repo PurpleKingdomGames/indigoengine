@@ -25,5 +25,6 @@ object `package` extends Module:
   object native extends SharedNative, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
+      build.`indigoengine-sdl-facades`.native,
       build.`indigo-render-pipeline`.native
     )

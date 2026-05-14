@@ -22,6 +22,7 @@ import indigo.shaders.library
 import indigo.shared.Context
 import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
+import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
@@ -166,7 +167,7 @@ trait Game[BootData, StartUpData, Model]:
   def launch(
       initialWidth: Int,
       initialHeight: Int,
-      context: String, // Fake, obvs.
+      context: SDL_GLContext,
       args: Array[String],
       services: IndigoCoreServices[TempImageData, Array[Byte]]
   ): Unit =
@@ -221,7 +222,7 @@ trait Game[BootData, StartUpData, Model]:
   def ready(
       initialWidth: Int,
       initialHeight: Int,
-      context: String, // Fake, obvs
+      context: SDL_GLContext,
       args: Array[String],
       services: IndigoCoreServices[TempImageData, Array[Byte]]
   ): GameEngine[StartUpData, Model] =

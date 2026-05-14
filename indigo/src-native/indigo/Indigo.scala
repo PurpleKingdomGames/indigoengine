@@ -8,16 +8,9 @@ package indigo
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
-import indigo.internal.services.NativeGamepadInputService
-import indigo.internal.services.NativeImageService
-import indigo.platform.IndigoCoreServices
-import indigo.platform.assets.TempImageData
 import tyrian.*
-import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
-// import tyrian.ui.Canvas
-// import tyrian.ui.Extent
-// import tyrian.ui.theme.Theme
+import tyrian.extensions.SDLExtension
 
 final case class Indigo(
     extensionId: ExtensionId,
@@ -28,7 +21,7 @@ final case class Indigo(
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
     settings: Settings
-) extends Extension:
+) extends SDLExtension:
 
   type ExtensionModel = Model
 
@@ -175,18 +168,19 @@ final case class Indigo(
 
     case Msg.Launch(LaunchStatus.AttemptStart(extId)) =>
       Result(model)
-        .addActions(
-          Indigo.launchAction(
-            extensionId,
-            model.game,
-            args,
-            IndigoCoreServices(
-              NativeGamepadInputService(),
-              model._audioPlayer,
-              NativeImageService()
-            )
-          )
-        )
+      // .addActions(
+      //   Indigo.launchAction(
+      //     extensionId,
+      //     model.game,
+      //     args,
+      //     IndigoCoreServices(
+      //       NativeGamepadInputService(),
+      //       model._audioPlayer,
+      //       NativeImageService()
+      //     ),
+      //     context
+      //   )
+      // )
       // if extId == extensionId then
       //   val maybeCanvas =
       //     Option(document.getElementById(canvasId))
@@ -280,6 +274,9 @@ final case class Indigo(
     // ) ++
     //   gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
 
+  def onFrame(ctx: SDLContext, runningTime: Seconds, model: ExtensionModel): Unit =
+    ()
+
 object Indigo:
 
   val MaxStartupAttempts: Int = 10
@@ -321,19 +318,20 @@ object Indigo:
     )
 
   // Move to IndigoActions
-  private def launchAction(
-      extensionId: ExtensionId,
-      game: Game[?, ?, ?],
-      args: Array[String],
-      services: IndigoCoreServices[TempImageData, Array[Byte]]
-  ): Action =
-    Action.run {
-      game.launch(
-        initialWidth = 800,   // : Int,
-        initialHeight = 600,  // : Int,
-        context = "nonsense", // : String, // Fake, obvs.
-        args = args,          // : Array[String],
-        services = services   // : IndigoCoreServices[TempImageData, Array[Byte]]
-      )
-      Msg.Launch(LaunchStatus.Started(extensionId))
-    }
+  // private def launchAction(
+  //     extensionId: ExtensionId,
+  //     game: Game[?, ?, ?],
+  //     args: Array[String],
+  //     services: IndigoCoreServices[TempImageData, Array[Byte]],
+  //     ctx: SDL_GLContext
+  // ): Action =
+  //   Action.run {
+  //     game.launch(
+  //       initialWidth = 800,   // : Int,
+  //       initialHeight = 600,  // : Int,
+  //       context = ctx, // : String, // Fake, obvs.
+  //       args = args,          // : Array[String],
+  //       services = services   // : IndigoCoreServices[TempImageData, Array[Byte]]
+  //     )
+  //     Msg.Launch(LaunchStatus.Started(extensionId))
+  //   }

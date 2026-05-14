@@ -20,6 +20,7 @@ import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.shaders.RawShaderCode
+import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 
 // Almost identical to JsPlatform?
@@ -29,7 +30,7 @@ class NativePlatform(
     val globalEventStream: GlobalEventStream,
     initialWidth: Int,
     initialHeight: Int,
-    context: String,                                       // Fake type
+    context: SDL_GLContext,
     imageService: ImageService[TempImageData, Array[Byte]] // Fake types
 ) extends Platform {
 
