@@ -1,10 +1,10 @@
 package indigo.render
 
+import indigoengine.sdl.facades.gl.GL.*
+import indigoengine.sdl.facades.gl.GLConstants.*
+
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
-
-import facades.gl.GL.*
-import facades.gl.GLConstants.*
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw"))
 object Shaders:

@@ -17,6 +17,7 @@ trait App[Model]:
   /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
     * more than sufficient, however the value can be tweaked in your app by overriding this value.
     */
+  // TODO: Is this used anywhere?
   def MaxConcurrentTasks: Int = 1024
 
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
@@ -48,9 +49,6 @@ trait App[Model]:
 
   val run: IO[Nothing] => Unit = _.unsafeRunSync()
 
-  def main(args: Array[String]): Unit =
-    ready(args)
-
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
     init(args) match
@@ -80,7 +78,7 @@ trait App[Model]:
   private val extensionsRegister: ExtensionRegister =
     new ExtensionRegister()
 
-  private def ready(args: Array[String]): Unit =
+  def launch(args: Array[String]): Unit =
 
     val (initModel, initCmds) =
       _init(args)

@@ -1,71 +1,71 @@
 package sandbox
 
 import cats.effect.IO
+import indigoengine.sdl.facades.gl.GL.*
 import indigoengine.shared.collections.Batch
+import tyrian.*
 import tyrian.GlobalMsg
 import tyrian.SDLApp
-import tyrian.SDLContext
 import tyrian.SDLMsg
-import tyrian.Watcher
+import tyrian.SDLWatcher.*
+import tyrian.extensions.SDLExtension
 import tyrian.platform.Cmd
-import tyrian.sdl.facades.gl.GL.*
-import tyrian.sdl.facades.gl.GLConstants.*
-import tyrian.syntax.*
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
-import tyrian.extensions.Extension
 
+// TODO: SDLApp[Unit]
 object SandboxNativeSDL extends SDLApp[SandboxModel]:
 
-  override def title: String = "Tyrian SDL Sandbox"
-  override def width: Int    = 400
-  override def height: Int   = 400
+  val title: String = "Tyrian SDL Sandbox"
+  val width: Int    = 400
+  val height: Int   = 400
 
-  def init(args: Array[String]): (SandboxModel, Cmd[IO, GlobalMsg]) =
+  def init(args: Array[String]): Result[SandboxModel] =
     val program = Shaders.createProgram(Shaders.vertSrc, Shaders.fragSrc)
     val vao     = makeVao()
     val cmd: Cmd[IO, GlobalMsg] =
       Cmd.SideEffect(IO.println("Tyrian SDL sandbox starting"))
 
-    (SandboxModel(program, vao, 0L), cmd)
+    Result(SandboxModel(program, vao, 0L))
+      .addCmds(cmd)
 
-  def update(model: SandboxModel): GlobalMsg => (SandboxModel, Cmd[IO, GlobalMsg]) =
-    case Msg.Tick =>
+  def update(model: SandboxModel): GlobalMsg => Result[SandboxModel] =
+    case Msg.Tick(t) =>
       val nextTicks = model.ticks + 1L
       val cmd: Cmd[IO, GlobalMsg] =
-        Cmd.SideEffect(IO.println(s"tick $nextTicks"))
-      (model.copy(ticks = nextTicks), cmd)
+        if nextTicks % 60L == 0L then Cmd.SideEffect(IO.println(s"tick $nextTicks (t=${t.toMillis} ms)"))
+        else Cmd.None
+
+      Result(model.copy(ticks = nextTicks))
+        .addCmds(cmd)
+
+    case Msg.Shutdown =>
+      Result(model)
+        .addCmds(Cmd.SideEffect(IO.println("SDL quit received")))
 
     case Msg.NoOp =>
-      (model, Cmd.None)
-
-    case SDLMsg.Quit =>
-      (model, Cmd.SideEffect(IO.println("SDL quit received")))
-
-    case SDLMsg.Other(_) =>
-      (model, Cmd.None)
+      Result(model)
 
     case _ =>
-      (model, Cmd.None)
+      Result(model)
+
+  def view(model: SandboxModel): TerminalFragment =
+    TerminalFragment.empty
 
   def watchers(model: SandboxModel): Batch[Watcher] =
-    Batch(Watcher.every(1.second, _ => Msg.Tick))
+    Batch(
+      Watcher.fromSDLMsg("sdl-msg-handler") {
+        case SDLMsg.Frame(t) => Some(Msg.Tick(t))
+        case SDLMsg.Quit     => Some(Msg.Shutdown)
+        case SDLMsg.Other(_) => Some(Msg.NoOp)
+      }
+    )
 
-  def extensions(
-      args: Array[String],
-      model: SandboxModel,
-      ctx: SDLContext
-  ): Set[Extension] =
-    Set()
-
-  def render(model: SandboxModel, ctx: SDLContext): Unit =
-    val phase = ((model.ticks % 6L).toFloat) / 6.0f
-    glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)
-    glClear(GL_COLOR_BUFFER_BIT)
-    glUseProgram(model.program)
-    glBindVertexArray(model.vao)
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
+  def extensions(args: Array[String], model: SandboxModel): Set[SDLExtension] =
+    Set(
+      TestSDLExtension
+    )
 
   private def makeVao(): UInt =
     val vaoPtr = stackalloc[UInt]()
@@ -77,5 +77,6 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
 final case class SandboxModel(program: UInt, vao: UInt, ticks: Long)
 
 enum Msg extends GlobalMsg derives CanEqual:
-  case Tick
+  case Tick(runningTime: Seconds)
+  case Shutdown
   case NoOp

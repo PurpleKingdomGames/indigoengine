@@ -28,6 +28,7 @@ import indigo.shaders.ShaderRegister
 import indigo.shaders.StandardShaders
 import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
+import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
@@ -90,7 +91,7 @@ final class GameEngine[StartUpData, GameModel](
   def start(
       initialWidth: Int,
       initialHeight: Int,
-      context: String, // TODO: What is this?
+      context: SDL_GLContext,
       assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel] = {

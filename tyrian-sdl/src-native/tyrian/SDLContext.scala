@@ -1,9 +1,10 @@
 package tyrian
 
-import tyrian.sdl.facades.gl.GL.*
-import tyrian.sdl.facades.sdl.SDL.*
-import tyrian.sdl.facades.sdl.SDLConstants.*
+import indigoengine.sdl.facades.gl.GL.*
+import indigoengine.sdl.facades.sdl.SDL.*
+import indigoengine.sdl.facades.sdl.SDLConstants.*
 
+import scala.scalanative as sdl
 import scala.scalanative.unsafe.*
 
 final class SDLContext private (
@@ -37,6 +38,12 @@ object SDLContext:
     val _e: CInt = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
     val _        = (_a, _b, _c, _d, _e)
 
+    Zone { (z: Zone) ?=>
+      val _1 = SDL_SetHint(toCString(SDL_HINT_WINDOW_ACTIVATE_WHEN_SHOWN)(using z), toCString("1")(using z))
+      val _2 = SDL_SetHint(toCString(SDL_HINT_WINDOW_ACTIVATE_WHEN_RAISED)(using z), toCString("1")(using z))
+      val _  = (_1, _2)
+    }
+
     val window =
       Zone { (z: Zone) ?=>
         SDL_CreateWindow(toCString(title)(using z), width, height, SDL_WINDOW_OPENGL)
@@ -50,11 +57,15 @@ object SDLContext:
     val glCtx = SDL_GL_CreateContext(window)
     if glCtx == null then
       val err = fromCString(SDL_GetError())
+
       SDL_DestroyWindow(window)
       SDL_Quit()
+
       throw new RuntimeException(s"SDL_GL_CreateContext failed: $err")
 
     glViewport(0, 0, width, height)
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f)
+
+    val _ = SDL_RaiseWindow(window)
 
     new SDLContext(window, glCtx, width, height)

@@ -5,22 +5,18 @@ import indigo.core.config.EngineConfig
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.render.ScreenCaptureConfig
 import indigo.render.Renderer
-import indigo.render.facades.sdl.SDL.*
 import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.shaders.RawShaderCode
+import indigoengine.sdl.facades.sdl.SDL.*
 import indigoengine.shared.aliases.Seconds
 import indigoengine.shared.collections.Batch
 
 import scala.annotation.nowarn
-// import indigo.render.facades.sdl.SDLConstants.*
-// import indigo.render.facades.gl.GL.*
-// import indigo.render.facades.gl.GLConstants.*
 
-@nowarn // TODO: Refine / Remove
+@nowarn // TODO: Remove nowarn once the implementation is in place.
 final class OpenGLRenderer(
     config: EngineConfig,
-    ctx: SDL_GLContext // ,
-    // globalEventStream: EmitGlobalEvent
+    ctx: SDL_GLContext
 ) extends Renderer:
 
   def screenWidth: Int =

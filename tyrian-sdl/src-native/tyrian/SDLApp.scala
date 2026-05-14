@@ -6,117 +6,146 @@ import cats.effect.unsafe.implicits.global
 import indigoengine.shared.collections.Batch
 import tyrian.GlobalMsg
 import tyrian.Watcher
-import tyrian.extensions.Extension
+import tyrian.classic.Terminal
+import tyrian.extensions.SDLExtension
+import tyrian.extensions.SDLExtensionRegister
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
-import tyrian.platform.runtime.CmdHelper
-import tyrian.platform.runtime.SubHelper
-import tyrian.sdl.facades.sdl.SDL.*
-import tyrian.sdl.facades.sdl.SDLConstants.*
+import tyrian.runtime.SDLRuntime
+import tyrian.runtime.TyrianSDLRuntime
 
 import java.util.concurrent.ConcurrentLinkedQueue
-import scala.scalanative.unsafe.*
-import scala.scalanative.unsigned.*
+import scala.annotation.nowarn
 
+/** SDLApp is the equivalent of Tyrian's standard App, modified specifically for SDL based applications where the window
+  * and graphics context must live on the main thread.
+  */
+@nowarn // TODO: Remove
 trait SDLApp[Model]:
 
-  def title: String = "Tyrian SDL"
-  def width: Int    = 400
-  def height: Int   = 400
+  // TODO: SDLApp doesn't have an onFrame yet, i.e. something that can render in the SDL graphics Context.
+
+  // TODO: Wrap this up in something...
+  def title: String
+  def width: Int
+  def height: Int
 
   /** Build the initial model and any startup commands. */
-  def init(args: Array[String]): (Model, Cmd[IO, GlobalMsg])
+  def init(args: Array[String]): Result[Model]
 
   /** Fold a message into the model and emit follow-up commands. Runs on the main thread. */
-  def update(model: Model): GlobalMsg => (Model, Cmd[IO, GlobalMsg])
+  def update(model: Model): GlobalMsg => Result[Model]
 
-  /** Issue GL calls for the current frame. Runs on the main thread, with the GL context current. */
-  def render(model: Model, ctx: SDLContext): Unit
+  /** TODO */
+  def view(model: Model): TerminalFragment
 
-  /** Long-running message sources (timers, sockets, etc.). Subscribed once at startup based on the initial model. */
+  /** Long-running message sources (timers, sockets, SDL events, etc.). Subscribed once at startup based on the initial
+    * model.
+    */
   def watchers(model: Model): Batch[Watcher]
 
-  /** Extensions receive the live `SDLContext` so users can wire it into extension constructors when they need GL
-    * access. v2 only collects the registered set; it does not yet drive their lifecycle.
-    */
-  def extensions(
-      args: Array[String],
-      model: Model,
-      ctx: SDLContext
-  ): Set[Extension]
+  /** Extensions own per-frame rendering via [[SDLExtension.onFrame]], invoked on the main thread by the runtime. */
+  def extensions(args: Array[String], model: Model): Set[SDLExtension]
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.var",
-      "scalafix:DisableSyntax.while",
-      "scalafix:DisableSyntax.null"
-    )
-  )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
+    init(args) match
+      case Result.Next(state, actions) =>
+        (state, Action.internal.Many(actions).toCmd)
+
+      case e @ Result.Error(err, _) =>
+        println(e.reportCrash)
+        throw err
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  protected def _update(
+      model: Model
+  ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
+    case msg =>
+      update(model)(msg) match
+        case Result.Next(state, actions) =>
+          state -> Action.internal.Many(actions).toCmd
+
+        case e @ Result.Error(err, _) =>
+          println(e.reportCrash)
+          throw err
+
+  private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
+    Watcher.internal.Many(watchers(model)).toSub
+
+  private val extensionsRegister: SDLExtensionRegister =
+    new SDLExtensionRegister()
+
+  // TODO: This seems backwards. I think the SDLApp should be run on top of the SDLRuntime.
   final def main(args: Array[String]): Unit =
-    val ctx = SDLContext.create(title, width, height)
+    val runtime = SDLRuntime.create(title, width, height)
+    SDLRuntime.current.set(runtime)
 
-    val msgQueue = new ConcurrentLinkedQueue[GlobalMsg]()
+    val msgQueue = new ConcurrentLinkedQueue[SDLMsg]()
 
     val (dispatcher, releaseDispatcher) =
       Dispatcher.parallel[IO].allocated.unsafeRunSync()
 
-    def runCmd(cmd: Cmd[IO, GlobalMsg]): Unit =
-      CmdHelper.cmdToTaskList[IO, GlobalMsg](cmd).foreach { task =>
-        dispatcher.unsafeRunAndForget(
-          task.flatMap {
-            case Some(m)    => IO(msgQueue.add(m)).void
-            case scala.None => IO.unit
-          }
+    val (initModel, initCmds) = _init(args)
+
+    val extensionsCmds =
+      extensionsRegister.register(Batch.fromSet(extensions(args, initModel))).map(_.toCmd)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def combinedUpdate(
+        model: Model
+    ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
+      msg =>
+        val (m, as) = _update(model)(msg)
+        val extCmds = extensionsRegister.update(msg).map { actions =>
+          val cmds = actions.map(_.toCmd)
+          if cmds.isEmpty then Cmd.None
+          else
+            val head = cmds.head
+            cmds.tail.foldLeft(head)(_ |+| _)
+        }
+
+        extCmds match {
+          case Result.Error(e, _) =>
+            throw e
+
+          case Result.Next(eCmds, _) =>
+            m -> (as |+| eCmds)
+        }
+
+    def combinedView(model: Model): Terminal[GlobalMsg] =
+      (view(model) |+| extensionsRegister.view).toTerminal
+
+    def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
+      _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub
+
+    val tyrianSDLRuntime =
+      TyrianSDLRuntime
+        .make[IO, Model, GlobalMsg, Terminal, Unit](
+          dispatcher,
+          initModel,
+          ()
         )
-      }
+        .unsafeRunSync()
 
-    val (initModel, initCmd) = init(args)
-    var model: Model         = initModel
-
-    val _registered: Set[Extension] = extensions(args, model, ctx)
-    val _                           = _registered
-
-    runCmd(initCmd)
-
-    val initialSub: Sub[IO, GlobalMsg] =
-      Watcher.internal.Many(watchers(initModel)).toSub
-
-    SubHelper.flatten(initialSub).foreach { obs =>
-      dispatcher.unsafeRunAndForget(
-        SubHelper
-          .runObserve[IO, Any, GlobalMsg](obs.asInstanceOf[Sub.Observe[IO, Any, GlobalMsg]]) { result =>
-            result.toOption.flatten.foreach { m =>
-              val _ = msgQueue.add(m)
-            }
-          }
-          .void
+    tyrianSDLRuntime
+      .start(
+        initCmds |+| Cmd.Batch(extensionsCmds.toList),
+        combinedSubscriptions
       )
+      .unsafeRunSync()
+
+    runtime.run { (ctx, runningTime) =>
+      tyrianSDLRuntime
+        .tick(
+          combinedUpdate,
+          combinedView,
+          combinedSubscriptions
+        )
+        .unsafeRunSync()
+
+      extensionsRegister.onFrame(ctx, runningTime)
     }
 
-    val event   = stackalloc[SDL_Event]()
-    var running = true
-
-    while running do
-      while SDL_PollEvent(event) != 0 do
-        val rawType = event.asInstanceOf[Ptr[CStruct1[UInt]]]._1
-        val msg: GlobalMsg =
-          if rawType == SDL_EVENT_QUIT then SDLMsg.Quit
-          else SDLMsg.Other(rawType)
-        val _ = msgQueue.add(msg)
-
-      var drained = msgQueue.poll()
-      while drained != null do
-        drained match
-          case SDLMsg.Quit => running = false
-          case _           => ()
-        val (newModel, cmd) = update(model)(drained)
-        model = newModel
-        runCmd(cmd)
-        drained = msgQueue.poll()
-
-      render(model, ctx)
-      val _ = SDL_GL_SwapWindow(ctx.window)
-      SDL_Delay(16.toUInt)
-
     releaseDispatcher.unsafeRunSync()
-    ctx.destroy()
+    runtime.ctx.destroy()
