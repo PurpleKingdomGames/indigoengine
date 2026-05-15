@@ -6,6 +6,7 @@ import tyrian.Result
 import tyrian.TerminalFragment
 import tyrian.Watcher
 
+// TODO: Should this be an enum? Standard | Graphics[ContextType] (replacing SDLExtension)? Then it could drive WebGL too?
 trait Extension:
 
   type ExtensionModel

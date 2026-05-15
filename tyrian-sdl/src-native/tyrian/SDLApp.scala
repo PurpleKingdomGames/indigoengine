@@ -14,37 +14,39 @@ import tyrian.platform.Sub
 import tyrian.runtime.SDLRuntime
 import tyrian.runtime.TyrianSDLRuntime
 
-import java.util.concurrent.ConcurrentLinkedQueue
-import scala.annotation.nowarn
-
 /** SDLApp is the equivalent of Tyrian's standard App, modified specifically for SDL based applications where the window
   * and graphics context must live on the main thread.
+  *
+  * The SDL graphics context is not available to the main Tyrian app, which presents to the terminal as usual, instead
+  * it is passed to the extensions `draw` operation.
   */
-@nowarn // TODO: Remove
 trait SDLApp[Model]:
-
-  // TODO: SDLApp doesn't have an onFrame yet, i.e. something that can render in the SDL graphics Context.
 
   // TODO: Wrap this up in something...
   def title: String
   def width: Int
   def height: Int
 
-  /** Build the initial model and any startup commands. */
+  /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
+    * run at start up, in order to trigger other processes.
+    */
   def init(args: Array[String]): Result[Model]
 
-  /** Fold a message into the model and emit follow-up commands. Runs on the main thread. */
+  /** The update method allows you to modify the model based on incoming messages (events). As well as an updated model,
+    * you can also produce actions to run.
+    */
   def update(model: Model): GlobalMsg => Result[Model]
 
-  /** TODO */
+  /** Used to render your current model into a view.
+    */
   def view(model: Model): TerminalFragment
 
-  /** Long-running message sources (timers, sockets, SDL events, etc.). Subscribed once at startup based on the initial
-    * model.
+  /** Watchers are typically processes that run for a period of time and emit discrete events based on some world event,
+    * e.g. a mouse moving might emit it's coordinates.
     */
   def watchers(model: Model): Batch[Watcher]
 
-  /** Extensions own per-frame rendering via [[SDLExtension.onFrame]], invoked on the main thread by the runtime. */
+  /** Extensions own per-frame rendering, invoked on the main thread by the runtime. */
   def extensions(args: Array[String], model: Model): Set[SDLExtension]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -76,12 +78,9 @@ trait SDLApp[Model]:
   private val extensionsRegister: SDLExtensionRegister =
     new SDLExtensionRegister()
 
-  // TODO: This seems backwards. I think the SDLApp should be run on top of the SDLRuntime.
   final def main(args: Array[String]): Unit =
     val runtime = SDLRuntime.create(title, width, height)
     SDLRuntime.current.set(runtime)
-
-    val msgQueue = new ConcurrentLinkedQueue[SDLMsg]()
 
     val (dispatcher, releaseDispatcher) =
       Dispatcher.parallel[IO].allocated.unsafeRunSync()
@@ -144,7 +143,7 @@ trait SDLApp[Model]:
         )
         .unsafeRunSync()
 
-      extensionsRegister.onFrame(ctx, runningTime)
+      extensionsRegister.draw(ctx, runningTime)
     }
 
     releaseDispatcher.unsafeRunSync()
