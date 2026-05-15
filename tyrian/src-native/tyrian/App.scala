@@ -14,12 +14,6 @@ import tyrian.platform.Sub
 
 trait App[Model]:
 
-  /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
-    * more than sufficient, however the value can be tweaked in your app by overriding this value.
-    */
-  // TODO: Is this used anywhere?
-  def MaxConcurrentTasks: Int = 1024
-
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
     * run at start up, in order to trigger other processes.
     */
