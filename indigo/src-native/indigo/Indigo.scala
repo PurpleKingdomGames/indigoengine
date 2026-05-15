@@ -274,7 +274,7 @@ final case class Indigo(
     // ) ++
     //   gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
 
-  def onFrame(ctx: SDLContext, runningTime: Seconds, model: ExtensionModel): Unit =
+  def draw(ctx: SDLContext, runningTime: Seconds, model: ExtensionModel): Unit =
     ()
 
 object Indigo:

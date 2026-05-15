@@ -24,12 +24,10 @@ object TestSDLExtension extends SDLExtension:
   def update(model: SandboxModel): GlobalMsg => Result[ExtensionModel] =
     case _ => Result(model)
 
-  // TODO: onFrame and view need to merge together.
-
   def view(model: SandboxModel): TerminalFragment =
     TerminalFragment.empty
 
-  def onFrame(context: SDLContext, runningTime: Seconds, model: SandboxModel): Unit =
+  def draw(context: SDLContext, runningTime: Seconds, model: SandboxModel): Unit =
     val phase = ((runningTime.toMillis.toLong / 1000L) % 6L).toFloat / 6.0f
 
     glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)

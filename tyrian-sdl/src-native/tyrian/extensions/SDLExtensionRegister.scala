@@ -82,7 +82,7 @@ final class SDLExtensionRegister {
 
         extension.watchers(model)
 
-  def onFrame(ctx: SDLContext, runningTime: Seconds): Unit =
+  def draw(ctx: SDLContext, runningTime: Seconds): Unit =
     registeredExtensions
       .foreach: rss =>
         val key       = rss.id
@@ -90,7 +90,7 @@ final class SDLExtensionRegister {
 
         val model: extension.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
-        extension.onFrame(ctx, runningTime, model)
+        extension.draw(ctx, runningTime, model)
 
   def size: Int =
     registeredExtensions.length
