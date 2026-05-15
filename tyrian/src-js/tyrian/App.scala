@@ -19,11 +19,6 @@ import scala.scalajs.js.annotation.*
 
 trait App[Model]:
 
-  /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
-    * more than sufficient, however the value can be tweaked in your app by overriding this value.
-    */
-  def MaxConcurrentTasks: Int = 1024
-
   /** The `routing` function is typically implemented using the `Routing` helper. Used to decide how to manage what
     * happens when the user clicks a link. Links are split in the `Location` object into 'internal' and 'external'
     * types.

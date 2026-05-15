@@ -22,11 +22,6 @@ import scala.scalajs.js.annotation.*
   */
 trait TyrianApp[F[_]: Async, Msg, Model]:
 
-  /** Specifies the number of queued tasks that can be consumed at any one time. Default is 1024 which is assumed to be
-    * more than sufficient, however the value can be tweaked in your app by overriding this value.
-    */
-  def MaxConcurrentTasks: Int = 1024
-
   val run: F[Nothing] => Unit
 
   def router: Location => Msg
