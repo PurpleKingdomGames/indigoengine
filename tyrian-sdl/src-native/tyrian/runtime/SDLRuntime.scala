@@ -27,14 +27,18 @@ final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListener
       "scalafix:DisableSyntax.null"
     )
   )
-  def run(perTick: (SDLContext, Seconds) => Unit): Unit =
-    val startNanos = System.nanoTime()
-    val event      = stackalloc[SDL_Event]()
-    var running    = true
+  def run(perTick: (SDLContext, Seconds, Seconds) => Unit): Unit =
+    val startNanos      = System.nanoTime()
+    val event           = stackalloc[SDL_Event]()
+    var running         = true
+    var lastRunningTime = Millis.fromNanos(startNanos)
 
     while running do
-      val runningTime        = Millis((System.nanoTime() - startNanos) / 1_000_000L)
+      val runningTime        = Millis(System.nanoTime() - startNanos)
       val runningTimeSeconds = runningTime.toSeconds
+      val timeDelta          = runningTime - lastRunningTime
+
+      lastRunningTime = runningTime
 
       while SDL_PollEvent(event) != 0 do
         val rawEventType = event.asInstanceOf[Ptr[CStruct1[UInt]]]._1
@@ -46,7 +50,7 @@ final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListener
 
       listeners.dispatch(SDLMsg.Frame(runningTimeSeconds))
 
-      perTick(ctx, runningTimeSeconds)
+      perTick(ctx, runningTimeSeconds, timeDelta.toSeconds)
 
       // val fit = frameHooks.values().iterator()
       // while fit.hasNext() do

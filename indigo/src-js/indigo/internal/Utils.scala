@@ -28,6 +28,8 @@ import scala.util.Success
 
 object Utils:
 
+  // TODO: Make sure we don't lose this.
+  // TODO: Do we need to backport to the native version?
   private[indigo] def processFrameTick(
       lastUpdated: Seconds,
       runningTime: Seconds,

@@ -9,8 +9,8 @@ import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
 import tyrian.*
+import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
-import tyrian.extensions.SDLExtension
 
 final case class Indigo(
     extensionId: ExtensionId,
@@ -21,7 +21,7 @@ final case class Indigo(
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
     settings: Settings
-) extends SDLExtension:
+) extends Extension.Graphical[SDLContext]:
 
   type ExtensionModel = Model
 
@@ -125,28 +125,28 @@ final case class Indigo(
           )
       else Result(model)
 
-    case Msg.GameTick(gameId, runningTime) =>
-      Result(model)
-      // if game.gameId == gameId && model.running then
-      //   Utils
-      //     .processFrameTick(
-      //       model.lastUpdated,
-      //       runningTime,
-      //       settings.frameRatePolicy
-      //     )
-      //     .flatMap {
-      //       case TickUpdateResult.Wait =>
-      //         Result(model)
+    // case Msg.GameTick(gameId, runningTime) =>
+    //   Result(model)
+    // if game.gameId == gameId && model.running then
+    //   Utils
+    //     .processFrameTick(
+    //       model.lastUpdated,
+    //       runningTime,
+    //       settings.frameRatePolicy
+    //     )
+    //     .flatMap {
+    //       case TickUpdateResult.Wait =>
+    //         Result(model)
 
-      //       case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-      //         Result(model.copy(lastUpdated = updatedAt))
-      //           .addActions(
-      //             Action.sideEffect {
-      //               game.system.tick(updatedAt, timeDelta)
-      //             }
-      //           )
-      //     }
-      // else Result(model)
+    //       case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
+    //         Result(model.copy(lastUpdated = updatedAt))
+    //           .addActions(
+    //             Action.sideEffect {
+    //               game.system.tick(updatedAt, timeDelta)
+    //             }
+    //           )
+    //     }
+    // else Result(model)
 
     case Msg.Launch(LaunchStatus.Retry(extId)) =>
       if extId == extensionId && model.attempts <= 0 then
@@ -274,8 +274,8 @@ final case class Indigo(
     // ) ++
     //   gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
 
-  def draw(ctx: SDLContext, runningTime: Seconds, model: ExtensionModel): Unit =
-    ()
+  def draw(ctx: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: ExtensionModel): Unit =
+    model.game.system.tick(ctx, runningTime, timeDelta)
 
 object Indigo:
 

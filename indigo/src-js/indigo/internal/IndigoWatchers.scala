@@ -12,7 +12,7 @@ import org.scalajs.dom.html
 import tyrian.*
 import tyrian.extensions.ExtensionId
 import tyrian.platform.Sub
-import tyrian.syntax.*
+// import tyrian.syntax.*
 
 object IndigoWatchers:
 
@@ -58,10 +58,10 @@ object IndigoWatchers:
     )
     Watcher(sub)
 
-  def tick(gameId: GameId): Watcher =
-    Watcher.animationFrameTick(s"[indigo-tick:${gameId.asString}]") { runningTime =>
-      Msg.GameTick(gameId, runningTime)
-    }
+  // def tick(gameId: GameId): Watcher =
+  //   Watcher.animationFrameTick(s"[indigo-tick:${gameId.asString}]") { runningTime =>
+  //     Msg.GameTick(gameId, runningTime)
+  //   }
 
   def resize(gameId: GameId, canvas: html.Canvas, container: HTMLElement): Watcher = {
     val toMsg: ((Double, Double)) => Option[GlobalMsg] =

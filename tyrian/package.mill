@@ -17,6 +17,7 @@ object `package` extends Module:
 
     def moduleDeps = Seq(
       build.`indigoengine-shared`.js,
+      build.`indigoengine-webgl2-facades`.js,
       build.`tyrian-platform`.js,
       build.`tyrian-tags`.js
     )

@@ -8,13 +8,12 @@ import tyrian.GlobalMsg
 import tyrian.SDLApp
 import tyrian.SDLMsg
 import tyrian.SDLWatcher.*
-import tyrian.extensions.SDLExtension
+import tyrian.extensions.Extension
 import tyrian.platform.Cmd
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
-// TODO: SDLApp[Unit]
 object SandboxNativeSDL extends SDLApp[SandboxModel]:
 
   val title: String = "Tyrian SDL Sandbox"
@@ -62,7 +61,7 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
       }
     )
 
-  def extensions(args: Array[String], model: SandboxModel): Set[SDLExtension] =
+  def extensions(args: Array[String], model: SandboxModel): Set[Extension.Graphical[SDLContext]] =
     Set(
       TestSDLExtension
     )

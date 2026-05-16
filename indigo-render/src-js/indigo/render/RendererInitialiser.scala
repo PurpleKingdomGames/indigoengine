@@ -2,7 +2,6 @@ package indigo.render
 
 import indigo.core.config.EngineConfig
 import indigo.render.Renderer
-import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.webgl2.ContextAndSize
 import indigo.render.webgl2.LoadedTextureAsset
 import indigo.render.webgl2.RendererWebGL2
@@ -14,16 +13,12 @@ final class RendererInitialiser():
   def setup(
       config: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
-      context: WebGL2RenderingContext,
-      width: Int,
-      height: Int,
+      context: ContextAndSize,
       shaders: Set[RawShaderCode]
-  ): Renderer =
-    val cNc = new ContextAndSize(context, width, height)
-
+  ): Renderer[ContextAndSize] =
     val r =
-      new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc)
+      new RendererWebGL2(config, loadedTextureAssets.toJSArray)
 
-    r.init(shaders)
-    r.resize(width, height)
+    r.init(context, shaders)
+    r.resize(context)
     r

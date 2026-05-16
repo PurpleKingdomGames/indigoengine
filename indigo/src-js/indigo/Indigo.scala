@@ -1,6 +1,7 @@
 package indigo
 
 import indigo.core.events.ScreenCaptureEvent
+import indigo.internal.CanvasAndContext
 import indigo.internal.IndigoActions
 import indigo.internal.IndigoWatchers
 import indigo.internal.Utils
@@ -8,10 +9,10 @@ import indigo.internal.WorldEventWatchers
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
-import indigo.internal.models.TickUpdateResult
 import indigo.internal.services.BrowserGamepadInputService
 import indigo.internal.services.BrowserImageService
 import indigo.platform.IndigoCoreServices
+import indigo.render.webgl2.ContextAndSize
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import tyrian.*
@@ -30,7 +31,7 @@ final case class Indigo(
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
     settings: Settings
-) extends Extension:
+) extends Extension.Graphical:
 
   type ExtensionModel = Model
 
@@ -132,27 +133,30 @@ final case class Indigo(
           )
       else Result(model)
 
-    case Msg.GameTick(gameId, runningTime) =>
-      if game.gameId == gameId && model.running then
-        Utils
-          .processFrameTick(
-            model.lastUpdated,
-            runningTime,
-            settings.frameRatePolicy
-          )
-          .flatMap {
-            case TickUpdateResult.Wait =>
-              Result(model)
+    // case Msg.GameTick(gameId, runningTime) =>
+    //   if game.gameId == gameId && model.running then
+    //     Utils
+    //       .processFrameTick(
+    //         model.lastUpdated,
+    //         runningTime,
+    //         settings.frameRatePolicy
+    //       )
+    //       .flatMap {
+    //         case TickUpdateResult.Wait =>
+    //           Result(model)
 
-            case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-              Result(model.copy(lastUpdated = updatedAt))
-                .addActions(
-                  Action.sideEffect {
-                    game.system.tick(updatedAt, timeDelta)
-                  }
-                )
-          }
-      else Result(model)
+    //         case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
+    //           // TODO: In the native version, the context is supplied through the draw() call.
+    //           val ctx: ContextAndSize = ???
+
+    //           Result(model.copy(lastUpdated = updatedAt))
+    //             .addActions(
+    //               Action.sideEffect {
+    //                 game.system.tick(ctx, updatedAt, timeDelta)
+    //               }
+    //             )
+    //       }
+    //   else Result(model)
 
     case Msg.Launch(LaunchStatus.Retry(extId)) =>
       if extId == extensionId && model.attempts <= 0 then
@@ -178,11 +182,32 @@ final case class Indigo(
           Option(document.getElementById(canvasId))
             .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
 
+        val maybeContext: Option[WebGL2Context] =
+          maybeCanvas.map: canvas =>
+            val bounds = canvas.parentElement.getBoundingClientRect()
+            canvas.width = bounds.width.toInt
+            canvas.height = bounds.height.toInt
+
+            val ctx =
+              CanvasAndContext.setupContext(
+                canvas,
+                settings.premultipliedAlpha,
+                settings.transparentBackground,
+                settings.antiAliasing
+              )
+
+            WebGL2Context(
+              ctx,
+              canvas.width,
+              canvas.height
+            )
+
         Result(
           model.copy(
             _eventWatchers =
               maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime, settings.disableContextMenu)),
             _canvas = maybeCanvas,
+            _context = maybeContext,
             _container = maybeCanvas.map(_.parentElement)
           )
         )
@@ -240,9 +265,9 @@ final case class Indigo(
     )
 
   def watchers(model: Model): Batch[Watcher] =
-    val gameTickWatcher =
-      if model.running then Batch(IndigoWatchers.tick(game.gameId))
-      else Batch.empty
+    // val gameTickWatcher =
+    //   if model.running then Batch(IndigoWatchers.tick(game.gameId))
+    //   else Batch.empty
 
     val resizeWatcher =
       (model._canvas, model._container) match
@@ -261,7 +286,31 @@ final case class Indigo(
       model.game.events.eventCallback.map: eventCallback =>
         IndigoWatchers.indigoEventWatcher(extensionId, eventMapping, eventCallback)
     ) ++
-      gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
+      resizeWatcher ++ worldEventWatchers
+
+  def draw(context: WebGL2Context, runningTime: Seconds, timeDelta: Seconds, model: Model): Unit =
+    val ctx: ContextAndSize =
+      ContextAndSize(
+        context.ctx,
+        context.width,
+        context.height
+      )
+
+    // TODO: Utils.processFrameTick ?
+
+    game.system.tick(ctx, runningTime, timeDelta)
+
+  def provideContext(model: Model): Option[WebGL2Context] =
+    model._canvas.flatMap: canvas =>
+      val bounds = canvas.parentElement.getBoundingClientRect()
+      canvas.width = bounds.width.toInt
+      canvas.height = bounds.height.toInt
+
+      model._context.map: ctx =>
+        ctx.copy(
+          width = canvas.width,
+          height = canvas.height
+        )
 
 object Indigo:
 

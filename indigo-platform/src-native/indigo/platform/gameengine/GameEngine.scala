@@ -16,6 +16,7 @@ import indigo.platform.assets.*
 import indigo.platform.audio.AudioService
 import indigo.platform.events.GlobalEventStream
 import indigo.render.Renderer
+import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.registers.AnimationsRegister
@@ -28,7 +29,6 @@ import indigo.shaders.ShaderRegister
 import indigo.shaders.StandardShaders
 import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
-import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
@@ -65,18 +65,20 @@ final class GameEngine[StartUpData, GameModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private[gameengine] var assetMapping: AssetMapping = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  private[gameengine] var renderer: Renderer = null
+  private[gameengine] var renderer: Renderer[ContextAndSize] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private[gameengine] var startUpData: StartUpData = uninitialized
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var platform: NativePlatform = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var _graphicsContext: ContextAndSize = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
 
     if platform != null then platform.kill()
 
-    if renderer != null then renderer.dispose()
+    if renderer != null && _graphicsContext != null then renderer.dispose(_graphicsContext)
 
     animationsRegister.kill()
     fontRegister.kill()
@@ -89,14 +91,14 @@ final class GameEngine[StartUpData, GameModel](
     ()
 
   def start(
-      initialWidth: Int,
-      initialHeight: Int,
-      context: SDL_GLContext,
+      context: ContextAndSize,
       assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
+
+    _graphicsContext = context
 
     // Intialisation / Boot events
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -112,8 +114,6 @@ final class GameEngine[StartUpData, GameModel](
     platform = new NativePlatform(
       engineConfig,
       globalEventStream,
-      initialWidth,
-      initialHeight,
       context,
       services.imageService
     )
@@ -124,8 +124,8 @@ final class GameEngine[StartUpData, GameModel](
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
-    if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
+  def tick(context: ContextAndSize, runningTime: Seconds, timeDelta: Seconds): Unit =
+    if gameLoopInstance != null then gameLoopInstance.runFrame(context, runningTime, timeDelta)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
   def rebuildGameLoop(
@@ -135,7 +135,7 @@ final class GameEngine[StartUpData, GameModel](
       runningTime => {
         if !firstRun then
           gameLoopInstance.lock()
-          if renderer != null then renderer.dispose()
+          if renderer != null then renderer.dispose(_graphicsContext) // Hmmm.
 
         fontRegister.clearRegister()
         boundaryLocator.purgeCache()
@@ -331,7 +331,7 @@ object GameEngine {
       initialModel: GameModel,
       frameProccessor: FrameProcessor[StartUpData, GameModel],
       startFrameLocked: Boolean,
-      renderer: => Renderer
+      renderer: => Renderer[ContextAndSize]
   ): Outcome[GameLoop[StartUpData, GameModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel](

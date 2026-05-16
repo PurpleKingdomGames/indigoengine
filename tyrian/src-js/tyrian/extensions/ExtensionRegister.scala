@@ -1,6 +1,7 @@
 package tyrian.extensions
 
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.datatypes.Seconds
 import tyrian.Action
 import tyrian.GlobalMsg
 import tyrian.HtmlFragment
@@ -30,9 +31,16 @@ final class ExtensionRegister {
         actions
     }
 
+  def hasGraphicalExtensions: Boolean =
+    registeredExtensions.exists(_.isGraphical)
+
   private def initialiseExtension(extension: Extension): Result[RegisteredExtension] = {
     val key = extension.id.toString
-    val res = RegisteredExtension(key, extension)
+    val isGraphical: Boolean =
+      extension match
+        case _: Extension.Graphical => true
+        case _                      => false
+    val res = RegisteredExtension(key, extension, isGraphical)
 
     extension.init.map { model =>
       stateMap.update(key, model.asInstanceOf[Object])
@@ -84,9 +92,27 @@ final class ExtensionRegister {
 
         extension.watchers(model)
 
+  def draw(runningTime: Seconds, timeDelta: Seconds): Unit =
+    registeredExtensions
+      .foreach: rss =>
+        val key       = rss.id
+        val extension = rss.extension
+
+        extension match
+          case ext: Extension.Standard =>
+            ()
+
+          case ext: Extension.Graphical =>
+            val model: ext.ExtensionModel = stateMap(key).asInstanceOf[ext.ExtensionModel]
+
+            ext
+              .provideContext(model)
+              .foreach: ctx =>
+                ext.draw(ctx, runningTime, timeDelta, model)
+
   def size: Int =
     registeredExtensions.length
 
 }
 
-final case class RegisteredExtension(id: String, extension: Extension) derives CanEqual
+final case class RegisteredExtension(id: String, extension: Extension, isGraphical: Boolean) derives CanEqual

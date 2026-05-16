@@ -1,0 +1,16 @@
+package build.`indigoengine-webgl2-facades`
+
+import mill.*
+import mill.scalalib.*
+
+import build.SharedJS
+import build.SharedPublish
+import build.Dependencies
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def mvnDeps = Seq(
+      mvn"org.scala-js::scalajs-dom::${Dependencies.scalajsDomVersion}"
+    )

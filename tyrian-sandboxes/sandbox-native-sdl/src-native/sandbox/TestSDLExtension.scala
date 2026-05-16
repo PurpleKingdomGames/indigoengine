@@ -3,12 +3,12 @@ package sandbox
 import indigoengine.sdl.facades.gl.GL.*
 import indigoengine.sdl.facades.gl.GLConstants.*
 import tyrian.*
-import tyrian.extensions.SDLExtension
+import tyrian.extensions.Extension
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
-object TestSDLExtension extends SDLExtension:
+object TestSDLExtension extends Extension.Graphical[SDLContext]:
 
   type ExtensionModel = SandboxModel
 
@@ -27,7 +27,7 @@ object TestSDLExtension extends SDLExtension:
   def view(model: SandboxModel): TerminalFragment =
     TerminalFragment.empty
 
-  def draw(context: SDLContext, runningTime: Seconds, model: SandboxModel): Unit =
+  def draw(context: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: SandboxModel): Unit =
     val phase = ((runningTime.toMillis.toLong / 1000L) % 6L).toFloat / 6.0f
 
     glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)

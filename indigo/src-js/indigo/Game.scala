@@ -13,7 +13,7 @@ import indigo.platform.assets.AssetCollection
 import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
 import indigo.render.EmitGlobalEvent
-import indigo.render.facades.WebGL2RenderingContext
+import indigo.render.webgl2.ContextAndSize
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager
@@ -155,8 +155,8 @@ trait Game[BootData, StartUpData, Model]:
   object system:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-    def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
-      if gameInstance != null then gameInstance.tick(runningTime, timeDelta)
+    def tick(ctx: ContextAndSize, runningTime: Seconds, timeDelta: Seconds): Unit =
+      if gameInstance != null then gameInstance.tick(ctx, runningTime, timeDelta)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     def halt(): Unit =
@@ -166,13 +166,11 @@ trait Game[BootData, StartUpData, Model]:
       ()
 
   def launch(
-      initialWidth: Int,
-      initialHeight: Int,
-      context: WebGL2RenderingContext,
+      context: ContextAndSize,
       flags: Map[String, String],
       services: IndigoCoreServices[html.Image, ImageData]
   ): Unit =
-    gameInstance = ready(initialWidth, initialHeight, context, flags, services)
+    gameInstance = ready(context, flags, services)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -221,9 +219,7 @@ trait Game[BootData, StartUpData, Model]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def ready(
-      initialWidth: Int,
-      initialHeight: Int,
-      context: WebGL2RenderingContext,
+      context: ContextAndSize,
       flags: Map[String, String],
       services: IndigoCoreServices[html.Image, ImageData]
   ): GameEngine[StartUpData, Model] =
@@ -242,8 +238,6 @@ trait Game[BootData, StartUpData, Model]:
         AssetLoader.loadAssets(b.assets).onComplete {
           case Success(ac) =>
             engine.start(
-              initialWidth,
-              initialHeight,
               context,
               ac,
               evts

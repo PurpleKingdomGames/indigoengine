@@ -13,6 +13,7 @@ import indigo.core.utils.IndigoLogger
 import indigo.gameengine.FrameProcessor
 import indigo.platform.assets.AssetCollection
 import indigo.render.Renderer
+import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
@@ -34,7 +35,7 @@ final class GameLoop[StartUpData, GameModel](
     initialModel: GameModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
-    renderer: => Renderer
+    renderer: => Renderer[ContextAndSize]
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -56,10 +57,10 @@ final class GameLoop[StartUpData, GameModel](
   def lock(): Unit              = _frameLocked = true
   def unlock(): Unit            = _frameLocked = false
 
-  def runFrame(time: Seconds, timeDelta: Seconds): Unit =
+  def runFrame(context: ContextAndSize, time: Seconds, timeDelta: Seconds): Unit =
     if _frameLocked then ()
     else if systemActions.size > 0 then performSystemActions(systemActions.dequeueAll(_ => true).toList, time)
-    else runFrameNormal(time, timeDelta)
+    else runFrameNormal(context, time, timeDelta)
 
   def performSystemActions(systemEvents: List[IndigoSystemEvent], runningTime: Seconds): Unit =
     systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection, nextEvent) =>
@@ -69,7 +70,7 @@ final class GameLoop[StartUpData, GameModel](
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def runFrameNormal(time: Seconds, timeDelta: Seconds): Unit =
+  private def runFrameNormal(ctx: ContextAndSize, time: Seconds, timeDelta: Seconds): Unit =
     val gameTime =
       new GameTime(time, timeDelta)
     val events = gameEngine.globalEventStream.collect ++ Batch(FrameTick)
@@ -132,11 +133,13 @@ final class GameLoop[StartUpData, GameModel](
 
     // Apply any viewport resize (Tyrian pushes ViewportResize when the canvas is resized)
     events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
-      gameEngine.renderer.resize(e.newSize.width, e.newSize.height)
+      // TODO: This might be wrong.
+      val updated = ctx.copy(width = e.newSize.width, height = e.newSize.height)
+      gameEngine.renderer.resize(updated)
     }
 
     // Render scene
-    gameEngine.renderer.drawScene(sceneData, gameTime.running)
+    gameEngine.renderer.drawScene(ctx, sceneData, gameTime.running)
 
     // Process system events
     events

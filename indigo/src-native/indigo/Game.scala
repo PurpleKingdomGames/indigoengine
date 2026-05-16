@@ -14,6 +14,7 @@ import indigo.platform.assets.TempImageData
 import indigo.platform.events.GlobalEventCallback
 import indigo.platform.gameengine.GameEngine
 import indigo.render.EmitGlobalEvent
+import indigo.render.opengl.ContextAndSize
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenes.Scene
 import indigo.scenes.SceneManager
@@ -22,29 +23,20 @@ import indigo.shaders.library
 import indigo.shared.Context
 import indigo.shared.Startup
 import indigo.shared.subsystems.SubSystemsRegister
-import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
+import tyrian.SDLContext
 
 import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
 
-/** A trait representing a game with scene management baked in
+/** A trait representing the required interface for an Indigo game.
   *
   * @example
-  *   `object MyGame extends IndigoGame[BootData, StartUpData, Model, Unit]`
-  *
-  * @tparam BootData
-  *   The class type representing you a successful game boot up
-  * @tparam StartUpData
-  *   The class type representing your successful startup data
-  * @tparam Model
-  *   The class type representing your game's model
-  * @tparam Unit
-  *   The class type representing your game's view model
+  *   `object MyGame extends Game[BootData, StartUpData, Model]`
   */
 trait Game[BootData, StartUpData, Model]:
 
@@ -154,8 +146,9 @@ trait Game[BootData, StartUpData, Model]:
   object system:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-    def tick(runningTime: Seconds, timeDelta: Seconds): Unit =
-      if gameInstance != null then gameInstance.tick(runningTime, timeDelta)
+    def tick(ctx: SDLContext, runningTime: Seconds, timeDelta: Seconds): Unit =
+      val c = ContextAndSize(ctx.glCtx, ctx.width, ctx.height)
+      if gameInstance != null then gameInstance.tick(c, runningTime, timeDelta)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     def halt(): Unit =
@@ -165,13 +158,11 @@ trait Game[BootData, StartUpData, Model]:
       ()
 
   def launch(
-      initialWidth: Int,
-      initialHeight: Int,
-      context: SDL_GLContext,
+      context: ContextAndSize,
       args: Array[String],
       services: IndigoCoreServices[TempImageData, Array[Byte]]
   ): Unit =
-    gameInstance = ready(initialWidth, initialHeight, context, args, services)
+    gameInstance = ready(context, args, services)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -220,9 +211,7 @@ trait Game[BootData, StartUpData, Model]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def ready(
-      initialWidth: Int,
-      initialHeight: Int,
-      context: SDL_GLContext,
+      context: ContextAndSize,
       args: Array[String],
       services: IndigoCoreServices[TempImageData, Array[Byte]]
   ): GameEngine[StartUpData, Model] =
@@ -241,8 +230,6 @@ trait Game[BootData, StartUpData, Model]:
         AssetLoader.loadAssets(b.assets).onComplete {
           case Success(ac) =>
             engine.start(
-              initialWidth,
-              initialHeight,
               context,
               ac,
               evts

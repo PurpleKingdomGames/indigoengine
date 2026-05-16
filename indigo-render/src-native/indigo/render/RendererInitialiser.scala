@@ -2,10 +2,10 @@ package indigo.render
 
 import indigo.core.config.EngineConfig
 import indigo.render.Renderer
+import indigo.render.opengl.ContextAndSize
 import indigo.render.opengl.LoadedTextureAsset
 import indigo.render.opengl.OpenGLRenderer
 import indigo.shaders.RawShaderCode
-import indigoengine.sdl.facades.sdl.SDL.*
 import indigoengine.sdl.facades.sdl.SDL.SDL_Event
 import indigoengine.shared.collections.Batch
 
@@ -32,18 +32,17 @@ final class RendererInitialiser():
   def setup(
       config: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
-      context: SDL_GLContext,
-      width: Int,
-      height: Int,
+      context: ContextAndSize,
       shaders: Set[RawShaderCode]
-  ): Renderer =
+  ): Renderer[ContextAndSize] =
 
     // val ctx = setupWindowAndContext()
 
     val r =
-      new OpenGLRenderer(config, context)
+      new OpenGLRenderer(config)
 
-    r.init(shaders)
+    r.init(context, shaders)
+    r.resize(context)
     r
 
   // @nowarn("msg=unused")

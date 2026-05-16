@@ -6,7 +6,7 @@ import tyrian.extensions.*
 import tyrian.ui.HtmlElement
 import tyrian.ui.theme.Theme
 
-object CounterExtension extends Extension:
+object CounterExtension extends Extension.Standard:
 
   given Theme = Theme.None
 

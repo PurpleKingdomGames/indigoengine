@@ -4,7 +4,8 @@ import indigo.*
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Msg
 import indigo.platform.IndigoCoreServices
-import indigo.render.facades.WebGL2RenderingContext
+import indigo.render.webgl2.ContextAndSize
+import indigoengine.webgl2.facades.WebGL2RenderingContext
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 import tyrian.*
@@ -35,7 +36,7 @@ object IndigoActions:
               settings.antiAliasing
             )
 
-          game.launch(canvas.width, canvas.height, context, flags, services)
+          game.launch(ContextAndSize(context, canvas.width, canvas.height), flags, services)
           Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>

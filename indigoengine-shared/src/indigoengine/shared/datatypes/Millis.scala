@@ -14,6 +14,9 @@ object Millis:
   val zero: Millis =
     Millis(0)
 
+  def fromNanos(value: Long): Millis =
+    Millis(value / 1_000_000L)
+
   extension (ms: Millis)
 
     def +(other: Millis): Millis =

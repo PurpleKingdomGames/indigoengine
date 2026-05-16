@@ -1,7 +1,7 @@
 // package indigo.internal
 
 // import indigo.core.utils.IndigoLogger
-// import indigo.render.facades.WebGL2RenderingContext
+// import indigoengine.webgl2.facades.WebGL2RenderingContext
 // import org.scalajs.dom
 // import org.scalajs.dom.html
 
