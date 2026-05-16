@@ -8,7 +8,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox-native")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    None
+    Some(ShapesScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
     ScenesList.scenes

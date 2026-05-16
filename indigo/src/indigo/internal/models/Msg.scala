@@ -13,7 +13,7 @@ import indigo.internal.models.LaunchStatus
 import tyrian.*
 
 enum Msg extends GlobalMsg:
-  case GameTick(gameId: GameId, runningTime: Seconds)
+  // case GameTick(gameId: GameId, runningTime: Seconds)
   case Halt(gameId: GameId)
   case Launch(status: LaunchStatus)
   case WorldEvents(events: Batch[GlobalEvent])

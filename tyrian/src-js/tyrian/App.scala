@@ -3,6 +3,7 @@ package tyrian
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import indigoengine.shared.collections.Batch
+import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 import org.scalajs.dom.window
@@ -138,11 +139,34 @@ trait App[Model]:
   private val extensionsRegister: ExtensionRegister =
     new ExtensionRegister()
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var lastUpdatedAt: Seconds = Seconds.zero
+
+  def graphicsTick(time: Double): Unit =
+    val runningTime = Seconds(time)
+    val timeDelta   = runningTime - lastUpdatedAt
+
+    lastUpdatedAt = runningTime
+
+    extensionsRegister.draw(runningTime, timeDelta)
+
+    dom.window.requestAnimationFrame { time =>
+      graphicsTick(time)
+    }: Unit
+
   def ready(node: Element, flags: Map[String, String]): Unit =
 
     val (initModel, initCmds) = _init(flags)
 
-    val extensionsCmds = extensionsRegister.register(Batch.fromSet(extensions(flags, initModel))).map(_.toCmd)
+    val extensionsCmds =
+      extensionsRegister.register(Batch.fromSet(extensions(flags, initModel))).map(_.toCmd)
+
+    // This is the spiritual equivalent of the native version, where we need to drive the render
+    // loop with graphics context from the main thread.
+    if extensionsRegister.hasGraphicalExtensions then
+      dom.window.requestAnimationFrame { time =>
+        graphicsTick(time)
+      }: Unit
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def combinedUpdate(

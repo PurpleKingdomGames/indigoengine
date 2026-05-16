@@ -2,11 +2,11 @@ package indigo
 
 import indigo.*
 import tyrian.*
-import tyrian.extensions.SDLExtension
+import tyrian.extensions.Extension
 
 abstract class BasicGameRuntime(game: => Game[?, ?, ?]) extends SDLApp[Unit]:
 
-  def extensions(args: Array[String], model: Unit): Set[SDLExtension] =
+  def extensions(args: Array[String], model: Unit): Set[Extension.Graphical[SDLContext]] =
     Set(
       Indigo(
         ExtensionId("indigo game"),

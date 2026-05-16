@@ -4,7 +4,7 @@
 // import indigo.internal.models.LaunchStatus
 // import indigo.internal.models.Msg
 // import indigo.platform.IndigoCoreServices
-// import indigo.render.facades.WebGL2RenderingContext
+// import indigoengine.webgl2.facades.WebGL2RenderingContext
 // import org.scalajs.dom.html
 // import tyrian.*
 // import tyrian.extensions.ExtensionId

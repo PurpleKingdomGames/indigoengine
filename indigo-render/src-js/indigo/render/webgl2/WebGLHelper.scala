@@ -1,9 +1,9 @@
 package indigo.render.webgl2
 
 import indigo.core.utils.IndigoLogger
-import indigo.render.facades.WebGL2RenderingContext
 import indigo.scenegraph.BlendFactor
 import indigo.shaders.RawShaderCode
+import indigoengine.webgl2.facades.WebGL2RenderingContext
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram

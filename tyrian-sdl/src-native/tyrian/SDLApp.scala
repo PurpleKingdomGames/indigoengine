@@ -7,7 +7,7 @@ import indigoengine.shared.collections.Batch
 import tyrian.GlobalMsg
 import tyrian.Watcher
 import tyrian.classic.Terminal
-import tyrian.extensions.SDLExtension
+import tyrian.extensions.Extension
 import tyrian.extensions.SDLExtensionRegister
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
@@ -47,7 +47,7 @@ trait SDLApp[Model]:
   def watchers(model: Model): Batch[Watcher]
 
   /** Extensions own per-frame rendering, invoked on the main thread by the runtime. */
-  def extensions(args: Array[String], model: Model): Set[SDLExtension]
+  def extensions(args: Array[String], model: Model): Set[Extension.Graphical[SDLContext]]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
@@ -134,7 +134,7 @@ trait SDLApp[Model]:
       )
       .unsafeRunSync()
 
-    runtime.run { (ctx, runningTime) =>
+    runtime.run { (ctx, runningTime, timeDelta) =>
       tyrianSDLRuntime
         .tick(
           combinedUpdate,
@@ -143,7 +143,7 @@ trait SDLApp[Model]:
         )
         .unsafeRunSync()
 
-      extensionsRegister.draw(ctx, runningTime)
+      extensionsRegister.draw(ctx, runningTime, timeDelta)
     }
 
     releaseDispatcher.unsafeRunSync()

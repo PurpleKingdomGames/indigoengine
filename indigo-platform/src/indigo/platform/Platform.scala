@@ -10,14 +10,14 @@ import indigoengine.shared.collections.Batch
 
 /** Platform abstraction for game engine runtime services.
   */
-trait Platform:
+trait Platform[Ctx]:
 
   /** Initialise the platform.
     */
   def initialise(
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
-  ): Outcome[(Renderer, AssetMapping)]
+  ): Outcome[(Renderer[Ctx], AssetMapping)]
 
   // /** Request the next animation frame
   //   *

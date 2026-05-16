@@ -1,10 +1,10 @@
 package indigo.render.webgl2
 
-import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.datatypes.DisplayObjectUniformData
 import indigo.shaders.ShaderId
 import indigo.shaders.StandardShaders
 import indigoengine.shared.datatypes.RGBA
+import indigoengine.webgl2.facades.WebGL2RenderingContext
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*

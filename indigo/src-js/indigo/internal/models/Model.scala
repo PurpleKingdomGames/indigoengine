@@ -15,6 +15,7 @@ final case class Model(
     running: Boolean,
     _eventWatchers: Option[WorldEventWatchers],
     _canvas: Option[html.Canvas],
+    _context: Option[WebGL2Context],
     _container: Option[HTMLElement],
     _audioPlayer: AudioPlayer
 )
@@ -25,6 +26,7 @@ object Model:
       Indigo.MaxStartupAttempts,
       Seconds.zero,
       running = true,
+      None,
       None,
       None,
       None,

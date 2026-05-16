@@ -1,9 +1,10 @@
 package indigo.render.webgl2
 
-import org.scalajs.dom.WebGLRenderingContext
+import indigoengine.webgl2.facades.WebGL2RenderingContext
 
-final class ContextAndSize(
-    val context: WebGLRenderingContext,
-    val width: Int,
-    val height: Int
+// TODO: Parameterise and merge with the native version?
+final case class ContextAndSize(
+    context: WebGL2RenderingContext,
+    width: Int,
+    height: Int
 )

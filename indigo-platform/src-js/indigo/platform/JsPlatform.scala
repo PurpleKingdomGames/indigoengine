@@ -14,10 +14,10 @@ import indigo.platform.events.GlobalEventStream
 import indigo.platform.imaging.ImageService
 import indigo.render.Renderer
 import indigo.render.RendererInitialiser
-import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
+import indigo.render.webgl2.ContextAndSize
 import indigo.render.webgl2.LoadedTextureAsset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
@@ -27,11 +27,9 @@ import org.scalajs.dom.html
 class JsPlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream,
-    initialWidth: Int,
-    initialHeight: Int,
-    context: WebGL2RenderingContext,
+    context: ContextAndSize,
     imageService: ImageService[html.Image, ImageData]
-) extends Platform {
+) extends Platform[ContextAndSize] {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser()
@@ -39,7 +37,7 @@ class JsPlatform(
   def initialise(
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
-  ): Outcome[(Renderer, AssetMapping)] =
+  ): Outcome[(Renderer[ContextAndSize], AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
@@ -101,15 +99,13 @@ class JsPlatform(
       engineConfig: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
       shaders: Set[RawShaderCode]
-  ): Outcome[Renderer] =
+  ): Outcome[Renderer[ContextAndSize]] =
     Outcome {
       IndigoLogger.info("Starting renderer")
       rendererInit.setup(
         engineConfig,
         loadedTextureAssets,
         context,
-        initialWidth,
-        initialHeight,
         shaders
       )
     }

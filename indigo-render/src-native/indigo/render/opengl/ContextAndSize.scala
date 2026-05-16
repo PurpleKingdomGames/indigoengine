@@ -1,9 +1,11 @@
-package indigo.render.webgl2
+package indigo.render.opengl
+
+import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 
 // import org.scalajs.dom.WebGLRenderingContext
 
-final class ContextAndSize(
-    val context: String,
-    val width: Int,
-    val height: Int
+final case class ContextAndSize(
+    context: SDL_GLContext,
+    width: Int,
+    height: Int
 )

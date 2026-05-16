@@ -7,4 +7,6 @@ import indigo.*
 object ScenesList:
 
   val scenes: NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
-    NonEmptyBatch(Scene.empty)
+    NonEmptyBatch(
+      ShapesScene
+    )

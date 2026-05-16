@@ -15,7 +15,8 @@ object `package` extends Module:
   object js extends SharedJS, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`indigo-render-pipeline`.js
+      build.`indigo-render-pipeline`.js,
+      build.`indigoengine-webgl2-facades`.js
     )
 
     def mvnDeps = Seq(

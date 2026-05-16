@@ -1,4 +1,4 @@
-package indigo.render.facades
+package indigoengine.webgl2.facades
 
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram

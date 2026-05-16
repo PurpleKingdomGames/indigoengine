@@ -15,12 +15,12 @@ import indigo.platform.events.GlobalEventStream
 import indigo.platform.imaging.ImageService
 import indigo.render.Renderer
 import indigo.render.RendererInitialiser
+import indigo.render.opengl.ContextAndSize
 import indigo.render.opengl.LoadedTextureAsset
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.shaders.RawShaderCode
-import indigoengine.sdl.facades.sdl.SDL.SDL_GLContext
 import indigoengine.shared.collections.Batch
 
 // Almost identical to JsPlatform?
@@ -28,11 +28,9 @@ import indigoengine.shared.collections.Batch
 class NativePlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream,
-    initialWidth: Int,
-    initialHeight: Int,
-    context: SDL_GLContext,
+    context: ContextAndSize,
     imageService: ImageService[TempImageData, Array[Byte]] // Fake types
-) extends Platform {
+) extends Platform[ContextAndSize] {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser()
@@ -40,7 +38,7 @@ class NativePlatform(
   def initialise(
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
-  ): Outcome[(Renderer, AssetMapping)] =
+  ): Outcome[(Renderer[ContextAndSize], AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
@@ -102,15 +100,13 @@ class NativePlatform(
       engineConfig: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
       shaders: Set[RawShaderCode]
-  ): Outcome[Renderer] =
+  ): Outcome[Renderer[ContextAndSize]] =
     Outcome {
       IndigoLogger.info("Starting renderer")
       rendererInit.setup(
         engineConfig,
         loadedTextureAssets,
         context,
-        initialWidth,
-        initialHeight,
         shaders
       )
     }

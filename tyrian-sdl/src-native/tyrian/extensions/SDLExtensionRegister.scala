@@ -10,6 +10,9 @@ import tyrian.SDLContext
 import tyrian.TerminalFragment
 import tyrian.Watcher
 
+// TODO: Can this be merged with the JS one?
+// TODO: Can we just use Extension and match on that?
+
 final class SDLExtensionRegister {
 
   private val stateMap: KVP[Object] = KVP.empty
@@ -18,7 +21,7 @@ final class SDLExtensionRegister {
   private var registeredExtensions: Batch[SDLRegisteredExtension] = Batch()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def register(newExtensions: Batch[SDLExtension]): Batch[Action] =
+  def register(newExtensions: Batch[Extension.Graphical[SDLContext]]): Batch[Action] =
     newExtensions.map(initialiseExtension).sequence match {
       case oe @ Result.Error(e, _) =>
         println("Error during subsystem setup - Halting.")
@@ -31,7 +34,7 @@ final class SDLExtensionRegister {
         actions
     }
 
-  private def initialiseExtension(extension: SDLExtension): Result[SDLRegisteredExtension] = {
+  private def initialiseExtension(extension: Extension.Graphical[SDLContext]): Result[SDLRegisteredExtension] = {
     val key = extension.id.toString
     val res = SDLRegisteredExtension(key, extension)
 
@@ -82,7 +85,7 @@ final class SDLExtensionRegister {
 
         extension.watchers(model)
 
-  def draw(ctx: SDLContext, runningTime: Seconds): Unit =
+  def draw(ctx: SDLContext, runningTime: Seconds, timeDelta: Seconds): Unit =
     registeredExtensions
       .foreach: rss =>
         val key       = rss.id
@@ -90,11 +93,11 @@ final class SDLExtensionRegister {
 
         val model: extension.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
-        extension.draw(ctx, runningTime, model)
+        extension.draw(ctx, runningTime, timeDelta, model)
 
   def size: Int =
     registeredExtensions.length
 
 }
 
-final case class SDLRegisteredExtension(id: String, extension: SDLExtension) derives CanEqual
+final case class SDLRegisteredExtension(id: String, extension: Extension.Graphical[SDLContext]) derives CanEqual

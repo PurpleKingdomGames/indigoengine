@@ -4,7 +4,6 @@ import indigo.core.config.EngineConfig
 import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.utils.QuickCache
 import indigo.render.Renderer
-import indigo.render.facades.WebGL2RenderingContext
 import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.scenegraph.Blend
 import indigo.scenegraph.BlendFactor
@@ -12,6 +11,8 @@ import indigo.shaders.RawShaderCode
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Radians
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.webgl2.facades.WebGL2RenderingContext
+import indigoengine.webgl2.facades.WebGLVertexArrayObject
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLProgram
@@ -23,36 +24,27 @@ import scala.scalajs.js.typedarray.Float32Array
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
     config: EngineConfig,
-    loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
-    cNc: ContextAndSize
-) extends Renderer {
+    loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset]
+) extends Renderer[ContextAndSize] {
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 
-  private val gl: WebGLRenderingContext =
-    cNc.context
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var textureLocations: scalajs.js.Array[TextureLookupResult] = null
 
-  private val gl2: WebGL2RenderingContext =
-    gl.asInstanceOf[WebGL2RenderingContext]
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var vertexAndTextureCoordsBuffer: WebGLBuffer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var projectionUBOBuffer: WebGLBuffer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var frameDataUBOBuffer: WebGLBuffer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var cloneReferenceUBOBuffer: WebGLBuffer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var lightDataUBOBuffer: WebGLBuffer = null
 
-  private val textureLocations: scalajs.js.Array[TextureLookupResult] =
-    gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-    loadedTextureAssets.map { li =>
-      new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
-    }
-
-  private val vertexAndTextureCoordsBuffer: WebGLBuffer =
-    gl.createBuffer()
-  private val projectionUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
-  private val frameDataUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
-  private val cloneReferenceUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
-  private val lightDataUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
-
-  private val vao = gl2.createVertexArray()
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var vao: WebGLVertexArrayObject = null
 
   private val customShaders: scalajs.js.Dictionary[WebGLProgram] =
     scalajs.js.Dictionary.empty
@@ -77,34 +69,21 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
-  private val layerRenderInstance: LayerRenderer =
-    new LayerRenderer(
-      gl2,
-      textureLocations,
-      config.batchSize,
-      projectionUBOBuffer,
-      frameDataUBOBuffer,
-      cloneReferenceUBOBuffer,
-      lightDataUBOBuffer
-    ).init()
-  private val layerMergeRenderInstance: LayerMergeRenderer =
-    new LayerMergeRenderer(gl2, frameDataUBOBuffer)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var layerRenderInstance: LayerRenderer = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var layerMergeRenderInstance: LayerMergeRenderer = null
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var scalingFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var emptyFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var scalingFrameBuffer: FrameBufferComponents.SingleOutput = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var emptyFrameBuffer: FrameBufferComponents.SingleOutput = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenIsTarget: Boolean = true
@@ -117,13 +96,57 @@ final class RendererWebGL2(
   private val transparentBlack: RGBA = RGBA.Black.makeTransparent
   private val clearColor: RGBA       = if config.transparentBackground then transparentBlack else config.clearColor
 
-  def init(shaders: Set[RawShaderCode]): Unit = {
+  def initialiseTextureLocations(gl2: WebGL2RenderingContext): Unit =
+    textureLocations =
+      gl2.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+      loadedTextureAssets.map { li =>
+        new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl2, li.data))
+      }
+
+  def initialiseBuffers(gl2: WebGLRenderingContext): Unit =
+    vertexAndTextureCoordsBuffer = gl2.createBuffer()
+    projectionUBOBuffer = gl2.createBuffer()
+    frameDataUBOBuffer = gl2.createBuffer()
+    cloneReferenceUBOBuffer = gl2.createBuffer()
+    lightDataUBOBuffer = gl2.createBuffer()
+
+  def initialiseVAO(gl2: WebGL2RenderingContext): Unit =
+    vao = gl2.createVertexArray()
+
+  def initialiseLayerRenderers(gl2: WebGL2RenderingContext): Unit =
+    layerRenderInstance = new LayerRenderer(
+      gl2,
+      textureLocations,
+      config.batchSize,
+      projectionUBOBuffer,
+      frameDataUBOBuffer,
+      cloneReferenceUBOBuffer,
+      lightDataUBOBuffer
+    ).init()
+
+    layerMergeRenderInstance = new LayerMergeRenderer(gl2, frameDataUBOBuffer)
+
+  def initialiseFrameBuffers(ctx: ContextAndSize): Unit =
+    layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+
+  def init(ctx: ContextAndSize, shaders: Set[RawShaderCode]): Unit = {
+    val gl2 = ctx.context
+
+    initialiseTextureLocations(gl2)
+    initialiseBuffers(gl2)
+    initialiseVAO(gl2)
+    initialiseLayerRenderers(gl2)
+    initialiseFrameBuffers(ctx)
 
     shaders.foreach { shader =>
       if (!customShaders.contains(shader.id.toString))
         customShaders.update(
           shader.id.toString,
-          WebGLHelper.shaderProgramSetup(gl, shader.id.toString, shader)
+          WebGLHelper.shaderProgramSetup(gl2, shader.id.toString, shader)
         )
     }
 
@@ -136,17 +159,17 @@ final class RendererWebGL2(
       vert0 ++ vert1 ++ vert2 ++ vert3
     }
 
-    gl.disable(DEPTH_TEST)
-    gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
-    gl.enable(BLEND)
+    gl2.disable(DEPTH_TEST)
+    gl2.viewport(0, 0, gl2.drawingBufferWidth.toDouble, gl2.drawingBufferHeight.toDouble)
+    gl2.enable(BLEND)
 
     gl2.bindVertexArray(vao)
 
     // Vertex
-    gl.bindBuffer(ARRAY_BUFFER, vertexAndTextureCoordsBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(verticesAndTextureCoords), STATIC_DRAW)
-    gl.enableVertexAttribArray(0)
-    gl.vertexAttribPointer(
+    gl2.bindBuffer(ARRAY_BUFFER, vertexAndTextureCoordsBuffer)
+    gl2.bufferData(ARRAY_BUFFER, new Float32Array(verticesAndTextureCoords), STATIC_DRAW)
+    gl2.enableVertexAttribArray(0)
+    gl2.vertexAttribPointer(
       indx = 0,
       size = 4,
       `type` = FLOAT,
@@ -158,19 +181,19 @@ final class RendererWebGL2(
     gl2.bindVertexArray(null)
   }
 
-  def setBlendMode(blend: Blend): Unit = {
+  def setBlendMode(gl2: WebGL2RenderingContext, blend: Blend): Unit = {
     if (blend.op != currentBlendEq) {
       currentBlendEq = blend.op
 
       blend match {
         case Blend.Add(_, _) =>
-          WebGLHelper.setBlendAdd(gl)
+          WebGLHelper.setBlendAdd(gl2)
 
         case Blend.Subtract(_, _) =>
-          WebGLHelper.setBlendSubtract(gl)
+          WebGLHelper.setBlendSubtract(gl2)
 
         case Blend.ReverseSubtract(_, _) =>
-          WebGLHelper.setBlendReverseSubtract(gl)
+          WebGLHelper.setBlendReverseSubtract(gl2)
 
         case Blend.Min(_, _) =>
           WebGLHelper.setBlendMin(gl2)
@@ -189,11 +212,12 @@ final class RendererWebGL2(
     val nextBlendPair = (blend.src, blend.dst)
     if (currentBlendFactors != nextBlendPair) {
       currentBlendFactors = nextBlendPair
-      WebGLHelper.setBlendFunc(gl, blend.src, blend.dst)
+      WebGLHelper.setBlendFunc(gl2, blend.src, blend.dst)
     }
   }
 
-  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
+  def drawScene(ctx: ContextAndSize, sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
+    val gl2 = ctx.context
 
     gl2.bindVertexArray(vao)
 
@@ -232,7 +256,7 @@ final class RendererWebGL2(
       // Set the entity blend mode
       if (currentBlend != layer.entityBlend) {
         currentBlend = layer.entityBlend
-        setBlendMode(currentBlend)
+        setBlendMode(gl2, currentBlend)
       }
 
       // Draw the entities onto the layer buffer
@@ -270,7 +294,7 @@ final class RendererWebGL2(
       // Clear the blend mode
       if (currentBlend != Blend.Normal) {
         currentBlend = Blend.Normal
-        setBlendMode(currentBlend)
+        setBlendMode(gl2, currentBlend)
       }
 
       // Merge the layer buffer onto the staging buffer, this clears the magnification
@@ -286,16 +310,16 @@ final class RendererWebGL2(
       // Set the layer blend mode
       if (currentBlend != layer.layerBlend) {
         currentBlend = layer.layerBlend
-        setBlendMode(currentBlend)
+        setBlendMode(gl2, currentBlend)
       }
 
       // Flip which buffer is the target.
       if (greenIsTarget) {
         greenIsTarget = false
-        blitBuffers(blueDstFrameBuffer.frameBuffer, greenDstFrameBuffer.frameBuffer)
+        blitBuffers(gl2, blueDstFrameBuffer.frameBuffer, greenDstFrameBuffer.frameBuffer)
       } else {
         greenIsTarget = true
-        blitBuffers(greenDstFrameBuffer.frameBuffer, blueDstFrameBuffer.frameBuffer)
+        blitBuffers(gl2, greenDstFrameBuffer.frameBuffer, blueDstFrameBuffer.frameBuffer)
       }
 
       // Merge the layer buffer onto the back buffer
@@ -313,7 +337,7 @@ final class RendererWebGL2(
     }
 
     // transfer the back buffer to the default framebuffer
-    WebGLHelper.setNormalBlend(gl)
+    WebGLHelper.setNormalBlend(gl2)
 
     layerMergeRenderInstance.mergeToDefaultFramebuffer(
       orthographicProjectionMatrixNoMagFlipped,
@@ -326,23 +350,28 @@ final class RendererWebGL2(
       sceneData.shaderUniformData.toJSArray
     )
 
-    clearBuffer(blueDstFrameBuffer.frameBuffer)
-    clearBuffer(greenDstFrameBuffer.frameBuffer)
-    clearBuffer(emptyFrameBuffer.frameBuffer)
+    clearBuffer(gl2, blueDstFrameBuffer.frameBuffer)
+    clearBuffer(gl2, greenDstFrameBuffer.frameBuffer)
+    clearBuffer(gl2, emptyFrameBuffer.frameBuffer)
   }
 
-  def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
+  def blitBuffers(gl2: WebGL2RenderingContext, from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
     gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, from)
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, to)
     gl2.blitFramebuffer(0, lastHeight, lastWidth, 0, 0, lastHeight, lastWidth, 0, COLOR_BUFFER_BIT, NEAREST)
   }
 
-  def clearBuffer(buffer: WebGLFramebuffer): Unit = {
+  def clearBuffer(gl2: WebGL2RenderingContext, buffer: WebGLFramebuffer): Unit = {
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, buffer)
     gl2.clear(COLOR_BUFFER_BIT)
   }
 
-  def resize(width: Int, height: Int): Unit =
+  def resize(ctx: ContextAndSize): Unit =
+    val gl2 = ctx.context
+
+    val width  = ctx.width
+    val height = ctx.height
+
     if (!resizeRun || (lastWidth != width) || (lastHeight != height)) {
       resizeRun = true
       lastWidth = width
@@ -354,61 +383,63 @@ final class RendererWebGL2(
       orthographicProjectionMatrixNoMagFlipped =
         CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
 
-      FrameBufferFunctions.deleteFrameBufferSingle(gl, layerEntityFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl, scalingFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl, greenDstFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl, blueDstFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl, emptyFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
 
-      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
-      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
-      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
-      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
-      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
 
-      gl.viewport(0, 0, width.toDouble, height.toDouble)
+      gl2.viewport(0, 0, width.toDouble, height.toDouble)
 
       ()
     }
 
-  def dispose(): Unit = {
+  def dispose(ctx: ContextAndSize): Unit = {
+    val gl2 = ctx.context
+
     // Reset GL bindings on the shared context so nothing this renderer touched
     // remains live for whatever instance comes next.
     gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, null)
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, null)
-    gl.bindFramebuffer(FRAMEBUFFER, null)
+    gl2.bindFramebuffer(FRAMEBUFFER, null)
 
     // Unbind the texture units used by LayerRenderer / LayerMergeRenderer (0 and 1).
-    gl.activeTexture(TEXTURE0)
-    gl.bindTexture(TEXTURE_2D, null)
-    gl.activeTexture(TEXTURE1)
-    gl.bindTexture(TEXTURE_2D, null)
-    gl.activeTexture(TEXTURE0)
+    gl2.activeTexture(TEXTURE0)
+    gl2.bindTexture(TEXTURE_2D, null)
+    gl2.activeTexture(TEXTURE1)
+    gl2.bindTexture(TEXTURE_2D, null)
+    gl2.activeTexture(TEXTURE0)
 
     gl2.bindVertexArray(null)
-    gl.bindBuffer(ARRAY_BUFFER, null)
+    gl2.bindBuffer(ARRAY_BUFFER, null)
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null)
-    gl.useProgram(null)
+    gl2.useProgram(null)
 
     // Delete the GPU resources owned by this renderer.
-    FrameBufferFunctions.deleteFrameBufferSingle(gl, layerEntityFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl, scalingFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl, greenDstFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl, blueDstFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl, emptyFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
 
-    gl.deleteBuffer(vertexAndTextureCoordsBuffer)
-    gl.deleteBuffer(projectionUBOBuffer)
-    gl.deleteBuffer(frameDataUBOBuffer)
-    gl.deleteBuffer(cloneReferenceUBOBuffer)
-    gl.deleteBuffer(lightDataUBOBuffer)
+    gl2.deleteBuffer(vertexAndTextureCoordsBuffer)
+    gl2.deleteBuffer(projectionUBOBuffer)
+    gl2.deleteBuffer(frameDataUBOBuffer)
+    gl2.deleteBuffer(cloneReferenceUBOBuffer)
+    gl2.deleteBuffer(lightDataUBOBuffer)
 
     gl2.deleteVertexArray(vao)
 
-    customShaders.values.foreach(gl.deleteProgram)
+    customShaders.values.foreach(gl2.deleteProgram)
     customShaders.clear()
 
-    textureLocations.foreach(t => gl.deleteTexture(t.texture))
+    textureLocations.foreach(t => gl2.deleteTexture(t.texture))
 
     layerRenderInstance.dispose()
     layerMergeRenderInstance.dispose()
