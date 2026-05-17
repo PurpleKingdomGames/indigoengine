@@ -131,7 +131,7 @@ final class GameLoop[StartUpData, GameModel](
 
     // Apply any viewport resize (Tyrian pushes ViewportResize when the canvas is resized)
     events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
-      // TODO: This might be wrong.
+      // TODO: Is this necessary any more? Is the size in the context already correct?
       val updated = ctx.copy(width = e.newSize.width, height = e.newSize.height)
       gameEngine.renderer.resize(updated)
     }

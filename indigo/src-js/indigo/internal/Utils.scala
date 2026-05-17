@@ -28,25 +28,21 @@ import scala.util.Success
 
 object Utils:
 
-  // TODO: Make sure we don't lose this.
   // TODO: Do we need to backport to the native version?
   private[indigo] def processFrameTick(
-      lastUpdated: Seconds,
       runningTime: Seconds,
+      timeDelta: Seconds,
       frameRatePolicy: FrameRatePolicy
-  ): Result[TickUpdateResult] =
-    val timeSinceLastUpdate = runningTime - lastUpdated
-
+  ): TickUpdateResult =
     frameRatePolicy match
       case FrameRatePolicy.Unlimited =>
-        Result(TickUpdateResult.RunNow(timeSinceLastUpdate, runningTime))
+        TickUpdateResult.RunNow(timeDelta, runningTime)
 
       case FrameRatePolicy.Skip(target) =>
         val targetFrameDuration = target.asFrameDuration // E.g. 16.7ms or 0.016s for 60fps
 
-        if timeSinceLastUpdate >= targetFrameDuration then
-          Result(TickUpdateResult.RunNow(timeSinceLastUpdate, runningTime))
-        else Result(TickUpdateResult.Wait)
+        if timeDelta >= targetFrameDuration then TickUpdateResult.RunNow(timeDelta, runningTime)
+        else TickUpdateResult.Wait
 
   // Running as a cheeky Future, might be worth revisiting sometime...
   def runFullScreen(canvas: html.Canvas, game: Game[?, ?, ?], request: FullScreenRequest): Unit =

@@ -29,21 +29,21 @@ final class RendererWebGL2(
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var textureLocations: scalajs.js.Array[TextureLookupResult] = null
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var vertexAndTextureCoordsBuffer: WebGLBuffer = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var projectionUBOBuffer: WebGLBuffer = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var frameDataUBOBuffer: WebGLBuffer = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var cloneReferenceUBOBuffer: WebGLBuffer = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var lightDataUBOBuffer: WebGLBuffer = null
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var vao: WebGLVertexArrayObject = null
 
   private val customShaders: scalajs.js.Dictionary[WebGLProgram] =
@@ -69,20 +69,20 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerRenderInstance: LayerRenderer = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerMergeRenderInstance: LayerMergeRenderer = null
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var scalingFrameBuffer: FrameBufferComponents.SingleOutput = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var emptyFrameBuffer: FrameBufferComponents.SingleOutput = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

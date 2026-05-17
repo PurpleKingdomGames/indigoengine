@@ -11,7 +11,7 @@ import tyrian.*
 final case class Model(
     game: Game[?, ?, ?],
     attempts: Int,
-    lastUpdated: Seconds,
+    lastUpdatedAt: Seconds,
     running: Boolean,
     _eventWatchers: Option[WorldEventWatchers],
     _canvas: Option[html.Canvas],

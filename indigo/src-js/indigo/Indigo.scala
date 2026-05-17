@@ -9,6 +9,7 @@ import indigo.internal.WorldEventWatchers
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
+import indigo.internal.models.TickUpdateResult
 import indigo.internal.services.BrowserGamepadInputService
 import indigo.internal.services.BrowserImageService
 import indigo.platform.IndigoCoreServices
@@ -133,31 +134,6 @@ final case class Indigo(
           )
       else Result(model)
 
-    // case Msg.GameTick(gameId, runningTime) =>
-    //   if game.gameId == gameId && model.running then
-    //     Utils
-    //       .processFrameTick(
-    //         model.lastUpdated,
-    //         runningTime,
-    //         settings.frameRatePolicy
-    //       )
-    //       .flatMap {
-    //         case TickUpdateResult.Wait =>
-    //           Result(model)
-
-    //         case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-    //           // TODO: In the native version, the context is supplied through the draw() call.
-    //           val ctx: ContextAndSize = ???
-
-    //           Result(model.copy(lastUpdated = updatedAt))
-    //             .addActions(
-    //               Action.sideEffect {
-    //                 game.system.tick(ctx, updatedAt, timeDelta)
-    //               }
-    //             )
-    //       }
-    //   else Result(model)
-
     case Msg.Launch(LaunchStatus.Retry(extId)) =>
       if extId == extensionId && model.attempts <= 0 then
         Result(model)
@@ -265,10 +241,6 @@ final case class Indigo(
     )
 
   def watchers(model: Model): Batch[Watcher] =
-    // val gameTickWatcher =
-    //   if model.running then Batch(IndigoWatchers.tick(game.gameId))
-    //   else Batch.empty
-
     val resizeWatcher =
       (model._canvas, model._container) match
         case (Some(cvs), Some(con)) =>
@@ -288,7 +260,7 @@ final case class Indigo(
     ) ++
       resizeWatcher ++ worldEventWatchers
 
-  def draw(context: WebGL2Context, runningTime: Seconds, timeDelta: Seconds, model: Model): Unit =
+  def draw(context: WebGL2Context, runningTime: Seconds, model: Model): Model =
     val ctx: ContextAndSize =
       ContextAndSize(
         context.ctx,
@@ -296,9 +268,17 @@ final case class Indigo(
         context.height
       )
 
-    // TODO: Utils.processFrameTick ?
+    val timeDelta = runningTime - model.lastUpdatedAt
 
-    game.system.tick(ctx, runningTime, timeDelta)
+    Utils.processFrameTick(runningTime, timeDelta, settings.frameRatePolicy) match
+      case TickUpdateResult.Wait =>
+        model
+
+      case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
+        game.system.tick(ctx, updatedAt, timeDelta)
+        model.copy(
+          lastUpdatedAt = updatedAt
+        )
 
   def provideContext(model: Model): Option[WebGL2Context] =
     model._canvas.flatMap: canvas =>
