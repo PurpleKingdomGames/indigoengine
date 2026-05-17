@@ -20,13 +20,7 @@ final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListener
   def removeSDLEventListener(handle: SDLEventListenerHandle): Unit =
     listeners.removeSDLEventListener(handle)
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.var",
-      "scalafix:DisableSyntax.while",
-      "scalafix:DisableSyntax.null"
-    )
-  )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def run(perTick: (SDLContext, Seconds, Seconds) => Unit): Unit =
     val startNanos      = System.nanoTime()
     val event           = stackalloc[SDL_Event]()

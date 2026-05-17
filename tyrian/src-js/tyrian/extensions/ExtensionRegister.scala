@@ -92,7 +92,7 @@ final class ExtensionRegister {
 
         extension.watchers(model)
 
-  def draw(runningTime: Seconds, timeDelta: Seconds): Unit =
+  def draw(runningTime: Seconds): Unit =
     registeredExtensions
       .foreach: rss =>
         val key       = rss.id
@@ -108,7 +108,8 @@ final class ExtensionRegister {
             ext
               .provideContext(model)
               .foreach: ctx =>
-                ext.draw(ctx, runningTime, timeDelta, model)
+                val updated = ext.draw(ctx, runningTime, model)
+                stateMap.update(key, updated.asInstanceOf[Object])
 
   def size: Int =
     registeredExtensions.length

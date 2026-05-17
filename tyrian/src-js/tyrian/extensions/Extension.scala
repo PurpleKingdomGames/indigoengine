@@ -49,6 +49,6 @@ object Extension:
 
     /** Used for per-frame drawing directly to a graphics context.
       */
-    def draw(context: WebGL2Context, runningTime: Seconds, timeDelta: Seconds, model: ExtensionModel): Unit
+    def draw(context: WebGL2Context, runningTime: Seconds, model: ExtensionModel): ExtensionModel
 
     def provideContext(model: ExtensionModel): Option[WebGL2Context]

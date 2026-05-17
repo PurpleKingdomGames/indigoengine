@@ -19,7 +19,7 @@ class UtilsTests extends munit.FunSuite:
     val expected: TickUpdateResult =
       TickUpdateResult.RunNow(Seconds(0.032), runningTime)
 
-    assert(resultCloseEnough(clue(actual.unsafeGet), clue(expected)))
+    assert(resultCloseEnough(clue(actual), clue(expected)))
   }
 
   test("processFrameTick - frame update too early") {
@@ -31,7 +31,7 @@ class UtilsTests extends munit.FunSuite:
     val expected: TickUpdateResult =
       TickUpdateResult.Wait
 
-    assert(resultCloseEnough(clue(actual.unsafeGet), clue(expected)))
+    assert(resultCloseEnough(clue(actual), clue(expected)))
   }
 
   // JavaScript floating point precision comparison helper

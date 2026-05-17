@@ -139,16 +139,8 @@ trait App[Model]:
   private val extensionsRegister: ExtensionRegister =
     new ExtensionRegister()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var lastUpdatedAt: Seconds = Seconds.zero
-
-  def graphicsTick(time: Double): Unit =
-    val runningTime = Seconds(time)
-    val timeDelta   = runningTime - lastUpdatedAt
-
-    lastUpdatedAt = runningTime
-
-    extensionsRegister.draw(runningTime, timeDelta)
+  def graphicsTick(runningTime: Double): Unit =
+    extensionsRegister.draw(Millis(runningTime.toLong).toSeconds)
 
     dom.window.requestAnimationFrame { time =>
       graphicsTick(time)
