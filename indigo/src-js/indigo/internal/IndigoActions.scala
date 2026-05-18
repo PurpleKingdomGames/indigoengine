@@ -4,8 +4,6 @@ import indigo.*
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Msg
 import indigo.platform.IndigoCoreServices
-import indigo.render.webgl2.ContextAndSize
-import indigoengine.webgl2.facades.WebGL2RenderingContext
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 import tyrian.*
@@ -18,7 +16,6 @@ object IndigoActions:
       game: Game[?, ?, ?],
       maybeCanvas: Option[html.Canvas],
       flags: Map[String, String],
-      settings: Settings,
       services: IndigoCoreServices[html.Image, ImageData]
   ): Action =
     Action.run {
@@ -28,15 +25,7 @@ object IndigoActions:
           canvas.width = bounds.width.toInt
           canvas.height = bounds.height.toInt
 
-          val context: WebGL2RenderingContext =
-            CanvasAndContext.setupContext(
-              canvas,
-              settings.premultipliedAlpha,
-              settings.transparentBackground,
-              settings.antiAliasing
-            )
-
-          game.launch(ContextAndSize(context, canvas.width, canvas.height), flags, services)
+          game.launch(flags, services)
           Msg.Launch(LaunchStatus.Started(extensionId))
 
         case _ =>

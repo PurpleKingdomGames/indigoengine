@@ -15,25 +15,10 @@ trait Platform[Ctx]:
   /** Initialise the platform.
     */
   def initialise(
+      context: Ctx,
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
   ): Outcome[(Renderer[Ctx], AssetMapping)]
-
-  // /** Request the next animation frame
-  //   *
-  //   * @param loop
-  //   *   The callback to invoke on the next frame, receiving the timestamp
-  //   */
-  // def tick(loop: Double => Unit): Unit
-
-  // /** Schedule a delayed execution
-  //   *
-  //   * @param amount
-  //   *   The delay in milliseconds
-  //   * @param thunk
-  //   *   The callback to invoke after the delay
-  //   */
-  // def delay(amount: Double, thunk: () => Unit): Unit
 
   /** Shutdown the platform and release resources */
   def kill(): Unit
