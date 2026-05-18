@@ -1,8 +1,15 @@
 package indigo.core.utils
 
-import scala.annotation.nowarn
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.Queue
 
-/** A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
+enum LogLevel derives CanEqual:
+  case Info, Error, Debug, Raw
+
+/** A very, very simple logger.
+  *
+  * Calls are pushed into an internal buffer. The Indigo extension drains the buffer once per frame and routes each
+  * entry through Tyrian's logging Cmd.
   */
 object IndigoLogger:
 
@@ -10,46 +17,49 @@ object IndigoLogger:
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
-  private val errorLogs: Array[String] = Array[String]()
-  private val debugLogs: Array[String] = Array[String]()
+  private val errorLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+  private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+
+  private val buffer: Queue[(LogLevel, String)] = Queue.empty[(LogLevel, String)]
+
+  private def push(level: LogLevel, message: String): Unit =
+    buffer.synchronized {
+      buffer.enqueue((level, message))
+      ()
+    }
+
+  private[indigo] def drainAll(): List[(LogLevel, String)] =
+    buffer.synchronized {
+      val out = buffer.toList
+      buffer.clear()
+      out
+    }
 
   private def formatMessage(level: String, message: String): String =
     s"""[$level] [Indigo] $message"""
 
-  private val consoleLogString: String => Unit = message => println(message)
-
-  private val infoString: String => Unit = message => println(formatMessage(INFO, message))
-
-  private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
-
-  @nowarn("msg=unused")
-  private val errorOnceString: String => Unit = message =>
-    if !errorLogs.contains(message) then
-      errorLogs :+ message
-      println(formatMessage(ERROR, message))
-
-  private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
-
-  @nowarn("msg=unused")
-  private val debugOnceString: String => Unit = message =>
-    if !debugLogs.contains(message) then
-      debugLogs :+ message
-      println(formatMessage(DEBUG, message))
-
   def consoleLog(messages: String*): Unit =
-    consoleLogString(messages.toList.mkString(", "))
+    push(LogLevel.Raw, messages.toList.mkString(", "))
 
   def info(messages: String*): Unit =
-    infoString(messages.toList.mkString(", "))
+    push(LogLevel.Info, formatMessage(INFO, messages.toList.mkString(", ")))
 
   def error(messages: String*): Unit =
-    errorString(messages.toList.mkString(", "))
+    push(LogLevel.Error, formatMessage(ERROR, messages.toList.mkString(", ")))
 
   def errorOnce(messages: String*): Unit =
-    errorOnceString(messages.toList.mkString(", "))
+    val msg = messages.toList.mkString(", ")
+    if !errorLogs.contains(msg) then {
+      errorLogs += msg
+      push(LogLevel.Error, formatMessage(ERROR, msg))
+    }
 
   def debug(messages: String*): Unit =
-    debugString(messages.toList.mkString(", "))
+    push(LogLevel.Debug, formatMessage(DEBUG, messages.toList.mkString(", ")))
 
   def debugOnce(messages: String*): Unit =
-    debugOnceString(messages.toList.mkString(", "))
+    val msg = messages.toList.mkString(", ")
+    if !debugLogs.contains(msg) then {
+      debugLogs += msg
+      push(LogLevel.Debug, formatMessage(DEBUG, msg))
+    }

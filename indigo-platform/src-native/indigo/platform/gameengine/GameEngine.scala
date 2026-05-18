@@ -72,6 +72,8 @@ final class GameEngine[StartUpData, GameModel](
   private var platform: NativePlatform = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var _graphicsContext: ContextAndSize = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var _assetCollection: AssetCollection = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
@@ -91,14 +93,14 @@ final class GameEngine[StartUpData, GameModel](
     ()
 
   def start(
-      context: ContextAndSize,
+      // context: ContextAndSize,
       assetCollection: AssetCollection,
       bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
-    _graphicsContext = context
+    _assetCollection = assetCollection
 
     // Intialisation / Boot events
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -114,116 +116,121 @@ final class GameEngine[StartUpData, GameModel](
     platform = new NativePlatform(
       engineConfig,
       globalEventStream,
-      context,
+      // context,
       services.imageService
     )
-
-    rebuildGameLoop(true)(assetCollection)(Seconds.zero)
 
     this
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def tick(context: ContextAndSize, runningTime: Seconds, timeDelta: Seconds): Unit =
+    if context != null && _graphicsContext == null then
+      _graphicsContext = context
+      rebuildGameLoop(true)(Seconds.zero)
+
     if gameLoopInstance != null then gameLoopInstance.runFrame(context, runningTime, timeDelta)
+
+  def updateAssetCollection(assetCollection: AssetCollection): Unit =
+    _assetCollection = assetCollection
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
   def rebuildGameLoop(
       firstRun: Boolean
-  ): AssetCollection => Seconds => Unit =
-    ac =>
-      runningTime => {
-        if !firstRun then
-          gameLoopInstance.lock()
-          if renderer != null then renderer.dispose(_graphicsContext) // Hmmm.
+  ): Seconds => Unit =
+    runningTime => {
+      if !firstRun then
+        gameLoopInstance.lock()
+        if renderer != null then renderer.dispose(_graphicsContext) // Hmmm.
 
-        fontRegister.clearRegister()
-        boundaryLocator.purgeCache()
-        sceneProcessor.purgeCaches()
+      fontRegister.clearRegister()
+      boundaryLocator.purgeCache()
+      sceneProcessor.purgeCaches()
 
-        accumulatedAssetCollection = accumulatedAssetCollection |+| ac
+      accumulatedAssetCollection = accumulatedAssetCollection |+| _assetCollection
 
-        services.audioService.addAudioAssets(accumulatedAssetCollection.sounds)
+      services.audioService.addAudioAssets(accumulatedAssetCollection.sounds)
 
-        val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
+      val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
 
-        initialise(accumulatedAssetCollection)(dice) match {
-          case oe @ Outcome.Error(error, _) =>
-            val msg =
-              if (firstRun) "Error during first initialisation - Halting."
-              else "Error during re-initialisation - Halting."
+      initialise(accumulatedAssetCollection)(dice) match {
+        case oe @ Outcome.Error(error, _) =>
+          val msg =
+            if (firstRun) "Error during first initialisation - Halting."
+            else "Error during re-initialisation - Halting."
 
-            IndigoLogger.error(msg)
-            IndigoLogger.error("Crash report:")
-            IndigoLogger.error(oe.reportCrash)
-            throw error
+          IndigoLogger.error(msg)
+          IndigoLogger.error("Crash report:")
+          IndigoLogger.error(oe.reportCrash)
+          throw error
 
-          case Outcome.Result(startupData, globalEvents) =>
-            globalEvents.foreach(globalEventStream.pushGlobalEvent)
+        case Outcome.Result(startupData, globalEvents) =>
+          globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-            GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-            GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+          GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-            GameEngine.registerShaders(
-              shaderRegister,
-              shaders ++ startupData.additionalShaders,
-              accumulatedAssetCollection
-            )
+          GameEngine.registerShaders(
+            shaderRegister,
+            shaders ++ startupData.additionalShaders,
+            accumulatedAssetCollection
+          )
 
-            def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
-              if (firstRun) initialModel(startUpSuccessData)
-              else Outcome(gameLoopInstance.gameModelState)
+          def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
+            if (firstRun) initialModel(startUpSuccessData)
+            else Outcome(gameLoopInstance.gameModelState)
 
-            val loop: Outcome[Unit] =
-              for {
-                rendererAndAssetMapping <- platform.initialise(
-                  shaderRegister.toSet,
-                  accumulatedAssetCollection
-                )
-                startUpSuccessData <- GameEngine.initialisedGame(startupData)
-                m                  <- modelToUse(startUpSuccessData)
-                initialisedGameLoop <- GameEngine.initialiseGameLoop(
-                  this,
-                  boundaryLocator,
-                  sceneProcessor,
-                  engineConfig,
-                  m,
-                  frameProccessor,
-                  !firstRun, // If this isn't the first run, start with it frame locked.
-                  renderer
-                )
-              } yield {
-                renderer = rendererAndAssetMapping._1
-                assetMapping = rendererAndAssetMapping._2
-                gameLoopInstance = initialisedGameLoop
-                startUpData = startUpSuccessData
-                ()
-              }
-
-            loop match {
-              case Outcome.Result(_, events) =>
-                IndigoLogger.info("Starting main loop, there will be no more info log messages.")
-                IndigoLogger.info("You may get first occurrence error logs.")
-
-                events.foreach(globalEventStream.pushGlobalEvent)
-
-                gameLoopInstance.unlock()
-
-                ()
-
-              case oe @ Outcome.Error(e, _) =>
-                val msg =
-                  if (firstRun) "Error during first engine start up - Halting."
-                  else "Error during engine restart - Halting."
-
-                IndigoLogger.error(msg)
-                IndigoLogger.error(oe.reportCrash)
-                throw e
+          val loop: Outcome[Unit] =
+            for {
+              rendererAndAssetMapping <- platform.initialise(
+                _graphicsContext,
+                shaderRegister.toSet,
+                accumulatedAssetCollection
+              )
+              startUpSuccessData <- GameEngine.initialisedGame(startupData)
+              m                  <- modelToUse(startUpSuccessData)
+              initialisedGameLoop <- GameEngine.initialiseGameLoop(
+                this,
+                boundaryLocator,
+                sceneProcessor,
+                engineConfig,
+                m,
+                frameProccessor,
+                !firstRun, // If this isn't the first run, start with it frame locked.
+                renderer
+              )
+            } yield {
+              renderer = rendererAndAssetMapping._1
+              assetMapping = rendererAndAssetMapping._2
+              gameLoopInstance = initialisedGameLoop
+              startUpData = startUpSuccessData
+              ()
             }
 
-        }
+          loop match {
+            case Outcome.Result(_, events) =>
+              IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+              IndigoLogger.info("You may get first occurrence error logs.")
+
+              events.foreach(globalEventStream.pushGlobalEvent)
+
+              gameLoopInstance.unlock()
+
+              ()
+
+            case oe @ Outcome.Error(e, _) =>
+              val msg =
+                if (firstRun) "Error during first engine start up - Halting."
+                else "Error during engine restart - Halting."
+
+              IndigoLogger.error(msg)
+              IndigoLogger.error(oe.reportCrash)
+              throw e
+          }
+
       }
+    }
 
 }
 
@@ -335,6 +342,7 @@ object GameEngine {
   ): Outcome[GameLoop[StartUpData, GameModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel](
+        gameEngine.updateAssetCollection,
         gameEngine.rebuildGameLoop(false),
         boundaryLocator,
         sceneProcessor,

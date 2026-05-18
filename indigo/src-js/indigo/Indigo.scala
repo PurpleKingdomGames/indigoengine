@@ -4,6 +4,7 @@ import indigo.core.events.ScreenCaptureEvent
 import indigo.internal.CanvasAndContext
 import indigo.internal.IndigoActions
 import indigo.internal.IndigoWatchers
+import indigo.internal.LogDrainWatcher
 import indigo.internal.Utils
 import indigo.internal.WorldEventWatchers
 import indigo.internal.models.LaunchStatus
@@ -124,6 +125,9 @@ final case class Indigo(
       Result(model)
         .addActions(Action.sideEffect(model._audioPlayer.playSound(assetName, volume, policy)))
 
+    case Msg.Log(_, text) =>
+      Result(model).log(text)
+
     case Msg.Halt(gameId) =>
       if game.gameId == gameId then
         Result(model.copy(running = false))
@@ -193,7 +197,6 @@ final case class Indigo(
               model.game,
               maybeCanvas,
               flags,
-              settings,
               IndigoCoreServices(
                 BrowserGamepadInputService(),
                 model._audioPlayer,
@@ -258,7 +261,7 @@ final case class Indigo(
       model.game.events.eventCallback.map: eventCallback =>
         IndigoWatchers.indigoEventWatcher(extensionId, eventMapping, eventCallback)
     ) ++
-      resizeWatcher ++ worldEventWatchers
+      resizeWatcher ++ worldEventWatchers ++ Batch(LogDrainWatcher(game))
 
   def draw(context: WebGL2Context, runningTime: Seconds, model: Model): Model =
     val ctx: ContextAndSize =

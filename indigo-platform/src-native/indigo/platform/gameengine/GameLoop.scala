@@ -27,7 +27,8 @@ import scala.collection.mutable
 // TODO: Identical to JS version?
 
 final class GameLoop[StartUpData, GameModel](
-    rebuildGameLoop: AssetCollection => Seconds => Unit,
+    updateAssetCollection: AssetCollection => Unit,
+    rebuildGameLoop: Seconds => Unit,
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[StartUpData, GameModel],
@@ -65,7 +66,8 @@ final class GameLoop[StartUpData, GameModel](
   def performSystemActions(systemEvents: List[IndigoSystemEvent], runningTime: Seconds): Unit =
     systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection, nextEvent) =>
       IndigoLogger.info("Rebuilding game loop from new asset collection.")
-      rebuildGameLoop(assetCollection)(runningTime)
+      updateAssetCollection(assetCollection)
+      rebuildGameLoop(runningTime)
       gameEngine.globalEventStream.pushGlobalEvent(nextEvent)
     }
 

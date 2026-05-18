@@ -28,7 +28,6 @@ import indigoengine.shared.collections.Batch
 class NativePlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream,
-    context: ContextAndSize,
     imageService: ImageService[TempImageData, Array[Byte]] // Fake types
 ) extends Platform[ContextAndSize] {
 
@@ -36,6 +35,7 @@ class NativePlatform(
     new RendererInitialiser()
 
   def initialise(
+      context: ContextAndSize,
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
   ): Outcome[(Renderer[ContextAndSize], AssetMapping)] =
@@ -43,7 +43,7 @@ class NativePlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      renderer            <- startRenderer(engineConfig, loadedTextureAssets, shaders)
+      renderer            <- startRenderer(context, engineConfig, loadedTextureAssets, shaders)
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
@@ -97,6 +97,7 @@ class NativePlatform(
     )
 
   def startRenderer(
+      context: ContextAndSize,
       engineConfig: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
       shaders: Set[RawShaderCode]
