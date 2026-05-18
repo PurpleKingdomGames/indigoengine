@@ -6,6 +6,7 @@ import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
+import indigo.core.utils.LogLevel
 import indigo.frameprocessors.GameFrameProcessor
 import indigo.internal.assets.AssetLoader
 import indigo.platform.IndigoCoreServices
@@ -165,12 +166,15 @@ trait Game[BootData, StartUpData, Model]:
       _pull = None
       ()
 
+    object logs:
+      def collect(): List[(LogLevel, String)] =
+        IndigoLogger.drainAll()
+
   def launch(
-      context: ContextAndSize,
       flags: Map[String, String],
       services: IndigoCoreServices[html.Image, ImageData]
   ): Unit =
-    gameInstance = ready(context, flags, services)
+    gameInstance = ready(flags, services)
     ()
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
@@ -219,7 +223,6 @@ trait Game[BootData, StartUpData, Model]:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def ready(
-      context: ContextAndSize,
       flags: Map[String, String],
       services: IndigoCoreServices[html.Image, ImageData]
   ): GameEngine[StartUpData, Model] =
@@ -238,7 +241,6 @@ trait Game[BootData, StartUpData, Model]:
         AssetLoader.loadAssets(b.assets).onComplete {
           case Success(ac) =>
             engine.start(
-              context,
               ac,
               evts
             )

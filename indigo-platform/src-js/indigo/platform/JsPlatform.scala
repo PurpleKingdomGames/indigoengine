@@ -27,7 +27,6 @@ import org.scalajs.dom.html
 class JsPlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream,
-    context: ContextAndSize,
     imageService: ImageService[html.Image, ImageData]
 ) extends Platform[ContextAndSize] {
 
@@ -35,6 +34,7 @@ class JsPlatform(
     new RendererInitialiser()
 
   def initialise(
+      context: ContextAndSize,
       shaders: Set[RawShaderCode],
       assetCollection: AssetCollection
   ): Outcome[(Renderer[ContextAndSize], AssetMapping)] =
@@ -42,7 +42,7 @@ class JsPlatform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      renderer            <- startRenderer(engineConfig, loadedTextureAssets, shaders)
+      renderer            <- startRenderer(context, engineConfig, loadedTextureAssets, shaders)
     } yield (renderer, assetMapping)
 
   def kill(): Unit =
@@ -96,6 +96,7 @@ class JsPlatform(
     )
 
   def startRenderer(
+      context: ContextAndSize,
       engineConfig: EngineConfig,
       loadedTextureAssets: Batch[LoadedTextureAsset],
       shaders: Set[RawShaderCode]

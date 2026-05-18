@@ -5,9 +5,14 @@ package indigo
 // import indigo.internal.IndigoWatchers
 // import indigo.internal.Utils
 // import indigo.internal.WorldEventWatchers
+import indigo.internal.IndigoActions
+import indigo.internal.LogDrainWatcher
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
+import indigo.internal.services.NativeGamepadInputService
+import indigo.internal.services.NativeImageService
+import indigo.platform.IndigoCoreServices
 import tyrian.*
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionId
@@ -16,16 +21,14 @@ final case class Indigo(
     extensionId: ExtensionId,
     args: Array[String],
     game: Game[?, ?, ?],
-    // containerMarkerId: MarkerId,
     onLaunchSuccess: Option[GlobalMsg],
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
+    // TODO: Settings currently unused by the native version. I suspect they'll come back though once the renderer takes shape.
     settings: Settings
 ) extends Extension.Graphical[SDLContext]:
 
   type ExtensionModel = Model
-
-  // private val canvasId: String = s"${game.gameId.asString}-canvas"
 
   def withExtensionId(value: ExtensionId): Indigo =
     this.copy(extensionId = value)
@@ -115,6 +118,9 @@ final case class Indigo(
       Result(model)
       // .addActions(Action.sideEffect(model._audioPlayer.playSound(assetName, volume, policy)))
 
+    case Msg.Log(_, text) =>
+      Result(model).log(text)
+
     case Msg.Halt(gameId) =>
       if game.gameId == gameId then
         Result(model.copy(running = false))
@@ -124,29 +130,6 @@ final case class Indigo(
             }
           )
       else Result(model)
-
-    // case Msg.GameTick(gameId, runningTime) =>
-    //   Result(model)
-    // if game.gameId == gameId && model.running then
-    //   Utils
-    //     .processFrameTick(
-    //       model.lastUpdated,
-    //       runningTime,
-    //       settings.frameRatePolicy
-    //     )
-    //     .flatMap {
-    //       case TickUpdateResult.Wait =>
-    //         Result(model)
-
-    //       case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-    //         Result(model.copy(lastUpdated = updatedAt))
-    //           .addActions(
-    //             Action.sideEffect {
-    //               game.system.tick(updatedAt, timeDelta)
-    //             }
-    //           )
-    //     }
-    // else Result(model)
 
     case Msg.Launch(LaunchStatus.Retry(extId)) =>
       if extId == extensionId && model.attempts <= 0 then
@@ -167,48 +150,21 @@ final case class Indigo(
       else Result(model)
 
     case Msg.Launch(LaunchStatus.AttemptStart(extId)) =>
-      Result(model)
-      // .addActions(
-      //   Indigo.launchAction(
-      //     extensionId,
-      //     model.game,
-      //     args,
-      //     IndigoCoreServices(
-      //       NativeGamepadInputService(),
-      //       model._audioPlayer,
-      //       NativeImageService()
-      //     ),
-      //     context
-      //   )
-      // )
-      // if extId == extensionId then
-      //   val maybeCanvas =
-      //     Option(document.getElementById(canvasId))
-      //       .flatMap(e => if e.isInstanceOf[html.Canvas] then Option(e.asInstanceOf[html.Canvas]) else None)
-
-      //   Result(
-      //     model.copy(
-      //       _eventWatchers =
-      //         maybeCanvas.map(c => WorldEventWatchers.init(c, settings.clickTime, settings.disableContextMenu)),
-      //       _canvas = maybeCanvas,
-      //       _container = maybeCanvas.map(_.parentElement)
-      //     )
-      //   )
-      //     .addActions(
-      //       IndigoActions.launch(
-      //         extensionId,
-      //         model.game,
-      //         maybeCanvas,
-      //         flags,
-      //         settings,
-      //         IndigoCoreServices(
-      //           BrowserGamepadInputService(),
-      //           model._audioPlayer,
-      //           BrowserImageService()
-      //         )
-      //       )
-      //     )
-      // else Result(model)
+      if extId == extensionId then
+        Result(model)
+          .addActions(
+            IndigoActions.launch(
+              extensionId,
+              model.game,
+              args,
+              IndigoCoreServices(
+                NativeGamepadInputService(),
+                model._audioPlayer,
+                NativeImageService()
+              )
+            )
+          )
+      else Result(model)
 
     case Msg.Launch(LaunchStatus.Started(extId)) =>
       if extId == extensionId then
@@ -234,23 +190,11 @@ final case class Indigo(
               .log(s"Indigo Extension failed to launch the game after ${Indigo.MaxStartupAttempts} attempts.")
       else Result(model)
 
-  // private given Theme = Theme.None
-
   def view(model: ExtensionModel): TerminalFragment =
     TerminalFragment.empty
-  // def view(model: Model): HtmlFragment =
-  //   HtmlFragment.insert(
-  //     containerMarkerId,
-  //     Canvas(
-  //       width = Extent.Fill,
-  //       height = Extent.Fill
-  //     )
-  //       .withId(canvasId)
-  //       .toElem
-  //   )
 
   def watchers(model: Model): Batch[Watcher] =
-    Batch.empty
+    Batch(LogDrainWatcher(game))
     // val gameTickWatcher =
     //   if model.running then Batch(IndigoWatchers.tick(game.gameId))
     //   else Batch.empty
@@ -285,13 +229,11 @@ object Indigo:
       extensionId: ExtensionId,
       args: Array[String],
       game: Game[?, ?, ?]
-      // containerMarkerId: MarkerId
   ): Indigo =
     Indigo(
       extensionId,
       args,
       game,
-      // containerMarkerId,
       None,
       None,
       PartialIso.none,
@@ -302,7 +244,6 @@ object Indigo:
       extensionId: ExtensionId,
       args: Array[String],
       game: Game[?, ?, ?],
-      // containerMarkerId: MarkerId,
       onLaunchSuccess: GlobalMsg,
       onLaunchFailure: GlobalMsg
   ): Indigo =
@@ -310,7 +251,6 @@ object Indigo:
       extensionId,
       args,
       game,
-      // containerMarkerId,
       Some(onLaunchSuccess),
       Some(onLaunchFailure),
       PartialIso.none,
