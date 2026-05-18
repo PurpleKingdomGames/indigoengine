@@ -128,3 +128,10 @@ object ProgramVersion:
       List.empty[ProgramRequirement],
       ProgramTransformer.GLSL_300
     )
+
+  inline def GLSL_410: ProgramVersion =
+    ProgramVersion(
+      ProgramVersionId("GLSL 410"),
+      List.empty[ProgramRequirement],
+      ProgramTransformer.GLSL_410
+    )

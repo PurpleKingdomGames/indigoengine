@@ -26,9 +26,18 @@ final case class ProceduralShader(
     rec(requirements, this, ShaderValid.Valid)
 
   def applyTransformers(transformers: List[ProgramTransformer]): ProceduralShader =
+    val stripUBOPrecision =
+      transformers.contains(ProgramTransformer.StripUBOPrecisionQualifiers)
+
+    val astTransformers =
+      transformers.filterNot(_ == ProgramTransformer.StripUBOPrecisionQualifiers)
+
     // Convert each transformer to a partial function
     val transformFunctions: List[PartialFunction[ShaderAST, ShaderAST]] =
-      transformers.map {
+      astTransformers.map {
+        case ProgramTransformer.StripUBOPrecisionQualifiers =>
+          PartialFunction.empty[ShaderAST, ShaderAST]
+
         case ProgramTransformer.RenameAnnotation(from, to) => {
           case ShaderAST.Annotated(ShaderAST.DataTypes.ident(id), param, v @ ShaderAST.Val(_, _, _)) if id == from =>
             ShaderAST.Annotated(ShaderAST.DataTypes.ident(to), param, v)
@@ -160,9 +169,15 @@ final case class ProceduralShader(
         case t :: ts =>
           rec(ts, acc.traverse(t))
 
+    val updatedUBOs: List[ShaderAST.UBO] =
+      if stripUBOPrecision then
+        ubos.map(u => ShaderAST.UBO(u.uboDef.copy(fields = u.uboDef.fields.map(_.copy(precision = None)))))
+      else ubos
+
     // Apply to all the AST parts, and return
     this.copy(
       defs = defs.map(d => rec(transformFunctions, d)),
+      ubos = updatedUBOs,
       annotations = annotations.map(a => rec(transformFunctions, a)),
       main = rec(transformFunctions, main)
     )

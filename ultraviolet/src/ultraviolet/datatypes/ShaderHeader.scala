@@ -25,6 +25,7 @@ object ShaderHeader:
           None
 
   inline def Version300ES: ShaderHeader          = ShaderHeader("#version 300 es")
+  inline def Version410Core: ShaderHeader        = ShaderHeader("#version 410 core")
   inline def PrecisionHighPFloat: ShaderHeader   = ShaderHeader("precision highp float;")
   inline def PrecisionMediumPFloat: ShaderHeader = ShaderHeader("precision mediump float;")
   inline def PrecisionLowPFloat: ShaderHeader    = ShaderHeader("precision lowp float;")

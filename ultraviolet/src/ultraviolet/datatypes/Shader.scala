@@ -36,6 +36,12 @@ object Shader:
     inline def toGLSL300(inline headers: List[ShaderHeader]): ShaderResult =
       toGLSL(ProgramVersion.GLSL_300, headers)
 
+    inline def toGLSL410: ShaderResult =
+      toGLSL(ProgramVersion.GLSL_410)
+
+    inline def toGLSL410(inline headers: List[ShaderHeader]): ShaderResult =
+      toGLSL(ProgramVersion.GLSL_410, headers)
+
     inline def toGLSL(inline version: ProgramVersion): ShaderResult =
       ShaderMacros.toGLSL(ctx, Nil, version)
 

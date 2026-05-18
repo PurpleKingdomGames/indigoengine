@@ -2,7 +2,7 @@ package ultraviolet.datatypes
 
 import scala.quoted.*
 
-enum ProgramTransformer:
+enum ProgramTransformer derives CanEqual:
   /** Find all invocations of a function, and rename, e.g. texture2d(1) renamed to texture(1) */
   case RenameFunctionAtCallSite(from: String, to: String)
 
@@ -28,6 +28,12 @@ enum ProgramTransformer:
     * This is a combination of ChangeFunctionReturnType + AssignFunctionReturnValueToVariable done in a single action.
     */
   case ConvertPureFunctionToAssignment(functionName: String, outVariableName: String)
+
+  /** Strip the precision qualifier (`lowp` / `mediump` / `highp`) from every UBO field. Used by the GLSL 4.10 Core
+    * path: those qualifiers are accepted but useless on desktop GL and the cleaner emitted source helps when reading
+    * the shader.
+    */
+  case StripUBOPrecisionQualifiers
 
 object ProgramTransformer:
 
@@ -59,6 +65,9 @@ object ProgramTransformer:
 
         case ProgramTransformer.ConvertPureFunctionToAssignment(functionName, outVariableName) =>
           '{ ProgramTransformer.ConvertPureFunctionToAssignment(${ Expr(functionName) }, ${ Expr(outVariableName) }) }
+
+        case ProgramTransformer.StripUBOPrecisionQualifiers =>
+          '{ ProgramTransformer.StripUBOPrecisionQualifiers }
   }
 
   given FromExpr[ProgramTransformer] with
@@ -112,6 +121,12 @@ object ProgramTransformer:
             ) =>
           Some(ProgramTransformer.ConvertPureFunctionToAssignment(functionName, outVariableName))
 
+        case Select(Ident("ProgramTransformer"), "StripUBOPrecisionQualifiers") =>
+          Some(ProgramTransformer.StripUBOPrecisionQualifiers)
+
+        case Ident("StripUBOPrecisionQualifiers") =>
+          Some(ProgramTransformer.StripUBOPrecisionQualifiers)
+
         case e =>
           report.errorAndAbort(s"[Ultraviolet macro error, please report.] ProgramTransformer after unwrap expr:\n${e
               .show(using Printer.TreeStructure)}")
@@ -128,4 +143,12 @@ object ProgramTransformer:
       ProgramTransformer.RenameAnnotation("attribute", "in"),
       ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),
       ProgramTransformer.RenameFunctionAtCallSite("textureCube", "texture")
+    )
+
+  inline def GLSL_410: List[ProgramTransformer] =
+    List(
+      ProgramTransformer.RenameAnnotation("attribute", "in"),
+      ProgramTransformer.RenameFunctionAtCallSite("texture2D", "texture"),
+      ProgramTransformer.RenameFunctionAtCallSite("textureCube", "texture"),
+      ProgramTransformer.StripUBOPrecisionQualifiers
     )
