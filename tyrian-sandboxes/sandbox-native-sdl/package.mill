@@ -9,4 +9,8 @@ object `package` extends Module:
 
   object native extends SharedNative, PlatformScalaModule:
 
-    def moduleDeps = Seq(build.`tyrian-sdl`.native)
+    def moduleDeps =
+      Seq(
+        build.`tyrian-sdl`.native,
+        build.ultraviolet.native
+      )

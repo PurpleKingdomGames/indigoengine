@@ -10,24 +10,26 @@ import scala.scalanative.unsigned.*
 
 object TestSDLExtension extends Extension.Graphical[SDLContext]:
 
-  type ExtensionModel = SandboxModel
+  type ExtensionModel = ExtModel
 
   def id: ExtensionId =
     ExtensionId("SDL test extension")
 
   def init: Result[ExtensionModel] =
-    val program = Shaders.createProgram(Shaders.vertSrc, Shaders.fragSrc)
-    val vao     = makeVao()
+    val program = Zone { (z: Zone) ?=>
+      Shaders.createProgram(Shaders.vertSrc, Shaders.fragSrc)
+    }
+    val vao = makeVao()
 
-    Result(SandboxModel(program, vao, 0L))
+    Result(ExtModel(program, vao))
 
-  def update(model: SandboxModel): GlobalMsg => Result[ExtensionModel] =
+  def update(model: ExtModel): GlobalMsg => Result[ExtensionModel] =
     case _ => Result(model)
 
-  def view(model: SandboxModel): TerminalFragment =
+  def view(model: ExtModel): TerminalFragment =
     TerminalFragment.empty
 
-  def draw(context: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: SandboxModel): Unit =
+  def draw(context: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: ExtModel): Unit =
     val phase = ((runningTime.toMillis.toLong / 1000L) % 6L).toFloat / 6.0f
 
     glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)
@@ -36,7 +38,7 @@ object TestSDLExtension extends Extension.Graphical[SDLContext]:
     glBindVertexArray(model.vao)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
 
-  def watchers(model: SandboxModel): Batch[Watcher] =
+  def watchers(model: ExtModel): Batch[Watcher] =
     Batch.empty
 
   private def makeVao(): UInt =
@@ -45,3 +47,5 @@ object TestSDLExtension extends Extension.Graphical[SDLContext]:
     val vaoId = !vaoPtr
     glBindVertexArray(vaoId)
     vaoId
+
+  final case class ExtModel(program: UInt, vao: UInt)

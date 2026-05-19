@@ -2,51 +2,55 @@ package sandbox
 
 import indigoengine.sdl.facades.gl.GL.*
 import indigoengine.sdl.facades.gl.GLConstants.*
+import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
+@nowarn("msg=unused")
+@nowarn("msg=unset")
+@nowarn("msg=mutated")
 object Shaders:
 
-  // GLSL 4.10 (matches macOS OpenGL 4.1 via Metal).
-  // Positions are generated from gl_VertexID — no vertex attributes needed,
-  // which avoids a macOS Metal GL layer bug with null VBO offsets.
-  val vertSrc: CString =
-    c"""#version 410 core
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  final case class VertEnv(gl_VertexID: Int, var gl_Position: vec4)
 
-out vec2 vUV;
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  inline def vertex: Shader[VertEnv, Unit] =
+    Shader[VertEnv, Unit] { env =>
+      @out var vUV: vec2 = null
 
-void main() {
-  vec2 pos[4];
-  pos[0]=vec2(-1.0,-1.0);
-  pos[1]=vec2( 1.0,-1.0);
-  pos[2]=vec2(-1.0, 1.0);
-  pos[3]=vec2( 1.0, 1.0);
+      def main: Unit =
+        val pos: array[4, vec2] = array[4, vec2](
+          vec2(-1.0f, -1.0f),
+          vec2(1.0f, -1.0f),
+          vec2(-1.0f, 1.0f),
+          vec2(1.0f, 1.0f)
+        )
+        vUV = pos(env.gl_VertexID) * 0.5f + 0.5f
+        env.gl_Position = vec4(pos(env.gl_VertexID), 0.0f, 1.0f)
+    }
 
-  vUV = pos[gl_VertexID] * 0.5 + 0.5;
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  inline def fragment: Shader[Unit, Unit] =
+    Shader {
+      @in val vUV: vec2                   = null
+      @layout(0) @out var fragColor: vec4 = null
 
-  gl_Position = vec4(pos[gl_VertexID], 0.0, 1.0);
-}
-"""
+      def main: Unit =
+        fragColor = vec4(vUV.x, vUV.y, 0.0f, 1.0f)
+    }
 
-  val fragSrc: CString =
-    c"""#version 410 core
-
-in vec2 vUV;
-layout(location = 0)
-out vec4 fragColor;
-
-void main() {
-  fragColor = vec4(vUV.x, vUV.y, 0.0, 1.0);
-}
-"""
+  val vertSrc: String = vertex.toGLSL410(List(ShaderHeader.Version410Core)).code
+  val fragSrc: String = fragment.toGLSL410(List(ShaderHeader.Version410Core)).code
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
-  def compileShader(shaderType: UInt, src: CString): UInt =
+  def compileShader(shaderType: UInt, src: String)(using Zone): UInt =
     val shader = glCreateShader(shaderType)
     val srcPtr = stackalloc[CString]()
 
-    !srcPtr = src
+    !srcPtr = toCString(src)
     glShaderSource(shader, 1, srcPtr, null)
     glCompileShader(shader)
 
@@ -64,7 +68,7 @@ void main() {
     shader
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
-  def createProgram(vs: CString, fs: CString): UInt =
+  def createProgram(vs: String, fs: String)(using Zone): UInt =
     val vert    = compileShader(GL_VERTEX_SHADER, vs)
     val frag    = compileShader(GL_FRAGMENT_SHADER, fs)
     val program = glCreateProgram()

@@ -117,4 +117,70 @@ class Desktop410Tests extends munit.FunSuite {
     assert(!actual.contains("attribute"), s"Expected no `attribute` keyword in:\n$actual")
   }
 
+  test("Sandbox-native-sdl: vertex shader emits expected GLSL 4.10 Core source") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    final case class VertEnv(gl_VertexID: Int, var gl_Position: vec4)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+    inline def vertex: Shader[VertEnv, Unit] =
+      Shader[VertEnv, Unit] { env =>
+        @out var vUV: vec2 = null
+
+        def main: Unit =
+          val pos: array[4, vec2] = array[4, vec2](
+            vec2(-1.0f, -1.0f),
+            vec2(1.0f, -1.0f),
+            vec2(-1.0f, 1.0f),
+            vec2(1.0f, 1.0f)
+          )
+          vUV = pos(env.gl_VertexID) * 0.5f + 0.5f
+          env.gl_Position = vec4(pos(env.gl_VertexID), 0.0f, 1.0f)
+      }
+
+    val actual =
+      vertex.toGLSL410(List(ShaderHeader.Version410Core)).code
+
+    assertNoDiff(
+      actual,
+      s"""
+      |#version 410 core
+      |out vec2 vUV;
+      |void main(){
+      |  vec2 pos[4]=vec2[4](vec2(-1.0,-1.0),vec2(1.0,-1.0),vec2(-1.0,1.0),vec2(1.0,1.0));
+      |  vUV=(pos[gl_VertexID]*0.5)+0.5;
+      |  gl_Position=vec4(pos[gl_VertexID],0.0,1.0);
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
+  test("Sandbox-native-sdl: fragment shader emits expected GLSL 4.10 Core source") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+    inline def fragment: Shader[Unit, Unit] =
+      Shader {
+        @in val vUV: vec2                   = null
+        @layout(0) @out var fragColor: vec4 = null
+
+        def main: Unit =
+          fragColor = vec4(vUV.x, vUV.y, 0.0f, 1.0f)
+      }
+
+    val actual =
+      fragment.toGLSL410(List(ShaderHeader.Version410Core)).code
+
+    assertNoDiff(
+      actual,
+      s"""
+      |#version 410 core
+      |in vec2 vUV;
+      |layout (location = 0) out vec4 fragColor;
+      |void main(){
+      |  fragColor=vec4(vUV.x,vUV.y,0.0,1.0);
+      |}
+      |""".stripMargin.trim
+    )
+  }
+
 }
