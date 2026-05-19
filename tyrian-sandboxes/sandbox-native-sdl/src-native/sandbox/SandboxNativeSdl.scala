@@ -1,7 +1,6 @@
 package sandbox
 
 import cats.effect.IO
-import indigoengine.sdl.facades.gl.GL.*
 import indigoengine.shared.collections.Batch
 import tyrian.*
 import tyrian.GlobalMsg
@@ -11,9 +10,6 @@ import tyrian.SDLWatcher.*
 import tyrian.extensions.Extension
 import tyrian.platform.Cmd
 
-import scala.scalanative.unsafe.*
-import scala.scalanative.unsigned.*
-
 object SandboxNativeSDL extends SDLApp[SandboxModel]:
 
   val title: String = "Tyrian SDL Sandbox"
@@ -21,12 +17,10 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
   val height: Int   = 400
 
   def init(args: Array[String]): Result[SandboxModel] =
-    val program = Shaders.createProgram(Shaders.vertSrc, Shaders.fragSrc)
-    val vao     = makeVao()
     val cmd: Cmd[IO, GlobalMsg] =
       Cmd.SideEffect(IO.println("Tyrian SDL sandbox starting"))
 
-    Result(SandboxModel(program, vao, 0L))
+    Result(SandboxModel(0L))
       .addCmds(cmd)
 
   def update(model: SandboxModel): GlobalMsg => Result[SandboxModel] =
@@ -46,9 +40,6 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
     case Msg.NoOp =>
       Result(model)
 
-    case _ =>
-      Result(model)
-
   def view(model: SandboxModel): TerminalFragment =
     TerminalFragment.empty
 
@@ -66,14 +57,7 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
       TestSDLExtension
     )
 
-  private def makeVao(): UInt =
-    val vaoPtr = stackalloc[UInt]()
-    glGenVertexArrays(1, vaoPtr)
-    val vaoId = !vaoPtr
-    glBindVertexArray(vaoId)
-    vaoId
-
-final case class SandboxModel(program: UInt, vao: UInt, ticks: Long)
+final case class SandboxModel(ticks: Long)
 
 enum Msg extends GlobalMsg derives CanEqual:
   case Tick(runningTime: Seconds)
