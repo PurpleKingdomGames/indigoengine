@@ -12,9 +12,10 @@ class UtilsTests extends munit.FunSuite:
 
   test("processFrameTick - frame update slower than framerate") {
     val runningTime: Seconds = Seconds(10.032) // Two frames worth of time
+    val timeDelta: Seconds   = Seconds(0.032)  // Two frames worth of time
 
     val actual =
-      Utils.processFrameTick(lastUpdated, runningTime, frameRatePolicy)
+      Utils.processFrameTick(runningTime, timeDelta, frameRatePolicy)
 
     val expected: TickUpdateResult =
       TickUpdateResult.RunNow(Seconds(0.032), runningTime)
@@ -24,9 +25,10 @@ class UtilsTests extends munit.FunSuite:
 
   test("processFrameTick - frame update too early") {
     val runningTime: Seconds = Seconds(10.001)
+    val timeDelta: Seconds   = Seconds(0.001) // Two frames worth of time
 
     val actual =
-      Utils.processFrameTick(lastUpdated, runningTime, frameRatePolicy)
+      Utils.processFrameTick(runningTime, timeDelta, frameRatePolicy)
 
     val expected: TickUpdateResult =
       TickUpdateResult.Wait
