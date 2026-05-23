@@ -36,9 +36,6 @@ import indigoengine.shared.datatypes.Seconds
 
 import scala.compiletime.uninitialized
 
-// TODO: This is _nearly_ a copy of the JS version - close as I could get it. Can we make them the same?
-//       Is it just 'parametarise the context type?'
-
 final class GameEngine[StartUpData, GameModel](
     services: IndigoCoreServices[TempImageData, Array[Byte]], // Fake types.
     engineConfig: EngineConfig,
