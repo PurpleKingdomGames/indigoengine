@@ -28,6 +28,15 @@ trait SDLApp[Model]:
 
   def height: Int
 
+  /** Minimum interval between SDL run-loop iterations, in milliseconds. Defaults to ~60 Hz.
+    *
+    * This is a coarse pacing knob: the runtime sleeps for this many milliseconds at the end of every iteration
+    * regardless of how much work the iteration did. A future enhancement could measure elapsed work per frame (poll +
+    * dispatch + draw + swap) and sleep only for the remainder, producing a more even cadence and avoiding over-sleep
+    * when work was already slow.
+    */
+  def frameIntervalMs: Int = 16
+
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
     * run at start up, in order to trigger other processes.
     */
@@ -80,7 +89,7 @@ trait SDLApp[Model]:
     new ExtensionRegister()
 
   final def main(args: Array[String]): Unit =
-    val runtime = SDLRuntime.create(title, width, height)
+    val runtime = SDLRuntime.create(title, width, height, frameIntervalMs)
     SDLRuntime.current.set(runtime)
 
     val (dispatcher, releaseDispatcher) =

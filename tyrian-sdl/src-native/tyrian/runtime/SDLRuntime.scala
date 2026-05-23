@@ -10,7 +10,11 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
-final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListeners):
+final class SDLRuntime private (
+    val ctx: SDLContext,
+    listeners: SDLEventListeners,
+    frameIntervalMs: Int
+):
 
   type Handle = Long
 
@@ -43,15 +47,19 @@ final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListener
       perTick(ctx, runningTimeSeconds)
 
       val _ = SDL_GL_SwapWindow(ctx.window)
-      SDL_Delay(16.toUInt)
+
+      // Coarse SDL-loop pacing — separate from FrameRatePolicy (which gates game ticks).
+      // Without this the loop spins at 100% CPU regardless of vsync.
+      SDL_Delay(frameIntervalMs.toUInt)
 
 object SDLRuntime:
 
   val current: AtomicReference[SDLRuntime] =
     new AtomicReference()
 
-  def create(title: String, width: Int, height: Int): SDLRuntime =
+  def create(title: String, width: Int, height: Int, frameIntervalMs: Int): SDLRuntime =
     new SDLRuntime(
       SDLContext.create(title, width, height),
-      new SDLEventListeners()
+      new SDLEventListeners(),
+      frameIntervalMs
     )
