@@ -7,13 +7,9 @@ import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
 import indigo.core.events.InputEvent
 import indigo.core.events.InputState
-import indigo.core.events.ViewportResize
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
-import indigo.gameengine.FrameProcessor
 import indigo.platform.assets.AssetCollection
-import indigo.render.Renderer
-import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
@@ -23,8 +19,6 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 import scala.collection.mutable
-
-// TODO: Identical to JS version?
 
 final class GameLoop[StartUpData, GameModel](
     updateAssetCollection: AssetCollection => Unit,
@@ -36,7 +30,7 @@ final class GameLoop[StartUpData, GameModel](
     initialModel: GameModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
-    renderer: => Renderer[ContextAndSize]
+    giveScreenSize: () => Size
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -58,10 +52,10 @@ final class GameLoop[StartUpData, GameModel](
   def lock(): Unit              = _frameLocked = true
   def unlock(): Unit            = _frameLocked = false
 
-  def runFrame(context: ContextAndSize, time: Seconds, timeDelta: Seconds): Unit =
+  def runFrame(time: Seconds, timeDelta: Seconds): Unit =
     if _frameLocked then ()
     else if systemActions.size > 0 then performSystemActions(systemActions.dequeueAll(_ => true).toList, time)
-    else runFrameNormal(context, time, timeDelta)
+    else runFrameNormal(time, timeDelta)
 
   def performSystemActions(systemEvents: List[IndigoSystemEvent], runningTime: Seconds): Unit =
     systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection, nextEvent) =>
@@ -72,7 +66,7 @@ final class GameLoop[StartUpData, GameModel](
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def runFrameNormal(ctx: ContextAndSize, time: Seconds, timeDelta: Seconds): Unit =
+  private def runFrameNormal(time: Seconds, timeDelta: Seconds): Unit =
     val gameTime =
       new GameTime(time, timeDelta)
     val events = gameEngine.globalEventStream.collect ++ Batch(FrameTick)
@@ -92,7 +86,7 @@ final class GameLoop[StartUpData, GameModel](
           Dice.fromSeconds(gameTime.running),
           gameTime,
           _inputState,
-          Size(renderer.screenWidth, renderer.screenHeight)
+          giveScreenSize() // Size(renderer.screenWidth, renderer.screenHeight)
         ),
         _services
       )
@@ -133,15 +127,7 @@ final class GameLoop[StartUpData, GameModel](
       gameEngine.globalEventStream.pushGlobalEvent
     )
 
-    // Apply any viewport resize (Tyrian pushes ViewportResize when the canvas is resized)
-    events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
-      // TODO: This might be wrong.
-      val updated = ctx.copy(width = e.newSize.width, height = e.newSize.height)
-      gameEngine.renderer.resize(updated)
-    }
-
-    // Render scene
-    gameEngine.renderer.drawScene(ctx, sceneData, gameTime.running)
+    gameEngine.resizeAndDraw(events, sceneData, gameTime.running)
 
     // Process system events
     events

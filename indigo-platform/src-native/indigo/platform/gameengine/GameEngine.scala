@@ -5,11 +5,12 @@ import indigo.core.animation.*
 import indigo.core.assets.AssetName
 import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
+import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
+import indigo.core.events.ViewportResize
 import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
-import indigo.gameengine.FrameProcessor
 import indigo.platform.IndigoCoreServices
 import indigo.platform.NativePlatform
 import indigo.platform.assets.*
@@ -18,6 +19,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.render.Renderer
 import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.assets.AssetMapping
+import indigo.render.pipeline.datatypes.ProcessedSceneData
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -129,7 +131,7 @@ final class GameEngine[StartUpData, GameModel](
       _graphicsContext = context
       rebuildGameLoop(true)(Seconds.zero)
 
-    if gameLoopInstance != null then gameLoopInstance.runFrame(context, runningTime, timeDelta)
+    if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
 
   def updateAssetCollection(assetCollection: AssetCollection): Unit =
     _assetCollection = assetCollection
@@ -231,6 +233,16 @@ final class GameEngine[StartUpData, GameModel](
 
       }
     }
+
+  def resizeAndDraw(events: Batch[GlobalEvent], sceneData: ProcessedSceneData, runningTime: Seconds): Unit =
+    // Apply any viewport resize (Tyrian pushes ViewportResize when the window is resized)
+    events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
+      val updated = _graphicsContext.copy(width = e.newSize.width, height = e.newSize.height)
+      renderer.resize(updated)
+    }
+
+    // Render scene
+    renderer.drawScene(_graphicsContext, sceneData, runningTime)
 
 }
 
@@ -351,7 +363,7 @@ object GameEngine {
         initialModel,
         frameProccessor,
         startFrameLocked,
-        renderer
+        () => Size(renderer.screenWidth, renderer.screenHeight)
       )
     )
 }

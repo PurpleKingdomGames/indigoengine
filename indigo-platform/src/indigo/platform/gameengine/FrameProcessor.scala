@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.platform.gameengine
 
 import indigo.core.Outcome
 import indigo.core.events.GlobalEvent
