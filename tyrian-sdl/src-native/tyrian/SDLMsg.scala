@@ -6,7 +6,6 @@ import scala.scalanative.unsigned.UInt
 
 enum SDLMsg derives CanEqual:
   case Quit
-  // TODO: Frame isn't _really_ an SDLMsg. We just want a watcher that hooks into the loop.
   case Frame(runningTime: Seconds)
   case Other(rawType: UInt)
 

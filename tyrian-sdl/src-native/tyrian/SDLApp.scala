@@ -22,9 +22,10 @@ import tyrian.runtime.TyrianSDLRuntime
   */
 trait SDLApp[Model]:
 
-  // TODO: Wrap this up in something...
   def title: String
+
   def width: Int
+
   def height: Int
 
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
@@ -120,10 +121,9 @@ trait SDLApp[Model]:
 
     val tyrianSDLRuntime =
       TyrianSDLRuntime
-        .make[IO, Model, GlobalMsg, Terminal, Unit](
+        .make[Model](
           dispatcher,
-          initModel,
-          ()
+          initModel
         )
         .unsafeRunSync()
 
