@@ -121,6 +121,8 @@ final class GameEngine[StartUpData, GameModel](
       services.imageService
     )
 
+    tryBuildGameLoop()
+
     this
   }
 
@@ -128,9 +130,14 @@ final class GameEngine[StartUpData, GameModel](
   def tick(context: ContextAndSize, runningTime: Seconds, timeDelta: Seconds): Unit =
     if context != null && _graphicsContext == null then
       _graphicsContext = context
-      rebuildGameLoop(true)(Seconds.zero)
+      tryBuildGameLoop()
 
     if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  private def tryBuildGameLoop(): Unit =
+    if gameLoopInstance == null && _graphicsContext != null && _assetCollection != null then
+      rebuildGameLoop(true)(Seconds.zero)
 
   def updateAssetCollection(assetCollection: AssetCollection): Unit =
     _assetCollection = assetCollection
