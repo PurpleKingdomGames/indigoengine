@@ -14,7 +14,7 @@ import tyrian.classic.cmds.Random
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object IndigoSandbox extends App[Model]:
+object IndigoSandbox extends App[WebGL2Context, Model]:
 
   private val containerMarkerId1 = MarkerId("indigo-game-container-1")
   private val containerMarkerId2 = MarkerId("indigo-game-container-2")
@@ -141,7 +141,7 @@ object IndigoSandbox extends App[Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch()
 
-  def extensions(flags: Map[String, String], model: Model): Set[Extension] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[WebGL2Context]] =
     Set(
       Indigo(
         ExtensionId("reverse"),

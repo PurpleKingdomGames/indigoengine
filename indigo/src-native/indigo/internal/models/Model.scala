@@ -9,11 +9,9 @@ import tyrian.*
 final case class Model(
     game: Game[?, ?, ?],
     attempts: Int,
-    lastUpdated: Seconds,
+    lastUpdatedAt: Seconds,
     running: Boolean,
     _eventWatchers: Option[WorldEventWatchers],
-    // _canvas: Option[html.Canvas],
-    // _container: Option[HTMLElement],
     _audioPlayer: AudioPlayer
 )
 object Model:
@@ -24,7 +22,5 @@ object Model:
       Seconds.zero,
       running = true,
       None,
-      // None,
-      // None,
       new AudioPlayer()
     )

@@ -5,7 +5,7 @@ import tyrian.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object Sandbox extends App[Model]:
+object Sandbox extends App[Unit, Model]:
 
   def router: Location => GlobalMsg =
     Routing.externalOnly(AppEvent.NoOp, AppEvent.FollowLink(_))
@@ -23,5 +23,5 @@ object Sandbox extends App[Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch.empty
 
-  def extensions(flags: Map[String, String], model: Model): Set[Extension] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[Unit]] =
     Set(CounterExtension)

@@ -29,7 +29,7 @@ object TestSDLExtension extends Extension.Graphical[SDLContext]:
   def view(model: ExtModel): TerminalFragment =
     TerminalFragment.empty
 
-  def draw(context: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: ExtModel): Unit =
+  def draw(context: SDLContext, runningTime: Seconds, model: ExtModel): ExtModel =
     val phase = ((runningTime.toMillis.toLong / 1000L) % 6L).toFloat / 6.0f
 
     glClearColor(phase, 0.2f, 1.0f - phase, 1.0f)
@@ -37,6 +37,11 @@ object TestSDLExtension extends Extension.Graphical[SDLContext]:
     glUseProgram(model.program)
     glBindVertexArray(model.vao)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
+
+    model
+
+  def provideContext(model: ExtModel): Option[SDLContext] =
+    None
 
   def watchers(model: ExtModel): Batch[Watcher] =
     Batch.empty

@@ -3,7 +3,7 @@ package sandbox
 import tyrian.*
 import tyrian.syntax.*
 
-object SandboxNative extends App[Model]:
+object SandboxNative extends App[Unit, Model]:
 
   def init(args: Array[String]): Result[Model] =
     Result(Model(None))
@@ -33,7 +33,7 @@ object SandboxNative extends App[Model]:
       Watcher.every(1.second, t => Msg.Tick(t))
     )
 
-  def extensions(args: Array[String], model: Model): Set[Extension] =
+  def extensions(args: Array[String], model: Model): Set[Extension[Unit]] =
     Set()
 
 final case class Model(elapsed: Option[Seconds])

@@ -13,7 +13,7 @@ import tyrian.Watcher
   *
   * They are the Tyrian version of Indigo's SubSystems.
   */
-sealed trait Extension:
+sealed trait Extension[GraphicsContext]:
 
   /** Type representing this extension's model
     */
@@ -43,9 +43,11 @@ sealed trait Extension:
 
 object Extension:
 
-  trait Standard extends Extension
-  trait Graphical[GraphicsContext] extends Extension:
+  trait Standard extends Extension[Unit]
+  trait Graphical[GraphicsContext] extends Extension[GraphicsContext]:
 
     /** Used for per-frame drawing directly to a graphics context.
       */
-    def draw(context: GraphicsContext, runningTime: Seconds, timeDelta: Seconds, model: ExtensionModel): Unit
+    def draw(context: GraphicsContext, runningTime: Seconds, model: ExtensionModel): ExtensionModel
+
+    def provideContext(model: ExtensionModel): Option[GraphicsContext]

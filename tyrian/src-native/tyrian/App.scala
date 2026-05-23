@@ -12,7 +12,7 @@ import tyrian.platform.Sub
 
 // TODO: Look at making the JS and Native App's common. There are differences, but there's a lot of similarity too.
 
-trait App[Model]:
+trait App[GraphicsContext, Model]:
 
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
     * run at start up, in order to trigger other processes.
@@ -39,7 +39,7 @@ trait App[Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(args: Array[String], model: Model): Set[Extension]
+  def extensions(args: Array[String], model: Model): Set[Extension[GraphicsContext]]
 
   val run: IO[Nothing] => Unit = _.unsafeRunSync()
 
@@ -69,7 +69,7 @@ trait App[Model]:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: ExtensionRegister =
+  private val extensionsRegister: ExtensionRegister[GraphicsContext] =
     new ExtensionRegister()
 
   def launch(args: Array[String]): Unit =

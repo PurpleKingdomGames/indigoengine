@@ -6,7 +6,7 @@ import tyrian.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object RogueLikeApp extends App[AppModel]:
+object RogueLikeApp extends App[WebGL2Context, AppModel]:
 
   private val containerMarkerId = MarkerId("indigo-game-container")
 
@@ -36,7 +36,7 @@ object RogueLikeApp extends App[AppModel]:
   def watchers(model: AppModel): Batch[Watcher] =
     Batch()
 
-  def extensions(flags: Map[String, String], model: AppModel): Set[Extension] =
+  def extensions(flags: Map[String, String], model: AppModel): Set[Extension[WebGL2Context]] =
     Set(
       Indigo(
         ExtensionId("rogue game"),

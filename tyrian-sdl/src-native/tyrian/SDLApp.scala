@@ -8,7 +8,7 @@ import tyrian.GlobalMsg
 import tyrian.Watcher
 import tyrian.classic.Terminal
 import tyrian.extensions.Extension
-import tyrian.extensions.SDLExtensionRegister
+import tyrian.extensions.ExtensionRegister
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 import tyrian.runtime.SDLRuntime
@@ -47,7 +47,7 @@ trait SDLApp[Model]:
   def watchers(model: Model): Batch[Watcher]
 
   /** Extensions own per-frame rendering, invoked on the main thread by the runtime. */
-  def extensions(args: Array[String], model: Model): Set[Extension.Graphical[SDLContext]]
+  def extensions(args: Array[String], model: Model): Set[Extension[SDLContext]]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
@@ -75,8 +75,8 @@ trait SDLApp[Model]:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: SDLExtensionRegister =
-    new SDLExtensionRegister()
+  private val extensionsRegister: ExtensionRegister[SDLContext] =
+    new ExtensionRegister()
 
   final def main(args: Array[String]): Unit =
     val runtime = SDLRuntime.create(title, width, height)
@@ -134,7 +134,7 @@ trait SDLApp[Model]:
       )
       .unsafeRunSync()
 
-    runtime.run { (ctx, runningTime, timeDelta) =>
+    runtime.run { (ctx, runningTime) =>
       tyrianSDLRuntime
         .tick(
           combinedUpdate,
@@ -143,7 +143,7 @@ trait SDLApp[Model]:
         )
         .unsafeRunSync()
 
-      extensionsRegister.draw(ctx, runningTime, timeDelta)
+      extensionsRegister.draw(Option(ctx), runningTime)
     }
 
     releaseDispatcher.unsafeRunSync()

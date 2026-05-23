@@ -7,7 +7,7 @@ import tyrian.ui.*
 /** Provides a no-frills Tyrian runtime for a single running Indigo game. For anything more complicated, you'll want to
   * build your own.
   */
-trait BasicGameRuntime extends App[Unit]:
+trait BasicGameRuntime extends App[WebGL2Context, Unit]:
 
   def game: Game[?, ?, ?]
 
@@ -16,7 +16,7 @@ trait BasicGameRuntime extends App[Unit]:
   private val containerMarkerId = MarkerId("indigo-game-container")
   private given Theme           = Theme.None
 
-  def extensions(flags: Map[String, String], model: Unit): Set[Extension] =
+  def extensions(flags: Map[String, String], model: Unit): Set[Extension[WebGL2Context]] =
     Set(
       Indigo(
         ExtensionId("indigo game"),

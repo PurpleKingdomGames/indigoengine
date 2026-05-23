@@ -4,9 +4,11 @@ import indigo.*
 import tyrian.*
 import tyrian.extensions.Extension
 
+// TODO: How far away is this from the JS version?
+
 abstract class BasicGameRuntime(game: => Game[?, ?, ?]) extends SDLApp[Unit]:
 
-  def extensions(args: Array[String], model: Unit): Set[Extension.Graphical[SDLContext]] =
+  def extensions(args: Array[String], model: Unit): Set[Extension[SDLContext]] =
     Set(
       Indigo(
         ExtensionId("indigo game"),

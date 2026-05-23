@@ -18,7 +18,7 @@ import tyrian.syntax.*
 
 import scala.scalajs.js.annotation.*
 
-trait App[Model]:
+trait App[GraphicsContext, Model]:
 
   /** The `routing` function is typically implemented using the `Routing` helper. Used to decide how to manage what
     * happens when the user clicks a link. Links are split in the `Location` object into 'internal' and 'external'
@@ -51,7 +51,7 @@ trait App[Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(flags: Map[String, String], model: Model): Set[Extension]
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[GraphicsContext]]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -136,11 +136,11 @@ trait App[Model]:
       )
       .toSub
 
-  private val extensionsRegister: ExtensionRegister =
+  private val extensionsRegister: ExtensionRegister[GraphicsContext] =
     new ExtensionRegister()
 
   def graphicsTick(runningTime: Double): Unit =
-    extensionsRegister.draw(Millis(runningTime.toLong).toSeconds)
+    extensionsRegister.draw(None, Millis(runningTime.toLong).toSeconds)
 
     dom.window.requestAnimationFrame { time =>
       graphicsTick(time)

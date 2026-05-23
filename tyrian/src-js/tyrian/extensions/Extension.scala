@@ -6,7 +6,6 @@ import tyrian.GlobalMsg
 import tyrian.HtmlFragment
 import tyrian.Result
 import tyrian.Watcher
-import tyrian.WebGL2Context
 
 // TODO: Can this be merged with the Native version?
 
@@ -14,7 +13,7 @@ import tyrian.WebGL2Context
   *
   * They are the Tyrian version of Indigo's SubSystems.
   */
-sealed trait Extension:
+sealed trait Extension[GraphicsContext]:
 
   /** Type representing this extension's model
     */
@@ -44,11 +43,11 @@ sealed trait Extension:
 
 object Extension:
 
-  trait Standard extends Extension
-  trait Graphical extends Extension:
+  trait Standard extends Extension[Unit]
+  trait Graphical[GraphicsContext] extends Extension[GraphicsContext]:
 
     /** Used for per-frame drawing directly to a graphics context.
       */
-    def draw(context: WebGL2Context, runningTime: Seconds, model: ExtensionModel): ExtensionModel
+    def draw(context: GraphicsContext, runningTime: Seconds, model: ExtensionModel): ExtensionModel
 
-    def provideContext(model: ExtensionModel): Option[WebGL2Context]
+    def provideContext(model: ExtensionModel): Option[GraphicsContext]

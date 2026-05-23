@@ -1,24 +1,25 @@
 package tyrian.extensions
 
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.collections.mutable.KVP
 import indigoengine.shared.datatypes.Seconds
 import tyrian.Action
 import tyrian.GlobalMsg
-import tyrian.HtmlFragment
 import tyrian.Result
+import tyrian.HtmlFragment
 import tyrian.Watcher
 
-import scalajs.js
+// TODO: Near identical to Native version
 
-final class ExtensionRegister {
+final class ExtensionRegister[GraphicsContext] {
 
-  private val stateMap: js.Dictionary[Object] = js.Dictionary.empty
+  private val stateMap: KVP[Object] = KVP.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var registeredExtensions: js.Array[RegisteredExtension] = js.Array()
+  private var registeredExtensions: Batch[RegisteredExtension[GraphicsContext]] = Batch()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def register(newExtensions: Batch[Extension]): Batch[Action] =
+  def register(newExtensions: Batch[Extension[GraphicsContext]]): Batch[Action] =
     newExtensions.map(initialiseExtension).sequence match {
       case oe @ Result.Error(e, _) =>
         println("Error during subsystem setup - Halting.")
@@ -27,19 +28,21 @@ final class ExtensionRegister {
         throw e
 
       case Result.Next(toBeRegistered, actions) =>
-        registeredExtensions = registeredExtensions ++ toBeRegistered.toJSArray
+        registeredExtensions = registeredExtensions ++ toBeRegistered
         actions
     }
 
   def hasGraphicalExtensions: Boolean =
     registeredExtensions.exists(_.isGraphical)
 
-  private def initialiseExtension(extension: Extension): Result[RegisteredExtension] = {
+  private def initialiseExtension(
+      extension: Extension[GraphicsContext]
+  ): Result[RegisteredExtension[GraphicsContext]] = {
     val key = extension.id.toString
     val isGraphical: Boolean =
       extension match
-        case _: Extension.Graphical => true
-        case _                      => false
+        case _: Extension.Graphical[_] => true
+        case _                         => false
     val res = RegisteredExtension(key, extension, isGraphical)
 
     extension.init.map { model =>
@@ -51,22 +54,20 @@ final class ExtensionRegister {
 
   def update(globalMsg: GlobalMsg): Result[Batch[Action]] =
     val results: Batch[Result[Batch[Action]]] =
-      Batch.fromJSArray(
-        registeredExtensions
-          .map: rss =>
-            val key       = rss.id
-            val extension = rss.extension
+      registeredExtensions
+        .map: rss =>
+          val key       = rss.id
+          val extension = rss.extension
 
-            val model: extension.ExtensionModel = stateMap(key).asInstanceOf[extension.ExtensionModel]
+          val model: extension.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
-            extension.update(model)(globalMsg) match
-              case Result.Error(e, _) =>
-                Result.raiseError(e)
+          extension.update(model)(globalMsg) match
+            case Result.Error(e, _) =>
+              Result.raiseError(e)
 
-              case Result.Next(state, actions) =>
-                stateMap.update(key, state.asInstanceOf[Object])
-                Result(actions)
-      )
+            case Result.Next(state, actions) =>
+              stateMap.update(key, state.asInstanceOf[Object])
+              Result(actions)
 
     results.foldLeft(Result(Batch.empty[Action])) { (acc, next) =>
       acc.flatMap(accActions => next.map(actions => accActions ++ actions))
@@ -76,23 +77,22 @@ final class ExtensionRegister {
     registeredExtensions
       .map { rss =>
         rss.extension.view(
-          stateMap(rss.id).asInstanceOf[rss.extension.ExtensionModel]
+          stateMap.getUnsafe(rss.id).asInstanceOf[rss.extension.ExtensionModel]
         )
       }
       .foldLeft(HtmlFragment.empty)(_ |+| _)
 
   def watchers: Batch[Watcher] =
-    Batch
-      .fromJSArray(registeredExtensions)
+    registeredExtensions
       .flatMap: rss =>
         val key       = rss.id
         val extension = rss.extension
 
-        val model: extension.ExtensionModel = stateMap(key).asInstanceOf[extension.ExtensionModel]
+        val model: extension.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
         extension.watchers(model)
 
-  def draw(runningTime: Seconds): Unit =
+  def draw(ctx: Option[GraphicsContext], runningTime: Seconds): Unit =
     registeredExtensions
       .foreach: rss =>
         val key       = rss.id
@@ -102,11 +102,11 @@ final class ExtensionRegister {
           case ext: Extension.Standard =>
             ()
 
-          case ext: Extension.Graphical =>
-            val model: ext.ExtensionModel = stateMap(key).asInstanceOf[ext.ExtensionModel]
+          case ext: Extension.Graphical[_] =>
+            val model: ext.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[ext.ExtensionModel]
 
-            ext
-              .provideContext(model)
+            ctx
+              .orElse(ext.provideContext(model))
               .foreach: ctx =>
                 val updated = ext.draw(ctx, runningTime, model)
                 stateMap.update(key, updated.asInstanceOf[Object])
@@ -116,4 +116,8 @@ final class ExtensionRegister {
 
 }
 
-final case class RegisteredExtension(id: String, extension: Extension, isGraphical: Boolean) derives CanEqual
+final case class RegisteredExtension[GraphicsContext](
+    id: String,
+    extension: Extension[GraphicsContext],
+    isGraphical: Boolean
+) derives CanEqual

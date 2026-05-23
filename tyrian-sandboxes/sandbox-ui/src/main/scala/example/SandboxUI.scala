@@ -6,7 +6,7 @@ import tyrian.ui.theme.Theme
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object SandboxUI extends App[Model]:
+object SandboxUI extends App[Unit, Model]:
 
   given Theme = Theme.default
 
@@ -26,5 +26,5 @@ object SandboxUI extends App[Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch.empty
 
-  def extensions(flags: Map[String, String], model: Model): Set[Extension] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[Unit]] =
     Set()

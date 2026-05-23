@@ -52,10 +52,8 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
       }
     )
 
-  def extensions(args: Array[String], model: SandboxModel): Set[Extension.Graphical[SDLContext]] =
-    Set(
-      TestSDLExtension
-    )
+  def extensions(args: Array[String], model: SandboxModel): Set[Extension[SDLContext]] =
+    Set(TestSDLExtension)
 
 final case class SandboxModel(ticks: Long)
 

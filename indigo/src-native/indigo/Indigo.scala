@@ -3,8 +3,9 @@ package indigo
 // import indigo.core.events.ScreenCaptureEvent
 // import indigo.internal.IndigoActions
 // import indigo.internal.IndigoWatchers
-// import indigo.internal.Utils
+import indigo.internal.Utils
 // import indigo.internal.WorldEventWatchers
+import indigo.internal.models.TickUpdateResult
 import indigo.internal.IndigoActions
 import indigo.internal.LogDrainWatcher
 import indigo.internal.models.LaunchStatus
@@ -91,32 +92,15 @@ final case class Indigo(
 
     case Msg.FullScreen(request) =>
       Result(model)
-      // model._canvas match
-      //   case None =>
-      //     Result(model)
-
-      //   case Some(canvas) =>
-      //     Result(model)
-      //       .addActions(Action.sideEffect(Utils.runFullScreen(canvas, model.game, request)))
 
     case Msg.LoadAssets(assets, key, makeAvailable) =>
       Result(model)
-      // .addActions(Action.sideEffect(Utils.runLoadAssets(model.game, assets, key, makeAvailable)))
 
     case Msg.CaptureScreen(config, key) =>
       Result(model)
-      // model._canvas match
-      //   case None =>
-      //     model.game.events.push(ScreenCaptureEvent.CaptureError(key, "No canvas available"))
-      //     Result(model)
-
-      //   case Some(canvas) =>
-      //     Result(model)
-      //       .addActions(Action.sideEffect(Utils.runCaptureScreen(model.game, canvas, config, key)))
 
     case Msg.PlaySound(assetName, volume, policy) =>
       Result(model)
-      // .addActions(Action.sideEffect(model._audioPlayer.playSound(assetName, volume, policy)))
 
     case Msg.Log(_, text) =>
       Result(model).log(text)
@@ -190,36 +174,27 @@ final case class Indigo(
               .log(s"Indigo Extension failed to launch the game after ${Indigo.MaxStartupAttempts} attempts.")
       else Result(model)
 
-  def view(model: ExtensionModel): TerminalFragment =
+  def view(model: Model): TerminalFragment =
     TerminalFragment.empty
 
   def watchers(model: Model): Batch[Watcher] =
     Batch(LogDrainWatcher(game))
-    // val gameTickWatcher =
-    //   if model.running then Batch(IndigoWatchers.tick(game.gameId))
-    //   else Batch.empty
 
-    // val resizeWatcher =
-    //   (model._canvas, model._container) match
-    //     case (Some(cvs), Some(con)) =>
-    //       Batch(IndigoWatchers.resize(game.gameId, cvs, con))
+  def draw(ctx: SDLContext, runningTime: Seconds, model: Model): Model =
+    val timeDelta = runningTime - model.lastUpdatedAt
 
-    //     case _ =>
-    //       Batch.empty
+    Utils.processFrameTick(runningTime, timeDelta, settings.frameRatePolicy) match
+      case TickUpdateResult.Wait =>
+        model
 
-    // val worldEventWatchers =
-    //   model._eventWatchers match
-    //     case None    => Batch.empty
-    //     case Some(w) => w.watchers
+      case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
+        model.game.system.tick(ctx, updatedAt, timeDelta)
+        model.copy(
+          lastUpdatedAt = updatedAt
+        )
 
-    // Batch.fromOption(
-    //   model.game.events.eventCallback.map: eventCallback =>
-    //     IndigoWatchers.indigoEventWatcher(extensionId, eventMapping, eventCallback)
-    // ) ++
-    //   gameTickWatcher ++ resizeWatcher ++ worldEventWatchers
-
-  def draw(ctx: SDLContext, runningTime: Seconds, timeDelta: Seconds, model: ExtensionModel): Unit =
-    model.game.system.tick(ctx, runningTime, timeDelta)
+  def provideContext(model: Model): Option[SDLContext] =
+    None
 
 object Indigo:
 
@@ -256,22 +231,3 @@ object Indigo:
       PartialIso.none,
       Settings.default
     )
-
-  // Move to IndigoActions
-  // private def launchAction(
-  //     extensionId: ExtensionId,
-  //     game: Game[?, ?, ?],
-  //     args: Array[String],
-  //     services: IndigoCoreServices[TempImageData, Array[Byte]],
-  //     ctx: SDL_GLContext
-  // ): Action =
-  //   Action.run {
-  //     game.launch(
-  //       initialWidth = 800,   // : Int,
-  //       initialHeight = 600,  // : Int,
-  //       context = ctx, // : String, // Fake, obvs.
-  //       args = args,          // : Array[String],
-  //       services = services   // : IndigoCoreServices[TempImageData, Array[Byte]]
-  //     )
-  //     Msg.Launch(LaunchStatus.Started(extensionId))
-  //   }
