@@ -17,6 +17,8 @@ object IndigoActions:
       services: IndigoCoreServices[TempImageData, Array[Byte]]
   ): Action =
     Action.run {
-      game.launch( /*context,*/ args, services)
+      game.launch(args, services)
+
+      // Succeeds regardless for now, review once more of the implementation is in place.
       Msg.Launch(LaunchStatus.Started(extensionId))
     }
