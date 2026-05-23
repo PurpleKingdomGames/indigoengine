@@ -36,7 +36,7 @@ object RogueLikeApp extends App[WebGL2Context, AppModel]:
   def watchers(model: AppModel): Batch[Watcher] =
     Batch()
 
-  def extensions(flags: Map[String, String], model: AppModel): Set[Extension[WebGL2Context]] =
+  def extensions(flags: Map[String, String], model: AppModel): Set[Extension[WebGL2Context, HtmlFragment]] =
     Set(
       Indigo(
         ExtensionId("rogue game"),

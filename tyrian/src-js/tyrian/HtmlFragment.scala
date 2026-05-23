@@ -5,6 +5,7 @@ import tyrian.Elem
 import tyrian.Html
 import tyrian.ui.UIElement
 import tyrian.ui.theme.Theme
+import indigoengine.shared.typeclass.Monoid
 
 /** An HtmlFragment represents a chunk of Html that will potentially make up part of the final DOM output. Though it
   * aids 'out-of-order' dom tree construction, it is not the same as a template (which in Tyrian Next is any function of
@@ -78,6 +79,12 @@ final case class HtmlFragment(markup: Batch[Elem[GlobalMsg]], inserts: Map[Marke
     HtmlRoot.div(this)
 
 object HtmlFragment:
+
+  given Monoid[HtmlFragment] =
+    Monoid.instance(
+      empty,
+      combine
+    )
 
   /** Merges two HtmlFragments by concatenating their markup sequences and combining their insert maps. When both
     * fragments contain inserts for the same MarkerId, the second fragment's insert will override the first.

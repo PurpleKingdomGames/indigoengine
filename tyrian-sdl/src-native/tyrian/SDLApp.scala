@@ -47,7 +47,7 @@ trait SDLApp[Model]:
   def watchers(model: Model): Batch[Watcher]
 
   /** Extensions own per-frame rendering, invoked on the main thread by the runtime. */
-  def extensions(args: Array[String], model: Model): Set[Extension[SDLContext]]
+  def extensions(args: Array[String], model: Model): Set[Extension[SDLContext, TerminalFragment]]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
@@ -75,7 +75,7 @@ trait SDLApp[Model]:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: ExtensionRegister[SDLContext] =
+  private val extensionsRegister: ExtensionRegister[SDLContext, TerminalFragment] =
     new ExtensionRegister()
 
   final def main(args: Array[String]): Unit =

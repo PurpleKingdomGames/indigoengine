@@ -39,7 +39,7 @@ trait App[GraphicsContext, Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(args: Array[String], model: Model): Set[Extension[GraphicsContext]]
+  def extensions(args: Array[String], model: Model): Set[Extension[GraphicsContext, TerminalFragment]]
 
   val run: IO[Nothing] => Unit = _.unsafeRunSync()
 
@@ -69,7 +69,7 @@ trait App[GraphicsContext, Model]:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: ExtensionRegister[GraphicsContext] =
+  private val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
     new ExtensionRegister()
 
   def launch(args: Array[String]): Unit =

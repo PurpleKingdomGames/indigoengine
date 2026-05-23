@@ -2,19 +2,29 @@ package tyrian
 
 import indigoengine.shared.collections.Batch
 import tyrian.classic.Terminal
+import indigoengine.shared.typeclass.Monoid
 
 final case class TerminalFragment(ops: Batch[TerminalOps]):
 
   def |+|(other: TerminalFragment): TerminalFragment =
-    this.copy(ops = ops ++ other.ops)
+    TerminalFragment.combine(this, other)
 
   def toTerminal: Terminal[GlobalMsg] =
     ops.map(_.toTerminal).foldLeft(Terminal.NoOp())((acc, next) => acc |+| next)
 
 object TerminalFragment:
 
+  given Monoid[TerminalFragment] =
+    Monoid.instance(
+      empty,
+      combine
+    )
+
   def empty: TerminalFragment =
     TerminalFragment(Batch.empty[TerminalOps])
+
+  def combine(a: TerminalFragment, b: TerminalFragment): TerminalFragment =
+    a.copy(ops = a.ops ++ b.ops)
 
   def combineAll(frags: Batch[TerminalFragment]): TerminalFragment =
     if frags.isEmpty then TerminalFragment.empty

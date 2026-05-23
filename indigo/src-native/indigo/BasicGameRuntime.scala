@@ -8,7 +8,7 @@ import tyrian.extensions.Extension
 
 abstract class BasicGameRuntime(game: => Game[?, ?, ?]) extends SDLApp[Unit]:
 
-  def extensions(args: Array[String], model: Unit): Set[Extension[SDLContext]] =
+  def extensions(args: Array[String], model: Unit): Set[Extension[SDLContext, TerminalFragment]] =
     Set(
       Indigo(
         ExtensionId("indigo game"),

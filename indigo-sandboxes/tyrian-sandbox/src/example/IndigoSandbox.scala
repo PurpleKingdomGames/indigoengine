@@ -141,7 +141,7 @@ object IndigoSandbox extends App[WebGL2Context, Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch()
 
-  def extensions(flags: Map[String, String], model: Model): Set[Extension[WebGL2Context]] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[WebGL2Context, HtmlFragment]] =
     Set(
       Indigo(
         ExtensionId("reverse"),

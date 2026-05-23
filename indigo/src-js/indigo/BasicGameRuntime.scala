@@ -16,7 +16,7 @@ trait BasicGameRuntime extends App[WebGL2Context, Unit]:
   private val containerMarkerId = MarkerId("indigo-game-container")
   private given Theme           = Theme.None
 
-  def extensions(flags: Map[String, String], model: Unit): Set[Extension[WebGL2Context]] =
+  def extensions(flags: Map[String, String], model: Unit): Set[Extension[WebGL2Context, HtmlFragment]] =
     Set(
       Indigo(
         ExtensionId("indigo game"),
