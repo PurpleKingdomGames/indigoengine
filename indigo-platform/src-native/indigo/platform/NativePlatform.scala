@@ -14,25 +14,22 @@ import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.imaging.ImageService
 import indigo.render.Renderer
-import indigo.render.RendererInitialiser
 import indigo.render.opengl.ContextAndSize
 import indigo.render.opengl.LoadedTextureAsset
+import indigo.render.opengl.OpenGLRenderer
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 
-// Almost identical to JsPlatform?
+import scala.annotation.nowarn
 
 class NativePlatform(
     engineConfig: EngineConfig,
     val globalEventStream: GlobalEventStream,
     imageService: ImageService[TempImageData, Array[Byte]] // Fake types
 ) extends Platform[ContextAndSize] {
-
-  val rendererInit: RendererInitialiser =
-    new RendererInitialiser()
 
   def initialise(
       context: ContextAndSize,
@@ -104,11 +101,24 @@ class NativePlatform(
   ): Outcome[Renderer[ContextAndSize]] =
     Outcome {
       IndigoLogger.info("Starting renderer")
-      rendererInit.setup(
+      initialiseRenderer(
         engineConfig,
         loadedTextureAssets,
         context,
         shaders
       )
     }
+
+  @nowarn("msg=unused")
+  private def initialiseRenderer(
+      config: EngineConfig,
+      loadedTextureAssets: Batch[LoadedTextureAsset],
+      context: ContextAndSize,
+      shaders: Set[RawShaderCode]
+  ): Renderer[ContextAndSize] =
+    val r = new OpenGLRenderer(config)
+
+    r.init(context, shaders)
+    r.resize(context)
+    r
 }

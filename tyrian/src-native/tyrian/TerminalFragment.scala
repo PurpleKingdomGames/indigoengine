@@ -1,8 +1,8 @@
 package tyrian
 
 import indigoengine.shared.collections.Batch
-import tyrian.classic.Terminal
 import indigoengine.shared.typeclass.Monoid
+import tyrian.classic.Terminal
 
 final case class TerminalFragment(ops: Batch[TerminalOps]):
 
