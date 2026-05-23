@@ -3,11 +3,11 @@ package tyrian.extensions
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.mutable.KVP
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.typeclass.Monoid
 import tyrian.Action
 import tyrian.GlobalMsg
 import tyrian.Result
 import tyrian.Watcher
-import indigoengine.shared.typeclass.Monoid
 
 final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]) {
 

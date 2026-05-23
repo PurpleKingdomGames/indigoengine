@@ -13,12 +13,12 @@ import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.imaging.ImageService
 import indigo.render.Renderer
-import indigo.render.RendererInitialiser
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.assets.AtlasId
 import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.render.webgl2.ContextAndSize
 import indigo.render.webgl2.LoadedTextureAsset
+import indigo.render.webgl2.RendererWebGL2
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.collections.Batch
 import org.scalajs.dom.ImageData
@@ -29,9 +29,6 @@ class JsPlatform(
     val globalEventStream: GlobalEventStream,
     imageService: ImageService[html.Image, ImageData]
 ) extends Platform[ContextAndSize] {
-
-  val rendererInit: RendererInitialiser =
-    new RendererInitialiser()
 
   def initialise(
       context: ContextAndSize,
@@ -103,11 +100,23 @@ class JsPlatform(
   ): Outcome[Renderer[ContextAndSize]] =
     Outcome {
       IndigoLogger.info("Starting renderer")
-      rendererInit.setup(
+      initialiseRenderer(
         engineConfig,
         loadedTextureAssets,
         context,
         shaders
       )
     }
+
+  private def initialiseRenderer(
+      config: EngineConfig,
+      loadedTextureAssets: Batch[LoadedTextureAsset],
+      context: ContextAndSize,
+      shaders: Set[RawShaderCode]
+  ): Renderer[ContextAndSize] =
+    val r = new RendererWebGL2(config, loadedTextureAssets.toJSArray)
+
+    r.init(context, shaders)
+    r.resize(context)
+    r
 }
