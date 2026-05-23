@@ -71,6 +71,9 @@ final class GameEngine[StartUpData, GameModel](
   private var platform: NativePlatform = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var _graphicsContext: ContextAndSize = null
+
+  // Written by start() at boot and by updateAssetCollection() when GameLoop handles
+  // IndigoSystemEvent.Rebuild. Read by rebuildGameLoop() to fold into accumulatedAssetCollection.
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var _assetCollection: AssetCollection = null
 
