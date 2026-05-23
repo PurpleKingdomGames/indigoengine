@@ -33,7 +33,7 @@ final case class Indigo(
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
     settings: Settings
-) extends Extension.Graphical[WebGL2Context]:
+) extends Extension.Graphical[WebGL2Context, HtmlFragment]:
 
   type ExtensionModel = Model
 

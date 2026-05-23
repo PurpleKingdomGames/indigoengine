@@ -8,7 +8,7 @@ import tyrian.extensions.Extension
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
-object TestSDLExtension extends Extension.Graphical[SDLContext]:
+object TestSDLExtension extends Extension.Graphical[SDLContext, TerminalFragment]:
 
   type ExtensionModel = ExtModel
 

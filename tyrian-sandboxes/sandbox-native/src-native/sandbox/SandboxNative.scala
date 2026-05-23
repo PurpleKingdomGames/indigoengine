@@ -33,7 +33,7 @@ object SandboxNative extends App[Unit, Model]:
       Watcher.every(1.second, t => Msg.Tick(t))
     )
 
-  def extensions(args: Array[String], model: Model): Set[Extension[Unit]] =
+  def extensions(args: Array[String], model: Model): Set[Extension[Unit, TerminalFragment]] =
     Set()
 
 final case class Model(elapsed: Option[Seconds])

@@ -1,16 +1,12 @@
 package indigo
 
-// import indigo.core.events.ScreenCaptureEvent
-// import indigo.internal.IndigoActions
-// import indigo.internal.IndigoWatchers
-import indigo.internal.Utils
-// import indigo.internal.WorldEventWatchers
-import indigo.internal.models.TickUpdateResult
 import indigo.internal.IndigoActions
 import indigo.internal.LogDrainWatcher
+import indigo.internal.Utils
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
+import indigo.internal.models.TickUpdateResult
 import indigo.internal.services.NativeGamepadInputService
 import indigo.internal.services.NativeImageService
 import indigo.platform.IndigoCoreServices
@@ -25,9 +21,8 @@ final case class Indigo(
     onLaunchSuccess: Option[GlobalMsg],
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
-    // TODO: Settings currently unused by the native version. I suspect they'll come back though once the renderer takes shape.
     settings: Settings
-) extends Extension.Graphical[SDLContext]:
+) extends Extension.Graphical[SDLContext, TerminalFragment]:
 
   type ExtensionModel = Model
 

@@ -26,5 +26,5 @@ object SandboxUI extends App[Unit, Model]:
   def watchers(model: Model): Batch[Watcher] =
     Batch.empty
 
-  def extensions(flags: Map[String, String], model: Model): Set[Extension[Unit]] =
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[Unit, HtmlFragment]] =
     Set()

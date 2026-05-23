@@ -3,7 +3,6 @@ package tyrian.extensions
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 import tyrian.GlobalMsg
-import tyrian.HtmlFragment
 import tyrian.Result
 import tyrian.Watcher
 
@@ -13,7 +12,7 @@ import tyrian.Watcher
   *
   * They are the Tyrian version of Indigo's SubSystems.
   */
-sealed trait Extension[GraphicsContext]:
+sealed trait Extension[GraphicsContext, View]:
 
   /** Type representing this extension's model
     */
@@ -34,7 +33,7 @@ sealed trait Extension[GraphicsContext]:
 
   /** Produces declaritive descriptions of views to be presented.
     */
-  def view(model: ExtensionModel): HtmlFragment
+  def view(model: ExtensionModel): View
 
   /** Allows the extension to watch for changes in external resources, and produce messages for the app to consume and
     * act on.
@@ -43,8 +42,8 @@ sealed trait Extension[GraphicsContext]:
 
 object Extension:
 
-  trait Standard extends Extension[Unit]
-  trait Graphical[GraphicsContext] extends Extension[GraphicsContext]:
+  trait Standard[View] extends Extension[Unit, View]
+  trait Graphical[GraphicsContext, View] extends Extension[GraphicsContext, View]:
 
     /** Used for per-frame drawing directly to a graphics context.
       */

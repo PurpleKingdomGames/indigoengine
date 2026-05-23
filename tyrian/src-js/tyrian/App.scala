@@ -51,7 +51,7 @@ trait App[GraphicsContext, Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(flags: Map[String, String], model: Model): Set[Extension[GraphicsContext]]
+  def extensions(flags: Map[String, String], model: Model): Set[Extension[GraphicsContext, HtmlFragment]]
 
   /** Launch the app and attach it to an element with the given id. Can be called from Scala or JavaScript.
     */
@@ -136,7 +136,7 @@ trait App[GraphicsContext, Model]:
       )
       .toSub
 
-  private val extensionsRegister: ExtensionRegister[GraphicsContext] =
+  private val extensionsRegister: ExtensionRegister[GraphicsContext, HtmlFragment] =
     new ExtensionRegister()
 
   def graphicsTick(runningTime: Double): Unit =
