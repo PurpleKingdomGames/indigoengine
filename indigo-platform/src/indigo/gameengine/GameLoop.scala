@@ -127,7 +127,7 @@ final class GameLoop[StartUpData, GameModel](
       gameEngine.globalEventStream.pushGlobalEvent
     )
 
-    gameEngine.resizeAndDraw(events, sceneData, gameTime.running)
+    gameEngine.resizeAndDraw(sceneData, gameTime.running)
 
     // Process system events
     events

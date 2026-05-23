@@ -8,7 +8,6 @@ import indigo.core.datatypes.FontInfo
 import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
-import indigo.core.events.ViewportResize
 import indigo.core.input.GamepadInputCapture
 import indigo.core.utils.IndigoLogger
 import indigo.platform.IndigoCoreServices
@@ -128,10 +127,8 @@ final class GameEngine[StartUpData, GameModel](
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def tick(context: ContextAndSize, runningTime: Seconds, timeDelta: Seconds): Unit =
-    if context != null && _graphicsContext == null then
-      _graphicsContext = context
-      tryBuildGameLoop()
-
+    if context != null then _graphicsContext = context
+    tryBuildGameLoop()
     if gameLoopInstance != null then gameLoopInstance.runFrame(runningTime, timeDelta)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
@@ -240,14 +237,8 @@ final class GameEngine[StartUpData, GameModel](
       }
     }
 
-  def resizeAndDraw(events: Batch[GlobalEvent], sceneData: ProcessedSceneData, runningTime: Seconds): Unit =
-    // Apply any viewport resize (Tyrian pushes ViewportResize when the window is resized)
-    events.collect { case e: ViewportResize => e }.lastOption.foreach { e =>
-      val updated = _graphicsContext.copy(width = e.newSize.width, height = e.newSize.height)
-      renderer.resize(updated)
-    }
-
-    // Render scene
+  def resizeAndDraw(sceneData: ProcessedSceneData, runningTime: Seconds): Unit =
+    renderer.resize(_graphicsContext)
     renderer.drawScene(_graphicsContext, sceneData, runningTime)
 
 }
