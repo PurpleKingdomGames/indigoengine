@@ -1,14 +1,14 @@
 package tyrian.runtime
 
-import cats.effect.kernel.Async
-import cats.effect.kernel.Clock
+import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.effect.std.AtomicCell
 import cats.effect.std.Dispatcher
 import cats.effect.std.Queue
-import cats.effect.syntax.all.*
 import cats.syntax.all.*
+import tyrian.GlobalMsg
 import tyrian.Location
+import tyrian.classic.Terminal
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 import tyrian.platform.runtime.CmdHelper
@@ -17,16 +17,15 @@ import tyrian.platform.runtime.SubHelper
 
 import scala.util.control.NonFatal
 
-// TODO: Simplify, we know some of these types.
-final class TyrianSDLRuntime[F[_], Model, Msg, View[Msg], ViewState](
-    dispatcher: Dispatcher[F],
-    _model: Ref[F, Model],
-    _currentSubs: AtomicCell[F, List[(String, F[Unit])]],
-    _msgQueue: Queue[F, Msg],
-    _renderer: Ref[F, ViewState]
-)(using F: Async[F], clock: Clock[F], present: PresentView[View, ViewState]):
+final class TyrianSDLRuntime[Model](
+    dispatcher: Dispatcher[IO],
+    _model: Ref[IO, Model],
+    _currentSubs: AtomicCell[IO, List[(String, IO[Unit])]],
+    _msgQueue: Queue[IO, GlobalMsg],
+    _viewState: Ref[IO, Unit]
+)(using present: PresentView[Terminal, Unit]):
 
-  def start(initCmds: Cmd[F, Msg], initSubs: Model => Sub[F, Msg]): F[Unit] =
+  def start(initCmds: Cmd[IO, GlobalMsg], initSubs: Model => Sub[IO, GlobalMsg]): IO[Unit] =
     val runCmd = runCommands(_msgQueue)
     val runSub = runSubscriptions(_currentSubs, _msgQueue, dispatcher)
 
@@ -34,17 +33,17 @@ final class TyrianSDLRuntime[F[_], Model, Msg, View[Msg], ViewState](
       runCmd(initCmds) *> runSub(initSubs(m))
 
   def tick(
-      update: Model => Msg => (Model, Cmd[F, Msg]),
-      view: Model => View[Msg],
-      subscriptions: Model => Sub[F, Msg]
-  ): F[Unit] =
-    val router: Location => Option[Msg] = _ => None
-    val runCmd                          = runCommands(_msgQueue)
-    val runSub                          = runSubscriptions(_currentSubs, _msgQueue, dispatcher)
-    val onMsg                           = postMsg(dispatcher, _msgQueue)
+      update: Model => GlobalMsg => (Model, Cmd[IO, GlobalMsg]),
+      view: Model => Terminal[GlobalMsg],
+      subscriptions: Model => Sub[IO, GlobalMsg]
+  ): IO[Unit] =
+    val router: Location => Option[GlobalMsg] = _ => None
+    val runCmd                                = runCommands(_msgQueue)
+    val runSub                                = runSubscriptions(_currentSubs, _msgQueue, dispatcher)
+    val onMsg                                 = postMsg(dispatcher, _msgQueue)
 
     // TODO: Magic number, make it a constant. Isn't there one already somewhere?
-    val processQueued: F[Unit] =
+    val processQueued: IO[Unit] =
       _msgQueue.tryTakeN(Some(256)).flatMap { msgs =>
         msgs.traverse_ { msg =>
           _model
@@ -58,10 +57,10 @@ final class TyrianSDLRuntime[F[_], Model, Msg, View[Msg], ViewState](
         }
       }
 
-    processQueued *> present.draw(dispatcher, _renderer, _model, view, onMsg, router)
+    processQueued *> present.draw(dispatcher, _viewState, _model, view, onMsg, router)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def runCommands[F[_], Msg](msgQueue: Queue[F, Msg])(cmd: Cmd[F, Msg])(using F: Async[F]): F[Unit] =
+  def runCommands[GlobalMsg](msgQueue: Queue[IO, GlobalMsg])(cmd: Cmd[IO, GlobalMsg]): IO[Unit] =
     CmdHelper.cmdToTaskList(cmd).foldMapM { task =>
       task
         .handleError {
@@ -77,11 +76,11 @@ final class TyrianSDLRuntime[F[_], Model, Msg, View[Msg], ViewState](
         .void
     }
 
-  def runSubscriptions[F[_], Msg](
-      currentSubs: AtomicCell[F, List[(String, F[Unit])]],
-      msgQueue: Queue[F, Msg],
-      dispatcher: Dispatcher[F]
-  )(sub: Sub[F, Msg])(using F: Async[F]): F[Unit] =
+  def runSubscriptions[GlobalMsg](
+      currentSubs: AtomicCell[IO, List[(String, IO[Unit])]],
+      msgQueue: Queue[IO, GlobalMsg],
+      dispatcher: Dispatcher[IO]
+  )(sub: Sub[IO, GlobalMsg]): IO[Unit] =
     currentSubs.evalUpdate { oldSubs =>
       val allSubs                 = SubHelper.flatten(sub)
       val (stillAlive, discarded) = SubHelper.aliveAndDead(allSubs, oldSubs)
@@ -99,24 +98,20 @@ final class TyrianSDLRuntime[F[_], Model, Msg, View[Msg], ViewState](
       discarded.foldMapM(_.start.void) *> newSubs.map(_ ++ stillAlive)
     }
 
-  def postMsg[F[_], Msg](dispatcher: Dispatcher[F], msgQueue: Queue[F, Msg]): Msg => Unit =
+  def postMsg[GlobalMsg](dispatcher: Dispatcher[IO], msgQueue: Queue[IO, GlobalMsg]): GlobalMsg => Unit =
     msg => dispatcher.unsafeRunAndForget(msgQueue.offer(msg))
 
 object TyrianSDLRuntime:
 
-  // TODO: Simplify, we know some of these types.
-  def make[F[_], Model, Msg, View[Msg], ViewState](
-      dispatcher: Dispatcher[F],
-      initModel: Model,
-      viewState: ViewState
+  def make[Model](
+      dispatcher: Dispatcher[IO],
+      initModel: Model
   )(using
-      F: Async[F],
-      clock: Clock[F],
-      present: PresentView[View, ViewState]
-  ): F[TyrianSDLRuntime[F, Model, Msg, View, ViewState]] =
+      present: PresentView[Terminal, Unit]
+  ): IO[TyrianSDLRuntime[Model]] =
     for {
-      model       <- F.ref(initModel)
-      currentSubs <- AtomicCell[F].of(List.empty[(String, F[Unit])])
-      msgQueue    <- Queue.unbounded[F, Msg]
-      renderer    <- F.ref(viewState)
-    } yield new TyrianSDLRuntime(dispatcher, model, currentSubs, msgQueue, renderer)
+      model       <- IO.ref(initModel)
+      currentSubs <- AtomicCell[IO].of(List.empty[(String, IO[Unit])])
+      msgQueue    <- Queue.unbounded[IO, GlobalMsg]
+      viewState   <- IO.ref(()) // This is a hangover from the web version
+    } yield new TyrianSDLRuntime(dispatcher, model, currentSubs, msgQueue, viewState)

@@ -47,7 +47,6 @@ final class SDLRuntime private (val ctx: SDLContext, listeners: SDLEventListener
 
 object SDLRuntime:
 
-  // TODO: Makes a singleton, pattern could use review.
   val current: AtomicReference[SDLRuntime] =
     new AtomicReference()
 
