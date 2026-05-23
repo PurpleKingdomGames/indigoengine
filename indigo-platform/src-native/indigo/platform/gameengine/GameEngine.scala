@@ -118,7 +118,6 @@ final class GameEngine[StartUpData, GameModel](
     platform = new NativePlatform(
       engineConfig,
       globalEventStream,
-      // context,
       services.imageService
     )
 
