@@ -2,6 +2,8 @@
 
 set -e
 
+export JAVA_OPTS="-Xss10m -Xmx6G"
+
 ./mill --no-server __.compile
 ./mill --no-server __.reformat
 ./mill --no-server __.compile
@@ -13,6 +15,8 @@ set -e
 ./mill --no-server __.publishLocal
 
 bash diagrams/build.sh
+
+export JAVA_OPTS=""
 
 # Will return when sbt 2.0 supports Scala.js
 
