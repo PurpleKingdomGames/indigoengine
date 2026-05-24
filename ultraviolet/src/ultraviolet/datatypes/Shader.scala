@@ -48,6 +48,19 @@ object Shader:
     inline def toGLSL(inline version: ProgramVersion, inline headers: List[ShaderHeader]): ShaderResult =
       ShaderMacros.toGLSL(ctx, headers, version)
 
+    /** Returns the `ProceduralShader` AST before any version-specific transformers are applied.
+      * Useful for debugging - pair with `ShaderASTPrinter.print` for a readable tree view.
+      */
+    inline def toAST: ProceduralShader =
+      ShaderMacros.toAST(ctx)
+
+    /** Returns the `ProceduralShader` AST after the given version's transformers have been applied.
+      * Useful for debugging - pair with `ShaderASTPrinter.print` for a readable tree view, and compare
+      * against `toAST` to see what the transformers changed.
+      */
+    inline def toASTTransformed(inline version: ProgramVersion): ProceduralShader =
+      ShaderMacros.toASTTransformed(ctx, version)
+
     inline def run(in: In): Out = ctx(in)
 
     inline def map[B](f: Out => B): Shader[In, B]                 = (in: In) => f(ctx.run(in))

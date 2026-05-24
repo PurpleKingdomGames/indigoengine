@@ -71,6 +71,30 @@ object ShaderMacros:
   ): Expr[ProceduralShader] =
     Expr(buildProceduralShader(expr))
 
+  inline def toASTTransformed[In, Out](
+      inline expr: Shader[In, Out],
+      inline version: ProgramVersion
+  ): ProceduralShader =
+    ${ toASTTransformedImpl('{ expr }, '{ version }) }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private[macros] def toASTTransformedImpl[In, Out: Type](
+      expr: Expr[Shader[In, Out]],
+      version: Expr[ProgramVersion]
+  )(using q: Quotes): Expr[ProceduralShader] =
+    import quotes.reflect.*
+
+    val v = version.value.getOrElse {
+      report.errorAndAbort(
+        s"""ProgramVersion must be inline. Try making it an `inline val` or `inline def`.
+        |[Ultraviolet macro, please report if the issue persists.]
+        |version expr: ${version.asTerm.show(using Printer.TreeStructure)}""".stripMargin
+      )
+    }
+
+    val p = buildProceduralShader(expr)
+    Expr(p.applyTransformers(v.transformers))
+
   private[macros] def buildProceduralShader[In, Out: Type](expr: Expr[Shader[In, Out]])(using
       q: Quotes
   ): ProceduralShader = {
