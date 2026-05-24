@@ -1,6 +1,6 @@
 package indigo.core.utils
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 import scala.collection.mutable.Queue
 
 enum LogLevel derives CanEqual:
@@ -17,8 +17,8 @@ object IndigoLogger:
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
-  private val errorLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
-  private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+  private val errorLogs: mutable.HashSet[String] = mutable.HashSet.empty
+  private val debugLogs: mutable.HashSet[String] = mutable.HashSet.empty
 
   private val buffer: Queue[(LogLevel, String)] = Queue.empty[(LogLevel, String)]
 
@@ -49,9 +49,8 @@ object IndigoLogger:
 
   def errorOnce(messages: String*): Unit =
     val msg = messages.toList.mkString(", ")
-    if !errorLogs.contains(msg) then {
-      errorLogs += msg
-      push(LogLevel.Error, formatMessage(ERROR, msg))
+    buffer.synchronized {
+      if errorLogs.add(msg) then push(LogLevel.Error, formatMessage(ERROR, msg))
     }
 
   def debug(messages: String*): Unit =
@@ -59,7 +58,6 @@ object IndigoLogger:
 
   def debugOnce(messages: String*): Unit =
     val msg = messages.toList.mkString(", ")
-    if !debugLogs.contains(msg) then {
-      debugLogs += msg
-      push(LogLevel.Debug, formatMessage(DEBUG, msg))
+    buffer.synchronized {
+      if debugLogs.add(msg) then push(LogLevel.Debug, formatMessage(DEBUG, msg))
     }
