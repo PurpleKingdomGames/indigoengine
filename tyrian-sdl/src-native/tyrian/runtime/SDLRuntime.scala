@@ -31,8 +31,8 @@ final class SDLRuntime private (
     var running    = true
 
     while running do
-      val runningTime        = Millis(System.nanoTime() - startNanos)
-      val runningTimeSeconds = runningTime.toSeconds
+      val runningTime =
+        Millis.fromNanos(System.nanoTime() - startNanos).toSeconds
 
       while SDL_PollEvent(event) != 0 do
         val rawEventType = event.asInstanceOf[Ptr[CStruct1[UInt]]]._1
@@ -42,9 +42,9 @@ final class SDLRuntime private (
 
         listeners.dispatch(msg)
 
-      listeners.dispatch(SDLMsg.Frame(runningTimeSeconds))
+      listeners.dispatch(SDLMsg.Frame(runningTime))
 
-      perTick(ctx, runningTimeSeconds)
+      perTick(ctx, runningTime)
 
       val _ = SDL_GL_SwapWindow(ctx.window)
 
