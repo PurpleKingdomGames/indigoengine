@@ -8,6 +8,9 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 .\mill.bat --no-server -j2 __.reformat
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+.\mill.bat --no-server -j2 __.compile
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 .\mill.bat --no-server -j2 __.fix
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -15,6 +18,9 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 .\mill.bat --no-server -j1 __.fastLinkJSTest
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+.\mill.bat --no-server -j1 __.test.nativeLink
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 .\mill.bat --no-server -j2 __.test
