@@ -6,9 +6,7 @@ import tyrian.GlobalMsg
 import tyrian.Result
 import tyrian.Watcher
 
-// TODO: Can this be merged with the Native version?
-
-/** Extensions are mini-tyrian app's that are mechanically and automatically composed into their parent application.
+/** Extensions are mini-tyrian apps that are mechanically and automatically composed into their parent application.
   *
   * They are the Tyrian version of Indigo's SubSystems.
   */
@@ -23,15 +21,15 @@ sealed trait Extension[GraphicsContext, View]:
   def id: ExtensionId
 
   /** Tells Tyrian how to produce the initial version of the extensions model. Since the result is wrapped in a Result
-    * type, Actions (Cmds) and messages can emited here.
+    * type, Actions (Cmds) and messages can emitted here.
     */
   def init: Result[ExtensionModel]
 
-  /** Updates the extensions model based on incoming msg's and optionally produces side effects.
+  /** Updates the extensions model based on incoming msgs and optionally produces side effects.
     */
   def update(model: ExtensionModel): GlobalMsg => Result[ExtensionModel]
 
-  /** Produces declaritive descriptions of views to be presented.
+  /** Produces declarative descriptions of views to be presented.
     */
   def view(model: ExtensionModel): View
 
