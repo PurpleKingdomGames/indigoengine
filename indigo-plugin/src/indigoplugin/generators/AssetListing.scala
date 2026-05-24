@@ -202,7 +202,9 @@ object AssetListing {
         |${renderedFiles.map(_._2).mkString(",\n")}
         |${indentSpacesNext}  )
         |${indentSpacesNext}def assetSetRelative: Set[AssetType] = assetSetRelativeTo("./")
-        |${indentSpacesNext}def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("$assetFolderParentPath")
+        |${indentSpacesNext}def assetSetAbsolute: Set[AssetType] = assetSetRelativeTo("${escapeStringLiteral(
+            assetFolderParentPath
+          )}")
         |
         |${indentSpacesNext}def assetNameSet: Set[AssetName] =
         |${indentSpacesNext}  Set(
@@ -219,6 +221,9 @@ object AssetListing {
       s"""${indentSpaces}object ${safeFolderName}:
       |${contents}"""
   }
+
+  private def escapeStringLiteral(s: String): String =
+    s.replace("\\", "\\\\").replace("\"", "\\\"")
 
   def toDefaultSafeName(rename: (String, String) => String): (String, String) => String = {
     (name: String, ext: String) =>
