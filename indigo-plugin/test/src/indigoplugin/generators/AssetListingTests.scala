@@ -2,8 +2,8 @@ package indigoplugin.generators
 
 class AssetListingTests extends munit.FunSuite {
 
-  val projectDir  = "/home/some-user/some-project"
-  val projectPath = os.Path(projectDir)
+  val projectPath = os.Path("/home/some-user/some-project")
+  val projectDir  = projectPath.toString.replace("\\", "\\\\").replace("\"", "\\\"")
 
   test("should be able to convert file and folder names into something safe (using default)") {
     def toSafeName(name: String) = AssetListing.toDefaultSafeName((n, _) => n)(name, "")
@@ -162,6 +162,36 @@ class AssetListingTests extends munit.FunSuite {
 
     assertNoDiff(actual.trim, expected.trim)
 
+  }
+
+  test("should escape backslashes in the absolute asset path so the generated Scala compiles on Windows") {
+    val winPath = """C:\Users\someone\project"""
+
+    val tree =
+      AssetListing.convertPathsToTree(List(os.RelPath.rel / "assets" / "a.txt"))
+
+    val actual =
+      AssetListing.renderTree(winPath, 0, AssetListing.toDefaultSafeName((n, _) => n))(tree)
+
+    assert(
+      actual.contains("""assetSetRelativeTo("C:\\Users\\someone\\project")"""),
+      s"Expected escaped Windows path in output, got:\n$actual"
+    )
+  }
+
+  test("should escape embedded double quotes in the absolute asset path") {
+    val weirdPath = """/tmp/has"quote/dir"""
+
+    val tree =
+      AssetListing.convertPathsToTree(List(os.RelPath.rel / "assets" / "a.txt"))
+
+    val actual =
+      AssetListing.renderTree(weirdPath, 0, AssetListing.toDefaultSafeName((n, _) => n))(tree)
+
+    assert(
+      actual.contains("""assetSetRelativeTo("/tmp/has\"quote/dir")"""),
+      s"Expected escaped quote in output, got:\n$actual"
+    )
   }
 
 }
