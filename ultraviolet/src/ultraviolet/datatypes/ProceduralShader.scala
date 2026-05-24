@@ -36,6 +36,8 @@ final case class ProceduralShader(
     val transformFunctions: List[PartialFunction[ShaderAST, ShaderAST]] =
       astTransformers.map {
         case ProgramTransformer.StripUBOPrecisionQualifiers =>
+          // Unreachable as `StripUBOPrecisionQualifiers` has been filtered out above
+          // This case is here to keep the function total.
           PartialFunction.empty[ShaderAST, ShaderAST]
 
         case ProgramTransformer.RenameAnnotation(from, to) => {
