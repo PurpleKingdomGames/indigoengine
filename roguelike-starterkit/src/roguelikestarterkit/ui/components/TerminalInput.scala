@@ -63,7 +63,7 @@ object TerminalInput:
       val bounds = input.bounds(context)
       val size   = (bounds.dimensions + 2).unsafeToSize
 
-      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      if size.width <= 2 || size.height <= 2 then Outcome(Layer.empty)
       else
         val correctedLabel =
           if input.text.length == bounds.width then input.text
