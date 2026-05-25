@@ -1,25 +1,24 @@
 package ultraviolet.utils
 
-import ultraviolet.macros.ShaderMacros
 import ultraviolet.datatypes.ProceduralShader
+import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.datatypes.Shader
 import ultraviolet.datatypes.ShaderAST
 import ultraviolet.datatypes.ShaderAST.*
-import ultraviolet.datatypes.Shader
-import ultraviolet.datatypes.ProgramVersion
+import ultraviolet.macros.ShaderMacros
 
 /** Renders a `ProceduralShader` or `ShaderAST` as an indented tree, intended for debugging.
   *
-  * The output is a multi-line `String` showing the structure of the AST itself (not the GLSL it would
-  * produce - for that, see [[ShaderPrinter]]). Useful in unit tests for `println` inspection or string
-  * matching, and for comparing the AST before and after transformers are applied (see
-  * `Shader.toAST` and `Shader.toASTTransformed`).
+  * The output is a multi-line `String` showing the structure of the AST itself (not the GLSL it would produce - for
+  * that, see [[ShaderPrinter]]). Useful in unit tests for `println` inspection or string matching, and for comparing
+  * the AST before and after transformers are applied (see `Shader.toAST` and `Shader.toASTTransformed`).
   */
 object ShaderASTPrinter:
-  
+
   inline def printAST[In, Out](inline shader: Shader[In, Out]): String =
     val proc = ShaderMacros.toAST(shader)
     print(proc)
-  
+
   inline def printASTTransformed[In, Out](inline shader: Shader[In, Out], inline version: ProgramVersion): String =
     val proc = ShaderMacros.toASTTransformed(shader, version)
     print(proc)
@@ -124,9 +123,9 @@ object ShaderASTPrinter:
         withChildren("For", List(i, c, n, b))
 
       case Switch(on, cases) =>
-        val head    = s"${pad}Switch"
-        val onLine  = render(on, indent + 1)
-        val inner   = "  " * (indent + 1)
+        val head   = s"${pad}Switch"
+        val onLine = render(on, indent + 1)
+        val inner  = "  " * (indent + 1)
         val caseLines = cases.map { case (label, body) =>
           val l = label.fold("default")(_.toString)
           s"$inner case $l:\n${render(body, indent + 2)}"
