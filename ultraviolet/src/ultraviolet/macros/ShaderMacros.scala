@@ -77,7 +77,6 @@ object ShaderMacros:
   ): ProceduralShader =
     ${ toASTTransformedImpl('{ expr }, '{ version }) }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def toASTTransformedImpl[In, Out: Type](
       expr: Expr[Shader[In, Out]],
       version: Expr[ProgramVersion]
