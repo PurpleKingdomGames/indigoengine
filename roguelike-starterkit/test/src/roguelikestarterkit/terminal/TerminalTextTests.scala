@@ -12,7 +12,7 @@ class TerminalTextTests extends munit.FunSuite {
 
     val actual =
       fragment.toGLSL300.code
-    
+
     // val outputAST = ShaderASTPrinter.printAST(fragment)
     // val outputASTTransformed = ShaderASTPrinter.printASTTransformed(fragment, ultraviolet.datatypes.ProgramVersion.GLSL_300)
     // println(actual)
