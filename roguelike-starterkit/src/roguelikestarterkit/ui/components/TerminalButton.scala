@@ -63,7 +63,7 @@ object TerminalButton:
       val bounds = button.bounds(context)
       val size   = bounds.dimensions.unsafeToSize
 
-      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      if size.width <= 2 || size.height <= 2 then Outcome(Layer.empty)
       else
         val txt  = label(context).take(bounds.width - 2)
         val hBar = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
