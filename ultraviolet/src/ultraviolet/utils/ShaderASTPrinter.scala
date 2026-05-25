@@ -53,7 +53,7 @@ object ShaderASTPrinter:
     val pad = "  " * indent
 
     def withChildren(header: String, children: List[ShaderAST]): String =
-      val rendered = children.filterNot(_ => false).map(c => render(c, indent + 1))
+      val rendered = children.map(c => render(c, indent + 1))
       if rendered.isEmpty then s"$pad$header"
       else s"$pad$header\n${rendered.mkString("\n")}"
 
