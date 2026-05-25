@@ -11,7 +11,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
   val gameId: GameId = GameId("roguelike")
 
   def initialScene(bootData: Unit): Option[SceneName] =
-    Option(TerminalUI.name)
+    Option(ColourWindowScene.name)
 
   def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, GameModel]] =
     NonEmptyBatch(
