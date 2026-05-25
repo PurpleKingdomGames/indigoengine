@@ -61,67 +61,70 @@ object TerminalInput:
   ): (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer] =
     (context, input) =>
       val bounds = input.bounds(context)
-      val correctedLabel =
-        if input.text.length == bounds.width then input.text
-        else if input.text.length > bounds.width then input.text.take(bounds.width)
-        else input.text + (List.fill(bounds.width - input.text.length)(" ").mkString)
+      val size   = (bounds.dimensions + 2).unsafeToSize
 
-      val hBar = Batch.fill(correctedLabel.length)(borderTiles.horizontal)
-      val size = (bounds.dimensions + 2).unsafeToSize
+      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      else
+        val correctedLabel =
+          if input.text.length == bounds.width then input.text
+          else if input.text.length > bounds.width then input.text.take(bounds.width)
+          else input.text + (List.fill(bounds.width - input.text.length)(" ").mkString)
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
-          .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
-          .put(Point(0, 2), borderTiles.bottomLeft, fgColor, bgColor)
-          .put(Point(size.width - 1, 2), borderTiles.bottomRight, fgColor, bgColor)
-          .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
-          .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
-          .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
-          .putLine(
-            Point(1, 1),
-            correctedLabel,
-            fgColor,
-            bgColor
-          )
-          .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
+        val hBar = Batch.fill(correctedLabel.length)(borderTiles.horizontal)
 
-      val terminalClones =
-        terminal
-          .toCloneTiles(
-            CloneId(s"input_${charSheet.assetName.toString}"),
-            bounds.coords
-              .toScreenSpace(charSheet.size)
-              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+        val terminal =
+          RogueTerminalEmulator(size)
+            .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
+            .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
+            .put(Point(0, 2), borderTiles.bottomLeft, fgColor, bgColor)
+            .put(Point(size.width - 1, 2), borderTiles.bottomRight, fgColor, bgColor)
+            .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
+            .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
+            .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
+            .putLine(
+              Point(1, 1),
+              correctedLabel,
+              fgColor,
+              bgColor
+            )
+            .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
 
-      val cursor: Batch[SceneNode] =
-        if input.hasFocus then
-          input.cursor.blinkRate match
-            case None =>
-              drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
+        val terminalClones =
+          terminal
+            .toCloneTiles(
+              CloneId(s"input_${charSheet.assetName.toString}"),
+              bounds.coords
+                .toScreenSpace(charSheet.size)
+                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+              charSheet.charCrops
+            ) { case (fg, bg) =>
+              graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+            }
 
-            case Some(blinkRate) =>
-              Signal
-                .Pulse(blinkRate)
-                .map(p =>
-                  if (context.frame.time.running - input.cursor.lastModified < Seconds(0.5)) true
-                  else p
-                )
-                .map {
-                  case false =>
-                    Batch.empty
+        val cursor: Batch[SceneNode] =
+          if input.hasFocus then
+            input.cursor.blinkRate match
+              case None =>
+                drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
 
-                  case true =>
-                    drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
-                }
-                .at(context.frame.time.running)
-        else Batch.empty
+              case Some(blinkRate) =>
+                Signal
+                  .Pulse(blinkRate)
+                  .map(p =>
+                    if (context.frame.time.running - input.cursor.lastModified < Seconds(0.5)) true
+                    else p
+                  )
+                  .map {
+                    case false =>
+                      Batch.empty
 
-      Outcome(Layer.Content(terminalClones).addNodes(cursor))
+                    case true =>
+                      drawCursor(context.parent.coords, input.cursor.position, charSheet, fgColor)
+                  }
+                  .at(context.frame.time.running)
+          else Batch.empty
+
+        Outcome(Layer.Content(terminalClones).addNodes(cursor))
 
   final case class Theme(
       charSheet: CharSheet,
