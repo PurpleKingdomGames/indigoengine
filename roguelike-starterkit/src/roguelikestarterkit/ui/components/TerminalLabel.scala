@@ -24,18 +24,20 @@ object TerminalLabel:
   ): (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer] = { case (context, label) =>
     val size = label.bounds(context).dimensions.unsafeToSize
 
-    val terminal =
-      RogueTerminalEmulator(size)
-        .putLine(Point.zero, label.text(context), fgColor, bgColor)
-        .toCloneTiles(
-          CloneId(s"label_${charSheet.assetName.toString}"),
-          context.parent.coords.toScreenSpace(charSheet.size),
-          charSheet.charCrops
-        ) { case (fg, bg) =>
-          graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-        }
+    if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+    else
+      val terminal =
+        RogueTerminalEmulator(size)
+          .putLine(Point.zero, label.text(context), fgColor, bgColor)
+          .toCloneTiles(
+            CloneId(s"label_${charSheet.assetName.toString}"),
+            context.parent.coords.toScreenSpace(charSheet.size),
+            charSheet.charCrops
+          ) { case (fg, bg) =>
+            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+          }
 
-    Outcome(Layer.Content(terminal))
+      Outcome(Layer.Content(terminal))
   }
 
   /** Creates a Label rendered using the RogueTerminalEmulator based on a `Label.Theme`, with bounds based on the text
