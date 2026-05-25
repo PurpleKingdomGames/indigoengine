@@ -31,8 +31,8 @@ object TerminalWindow:
     val tiles: Batch[(Point, MapTile)] =
       val grey = RGBA.White.mix(RGBA.Black, if context.hasFocus then 0.4 else 0.8)
 
-      (0 to validSize.height).toBatch.flatMap { _y =>
-        (0 to validSize.width).toBatch.map { _x =>
+      (0 until validSize.height).toBatch.flatMap { _y =>
+        (0 until validSize.width).toBatch.map { _x =>
           val maxX   = validSize.width - 1
           val maxY   = validSize.height - 1
           val coords = Point(_x, _y)
