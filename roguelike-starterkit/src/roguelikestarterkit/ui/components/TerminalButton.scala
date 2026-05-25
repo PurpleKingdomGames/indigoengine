@@ -34,21 +34,23 @@ object TerminalButton:
     (context, button) =>
       val size = button.bounds.dimensions.unsafeToSize
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .fill(Tile.` `, fgColor, bgColor)
-          .putTileLine(Point.zero, label(context), fgColor, bgColor)
-          .toCloneTiles(
-            CloneId(s"button_${charSheet.assetName.toString}"),
-            button.bounds.coords
-              .toScreenSpace(charSheet.size)
-              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      else
+        val terminal =
+          RogueTerminalEmulator(size)
+            .fill(Tile.` `, fgColor, bgColor)
+            .putTileLine(Point.zero, label(context), fgColor, bgColor)
+            .toCloneTiles(
+              CloneId(s"button_${charSheet.assetName.toString}"),
+              button.bounds.coords
+                .toScreenSpace(charSheet.size)
+                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+              charSheet.charCrops
+            ) { case (fg, bg) =>
+              graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+            }
 
-      Outcome(Layer.Content(terminal))
+        Outcome(Layer.Content(terminal))
 
   private def presentButtonWithBorder[ReferenceData](
       label: UIContext[ReferenceData] => Batch[Tile],
@@ -59,36 +61,39 @@ object TerminalButton:
   ): (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer] =
     (context, button) =>
       val bounds = button.bounds(context)
-      val txt    = label(context).take(bounds.width - 2)
-      val hBar   = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
       val size   = bounds.dimensions.unsafeToSize
 
-      val terminal =
-        RogueTerminalEmulator(size)
-          .fill(borderTiles.fill, fgColor, bgColor)
-          .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
-          .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
-          .put(Point(0, size.height - 1), borderTiles.bottomLeft, fgColor, bgColor)
-          .put(Point(size.width - 1, size.height - 1), borderTiles.bottomRight, fgColor, bgColor)
-          .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
-          .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
-          .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
-          .putTileLine(Point(1, 1), txt, fgColor, bgColor)
-          .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
+      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      else
+        val txt  = label(context).take(bounds.width - 2)
+        val hBar = Batch.fill(bounds.width - 2)(borderTiles.horizontal)
 
-      val terminalClones =
-        terminal
-          .toCloneTiles(
-            CloneId(s"button_${charSheet.assetName.toString}"),
-            bounds.coords
-              .toScreenSpace(charSheet.size)
-              .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
-            charSheet.charCrops
-          ) { case (fg, bg) =>
-            graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
-          }
+        val terminal =
+          RogueTerminalEmulator(size)
+            .fill(borderTiles.fill, fgColor, bgColor)
+            .put(Point(0, 0), borderTiles.topLeft, fgColor, bgColor)
+            .put(Point(size.width - 1, 0), borderTiles.topRight, fgColor, bgColor)
+            .put(Point(0, size.height - 1), borderTiles.bottomLeft, fgColor, bgColor)
+            .put(Point(size.width - 1, size.height - 1), borderTiles.bottomRight, fgColor, bgColor)
+            .put(Point(0, 1), borderTiles.vertical, fgColor, bgColor)
+            .put(Point(size.width - 1, 1), borderTiles.vertical, fgColor, bgColor)
+            .putTileLine(Point(1, 0), hBar, fgColor, bgColor)
+            .putTileLine(Point(1, 1), txt, fgColor, bgColor)
+            .putTileLine(Point(1, 2), hBar, fgColor, bgColor)
 
-      Outcome(Layer.Content(terminalClones))
+        val terminalClones =
+          terminal
+            .toCloneTiles(
+              CloneId(s"button_${charSheet.assetName.toString}"),
+              bounds.coords
+                .toScreenSpace(charSheet.size)
+                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+              charSheet.charCrops
+            ) { case (fg, bg) =>
+              graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
+            }
+
+        Outcome(Layer.Content(terminalClones))
 
   private def findBounds(labelLength: Int, hasBorder: Boolean): Bounds =
     if hasBorder then Bounds(0, 0, labelLength + 2, 3) else Bounds(0, 0, labelLength, 1)
