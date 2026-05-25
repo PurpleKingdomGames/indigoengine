@@ -2,11 +2,10 @@ package indigoextras.ui.components
 
 import indigo.*
 import indigoextras.ui.component.Component
+import indigoextras.ui.components.datatypes.BoundsType
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
-
-import datatypes.BoundsType
 
 /** The Button `Component` allows you to create buttons for your UI. Buttons also support drag options, and can be used
   * for making things like resizing controls.
@@ -188,7 +187,7 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       (_, _) => Batch.empty,
-      datatypes.BoundsType.Fixed(bounds),
+      BoundsType.Fixed(bounds),
       isDown = false,
       isOver = false,
       dragOptions = DragOptions.default,
@@ -212,7 +211,7 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       (_, _) => Batch.empty,
-      datatypes.BoundsType.Calculated(calculateBounds),
+      BoundsType.Calculated(calculateBounds),
       isDown = false,
       isOver = false,
       dragOptions = DragOptions.default,
@@ -230,10 +229,10 @@ object Button:
       case FrameTick =>
         val newBounds =
           model.boundsType match
-            case datatypes.BoundsType.Fixed(bounds) =>
+            case BoundsType.Fixed(bounds) =>
               bounds
 
-            case datatypes.BoundsType.Calculated(calculate) =>
+            case BoundsType.Calculated(calculate) =>
               calculate(context, ())
 
             case _ =>
@@ -361,15 +360,15 @@ object Button:
         model: Button[ReferenceData]
     ): Button[ReferenceData] =
       model.boundsType match
-        case datatypes.BoundsType.Fixed(bounds) =>
+        case BoundsType.Fixed(bounds) =>
           model.copy(
             bounds = bounds
           )
 
-        case datatypes.BoundsType.Calculated(calculate) =>
-          model
+        case BoundsType.Calculated(calculate) =>
+          model.copy(bounds = calculate(context, ()))
 
-        case datatypes.BoundsType.FillWidth(height, padding) =>
+        case BoundsType.FillWidth(height, padding) =>
           model.copy(
             bounds = Bounds(
               context.parent.bounds.width - padding.left - padding.right,
@@ -377,7 +376,7 @@ object Button:
             )
           )
 
-        case datatypes.BoundsType.FillHeight(width, padding) =>
+        case BoundsType.FillHeight(width, padding) =>
           model.copy(
             bounds = Bounds(
               width,
@@ -385,7 +384,7 @@ object Button:
             )
           )
 
-        case datatypes.BoundsType.Fill(padding) =>
+        case BoundsType.Fill(padding) =>
           model.copy(
             bounds = Bounds(
               context.parent.bounds.width - padding.left - padding.right,
