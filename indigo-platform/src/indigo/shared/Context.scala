@@ -13,63 +13,52 @@ import indigoengine.shared.collections.Batch
 
 /** The Context is the context in which the current frame will be processed.
   *
-  * This is divided into three main areas:
+  * This is divided into two areas:
   *
-  *   1. StartUpData: The data that was passed into the game at the start, and is available globally.
-  *   2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
+  *   1. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
   *      random number generated seeded on the game's running time at the beginning of the frame), and if only frame
   *      values are used, then calls to functions like `updateModel` can be considered referentially transparent.
-  *   3. Services: The services that are available to the game, such as measuring text, finding the bounds of on-screen
+  *   2. Services: The services that are available to the game, such as measuring text, finding the bounds of on-screen
   *      elements, or accessing a long running Random instance. Services are side-effecting, long running, and / or
   *      stateful.
   */
-final class Context[StartUpData](
-    _startUpData: => StartUpData,
+final class Context(
     val frame: Context.Frame,
     val services: Context.Services
 ):
-  lazy val startUpData = _startUpData
 
-  def withStartUpData[B](newStartUpData: B): Context[B] =
-    new Context(newStartUpData, frame, services)
-
-  def modifyStartUpData(modify: StartUpData => StartUpData): Context[StartUpData] =
-    withStartUpData(modify(startUpData))
-
-  def withFrame(newFrame: Context.Frame): Context[StartUpData] =
-    new Context(startUpData, newFrame, services)
-  def modifyFrame(modify: Context.Frame => Context.Frame): Context[StartUpData] =
+  def withFrame(newFrame: Context.Frame): Context =
+    new Context(newFrame, services)
+  def modifyFrame(modify: Context.Frame => Context.Frame): Context =
     withFrame(modify(frame))
 
-  def withServices(newServices: Context.Services): Context[StartUpData] =
-    new Context(startUpData, frame, newServices)
-  def modifyServices(modify: Context.Services => Context.Services): Context[StartUpData] =
+  def withServices(newServices: Context.Services): Context =
+    new Context(frame, newServices)
+  def modifyServices(modify: Context.Services => Context.Services): Context =
     withServices(modify(services))
 
 object Context:
 
-  def initial: Context[Unit] =
-    new Context((), Frame.initial, Services.noop)
+  def initial: Context =
+    new Context(Frame.initial, Services.noop)
 
-  def apply(frame: Frame): Context[Unit] =
-    new Context((), frame, Services.noop)
+  def apply(frame: Frame): Context =
+    new Context(frame, Services.noop)
 
-  def apply(services: Services): Context[Unit] =
-    new Context((), Frame.initial, services)
+  def apply(services: Services): Context =
+    new Context(Frame.initial, services)
 
-  def apply(frame: Frame, services: Services): Context[Unit] =
-    new Context((), frame, services)
+  def apply(frame: Frame, services: Services): Context =
+    new Context(frame, services)
 
-  def apply[StartUpData](
+  def apply(
       gameTime: GameTime,
       dice: Dice,
       inputState: InputState,
       viewport: Size,
-      boundaryLocator: BoundaryLocator,
-      startUpData: StartUpData
-  ): Context[StartUpData] =
+      boundaryLocator: BoundaryLocator
+  ): Context =
     new Context(
-      startUpData,
       Frame(
         dice,
         gameTime,
