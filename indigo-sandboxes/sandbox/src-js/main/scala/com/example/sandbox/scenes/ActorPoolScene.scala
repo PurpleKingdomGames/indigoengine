@@ -29,7 +29,7 @@ object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: ActorSceneModel
   ): GlobalEvent => Outcome[ActorSceneModel] =
     case FrameTick if !model.spawned =>
@@ -91,7 +91,7 @@ object ActorPoolScene extends Scene[SandboxStartupData, SandboxGameModel]:
         }
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: ActorSceneModel
   ): Outcome[SceneUpdateFragment] =
     model.actorSystem.present(context.context, model.target).map { followers =>

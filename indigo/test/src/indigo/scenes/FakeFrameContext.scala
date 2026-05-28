@@ -7,20 +7,20 @@ import indigoengine.shared.datatypes.Seconds
 
 object FakeFrameContext {
 
-  def context(sides: Int): Context[Unit] =
+  def context(sides: Int): Context =
     Context.initial
       .modifyFrame(
         _.withDice(Dice.loaded(sides))
       )
 
-  def context(sides: Int, time: Seconds): Context[Unit] =
+  def context(sides: Int, time: Seconds): Context =
     Context.initial
       .modifyFrame(
         _.withDice(Dice.loaded(sides))
           .withTime(GameTime.is(time))
       )
 
-  def context(sides: Int, time: Seconds, delta: Seconds): Context[Unit] =
+  def context(sides: Int, time: Seconds, delta: Seconds): Context =
     Context.initial
       .modifyFrame(
         _.withDice(Dice.loaded(sides))

@@ -46,7 +46,7 @@ class SceneManager[StartUpData, GameModel](
 
   // Scene delegation
 
-  def updateModel(ctx: Context[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(ctx: Context, model: GameModel): GlobalEvent => Outcome[GameModel] =
     case SceneEvent.First =>
       lastSceneChangeAt = ctx.frame.time.running
 
@@ -173,7 +173,7 @@ class SceneManager[StartUpData, GameModel](
       )
 
   def updateView(
-      ctx: Context[StartUpData],
+      ctx: Context,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     scenes.find(_.name == finderInstance.current.name) match

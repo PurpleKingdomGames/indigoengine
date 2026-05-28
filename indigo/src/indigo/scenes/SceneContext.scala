@@ -13,10 +13,10 @@ import indigoengine.shared.datatypes.Seconds
   * @param context
   *   The normal frame context object that all other fields delegate to.
   */
-final class SceneContext[StartUpData](
+final class SceneContext(
     val sceneName: SceneName,
     val sceneStartTime: Seconds,
-    val context: Context[StartUpData]
+    val context: Context
 ):
   export context.*
 
@@ -26,10 +26,10 @@ final class SceneContext[StartUpData](
   lazy val sceneRunning: Seconds =
     context.frame.time.running - sceneStartTime
 
-  def toContext: Context[StartUpData] =
+  def toContext: Context =
     context
 
 object SceneContext:
 
-  def fromContext[A](sceneName: SceneName, sceneStartTime: Seconds, ctx: Context[A]): SceneContext[A] =
+  def fromContext(sceneName: SceneName, sceneStartTime: Seconds, ctx: Context): SceneContext =
     new SceneContext(sceneName, sceneStartTime, ctx)

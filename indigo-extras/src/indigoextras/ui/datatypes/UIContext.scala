@@ -87,20 +87,20 @@ object UIContext:
       subSystemContext.services
     )
 
-  def apply(ctx: Context[?], magnification: Int): UIContext[Unit] =
+  def apply(ctx: Context, magnification: Int): UIContext[Unit] =
     fromContext(ctx, (), magnification)
 
-  def apply(ctx: Context[?]): UIContext[Unit] =
+  def apply(ctx: Context): UIContext[Unit] =
     fromContext(ctx, (), 1)
 
-  def apply(ctx: SceneContext[?], magnification: Int): UIContext[Unit] =
+  def apply(ctx: SceneContext, magnification: Int): UIContext[Unit] =
     fromSceneContext(ctx, (), magnification)
 
-  def apply(ctx: SceneContext[?]): UIContext[Unit] =
+  def apply(ctx: SceneContext): UIContext[Unit] =
     fromSceneContext(ctx, (), 1)
 
   def fromContext[ReferenceData](
-      ctx: Context[?],
+      ctx: Context,
       reference: ReferenceData,
       magnification: Int
   ): UIContext[ReferenceData] =
@@ -116,7 +116,7 @@ object UIContext:
     )
 
   def fromSceneContext[ReferenceData](
-      ctx: SceneContext[?],
+      ctx: SceneContext,
       reference: ReferenceData,
       magnification: Int
   ): UIContext[ReferenceData] =

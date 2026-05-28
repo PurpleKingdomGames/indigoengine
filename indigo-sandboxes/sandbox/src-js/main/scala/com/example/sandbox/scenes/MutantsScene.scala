@@ -25,7 +25,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
@@ -72,7 +72,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel]:
     }
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

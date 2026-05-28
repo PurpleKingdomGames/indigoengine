@@ -40,7 +40,7 @@ object ColourWindowScene extends Scene[Unit, GameModel]:
     )
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.KEY_O) =>
@@ -78,7 +78,7 @@ object ColourWindowScene extends Scene[Unit, GameModel]:
     )
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

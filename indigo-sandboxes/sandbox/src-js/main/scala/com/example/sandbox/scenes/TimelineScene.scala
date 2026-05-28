@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Dude
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
@@ -10,13 +11,13 @@ import indigo.syntax.animations.*
 
 object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel]:
 
-  type SceneModel = Unit
+  type SceneModel = Dude
 
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def modelLens: Lens[SandboxGameModel, Unit] =
-    Lens.unit
+  def modelLens: Lens[SandboxGameModel, Dude] =
+    Lens.readOnly(_.dude.dude)
 
   def name: SceneName =
     SceneName("timeline")
@@ -25,9 +26,9 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
-      model: Unit
-  ): GlobalEvent => Outcome[Unit] =
+      context: SceneContext,
+      model: Dude
+  ): GlobalEvent => Outcome[Dude] =
     _ => Outcome(model)
 
   val crate: Graphic[Material.ImageEffects] =
@@ -87,10 +88,10 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel]:
       .moveTo(50, 0)
 
   def present(
-      context: SceneContext[SandboxStartupData],
-      model: Unit
+      context: SceneContext,
+      model: Dude
   ): Outcome[SceneUpdateFragment] =
-    val dude = context.startUpData.dude.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
+    val dude = model.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
 
     Outcome(
       SceneUpdateFragment(

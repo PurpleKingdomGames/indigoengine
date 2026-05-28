@@ -53,7 +53,7 @@ object MultipleWindowsScene extends Scene[Unit, GameModel]:
     )
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case WindowEvent.PointerOver(id) =>
@@ -78,7 +78,7 @@ object MultipleWindowsScene extends Scene[Unit, GameModel]:
       Outcome(model)
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

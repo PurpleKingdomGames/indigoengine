@@ -32,7 +32,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: PointersModel
   ): GlobalEvent => Outcome[PointersModel] =
     case e: PointerEvent.Down =>
@@ -52,7 +52,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: PointersModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

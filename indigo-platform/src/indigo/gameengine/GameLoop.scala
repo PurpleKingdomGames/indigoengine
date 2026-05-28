@@ -80,8 +80,7 @@ final class GameLoop[StartUpData, GameModel](
     )
 
     val context =
-      new Context[StartUpData](
-        gameEngine.startUpData,
+      new Context(
         Context.Frame(
           Dice.fromSeconds(gameTime.running),
           gameTime,

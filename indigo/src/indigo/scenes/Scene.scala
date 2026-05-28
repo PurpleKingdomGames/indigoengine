@@ -19,10 +19,10 @@ trait Scene[StartUpData, GameModel] derives CanEqual:
   def eventFilters: EventFilters
   def subSystems: Set[SubSystem[GameModel]]
 
-  def updateModel(context: SceneContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateModel(context: SceneContext, model: SceneModel): GlobalEvent => Outcome[SceneModel]
 
   def present(
-      context: SceneContext[StartUpData],
+      context: SceneContext,
       model: SceneModel
   ): Outcome[SceneUpdateFragment]
 
@@ -30,7 +30,7 @@ object Scene {
 
   def updateModel[SD, GM](
       scene: Scene[SD, GM],
-      context: SceneContext[SD],
+      context: SceneContext,
       gameModel: GM
   ): GlobalEvent => Outcome[GM] =
     e =>
@@ -40,7 +40,7 @@ object Scene {
 
   def updateView[SD, GM](
       scene: Scene[SD, GM],
-      context: SceneContext[SD],
+      context: SceneContext,
       model: GM
   ): Outcome[SceneUpdateFragment] =
     scene.present(context, scene.modelLens.get(model))
@@ -67,13 +67,13 @@ object Scene {
         Set()
 
       def updateModel(
-          context: SceneContext[SD],
+          context: SceneContext,
           model: Unit
       ): GlobalEvent => Outcome[Unit] =
         _ => modelOutcome
 
       def present(
-          context: SceneContext[SD],
+          context: SceneContext,
           model: Unit
       ): Outcome[SceneUpdateFragment] = sceneFragment
     }

@@ -12,11 +12,11 @@ import indigoengine.shared.collections.Batch
 trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
   def subSystemsRegister: SubSystemsRegister[Model]
   def eventFilters: EventFilters
-  def modelUpdate: (Context[StartUpData], Model) => GlobalEvent => Outcome[Model]
-  def viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment]
+  def modelUpdate: (Context, Model) => GlobalEvent => Outcome[Model]
+  def viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment]
 
   def processModel(
-      context: Context[StartUpData],
+      context: Context,
       model: Model,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[Model] =
@@ -30,7 +30,7 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
       }
 
   def processView(
-      context: Context[StartUpData],
+      context: Context,
       model: Model
   ): Outcome[SceneUpdateFragment] =
     Outcome.merge(

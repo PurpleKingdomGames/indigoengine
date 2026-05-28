@@ -278,7 +278,7 @@ object SandboxModelShared:
       )
 
   def updateModel(
-      context: Context[SandboxStartupData],
+      context: Context,
       state: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] = {
     case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
@@ -348,7 +348,7 @@ object SandboxModelShared:
   }
 
   private def updateViewModel(
-      context: Context[SandboxStartupData],
+      context: Context,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] = {
     case FrameTick =>

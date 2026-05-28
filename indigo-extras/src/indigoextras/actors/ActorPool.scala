@@ -18,7 +18,7 @@ final case class ActorPool[ReferenceData, ActorType](
 
   /** Update the actor pool, passing in the model and a standard context. */
   def update(
-      context: Context[?],
+      context: Context,
       model: ReferenceData
   ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
     val nextPool: GlobalEvent => Outcome[Batch[ActorInstance[ReferenceData, ActorType]]] =
@@ -49,7 +49,7 @@ final case class ActorPool[ReferenceData, ActorType](
 
   /** Update the actor pool, passing in the model and a scene context. */
   def update(
-      context: SceneContext[?],
+      context: SceneContext,
       model: ReferenceData
   ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
     update(context.toContext, model)
@@ -62,7 +62,7 @@ final case class ActorPool[ReferenceData, ActorType](
     update(context.toContext, model)
 
   def present(
-      context: Context[?],
+      context: Context,
       model: ReferenceData
   ): Outcome[Batch[SceneNode]] =
     actors
@@ -75,7 +75,7 @@ final case class ActorPool[ReferenceData, ActorType](
       .map(_.flatten)
 
   def present(
-      context: SceneContext[?],
+      context: SceneContext,
       model: ReferenceData
   ): Outcome[Batch[SceneNode]] =
     present(context.toContext, model)

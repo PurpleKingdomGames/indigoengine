@@ -40,7 +40,7 @@ object PerformerPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]
     )
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: PerformerPhysicsSceneModel
   ): GlobalEvent => Outcome[PerformerPhysicsSceneModel] =
     case FrameTick if !model.spawned =>
@@ -70,7 +70,7 @@ object PerformerPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]
       Outcome(model)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: PerformerPhysicsSceneModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

@@ -12,8 +12,8 @@ final case class PerformerContext[ReferenceData](
     frame: Context.Frame,
     services: Context.Services
 ):
-  def toContext: Context[Unit] =
-    new Context[Unit]((), frame, services)
+  def toContext: Context =
+    new Context(frame, services)
 
 object PerformerContext:
 
@@ -21,7 +21,7 @@ object PerformerContext:
       findById: PerformerId => Option[Performer[ReferenceData]],
       findColliderById: PerformerId => Option[Collider[PerformerId]],
       reference: ReferenceData,
-      ctx: Context[?]
+      ctx: Context
   ): PerformerContext[ReferenceData] =
     PerformerContext(findById, findColliderById, reference, ctx.frame, ctx.services)
 
@@ -29,7 +29,7 @@ object PerformerContext:
       findById: PerformerId => Option[Performer[ReferenceData]],
       findColliderById: PerformerId => Option[Collider[PerformerId]],
       reference: ReferenceData,
-      ctx: SceneContext[?]
+      ctx: SceneContext
   ): PerformerContext[ReferenceData] =
     PerformerContext(findById, findColliderById, reference, ctx.frame, ctx.services)
 

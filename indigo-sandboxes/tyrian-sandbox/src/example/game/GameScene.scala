@@ -20,13 +20,13 @@ final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit]:
     Set()
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     val rotateAmount =

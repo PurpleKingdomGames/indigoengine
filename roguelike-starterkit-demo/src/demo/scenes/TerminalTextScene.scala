@@ -23,7 +23,7 @@ object TerminalTextScene extends Scene[Unit, GameModel]:
   val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: SceneContext, model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
 
@@ -37,7 +37,7 @@ object TerminalTextScene extends Scene[Unit, GameModel]:
     |""".stripMargin
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

@@ -28,7 +28,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     case ChangeValue(value) =>
@@ -50,7 +50,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel]:
       } yield model.copy(button = b, scrollPane = s)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
 

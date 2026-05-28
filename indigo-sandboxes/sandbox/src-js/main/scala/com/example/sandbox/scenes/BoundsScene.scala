@@ -26,13 +26,13 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
 
@@ -79,7 +79,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel]:
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed).invert)
 
     val sprite: Sprite[Material.ImageEffects] =
-      context.startUpData.dude.sprite
+      model.dude.dude.sprite
         .scaleBy(2, 2)
         .moveTo(50, 120)
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))

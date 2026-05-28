@@ -22,7 +22,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
@@ -46,7 +46,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel]:
       .moveTo(100, 10)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] = {
 

@@ -30,7 +30,7 @@ object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: ActorPhysicsSceneModel
   ): GlobalEvent => Outcome[ActorPhysicsSceneModel] =
     case FrameTick if !model.spawned =>
@@ -126,7 +126,7 @@ object ActorPoolPhysicsScene extends Scene[SandboxStartupData, SandboxGameModel]
         }
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: ActorPhysicsSceneModel
   ): Outcome[SceneUpdateFragment] =
     model.actorPool.present(context.context, Map.empty).map { zombies =>

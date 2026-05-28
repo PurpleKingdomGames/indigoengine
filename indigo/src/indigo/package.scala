@@ -361,7 +361,7 @@ object aliases:
 
   type BoundaryLocator = indigo.scenegraph.registers.BoundaryLocator
 
-  type Context[StartUpData] = shared.Context[StartUpData]
+  type Context = shared.Context
   val Context: shared.Context.type = shared.Context
 
   type SubSystemContext[ReferenceData] = shared.subsystems.SubSystemContext[ReferenceData]
@@ -576,7 +576,7 @@ object aliases:
   type SceneName = indigo.scenes.SceneName
   val SceneName: indigo.scenes.SceneName.type = indigo.scenes.SceneName
 
-  type SceneContext[StartupData] = indigo.scenes.SceneContext[StartupData]
+  type SceneContext = indigo.scenes.SceneContext
   val SceneContext: indigo.scenes.SceneContext.type = indigo.scenes.SceneContext
 
   type SceneEvent = indigo.scenes.SceneEvent

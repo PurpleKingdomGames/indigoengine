@@ -25,7 +25,7 @@ object TextScene extends Scene[SandboxStartupData, SandboxGameModel] {
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
@@ -33,7 +33,7 @@ object TextScene extends Scene[SandboxStartupData, SandboxGameModel] {
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

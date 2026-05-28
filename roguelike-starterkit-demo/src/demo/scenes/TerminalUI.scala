@@ -26,7 +26,7 @@ object TerminalUI extends Scene[Unit, GameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case GameEvent.Log(message) =>
@@ -43,7 +43,7 @@ object TerminalUI extends Scene[Unit, GameModel]:
       }
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val ctx = UIContext(context.toContext, 1)

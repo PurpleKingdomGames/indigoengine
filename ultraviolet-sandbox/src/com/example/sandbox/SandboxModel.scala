@@ -15,7 +15,7 @@ object SandboxModel {
     )
 
   def updateModel(
-      context: Context[SandboxStartupData],
+      context: Context,
       state: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] = {
     case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
@@ -86,7 +86,7 @@ object SandboxModel {
   }
 
   private def updateViewModel(
-      context: Context[SandboxStartupData],
+      context: Context,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] = {
     case FrameTick =>
