@@ -117,7 +117,7 @@ trait Game[BootData, StartUpData, Model]:
     *
     * @param context
     *   The context the frame should be produced in, including the time, input state, a dice instance, the state of the
-    *   inputs, and a read only reference to your start up data.
+    *   inputs.
     * @param model
     *   The latest version of the model to read from.
     * @return
@@ -131,7 +131,7 @@ trait Game[BootData, StartUpData, Model]:
     *
     * @param context
     *   The context the frame should be produced in, including the time, input state, a dice instance, the state of the
-    *   inputs, and a read only reference to your start up data.
+    *   inputs.
     * @param model
     *   The latest version of the model to read from.
     * @return
