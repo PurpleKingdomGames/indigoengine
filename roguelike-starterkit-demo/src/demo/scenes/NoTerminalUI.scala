@@ -29,7 +29,7 @@ object NoTerminalUI extends Scene[Unit, GameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): GlobalEvent => Outcome[GameModel] =
     case ChangeValue(value) =>
@@ -43,7 +43,7 @@ object NoTerminalUI extends Scene[Unit, GameModel]:
       }
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     model.components

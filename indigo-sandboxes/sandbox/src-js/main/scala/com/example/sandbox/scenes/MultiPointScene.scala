@@ -36,7 +36,7 @@ object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: InputStateModel
   ): GlobalEvent => Outcome[InputStateModel] =
     case e: PenEvent.Move =>
@@ -100,7 +100,7 @@ object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel]:
   val globalMagnificationLevel = 2
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: InputStateModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

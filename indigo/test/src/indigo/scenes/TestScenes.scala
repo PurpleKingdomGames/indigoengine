@@ -42,13 +42,13 @@ final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel] {
 
   val subSystems: Set[SubSystem[TestGameModel]] = Set()
 
-  def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateModel(context: SceneContext, sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ =>
       // println(s"A - before: ${sceneModel.count}, after: ${sceneModel.count + 1}")
       Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       sceneModel: TestSceneModelA
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
@@ -82,13 +82,13 @@ final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel] {
 
   val subSystems: Set[SubSystem[TestGameModel]] = Set()
 
-  def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateModel(context: SceneContext, sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ =>
       // println(s"B - before: ${sceneModel.count}, after: ${sceneModel.count + 10}")
       Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       sceneModel: TestSceneModelB
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

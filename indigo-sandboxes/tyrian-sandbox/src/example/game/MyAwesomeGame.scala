@@ -32,7 +32,7 @@ final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit
     Outcome(Startup.Success(()))
 
   def updateModel(
-      context: Context[Unit],
+      context: Context,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     case ExchangeEvents.IndigoToLog(gameId, msg) if gameId == id =>
@@ -48,7 +48,7 @@ final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit
       Outcome(model)
 
   def present(
-      context: Context[Unit],
+      context: Context,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

@@ -20,7 +20,7 @@ trait PhysicsScene extends Scene[Unit, Model]:
     Set()
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       world: World[MyTag]
   ): GlobalEvent => Outcome[World[MyTag]] =
     case FrameTick =>
@@ -30,7 +30,7 @@ trait PhysicsScene extends Scene[Unit, Model]:
       Outcome(world)
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       world: World[MyTag]
   ): Outcome[SceneUpdateFragment] =
     View.present(world)

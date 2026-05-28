@@ -34,13 +34,13 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
     Outcome(SandboxModel.initialModel)
 
   def updateModel(
-      context: Context[SandboxStartupData],
+      context: Context,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     case _ => Outcome(model)
 
   def present(
-      context: Context[SandboxStartupData],
+      context: Context,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

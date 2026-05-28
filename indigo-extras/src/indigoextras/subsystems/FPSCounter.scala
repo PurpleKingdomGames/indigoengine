@@ -25,7 +25,7 @@ import indigoengine.shared.datatypes.Seconds
 
 final case class FPSCounter[Model](
     id: SubSystemId,
-    place: (Context[Unit], Size) => Point,
+    place: (Context, Size) => Point,
     targetFPS: Option[FPS],
     layerKey: Option[LayerKey],
     fontKey: FontKey,
@@ -36,7 +36,7 @@ final case class FPSCounter[Model](
   type ReferenceData  = Unit
 
   def withPlaceFunction(
-      place: (Context[Unit], Size) => Point
+      place: (Context, Size) => Point
   ): FPSCounter[Model] =
     copy(place = place)
 
@@ -45,7 +45,7 @@ final case class FPSCounter[Model](
   def moveTo(x: Int, y: Int): FPSCounter[Model] =
     moveTo(Point(x, y))
 
-  def placeAt(location: (Context[Unit], Size) => Point): FPSCounter[Model] =
+  def placeAt(location: (Context, Size) => Point): FPSCounter[Model] =
     withPlaceFunction(place = location)
 
   def withTargetFPS(targetFPS: FPS): FPSCounter[Model] =
@@ -154,7 +154,7 @@ object FPSCounter:
 
   val DefaultId: SubSystemId = SubSystemId("[indigo_FPSCounter_subsystem]")
 
-  private val defaultPlaceFunction: (Context[Unit], Size) => Point =
+  private val defaultPlaceFunction: (Context, Size) => Point =
     (_, _) => Point(0, 0)
 
   def apply[Model](fontKey: FontKey, fontAsset: AssetName): FPSCounter[Model] =
@@ -205,12 +205,12 @@ object FPSCounter:
   final case class Move(to: Point) extends GlobalEvent
 
 final case class FPSCounterState(
-    placeFunction: (Context[Unit], Size) => Point,
+    placeFunction: (Context, Size) => Point,
     bounds: Rectangle,
     fps: Int,
     lastInterval: Seconds,
     frameCountSinceInterval: Int
 )
 object FPSCounterState:
-  def initial(place: (Context[Unit], Size) => Point): FPSCounterState =
+  def initial(place: (Context, Size) => Point): FPSCounterState =
     FPSCounterState(place, Rectangle.zero, 0, Seconds.zero, 0)

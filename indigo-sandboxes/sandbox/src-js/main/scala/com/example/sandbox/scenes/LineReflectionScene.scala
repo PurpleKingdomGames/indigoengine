@@ -26,7 +26,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       rotation: Radians
   ): GlobalEvent => Outcome[Radians] =
     case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
@@ -56,7 +56,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Math.round(d * 100.0) / 100.0
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       rotation: Radians
   ): Outcome[SceneUpdateFragment] =
 

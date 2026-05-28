@@ -15,18 +15,18 @@ final class GameFrameProcessor[StartUpData, Model](
     val subSystemsRegister: SubSystemsRegister[Model],
     val sceneManager: SceneManager[StartUpData, Model],
     val eventFilters: EventFilters,
-    val modelUpdate: (Context[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    val _viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment]
+    val modelUpdate: (Context, Model) => GlobalEvent => Outcome[Model],
+    val _viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment]
 ) extends FrameProcessor[StartUpData, Model]
     with StandardFrameProcessorFunctions[StartUpData, Model, Unit]:
 
-  def viewUpdate: (Context[StartUpData], Model) => Outcome[SceneUpdateFragment] =
+  def viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment] =
     (ctx, m) => _viewUpdate(ctx, m)
 
   def run(
       model: => Model,
       globalEvents: Batch[GlobalEvent],
-      context: => Context[StartUpData]
+      context: => Context
   ): Outcome[(Model, SceneUpdateFragment)] = {
 
     val processSceneView: Model => Outcome[SceneUpdateFragment] = m =>
@@ -46,7 +46,7 @@ final class GameFrameProcessor[StartUpData, Model](
   }
 
   def processSceneModel(
-      context: Context[StartUpData],
+      context: Context,
       model: Model,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[Model] =
@@ -60,7 +60,7 @@ final class GameFrameProcessor[StartUpData, Model](
       }
 
   def processSubSystems(
-      context: Context[StartUpData],
+      context: Context,
       model: Model,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[Unit] =

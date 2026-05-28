@@ -39,7 +39,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     case PointerEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
@@ -87,7 +87,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
       Outcome(model)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     val screenshotScale = 0.3

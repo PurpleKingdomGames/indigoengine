@@ -23,7 +23,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
@@ -46,7 +46,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel]:
     )
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(

@@ -21,7 +21,7 @@ object LightingScene extends Scene[Unit, GameModel]:
   val subSystems: Set[SubSystem[GameModel]] =
     Set()
 
-  def updateModel(context: SceneContext[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: SceneContext, model: GameModel): GlobalEvent => Outcome[GameModel] =
     case _ =>
       Outcome(model)
 
@@ -50,7 +50,7 @@ object LightingScene extends Scene[Unit, GameModel]:
     Graphic(10, 10, material)
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     val tiles =

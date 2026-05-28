@@ -81,10 +81,10 @@ final class PerfGame extends Game[Unit, Dude, DudeModel]:
     Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
   }
 
-  def updateModel(context: Context[Dude], model: DudeModel): GlobalEvent => Outcome[DudeModel] =
+  def updateModel(context: Context, model: DudeModel): GlobalEvent => Outcome[DudeModel] =
     PerfModel.updateModel(model)
 
-  def present(context: Context[Dude], model: DudeModel): Outcome[SceneUpdateFragment] =
+  def present(context: Context, model: DudeModel): Outcome[SceneUpdateFragment] =
     Outcome(PerfView.updateView(model))
 
 object PerfGame:

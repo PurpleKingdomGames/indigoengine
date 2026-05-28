@@ -124,7 +124,7 @@ trait Game[BootData, StartUpData, Model]:
     *   A function that maps GlobalEvent's to the next version of your model, and encapsulates failures or resulting
     *   events within the Outcome wrapper.
     */
-  def updateModel(context: Context[StartUpData], model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: Context, model: Model): GlobalEvent => Outcome[Model]
 
   /** A pure function for presenting your game. The result is a side effect free declaration of what you intend to be
     * presented to the player next.
@@ -138,7 +138,7 @@ trait Game[BootData, StartUpData, Model]:
     *   A function that produces a description of what to present next, and encapsulates failures or resulting events
     *   within the Outcome wrapper.
     */
-  def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
+  def present(context: Context, model: Model): Outcome[SceneUpdateFragment]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _push: Option[EmitGlobalEvent] = None
@@ -393,7 +393,7 @@ object Game:
       )
 
     final def updateModel(
-        context: Context[ShaderPlayground.Channels],
+        context: Context,
         model: ShaderPlayground.Model
     ): GlobalEvent => Outcome[ShaderPlayground.Model] = {
       case ViewportResize(size) =>
@@ -407,7 +407,7 @@ object Game:
     }
 
     final def present(
-        context: Context[ShaderPlayground.Channels],
+        context: Context,
         model: ShaderPlayground.Model
     ): Outcome[SceneUpdateFragment] =
       Outcome(

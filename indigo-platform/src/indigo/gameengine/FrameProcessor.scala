@@ -10,5 +10,5 @@ trait FrameProcessor[StartUpData, Model]:
   def run(
       model: => Model,
       globalEvents: Batch[GlobalEvent],
-      context: => Context[StartUpData]
+      context: => Context
   ): Outcome[(Model, SceneUpdateFragment)]

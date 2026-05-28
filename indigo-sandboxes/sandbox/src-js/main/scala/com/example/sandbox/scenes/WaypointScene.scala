@@ -27,7 +27,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SceneModel
   ): GlobalEvent => Outcome[SceneModel] =
     _ => Outcome(model)
@@ -151,7 +151,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel]:
     )
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SceneModel
   ): Outcome[SceneUpdateFragment] =
 

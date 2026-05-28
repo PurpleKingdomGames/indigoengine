@@ -57,7 +57,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(bootData))
 
-  def updateModel(context: Context[Unit], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(context: Context, model: GameModel): GlobalEvent => Outcome[GameModel] =
     case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
       Outcome(model).addGlobalEvents(SceneEvent.LoopPrevious)
 
@@ -74,7 +74,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
       Outcome(model)
 
   def present(
-      context: Context[Unit],
+      context: Context,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

@@ -59,7 +59,7 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel]:
     )
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     case KeyboardEvent.KeyUp(Key.KEY_Q) =>
@@ -78,7 +78,7 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel]:
       Outcome(model)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

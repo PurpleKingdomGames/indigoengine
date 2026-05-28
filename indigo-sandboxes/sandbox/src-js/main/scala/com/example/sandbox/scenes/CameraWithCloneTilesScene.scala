@@ -24,7 +24,7 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
@@ -44,7 +44,7 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
     }.toBatch
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(

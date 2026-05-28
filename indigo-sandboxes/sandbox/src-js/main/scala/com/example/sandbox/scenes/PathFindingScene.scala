@@ -36,7 +36,7 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SceneModel
   ): GlobalEvent => Outcome[SceneModel] =
 
@@ -55,7 +55,7 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel]:
     case _ => Outcome(model)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SceneModel
   ): Outcome[SceneUpdateFragment] =
 

@@ -9,22 +9,22 @@ final case class ActorContext[ReferenceData, ActorType](
     frame: Context.Frame,
     services: Context.Services
 ):
-  def toContext: Context[Unit] =
-    new Context[Unit]((), frame, services)
+  def toContext: Context =
+    new Context(frame, services)
 
 object ActorContext:
 
   def apply[ReferenceData, ActorType](
       find: (ActorType => Boolean) => Option[ActorType],
       reference: ReferenceData,
-      ctx: Context[?]
+      ctx: Context
   ): ActorContext[ReferenceData, ActorType] =
     ActorContext(find, reference, ctx.frame, ctx.services)
 
   def apply[ReferenceData, ActorType](
       find: (ActorType => Boolean) => Option[ActorType],
       reference: ReferenceData,
-      ctx: SceneContext[?]
+      ctx: SceneContext
   ): ActorContext[ReferenceData, ActorType] =
     ActorContext(find, reference, ctx.frame, ctx.services)
 

@@ -25,7 +25,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
@@ -33,7 +33,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel]:
   val label: String => Text[Material.ImageEffects] = lbl => Text(lbl, Fonts.fontKey, SandboxAssets.fontMaterial)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(

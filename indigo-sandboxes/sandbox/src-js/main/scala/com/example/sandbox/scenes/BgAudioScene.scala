@@ -27,7 +27,7 @@ object BgAudioScene extends Scene[SandboxStartupData, SandboxGameModel]:
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     case _ => Outcome(model)
@@ -36,7 +36,7 @@ object BgAudioScene extends Scene[SandboxStartupData, SandboxGameModel]:
     SandboxAssets.fontMaterial.toBitmap
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome(

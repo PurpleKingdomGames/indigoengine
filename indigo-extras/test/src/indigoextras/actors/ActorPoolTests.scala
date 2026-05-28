@@ -53,7 +53,7 @@ class ActorPoolTests extends munit.FunSuite {
   test("update") {
     val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
 
-    val ctx: Context[Unit] =
+    val ctx: Context =
       Context.initial
 
     val updatedPool = actorPool.update(ctx, ())(FrameTick)
@@ -64,7 +64,7 @@ class ActorPoolTests extends munit.FunSuite {
   test("present") {
     val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
 
-    val ctx: Context[Unit] =
+    val ctx: Context =
       Context.initial
 
     val presented = actorPool.present(ctx, ())

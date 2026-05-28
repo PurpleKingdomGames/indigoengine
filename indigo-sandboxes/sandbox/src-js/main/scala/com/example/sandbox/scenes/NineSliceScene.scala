@@ -23,7 +23,7 @@ object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel] {
     Set()
 
   def updateModel(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
@@ -34,7 +34,7 @@ object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel] {
   def boxSize(t: Seconds): Int = Signal.SmoothPulse.map(d => (d * 64) + 32).map(_.toInt).at(t)
 
   def present(
-      context: SceneContext[SandboxStartupData],
+      context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] = {
     val boxSizeValue: Int = boxSize(context.frame.time.running)

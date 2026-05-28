@@ -20,7 +20,7 @@ object LoadScene extends Scene[Unit, Model]:
     Set()
 
   def updateModel(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
@@ -31,7 +31,7 @@ object LoadScene extends Scene[Unit, Model]:
       Outcome(model)
 
   def present(
-      context: SceneContext[Unit],
+      context: SceneContext,
       model: Unit
   ): Outcome[SceneUpdateFragment] =
     val tb =
