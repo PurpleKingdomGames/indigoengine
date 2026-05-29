@@ -13,6 +13,7 @@ null/
 out
 publish.sh
 credentials.sh
+credentials-cleanup.sh
 
 # sbt specific
 sbt
