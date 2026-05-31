@@ -50,29 +50,37 @@ object syntax:
     def timeout(duration: Seconds, msg: GlobalMsg): Watcher =
       timeout(duration.toMillis, msg, "[tyrian-watcher-timeout] " + duration.toMillis.toString + msg.toString)
 
-    /** Creates a watcher that repeatedly emits messages at regular intervals. */
-    def every(interval: Millis, id: String, toMsg: Millis => GlobalMsg): Watcher =
-      Watcher.fromSub {
-        val f: js.Date => GlobalMsg =
-          dt => toMsg(Millis(dt.getTime().toLong))
-
+    /** Creates a watcher that repeatedly emits the current date at regular intervals. */
+    def fromDate(interval: Millis, id: String, toMsg: js.Date => GlobalMsg): Watcher =
+      Watcher.fromSub(
         SubJsOps
           .every[IO](FiniteDuration(interval.toLong, TimeUnit.MILLISECONDS), id)
-          .map(f)
-      }
+          .map(toMsg)
+      )
+
+    /** Creates a watcher that repeatedly emits the current date at regular intervals. */
+    def fromDate(interval: Seconds, id: String, toMsg: js.Date => GlobalMsg): Watcher =
+      Watcher.fromSub(
+        SubJsOps
+          .every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id)
+          .map(toMsg)
+      )
+
+    /** Creates a watcher that repeatedly emits the current date at regular intervals. */
+    def fromDate(interval: Millis, toMsg: js.Date => GlobalMsg): Watcher =
+      fromDate(interval, "[tyrian-watcher-from-date] " + interval.toString, toMsg)
+
+    /** Creates a watcher that repeatedly emits the current date at regular intervals. */
+    def fromDate(interval: Seconds, toMsg: js.Date => GlobalMsg): Watcher =
+      fromDate(interval, "[tyrian-watcher-from-date] " + interval.toMillis.toString, toMsg)
+
+    /** Creates a watcher that repeatedly emits messages at regular intervals. */
+    def every(interval: Millis, id: String, toMsg: Millis => GlobalMsg): Watcher =
+      fromDate(interval, id, dt => toMsg(Millis(dt.getTime().toLong)))
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
     def every(interval: Seconds, id: String, toMsg: Seconds => GlobalMsg): Watcher =
-      Watcher.fromSub {
-        val f: js.Date => GlobalMsg =
-          dt =>
-            val s: Double = dt.getTime() / 1000
-            toMsg(Seconds(s))
-
-        SubJsOps
-          .every[IO](FiniteDuration(interval.toMillis.toLong, TimeUnit.MILLISECONDS), id)
-          .map(f)
-      }
+      fromDate(interval, id, dt => toMsg(Seconds(dt.getTime() / 1000)))
 
     /** Creates a watcher that repeatedly emits messages at regular intervals. */
     def every(interval: Millis, toMsg: Millis => GlobalMsg): Watcher =
