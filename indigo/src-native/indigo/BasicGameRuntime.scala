@@ -2,7 +2,6 @@ package indigo
 
 import indigo.*
 import tyrian.*
-import tyrian.extensions.Extension
 
 // TODO: How far away is this from the JS version?
 

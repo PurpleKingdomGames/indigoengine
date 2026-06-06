@@ -2,9 +2,9 @@ package tyrian
 
 import cats.effect.IO
 import indigoengine.shared.datatypes.*
-import scala.scalajs.js
-
 import tyrian.syntax.*
+
+import scala.scalajs.js
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.var"))
 class WatcherJsTests extends munit.CatsEffectSuite {

@@ -7,7 +7,6 @@ import tyrian.GlobalMsg
 import tyrian.SDLApp
 import tyrian.SDLMsg
 import tyrian.SDLWatcher.*
-import tyrian.extensions.Extension
 import tyrian.platform.Cmd
 
 object SandboxNativeSDL extends SDLApp[SandboxModel]:

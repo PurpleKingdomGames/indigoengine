@@ -11,7 +11,8 @@ object aliases:
 
   // Extensions
 
-  type Extension = tyrian.extensions.Extension
+  type Extension[GraphicsContext, View] = tyrian.extensions.Extension[GraphicsContext, View]
+  val Extension: tyrian.extensions.Extension.type = tyrian.extensions.Extension
 
   type ExtensionId = tyrian.extensions.ExtensionId
   val ExtensionId: tyrian.extensions.ExtensionId.type = tyrian.extensions.ExtensionId

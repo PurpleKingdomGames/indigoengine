@@ -11,8 +11,6 @@ import indigo.internal.services.NativeGamepadInputService
 import indigo.internal.services.NativeImageService
 import indigo.platform.IndigoCoreServices
 import tyrian.*
-import tyrian.extensions.Extension
-import tyrian.extensions.ExtensionId
 
 final case class Indigo(
     extensionId: ExtensionId,

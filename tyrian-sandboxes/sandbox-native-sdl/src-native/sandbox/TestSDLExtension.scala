@@ -3,7 +3,6 @@ package sandbox
 import indigoengine.sdl.facades.gl.GL.*
 import indigoengine.sdl.facades.gl.GLConstants.*
 import tyrian.*
-import tyrian.extensions.Extension
 
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*

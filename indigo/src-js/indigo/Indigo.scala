@@ -18,8 +18,6 @@ import indigo.render.webgl2.ContextAndSize
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import tyrian.*
-import tyrian.extensions.Extension
-import tyrian.extensions.ExtensionId
 import tyrian.ui.Canvas
 import tyrian.ui.Extent
 import tyrian.ui.theme.Theme
