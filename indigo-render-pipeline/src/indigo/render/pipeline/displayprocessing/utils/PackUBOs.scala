@@ -37,25 +37,39 @@ object PackUBOs:
             rowUsed = 0
           appendBatch(buf, p.toBatch)
         else
-          val primLen = p.length
+          p match
+            case v: ShaderPrimitive.vec3 =>
+              // std140: vec3 has 16-byte alignment but 12-byte size, so a
+              // following scalar packs into the unused 4th component.
+              if rowUsed > 0 then
+                while rowUsed < 4 do
+                  buf.append(0.0f)
+                  rowUsed += 1
+              buf.append(v.x)
+              buf.append(v.y)
+              buf.append(v.z)
+              rowUsed = 3
 
-          // std140: vec2 must not straddle a 16-byte boundary
-          if rowUsed == 1 && primLen == 2 then
-            buf.append(0.0f)
-            rowUsed = 2
+            case _ =>
+              val primLen = p.length
 
-          // Primitive doesn't fit in current row
-          if rowUsed + primLen > 4 then
-            // Pad remaining row; rowUsed == 0 handles large primitives like mat4
-            if rowUsed > 0 then
-              while rowUsed < 4 do
+              // std140: vec2 must not straddle a 16-byte boundary
+              if rowUsed == 1 && primLen == 2 then
                 buf.append(0.0f)
-                rowUsed += 1
-            appendBatch(buf, p.toBatch)
-            rowUsed = primLen % 4
-          else
-            appendBatch(buf, p.toBatch)
-            rowUsed += primLen
+                rowUsed = 2
+
+              // Primitive doesn't fit in current row
+              if rowUsed + primLen > 4 then
+                // Pad remaining row; rowUsed == 0 handles large primitives like mat4
+                if rowUsed > 0 then
+                  while rowUsed < 4 do
+                    buf.append(0.0f)
+                    rowUsed += 1
+                appendBatch(buf, p.toBatch)
+                rowUsed = primLen % 4
+              else
+                appendBatch(buf, p.toBatch)
+                rowUsed += primLen
 
       // Pad final partial row
       if rowUsed > 0 && rowUsed < 4 then

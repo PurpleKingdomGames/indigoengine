@@ -28,8 +28,7 @@ class PackUBOsTests extends munit.FunSuite {
     val expected: Array[Float] =
       Array[Array[Float]](
         Array[Float](1, 2, 0, 0),
-        Array[Float](3, 4, 5, 0),
-        Array[Float](6, 0, 0, 0),
+        Array[Float](3, 4, 5, 6),
         Array[Float](7, 8, 0, 0, 9, 10, 0, 0, 11, 12, 0, 0, 0, 0, 0, 0),
         Array[Float](13, 0, 0, 0)
       ).flatten
@@ -258,11 +257,73 @@ class PackUBOsTests extends munit.FunSuite {
     assertEquals(actual.toList, List[Float](1, 2, 3, 4))
   }
 
-  test("vec3 then float starts new row") {
+  test("vec3 then float packs into 4th slot") {
     import indigo.shaders.ShaderPrimitive._
     val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3), Uniform("b") -> float(4))
     val actual   = PackUBOs.packUBO(uniforms, "", true)
-    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 0, 0, 0))
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4))
+  }
+
+  test("vec3 then float then float - second float starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> vec3(1, 2, 3),
+      Uniform("b") -> float(4),
+      Uniform("c") -> float(5)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 4, 5, 0, 0, 0))
+  }
+
+  test("vec3 then vec2 - vec2 starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3), Uniform("b") -> vec2(4, 5))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 5, 0, 0))
+  }
+
+  test("vec3 then vec3 - each on its own row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3), Uniform("b") -> vec3(4, 5, 6))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 5, 6, 0))
+  }
+
+  test("vec3 then vec4 - vec4 starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> vec3(1, 2, 3), Uniform("b") -> vec4(4, 5, 6, 7))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 5, 6, 7))
+  }
+
+  test("three floats then vec2 - vec2 does not straddle, starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(
+      Uniform("a") -> float(1),
+      Uniform("b") -> float(2),
+      Uniform("c") -> float(3),
+      Uniform("d") -> vec2(4, 5)
+    )
+    val actual = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 2, 3, 0, 4, 5, 0, 0))
+  }
+
+  test("float then vec4 - vec4 starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val uniforms = Batch(Uniform("a") -> float(1), Uniform("b") -> vec4(2, 3, 4, 5))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(actual.toList, List[Float](1, 0, 0, 0, 2, 3, 4, 5))
+  }
+
+  test("mat4 then float - float starts new row") {
+    import indigo.shaders.ShaderPrimitive._
+    val data     = Batch.fromList((1 to 16).map(_.toFloat).toList)
+    val uniforms = Batch(Uniform("a") -> mat4(data), Uniform("b") -> float(17))
+    val actual   = PackUBOs.packUBO(uniforms, "", true)
+    assertEquals(
+      actual.toList,
+      (1 to 16).map(_.toFloat).toList ++ List[Float](17, 0, 0, 0)
+    )
   }
 
   test("float then vec3 - float pads, vec3 gets own row") {

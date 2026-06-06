@@ -60,7 +60,7 @@ object CanvasAndContext:
       throw new Exception("WebGL 2.0 required by indigo game. This browser does not appear to support WebGL 2.0.")
     else if (!isWebGL2ReallySupported(gl2))
       throw new Exception(
-        "WebGL 2.0 required by indigo game. This browser claims to support WebGL 2.0, but does not meet indigo's requirements."
+        s"This browser supports WebGL 2.0, but does not meet Indigo's requirements."
       )
     else {
       IndigoLogger.info("Using WebGL 2.0")
