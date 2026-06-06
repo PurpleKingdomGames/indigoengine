@@ -35,6 +35,9 @@ object aliases:
   type HtmlEntity = tyrian.HtmlEntity
   val HtmlEntity: tyrian.HtmlEntity.type = tyrian.HtmlEntity
 
+  type Style = tyrian.Style
+  val Style: tyrian.Style.type = tyrian.Style
+
   // -- platform aliases
 
   type Cmd[F[_], Msg] = tyrian.platform.Cmd[F, Msg]
