@@ -2,7 +2,7 @@
 
 All efforts to contribute to Indigo are welcome and encouraged, as the project can only be better with more eyes looking for problems and more minds trying to solve them.
 
-All contributions must be in-line with our code of conduct.
+All contributions must be in line with our code of conduct.
 
 Ways to contribute:
 
@@ -63,7 +63,7 @@ As long as the PR genuinely adds value, even if it is a little random, we'll try
 
 ### AI usage
 
-This project was started long before AI coding assistants appeared, and so is not vibe coded, however the authors of this project do now use AI tools to _assist_ in it's development. As such, it would be hypocritical of us to reject contributions that have had AI assistance, and frankly, spotting AI produced code can be difficult.
+This project was started long before AI coding assistants appeared, and so is not "vibe coded", however the authors of this project do now use AI tools to _assist_ in its development. As such, it would be hypocritical of us to reject contributions that have had AI assistance, and frankly, spotting AI produced code can be difficult.
 
 The tricky part is that we have all the time in the world for human contributors who are trying their best, happy to help and grateful for your time investment, but very little patience for AI generated code that doesn't hit the mark.
 
