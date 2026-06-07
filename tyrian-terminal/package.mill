@@ -1,4 +1,4 @@
-package build.tyrian
+package build.`tyrian-terminal`
 
 import mill.*
 import mill.scalalib.*
@@ -6,7 +6,6 @@ import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
 import mill.scalajslib.*
 
-import build.SharedJS
 import build.SharedJVM
 import build.SharedNative
 import build.SharedPublish
@@ -14,26 +13,14 @@ import build.Dependencies
 
 object `package` extends Module:
 
-  object js extends SharedJS, PlatformScalaModule, SharedPublish:
-
-    def moduleDeps = Seq(
-      build.`tyrian-shared`.js,
-      build.`tyrian-tags`.js,
-      build.`indigoengine-webgl2-facades`.js
-    )
-
-    def mvnDeps = Seq(
-      mvn"io.github.buntec::scala-js-snabbdom::${Dependencies.scalajsSnabbdom}"
-    )
-
   object jvm extends SharedJVM, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`tyrian-terminal`.jvm
+      build.`tyrian-shared`.jvm
     )
 
   object native extends SharedNative, PlatformScalaModule, SharedPublish:
 
     def moduleDeps = Seq(
-      build.`tyrian-terminal`.native
+      build.`tyrian-shared`.native
     )

@@ -1,7 +1,6 @@
 package tyrian
 
 import indigoengine.shared.collections.Batch
-import tyrian.syntax.*
 
 import Result.*
 
@@ -48,7 +47,7 @@ class ResultTests extends munit.FunSuite {
       )
 
     val actual: Result[List[Int]] =
-      l.sequence
+      Result.sequenceList(l)
 
     val expected: Result[List[Int]] =
       Result(List(1, 2, 3))
@@ -67,7 +66,7 @@ class ResultTests extends munit.FunSuite {
       )
 
     val actual: Result[List[Int]] =
-      l.sequence
+      Result.sequenceList(l)
 
     val expected: Result[List[Int]] =
       Result(List(1, 2, 3))
@@ -313,7 +312,7 @@ class ResultTests extends munit.FunSuite {
     assertEquals(actual2.unsafeActions, expected.unsafeActions)
   }
 
-  // Error handline
+  // Error handling
 
   def errorsMatch[A](actual: Result[A], expected: Result[A]): Boolean =
     (actual, expected) match {
@@ -440,7 +439,7 @@ class ResultTests extends munit.FunSuite {
     val e = new Exception("Boom!")
 
     val actual =
-      Option(123).toResult(e)
+      Result.fromOption(Option(123), e)
 
     val expected =
       Result[Int](123)
@@ -453,7 +452,7 @@ class ResultTests extends munit.FunSuite {
     val e = new Exception("Boom!")
 
     val actual =
-      Option.empty[Int].toResult(e)
+      Result.fromOption(Option.empty[Int], e)
 
     val expected =
       Result.Error(e)

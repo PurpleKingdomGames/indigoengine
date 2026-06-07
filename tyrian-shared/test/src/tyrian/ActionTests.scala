@@ -2,6 +2,7 @@ package tyrian
 
 import cats.effect.IO
 import cats.syntax.all.*
+import indigoengine.shared.datatypes.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 class ActionTests extends munit.CatsEffectSuite {

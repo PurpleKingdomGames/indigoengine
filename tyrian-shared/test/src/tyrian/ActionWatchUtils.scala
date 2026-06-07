@@ -1,8 +1,8 @@
 package tyrian
 
 import cats.effect.IO
-import tyrian.classic.Cmd
-import tyrian.classic.Sub
+import tyrian.platform.Cmd
+import tyrian.platform.Sub
 
 import scala.annotation.nowarn
 

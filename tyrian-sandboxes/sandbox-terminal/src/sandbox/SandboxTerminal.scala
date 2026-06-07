@@ -3,7 +3,7 @@ package sandbox
 import tyrian.*
 import tyrian.syntax.*
 
-object SandboxNative extends App[Unit, Model]:
+object SandboxTerminal extends App[Unit, Model]:
 
   def init(args: Array[String]): Result[Model] =
     Result(Model(None))

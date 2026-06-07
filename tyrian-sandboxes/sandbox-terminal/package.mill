@@ -1,12 +1,17 @@
-package build.`tyrian-sandboxes`.`sandbox-native`
+package build.`tyrian-sandboxes`.`sandbox-terminal`
 
 import mill.*
 import mill.scalalib.*
 
 import build.SharedNative
+import build.SharedJVM
 import build.Dependencies
 
 object `package` extends Module:
+
+  object jvm extends SharedJVM, PlatformScalaModule:
+
+    def moduleDeps = Seq(build.`tyrian`.jvm)
 
   object native extends SharedNative, PlatformScalaModule:
 

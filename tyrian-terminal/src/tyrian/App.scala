@@ -72,7 +72,7 @@ trait App[GraphicsContext, Model]:
   private val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
     new ExtensionRegister()
 
-  def launch(args: Array[String]): Unit =
+  def main(args: Array[String]): Unit =
 
     val (initModel, initCmds) =
       _init(args)
