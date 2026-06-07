@@ -14,8 +14,7 @@ object SandboxTerminal extends App[Unit, Model]:
       Result(model.copy(elapsed = Some(t)))
 
     case Msg.Quit =>
-      // Result(model).exit
-      Result(throw Exception("Boom"))
+      Result(model).exit
 
     case Msg.NoOp =>
       Result(model)
