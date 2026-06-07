@@ -16,7 +16,6 @@ source ./credentials.sh
 # ./mill --no-server -j2 __.fastLinkJSTest
 # ./mill --no-server -j1 __.test.nativeLink
 # ./mill --no-server __.test
-# ./mill --no-server __.publishSonatypeCentral
 ./mill --no-server mill.javalib.SonatypeCentralPublishModule/publishAll
 
 source ./credentials-cleanup.sh
