@@ -1,5 +1,6 @@
 package tyrian
 
+import cats.effect.ExitCode
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
 import tyrian.classic.cmds.Logger
@@ -48,6 +49,13 @@ sealed trait Result[+A] derives CanEqual:
   def addGlobalMsgs(msgs: GlobalMsg*): Result[A] =
     addGlobalMsgs(Batch.fromSeq(msgs))
 
+  def exit: Result[A] =
+    addActions(Action.exit)
+  def exit(code: ExitCode): Result[A] =
+    addActions(Action.exit(code))
+  def exit(code: Int): Result[A] =
+    exit(ExitCode(code))
+
   def createActions(f: A => Batch[Action]): Result[A]
 
   def clearActions: Result[A]
@@ -71,6 +79,10 @@ sealed trait Result[+A] derives CanEqual:
   def flatMap[B](f: A => Result[B]): Result[B]
 
 object Result:
+
+  private val defaultCrashLogging: PartialFunction[Throwable, String] = { case (e: Throwable) =>
+    e.getMessage + "\n" + e.getStackTrace().mkString("\n")
+  }
 
   final case class Next[+A](state: A, actions: Batch[Action]) extends Result[A] {
 
@@ -184,9 +196,7 @@ object Result:
       this.copy(crashReporter = reporter)
 
     def reportCrash: String =
-      crashReporter.orElse[Throwable, String] { case (e: Throwable) =>
-        e.getMessage + "\n" + e.getStackTrace.mkString("\n")
-      }(e)
+      crashReporter.orElse(defaultCrashLogging)(e)
 
     def addActions(newActions: Action*): Error                               = this
     def addActions(newActions: Batch[Action]): Error                         = this
@@ -206,7 +216,7 @@ object Result:
 
   object Error {
     def apply(e: Throwable): Error =
-      Error(e, { case (ee: Throwable) => ee.getMessage })
+      Error(e, defaultCrashLogging)
   }
 
   extension [A](l: Batch[Result[A]]) def sequence: Result[Batch[A]] = Result.sequenceBatch(l)

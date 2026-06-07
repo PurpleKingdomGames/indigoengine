@@ -1,5 +1,6 @@
 package tyrian.internal
 
+import cats.effect.ExitCode
 import cats.effect.IO
 import cats.effect.IOApp
 import indigoengine.shared.collections.Batch
@@ -69,11 +70,22 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     case msg =>
       update(model)(msg) match
         case Result.Next(state, actions) =>
-          state -> Action.internal.Many(actions).toCmd
+          findExit(actions) match
+            case Some(code) =>
+              throw ExitSignal(code)
+
+            case None =>
+              state -> Action.internal.Many(actions).toCmd
 
         case e @ Result.Error(err, _) =>
           println(e.reportCrash)
           throw err
+
+  private def findExit(actions: Batch[Action]): Option[ExitCode] =
+    actions.collectFirst {
+      case Action.Exit(code)          => Some(code)
+      case Action.internal.Many(more) => findExit(more)
+    }.flatten
 
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
@@ -122,3 +134,5 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
       combinedView,
       combinedSubscriptions
     )
+
+private[tyrian] final case class ExitSignal(code: ExitCode) extends RuntimeException

@@ -5,6 +5,7 @@ import cats.effect.IO
 import cats.effect.kernel.Outcome
 import cats.effect.kernel.Resource
 import cats.syntax.all.*
+import tyrian.internal.ExitSignal
 
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.concurrent.duration.*
@@ -24,21 +25,23 @@ trait App[GraphicsContext, Model] extends internal.AppBase[GraphicsContext, Mode
             (awaitSignal *> fiber.cancel).background.surround {
               fiber.join.flatMap {
                 case Outcome.Canceled() =>
-                  // cancelled, e.g. Ctrl+C
-                  IO(teardown)
+                  // cancelled, e.g. Ctrl+C / SIGTERM
+                  IO(teardown).as(ExitCode.Success)
+
+                case Outcome.Errored(ExitSignal(code)) =>
+                  // The app shut itself down cleanly via Result.exit / Action.exit
+                  IO(teardown).as(code)
 
                 case Outcome.Errored(e) =>
-                  IO(teardown) *>
-                    IO.println(s"App exited following an error:\n${e.getMessage}")
+                  IO(teardown).as(ExitCode.Error)
 
-                case Outcome.Succeeded(_) =>
-                  // Exited because the app presumably shut itself down cleanly, nothing to do.
-                  IO(teardown)
+                case Outcome.Succeeded(fa) =>
+                  // Unreachable: Here for completeness
+                  fa
               }
             }
           }
       }
-      .as(ExitCode.Success)
 
 object App:
 

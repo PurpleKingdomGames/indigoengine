@@ -1,5 +1,6 @@
 package tyrian
 
+import cats.effect.ExitCode
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
@@ -49,6 +50,24 @@ object Action:
   /** Creates an action that runs a side effect without producing a message. */
   def sideEffect(thunk: => Unit): Action =
     Action.SideEffect(thunk)
+
+  /** Requests that the (terminal) app shut itself down cleanly with `ExitCode.Success`. Has no effect on the JS
+    * frontend.
+    */
+  def exit: Action =
+    Exit(ExitCode.Success)
+
+  /** Requests that the (terminal) app shut itself down cleanly with the given exit code. Has no effect on the JS
+    * frontend.
+    */
+  def exit(code: ExitCode): Action =
+    Exit(code)
+
+  /** Requests that the (terminal) app shut itself down cleanly with the given exit code. Has no effect on the JS
+    * frontend.
+    */
+  def exit(code: Int): Action =
+    Exit(ExitCode(code))
 
   /** Alias for sideEffect. */
   def fireAndForget(thunk: => Unit): Action =
@@ -133,6 +152,15 @@ object Action:
 
     def apply(run: => GlobalMsg): Run[GlobalMsg] =
       Run(IO(run), identity)
+
+  /** Requests that the app shut itself down. Intercepted by the terminal runtime and ignored everywhere else.
+    */
+  private[tyrian] final case class Exit(code: ExitCode) extends Action:
+    def map(f: GlobalMsg => GlobalMsg): Exit =
+      this
+
+    def toCmd: Cmd[IO, Nothing] =
+      Cmd.None
 
   object internal:
 

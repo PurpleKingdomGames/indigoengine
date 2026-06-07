@@ -2,23 +2,22 @@ package tyrian
 
 import cats.effect.ExitCode
 import cats.effect.IO
-import cats.effect.kernel.Outcome
+import tyrian.internal.ExitSignal
 
 trait App[GraphicsContext, Model] extends internal.AppBase[GraphicsContext, Model]:
 
   def run(args: List[String]): IO[ExitCode] =
-    appStart(args)
-      .guaranteeCase {
-        case Outcome.Canceled() =>
-          // cancelled, e.g. Ctrl+C
-          IO(teardown)
+    appStart(args).attempt
+      .flatMap {
+        case Left(ExitSignal(code)) =>
+          // The app shut itself down cleanly via Result.exit / Action.exit
+          IO(teardown).as(code)
 
-        case Outcome.Errored(e) =>
-          IO(teardown) *>
-            IO.println(s"App exited following an error:\n${e.getMessage}")
+        case Left(e) =>
+          IO(teardown).as(ExitCode.Error)
 
-        case Outcome.Succeeded(_) =>
-          // Exited because the app presumably shut itself down cleanly, nothing to do.
-          IO(teardown)
+        case Right(n) =>
+          // Unreachable: Here for completeness
+          n
       }
-      .as(ExitCode.Success)
+      .onCancel(IO(teardown)) // cancelled, e.g. Ctrl+C / SIGTERM
