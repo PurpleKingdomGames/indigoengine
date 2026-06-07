@@ -58,18 +58,18 @@ class ResultTests extends munit.FunSuite {
   }
 
   test("Transforming outcomes.sequencing (batch)") {
-    val l: List[Result[Int]] =
-      List(
+    val l: Batch[Result[Int]] =
+      Batch(
         Result(1).addActions(Action.Emit(TestMsg("a"))),
         Result(2).addActions(Action.Emit(TestMsg("b"))),
         Result(3).addActions(Action.Emit(TestMsg("c")))
       )
 
-    val actual: Result[List[Int]] =
-      Result.sequenceList(l)
+    val actual: Result[Batch[Int]] =
+      Result.sequenceBatch(l)
 
-    val expected: Result[List[Int]] =
-      Result(List(1, 2, 3))
+    val expected: Result[Batch[Int]] =
+      Result(Batch(1, 2, 3))
         .addActions(Action.Emit(TestMsg("a")), Action.Emit(TestMsg("b")), Action.Emit(TestMsg("c")))
 
     assertEquals(actual.unsafeGet, expected.unsafeGet)
