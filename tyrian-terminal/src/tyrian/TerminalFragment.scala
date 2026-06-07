@@ -34,6 +34,9 @@ object TerminalFragment:
 
       t.foldLeft(h)(_ |+| _)
 
+  def apply(ops: TerminalOps*): TerminalFragment =
+    TerminalFragment(Batch.fromSeq(ops))
+
 enum TerminalOps derives CanEqual:
   case Print(value: String)
 
