@@ -1,8 +1,13 @@
-package tyrian
+package tyrian.internal
 
 import cats.effect.IO
-import cats.effect.unsafe.implicits.global
+import cats.effect.IOApp
 import indigoengine.shared.collections.Batch
+import tyrian.Action
+import tyrian.GlobalMsg
+import tyrian.Result
+import tyrian.TerminalFragment
+import tyrian.Watcher
 import tyrian.classic.Terminal
 import tyrian.classic.TyrianApp
 import tyrian.extensions.Extension
@@ -10,14 +15,12 @@ import tyrian.extensions.ExtensionRegister
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 
-// TODO: Look at making the JS and Native App's common. There are differences, but there's a lot of similarity too.
-
-trait App[GraphicsContext, Model]:
+trait AppBase[GraphicsContext, Model] extends IOApp:
 
   /** Used to initialise your app. Accepts simple flags and produces the initial model state, along with any actions to
     * run at start up, in order to trigger other processes.
     */
-  def init(args: Array[String]): Result[Model]
+  def init(args: List[String]): Result[Model]
 
   /** The update method allows you to modify the model based on incoming messages (events). As well as an updated model,
     * you can also produce actions to run.
@@ -39,12 +42,18 @@ trait App[GraphicsContext, Model]:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(args: Array[String], model: Model): Set[Extension[GraphicsContext, TerminalFragment]]
+  def extensions(args: List[String], model: Model): Set[Extension[GraphicsContext, TerminalFragment]]
 
-  val run: IO[Nothing] => Unit = _.unsafeRunSync()
+  /** Invoked when terminal apps exit. Provides an opportunity for sign-off messages to the user, or for clean up
+    * side-effects to take place.
+    *
+    * Note: `teardown` may not be invoked if you run the native version through your build tool, but will be invoked if
+    * you run the executable directly.
+    */
+  def teardown: Unit
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
+  private def _init(args: List[String]): (Model, Cmd[IO, GlobalMsg]) =
     init(args) match
       case Result.Next(state, actions) =>
         (state, Action.internal.Many(actions).toCmd)
@@ -72,8 +81,7 @@ trait App[GraphicsContext, Model]:
   private val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
     new ExtensionRegister()
 
-  def main(args: Array[String]): Unit =
-
+  def appStart(args: List[String]): IO[Nothing] =
     val (initModel, initCmds) =
       _init(args)
 
@@ -108,11 +116,9 @@ trait App[GraphicsContext, Model]:
     def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
       _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub
 
-    run(
-      TyrianApp.start[IO, Model, GlobalMsg](
-        initModel -> (initCmds |+| Cmd.Batch(extensionsCmds.toList)),
-        combinedUpdate,
-        combinedView,
-        combinedSubscriptions
-      )
+    TyrianApp.start[IO, Model, GlobalMsg](
+      initModel -> (initCmds |+| Cmd.Batch(extensionsCmds.toList)),
+      combinedUpdate,
+      combinedView,
+      combinedSubscriptions
     )

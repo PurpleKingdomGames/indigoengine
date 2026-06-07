@@ -5,7 +5,7 @@ import tyrian.syntax.*
 
 object SandboxTerminal extends App[Unit, Model]:
 
-  def init(args: Array[String]): Result[Model] =
+  def init(args: List[String]): Result[Model] =
     Result(Model(None))
       .addActions(Action.fireAndForget(println("Starting my command line app!")))
 
@@ -33,8 +33,11 @@ object SandboxTerminal extends App[Unit, Model]:
       Watcher.every(1.second, t => Msg.Tick(t))
     )
 
-  def extensions(args: Array[String], model: Model): Set[Extension[Unit, TerminalFragment]] =
+  def extensions(args: List[String], model: Model): Set[Extension[Unit, TerminalFragment]] =
     Set()
+
+  def teardown: Unit =
+    println("Goodbye!")
 
 final case class Model(elapsed: Option[Seconds])
 
