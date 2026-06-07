@@ -6,7 +6,6 @@ import Result.*
 
 final case class TestMsg(message: String) extends GlobalMsg
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class ResultTests extends munit.FunSuite {
 
   test("Transforming outcomes.sequencing (list) (using syntax import)") {

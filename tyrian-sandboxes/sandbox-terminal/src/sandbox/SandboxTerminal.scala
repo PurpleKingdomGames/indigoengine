@@ -22,7 +22,7 @@ object SandboxTerminal extends App[Unit, Model]:
   def view(model: Model): TerminalFragment =
     model.elapsed match
       case None =>
-        TerminalFragment.empty
+        TerminalFragment(TerminalOps.Print("Waiting..."))
 
       case Some(t) =>
         TerminalFragment(
