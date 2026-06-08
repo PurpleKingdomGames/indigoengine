@@ -91,7 +91,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.toString + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
-      clips               <- aseprite.toClips(SandboxAssets.dudeName)
+      clips               <- aseprite.toClips(SandboxAssets.dudeName).toOption
     } yield makeStartupData(aseprite, spriteAndAnimations, clips)
 
     Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
