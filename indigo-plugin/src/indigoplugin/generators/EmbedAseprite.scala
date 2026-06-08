@@ -27,7 +27,7 @@ object EmbedAseprite {
 
         case Left(e) =>
           throw new Exception(
-            "Failed to deserialise json into Aseprite.\nPLEASE NOTE: Aseprite data must be exported using the 'array' option, the 'hash' format is not supported.\n" + e.getMessage
+            "Failed to deserialise json into Aseprite.\n" + e.getMessage
           )
       }
 
