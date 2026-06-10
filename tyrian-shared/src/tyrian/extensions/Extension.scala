@@ -38,6 +38,14 @@ sealed trait Extension[GraphicsContext, View]:
     */
   def watchers(model: ExtensionModel): Batch[Watcher]
 
+  /** Invoked when terminal apps exit (has no effect on JS). Provides an opportunity for sign-off messages to the user,
+    * or for clean up side-effects to take place.
+    *
+    * Note: `teardown` may not be invoked if you run the native version through your build tool, but will be invoked if
+    * you run the executable directly.
+    */
+  def teardown: Unit
+
 object Extension:
 
   trait Standard[View] extends Extension[Unit, View]

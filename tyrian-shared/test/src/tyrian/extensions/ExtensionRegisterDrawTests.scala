@@ -29,6 +29,7 @@ final class GraphicalRecorder(
     calls += ((ctx, t, m))
     m + 1
   def provideContext(m: Int): Option[TestCtx] = contextHook(m)
+  def teardown: Unit                          = ()
 
 class ExtensionRegisterDrawTests extends munit.FunSuite {
 

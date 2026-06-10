@@ -189,6 +189,9 @@ final case class Indigo(
   def provideContext(model: Model): Option[SDLContext] =
     None
 
+  def teardown: Unit =
+    ()
+
 object Indigo:
 
   val MaxStartupAttempts: Int = 10
