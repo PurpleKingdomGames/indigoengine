@@ -3,7 +3,6 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import org.scalajs.dom
@@ -11,7 +10,7 @@ import org.scalajs.dom
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
-object PointersScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object PointersScene extends Scene[SandboxGameModel]:
   // disabling default browser touch actions
   val style = dom.document.createElement("style")
   style.innerHTML = "canvas { touch-action: none }"

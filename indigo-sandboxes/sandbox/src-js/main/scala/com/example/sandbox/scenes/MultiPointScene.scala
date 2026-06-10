@@ -3,7 +3,6 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import org.scalajs.dom
@@ -15,7 +14,7 @@ import scala.math.BigDecimal.RoundingMode
 // Each box contains position, button down, state (down/up), and pressure (if applicable)
 
 @nowarn("msg=unused")
-object MultiPointScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object MultiPointScene extends Scene[SandboxGameModel]:
   // disabling default browser touch actions
   val style = dom.document.createElement("style")
   style.innerHTML = "canvas { touch-action: none }"

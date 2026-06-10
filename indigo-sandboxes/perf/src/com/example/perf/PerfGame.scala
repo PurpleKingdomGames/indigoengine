@@ -47,7 +47,7 @@ final class PerfGame extends Game[Unit, Dude, DudeModel]:
         )
     }
 
-  def scenes(bootData: Unit): NonEmptyBatch[Scene[Dude, DudeModel]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[DudeModel]] =
     NonEmptyBatch(Scene.empty)
 
   def initialScene(bootData: Unit): Option[SceneName] =

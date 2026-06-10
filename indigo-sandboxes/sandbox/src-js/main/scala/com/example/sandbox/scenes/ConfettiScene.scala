@@ -4,11 +4,10 @@ import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 
-object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object ConfettiScene extends Scene[SandboxGameModel]:
 
   val spawnCount: Int = 600
 

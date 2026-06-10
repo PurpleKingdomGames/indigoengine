@@ -8,7 +8,7 @@ import indigo.*
 import indigoextras.ui.*
 import roguelikestarterkit.*
 
-object ColourWindowScene extends Scene[Unit, GameModel]:
+object ColourWindowScene extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

@@ -10,7 +10,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(ShapesScene.name)
 
-  def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel]] =
+  def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxGameModel]] =
     ScenesList.scenes
 
   val eventFilters: EventFilters = EventFilters.Permissive

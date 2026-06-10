@@ -2,7 +2,6 @@ package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
@@ -10,7 +9,7 @@ import indigo.syntax.animations.*
 import indigoextras.waypoints.WaypointPath
 import indigoextras.waypoints.WaypointPathPosition
 
-object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object WaypointScene extends Scene[SandboxGameModel]:
 
   type SceneModel = Unit
 

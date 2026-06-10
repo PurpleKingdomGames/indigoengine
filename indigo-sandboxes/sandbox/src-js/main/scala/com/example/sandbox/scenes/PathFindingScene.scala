@@ -15,7 +15,7 @@ final case class PathFindingModel(
 object PathFindingModel:
   val empty: PathFindingModel = PathFindingModel(Batch.empty)
 
-object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object PathFindingScene extends Scene[SandboxGameModel]:
 
   type SceneModel = PathFindingModel
 

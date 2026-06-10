@@ -3,12 +3,11 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 
-object ClipScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object ClipScene extends Scene[SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 

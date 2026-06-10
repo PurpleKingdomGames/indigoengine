@@ -6,7 +6,7 @@ import demo.windows.DemoWindow
 import indigo.*
 import indigoextras.ui.*
 
-object WindowDemoScene extends Scene[Unit, GameModel]:
+object WindowDemoScene extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

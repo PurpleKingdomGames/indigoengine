@@ -3,13 +3,12 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Constants
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 
-object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object ComponentUIScene extends Scene[SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 

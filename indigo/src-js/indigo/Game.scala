@@ -62,7 +62,7 @@ trait Game[BootData, StartUpData, Model]:
     * @return
     *   A list of scenes that ensures at least one scene exists.
     */
-  def scenes(bootData: BootData): NonEmptyBatch[Scene[StartUpData, Model]]
+  def scenes(bootData: BootData): NonEmptyBatch[Scene[Model]]
 
   /** Optional name of the first scene. If None is provided then the first scene is the head of the scenes list.
     *
@@ -187,7 +187,7 @@ trait Game[BootData, StartUpData, Model]:
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
-    val sceneManager: SceneManager[StartUpData, Model] = {
+    val sceneManager: SceneManager[Model] = {
       val s = scenes(bootUp.bootData)
 
       initialScene(bootUp.bootData) match {
@@ -322,8 +322,8 @@ object Game:
 
     def scenes(
         bootData: ShaderPlayground.Channels
-    ): NonEmptyBatch[Scene[ShaderPlayground.Channels, ShaderPlayground.Model]] =
-      NonEmptyBatch(Scene.empty[ShaderPlayground.Channels, ShaderPlayground.Model])
+    ): NonEmptyBatch[Scene[ShaderPlayground.Model]] =
+      NonEmptyBatch(Scene.empty[ShaderPlayground.Model])
 
     def initialScene(bootData: ShaderPlayground.Channels): Option[SceneName] =
       None

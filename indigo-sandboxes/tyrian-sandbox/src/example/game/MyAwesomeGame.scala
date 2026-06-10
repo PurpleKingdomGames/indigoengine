@@ -10,7 +10,7 @@ final case class MyAwesomeGame(id: String, clockwise: Boolean) extends Game[Unit
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 
-  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Unit]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit]] =
     NonEmptyBatch(GameScene(clockwise))
 
   val eventFilters: EventFilters =

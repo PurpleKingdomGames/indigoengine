@@ -5,7 +5,7 @@ import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
 
-object TerminalEmulatorScene extends Scene[Unit, GameModel]:
+object TerminalEmulatorScene extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

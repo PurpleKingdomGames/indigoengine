@@ -13,7 +13,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
     Some(NoiseScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[
-    Scene[SandboxStartupData, SandboxGameModel]
+    Scene[SandboxGameModel]
   ] =
     NonEmptyBatch(
       OriginalScene,
