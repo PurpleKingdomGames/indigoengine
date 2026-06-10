@@ -167,7 +167,7 @@ object Dependencies:
   val http4sDom                = "0.2.11"
   val http4sServer             = "0.23.32"
   val scalacheck               = "1.19.0"
-  val munit                    = "1.2.2"
+  val munit                    = "1.2.4"
   val oslib                    = millbuild.DepVersions.osLibVersion
   val scalacOptions: String    = millbuild.DepVersions.scalacOptionsVersion
   val scalafixMill: String     = millbuild.DepVersions.scalafixMillVersion
