@@ -17,8 +17,7 @@ final class GameFrameProcessor[StartUpData, Model](
     val eventFilters: EventFilters,
     val modelUpdate: (Context, Model) => GlobalEvent => Outcome[Model],
     val _viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment]
-) extends FrameProcessor[StartUpData, Model]
-    with StandardFrameProcessorFunctions[StartUpData, Model, Unit]:
+) extends FrameProcessor[StartUpData, Model]:
 
   def viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment] =
     (ctx, m) => _viewUpdate(ctx, m)
@@ -68,3 +67,26 @@ final class GameFrameProcessor[StartUpData, Model](
       subSystemsRegister.update(context.forSubSystems, model, globalEvents),
       sceneManager.updateSubSystems(context.forSubSystems, model, globalEvents)
     )((_, _) => ())
+
+  def processModel(
+      context: Context,
+      model: Model,
+      globalEvents: Batch[GlobalEvent]
+  ): Outcome[Model] =
+    globalEvents
+      .map(eventFilters.modelFilter)
+      .collect { case Some(e) => e }
+      .foldLeft(Outcome(model)) { (acc, e) =>
+        acc.flatMap { next =>
+          modelUpdate(context, next)(e)
+        }
+      }
+
+  def processView(
+      context: Context,
+      model: Model
+  ): Outcome[SceneUpdateFragment] =
+    Outcome.merge(
+      viewUpdate(context, model),
+      subSystemsRegister.present(context.forSubSystems, model)
+    )(_ |+| _)
