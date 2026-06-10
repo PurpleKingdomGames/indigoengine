@@ -19,4 +19,3 @@ object `package` extends Module:
     )
 
     override def moduleKind = ModuleKind.CommonJSModule
-

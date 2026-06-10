@@ -35,7 +35,7 @@ val nonTestNodes = allNodes.filterNot(_.contains(".test."))
 val jsNodes     = nonTestNodes.filter(_.endsWith(".js.compile"))
 val jvmNodes    = nonTestNodes.filter(_.endsWith(".jvm.compile"))
 val nativeNodes = nonTestNodes.filter(_.endsWith(".native.compile"))
-val plainNodes  = nonTestNodes.filter { n =>
+val plainNodes = nonTestNodes.filter { n =>
   n.endsWith(".compile") &&
   !n.endsWith(".js.compile") &&
   !n.endsWith(".jvm.compile") &&
@@ -52,8 +52,8 @@ val allPlatformBases = (jsBaseNames ++ jvmBaseNames ++ nativeBaseNames).toSet
 val platformsForBase: Map[String, List[String]] =
   allPlatformBases.map { base =>
     val platforms = List(
-      if jsBaseNames.contains(base)     then Some("js")     else None,
-      if jvmBaseNames.contains(base)    then Some("jvm")    else None,
+      if jsBaseNames.contains(base) then Some("js") else None,
+      if jvmBaseNames.contains(base) then Some("jvm") else None,
       if nativeBaseNames.contains(base) then Some("native") else None
     ).flatten
     base -> platforms
@@ -64,10 +64,10 @@ def displayName(base: String): String =
 
 // Build rename map: original name -> display name
 val renameMap: Map[String, String] =
-  val jsRenames     = jsNodes.map { n => n -> displayName(n.stripSuffix(".js.compile")) }
-  val jvmRenames    = jvmNodes.map { n => n -> displayName(n.stripSuffix(".jvm.compile")) }
-  val nativeRenames = nativeNodes.map { n => n -> displayName(n.stripSuffix(".native.compile")) }
-  val plainRenames  = plainNodes.map { n => n -> n.stripSuffix(".compile") }
+  val jsRenames     = jsNodes.map(n => n -> displayName(n.stripSuffix(".js.compile")))
+  val jvmRenames    = jvmNodes.map(n => n -> displayName(n.stripSuffix(".jvm.compile")))
+  val nativeRenames = nativeNodes.map(n => n -> displayName(n.stripSuffix(".native.compile")))
+  val plainRenames  = plainNodes.map(n => n -> n.stripSuffix(".compile"))
   (jsRenames ++ jvmRenames ++ nativeRenames ++ plainRenames).toMap
 
 // Process edges: remove test refs, apply renames, dedup, drop self-loops

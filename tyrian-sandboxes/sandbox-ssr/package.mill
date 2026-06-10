@@ -20,4 +20,3 @@ object `package` extends Module:
       mvn"org.http4s::http4s-ember-server::${Dependencies.http4sServer}",
       mvn"org.http4s::http4s-dsl::${Dependencies.http4sServer}"
     )
-

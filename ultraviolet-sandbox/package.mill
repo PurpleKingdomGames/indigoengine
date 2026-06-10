@@ -37,4 +37,3 @@ object `package` extends Module:
 
     def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
       IndigoGenerators.None
-

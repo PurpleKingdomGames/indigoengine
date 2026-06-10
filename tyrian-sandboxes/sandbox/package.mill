@@ -15,4 +15,3 @@ object `package` extends Module:
     def moduleDeps = Seq(build.`tyrian`.js)
 
     override def moduleKind = ModuleKind.CommonJSModule
-

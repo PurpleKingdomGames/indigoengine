@@ -30,7 +30,7 @@ object `package` extends Module:
     def moduleDeps =
       Seq(
         build.indigo.js,
-        build.`indigo-extras`.js,
+        build.`indigo-extras`.js
       )
 
     override def generatedSources =

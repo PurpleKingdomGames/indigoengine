@@ -16,4 +16,3 @@ object `package` extends Module:
   object native extends SharedNative, PlatformScalaModule:
 
     def moduleDeps = Seq(build.`tyrian`.native)
-
