@@ -1,11 +1,10 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 
-object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object ShapesScene extends Scene[SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 

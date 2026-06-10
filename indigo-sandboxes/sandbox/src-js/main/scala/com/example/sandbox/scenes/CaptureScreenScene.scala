@@ -8,14 +8,13 @@ import com.example.sandbox.DudeUp
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.core.events.ScreenCaptureEvent
 import indigo.scenegraph.Shape
 import indigo.scenegraph.Shape.Box
 import indigo.scenes.*
 
-object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object CaptureScreenScene extends Scene[SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 

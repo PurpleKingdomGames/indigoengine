@@ -16,15 +16,10 @@ import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 
-class SceneManager[StartUpData, GameModel](
-    scenes: NonEmptyBatch[Scene[StartUpData, GameModel]],
+class SceneManager[GameModel](
+    scenes: NonEmptyBatch[Scene[GameModel]],
     scenesFinder: SceneFinder
 ):
-
-  // private given CanEqual[Option[Scene[StartUpData, GameModel]], Option[
-  //   Scene[StartUpData, GameModel]
-  // ]] =
-  //   CanEqual.derived
 
   // Scene management
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -209,11 +204,11 @@ class SceneManager[StartUpData, GameModel](
 
 object SceneManager:
 
-  def apply[StartUpData, GameModel](
-      scenes: NonEmptyBatch[Scene[StartUpData, GameModel]],
+  def apply[GameModel](
+      scenes: NonEmptyBatch[Scene[GameModel]],
       initialScene: SceneName
-  ): SceneManager[StartUpData, GameModel] =
-    new SceneManager[StartUpData, GameModel](
+  ): SceneManager[GameModel] =
+    new SceneManager[GameModel](
       scenes,
-      SceneFinder.fromScenes[StartUpData, GameModel](scenes).jumpToSceneByName(initialScene)
+      SceneFinder.fromScenes(scenes).jumpToSceneByName(initialScene)
     )

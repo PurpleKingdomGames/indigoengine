@@ -4,14 +4,13 @@ import com.example.sandbox.Constants
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import example.TestFont
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
 
-object SfxScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object SfxScene extends Scene[SandboxGameModel]:
 
   type SceneModel = SandboxGameModel
 

@@ -3,7 +3,7 @@ package example
 import indigo.*
 import indigo.scenes.*
 
-object LoadScene extends Scene[Unit, Model]:
+object LoadScene extends Scene[Model]:
 
   type SceneModel = Unit
 

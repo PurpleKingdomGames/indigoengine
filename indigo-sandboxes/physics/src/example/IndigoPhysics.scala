@@ -11,7 +11,7 @@ final class IndigoPhysics extends Game[Unit, Unit, Model]:
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 
-  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Model]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Model]] =
     NonEmptyBatch(LoadScene, VolumeScene, BoxesAndBallsScene, BoxesScene, BallsScene)
 
   val eventFilters: EventFilters =

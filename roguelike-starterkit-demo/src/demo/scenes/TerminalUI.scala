@@ -9,7 +9,7 @@ import indigoextras.ui.syntax.*
 import roguelikestarterkit.*
 import roguelikestarterkit.ui.*
 
-object TerminalUI extends Scene[Unit, GameModel]:
+object TerminalUI extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

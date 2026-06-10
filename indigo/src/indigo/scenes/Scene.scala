@@ -11,7 +11,7 @@ import indigoengine.shared.optics.Lens
 
 /** Describes the functions that a valid scene must implement.
   */
-trait Scene[StartUpData, GameModel] derives CanEqual:
+trait Scene[GameModel] derives CanEqual:
   type SceneModel
 
   def name: SceneName
@@ -28,25 +28,25 @@ trait Scene[StartUpData, GameModel] derives CanEqual:
 
 object Scene {
 
-  def updateModel[SD, GM](
-      scene: Scene[SD, GM],
+  def updateModel[GameModel](
+      scene: Scene[GameModel],
       context: SceneContext,
-      gameModel: GM
-  ): GlobalEvent => Outcome[GM] =
+      gameModel: GameModel
+  ): GlobalEvent => Outcome[GameModel] =
     e =>
       scene
         .updateModel(context, scene.modelLens.get(gameModel))(e)
         .map(scene.modelLens.set(gameModel, _))
 
-  def updateView[SD, GM](
-      scene: Scene[SD, GM],
+  def updateView[GameModel](
+      scene: Scene[GameModel],
       context: SceneContext,
-      model: GM
+      model: GameModel
   ): Outcome[SceneUpdateFragment] =
     scene.present(context, scene.modelLens.get(model))
 
-  def empty[SD, GM]: Scene[SD, GM] =
-    new Scene[SD, GM] {
+  def empty[GameModel]: Scene[GameModel] =
+    new Scene[GameModel] {
       type SceneModel = Unit
 
       val sceneFragment =
@@ -57,13 +57,13 @@ object Scene {
       val name: SceneName =
         SceneName("empty-scene")
 
-      val modelLens: Lens[GM, Unit] =
+      val modelLens: Lens[GameModel, Unit] =
         Lens.unit
 
       val eventFilters: EventFilters =
         EventFilters.BlockAll
 
-      val subSystems: Set[SubSystem[GM]] =
+      val subSystems: Set[SubSystem[GameModel]] =
         Set()
 
       def updateModel(

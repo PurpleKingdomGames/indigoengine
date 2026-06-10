@@ -7,7 +7,7 @@ import roguelikestarterkit.*
 
 import scala.annotation.nowarn
 
-object TerminalTextScene extends Scene[Unit, GameModel]:
+object TerminalTextScene extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

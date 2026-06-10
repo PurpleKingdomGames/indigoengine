@@ -3,11 +3,10 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 
-object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel] {
+object TextureTileScene extends Scene[SandboxGameModel] {
 
   type SceneModel = SandboxGameModel
 

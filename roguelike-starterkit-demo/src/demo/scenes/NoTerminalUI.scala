@@ -12,7 +12,7 @@ import indigoextras.ui.syntax.*
 import roguelikestarterkit.RoguelikeTiles
 import roguelikestarterkit.TerminalMaterial
 
-object NoTerminalUI extends Scene[Unit, GameModel]:
+object NoTerminalUI extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

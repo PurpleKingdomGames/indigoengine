@@ -3,13 +3,12 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.RefractionEntity
 
-object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel] {
+object RefractionScene extends Scene[SandboxGameModel] {
 
   type SceneModel = SandboxGameModel
 

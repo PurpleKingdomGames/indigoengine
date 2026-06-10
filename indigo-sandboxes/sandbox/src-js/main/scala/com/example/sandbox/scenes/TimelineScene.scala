@@ -3,13 +3,12 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Dude
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
 import indigo.syntax.animations.*
 
-object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object TimelineScene extends Scene[SandboxGameModel]:
 
   type SceneModel = Dude
 

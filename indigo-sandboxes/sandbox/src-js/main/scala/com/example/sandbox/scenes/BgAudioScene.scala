@@ -3,14 +3,13 @@ package com.example.sandbox.scenes
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 
 import scala.annotation.nowarn
 
 @nowarn("msg=unused")
-object BgAudioScene extends Scene[SandboxStartupData, SandboxGameModel]:
+object BgAudioScene extends Scene[SandboxGameModel]:
 
   type SceneModel = Unit
 

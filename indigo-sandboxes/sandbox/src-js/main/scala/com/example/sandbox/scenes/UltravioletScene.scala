@@ -1,14 +1,13 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxStartupData
 import indigo.*
 import indigo.scenes.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel] {
+object UltravioletScene extends Scene[SandboxGameModel] {
 
   type SceneModel = SandboxGameModel
 

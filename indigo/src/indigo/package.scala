@@ -570,7 +570,7 @@ object aliases:
 
   // Scenes
 
-  type Scene[StartUpData, GameModel] = indigo.scenes.Scene[StartUpData, GameModel]
+  type Scene[GameModel] = indigo.scenes.Scene[GameModel]
   val Scene: indigo.scenes.Scene.type = indigo.scenes.Scene
 
   type SceneName = indigo.scenes.SceneName
@@ -585,7 +585,7 @@ object aliases:
   type SceneFinder = indigo.scenes.SceneFinder
   val SceneFinder: indigo.scenes.SceneFinder.type = indigo.scenes.SceneFinder
 
-  type SceneManager[StartUpData, GameModel] = indigo.scenes.SceneManager[StartUpData, GameModel]
+  type SceneManager[GameModel] = indigo.scenes.SceneManager[GameModel]
   val SceneManager: indigo.scenes.SceneManager.type = indigo.scenes.SceneManager
 
 end aliases

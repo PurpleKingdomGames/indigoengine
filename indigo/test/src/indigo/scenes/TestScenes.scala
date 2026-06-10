@@ -16,7 +16,7 @@ object TestScenes {
 
 final case class TestGameModel(sceneA: TestSceneModelA, sceneB: TestSceneModelB)
 
-final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel] {
+final case class TestSceneA(id: String) extends Scene[TestGameModel] {
   type SceneModel = TestSceneModelA
 
   val name: SceneName = SceneName(id)
@@ -56,7 +56,7 @@ final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel] {
 
 final case class TestSceneModelA(count: Int)
 
-final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel] {
+final case class TestSceneB(id: String) extends Scene[TestGameModel] {
   type SceneModel = TestSceneModelB
 
   val name: SceneName = SceneName(id)

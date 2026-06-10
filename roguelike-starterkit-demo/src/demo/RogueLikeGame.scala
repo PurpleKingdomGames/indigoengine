@@ -13,7 +13,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
   def initialScene(bootData: Unit): Option[SceneName] =
     Option(ColourWindowScene.name)
 
-  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, GameModel]] =
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[GameModel]] =
     NonEmptyBatch(
       NoTerminalUI,
       ColourWindowScene,

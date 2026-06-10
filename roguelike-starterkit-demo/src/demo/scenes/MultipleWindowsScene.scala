@@ -8,7 +8,7 @@ import demo.windows.MenuWindow
 import indigo.*
 import indigoextras.ui.*
 
-object MultipleWindowsScene extends Scene[Unit, GameModel]:
+object MultipleWindowsScene extends Scene[GameModel]:
 
   type SceneModel = GameModel
 

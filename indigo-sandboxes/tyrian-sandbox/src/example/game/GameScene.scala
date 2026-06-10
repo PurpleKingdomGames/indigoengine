@@ -3,7 +3,7 @@ package example.game
 import indigo.*
 import indigo.scenes.*
 
-final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit]:
+final case class GameScene(clockwise: Boolean) extends Scene[Unit]:
 
   type SceneModel = Unit
 

@@ -13,7 +13,7 @@ import indigoengine.shared.collections.Batch
 
 final class GameFrameProcessor[StartUpData, Model](
     val subSystemsRegister: SubSystemsRegister[Model],
-    val sceneManager: SceneManager[StartUpData, Model],
+    val sceneManager: SceneManager[Model],
     val eventFilters: EventFilters,
     val modelUpdate: (Context, Model) => GlobalEvent => Outcome[Model],
     val _viewUpdate: (Context, Model) => Outcome[SceneUpdateFragment]

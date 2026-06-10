@@ -3,7 +3,7 @@ package example
 import indigo.*
 import indigo.physics.*
 
-trait PhysicsScene extends Scene[Unit, Model]:
+trait PhysicsScene extends Scene[Model]:
 
   def world(dice: Dice): World[MyTag]
 
