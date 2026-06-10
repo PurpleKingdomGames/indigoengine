@@ -90,7 +90,7 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
+  private[tyrian] val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
     new ExtensionRegister()
 
   def appStart(args: List[String]): IO[Nothing] =

@@ -9,6 +9,8 @@ import tyrian.GlobalMsg
 import tyrian.Result
 import tyrian.Watcher
 
+import scala.util.control.NonFatal
+
 final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]) {
 
   private val stateMap: KVP[Object] = KVP.empty
@@ -112,6 +114,14 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]) {
 
   def size: Int =
     registeredExtensions.length
+
+  def teardown: Unit =
+    registeredExtensions.foreach { re =>
+      try re.extension.teardown
+      catch
+        case NonFatal(e) =>
+          println(s"Extension teardown failed: ${e.getMessage}")
+    }
 
 }
 

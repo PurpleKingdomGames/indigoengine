@@ -293,6 +293,9 @@ final case class Indigo(
           height = canvas.height
         )
 
+  def teardown: Unit =
+    ()
+
 object Indigo:
 
   val MaxStartupAttempts: Int = 10

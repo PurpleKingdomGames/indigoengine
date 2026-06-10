@@ -45,5 +45,8 @@ object CounterExtension extends Extension.Standard[HtmlFragment]:
   def watchers(currentValue: Int): Batch[Watcher] =
     Batch.empty
 
+  def teardown: Unit =
+    ()
+
   enum CustomEvent extends GlobalMsg:
     case Increment, Decrement

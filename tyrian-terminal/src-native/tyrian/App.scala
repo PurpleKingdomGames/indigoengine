@@ -17,6 +17,10 @@ import scala.scalanative.unsafe.CInt
 
 trait App[GraphicsContext, Model] extends internal.AppBase[GraphicsContext, Model]:
 
+  private def teardownAll: Unit =
+    extensionsRegister.teardown
+    teardown
+
   def run(args: List[String]): IO[ExitCode] =
     App.onSignals
       .use { awaitSignal =>
@@ -26,14 +30,14 @@ trait App[GraphicsContext, Model] extends internal.AppBase[GraphicsContext, Mode
               fiber.join.flatMap {
                 case Outcome.Canceled() =>
                   // cancelled, e.g. Ctrl+C / SIGTERM
-                  IO(teardown).as(ExitCode.Success)
+                  IO(teardownAll).as(ExitCode.Success)
 
                 case Outcome.Errored(ExitSignal(code)) =>
                   // The app shut itself down cleanly via Result.exit / Action.exit
-                  IO(teardown).as(code)
+                  IO(teardownAll).as(code)
 
                 case Outcome.Errored(e) =>
-                  IO(teardown).as(ExitCode.Error)
+                  IO(teardownAll).as(ExitCode.Error)
 
                 case Outcome.Succeeded(fa) =>
                   // Unreachable: Here for completeness

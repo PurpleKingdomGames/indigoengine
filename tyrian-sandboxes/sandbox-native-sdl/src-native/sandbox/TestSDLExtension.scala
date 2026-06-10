@@ -45,6 +45,9 @@ object TestSDLExtension extends Extension.Graphical[SDLContext, TerminalFragment
   def watchers(model: ExtModel): Batch[Watcher] =
     Batch.empty
 
+  def teardown: Unit =
+    ()
+
   private def makeVao(): UInt =
     val vaoPtr = stackalloc[UInt]()
     glGenVertexArrays(1, vaoPtr)
