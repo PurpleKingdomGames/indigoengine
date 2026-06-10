@@ -45,7 +45,7 @@ object TestSDLExtension extends Extension.Graphical[SDLContext, TerminalFragment
   def watchers(model: ExtModel): Batch[Watcher] =
     Batch.empty
 
-  def teardown: Unit =
+  def teardown(model: ExtModel): Unit =
     ()
 
   private def makeVao(): UInt =

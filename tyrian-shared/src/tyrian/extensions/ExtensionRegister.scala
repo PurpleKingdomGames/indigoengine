@@ -11,7 +11,7 @@ import tyrian.Watcher
 
 import scala.util.control.NonFatal
 
-final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]) {
+final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
 
   private val stateMap: KVP[Object] = KVP.empty
 
@@ -116,17 +116,15 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]) {
     registeredExtensions.length
 
   def teardown: Unit =
-    registeredExtensions.foreach { re =>
-      try re.extension.teardown
-      catch
-        case NonFatal(e) =>
-          println(s"Extension teardown failed: ${e.getMessage}")
-    }
+    registeredExtensions
+      .foreach: rss =>
+        val key       = rss.id
+        val extension = rss.extension
 
-}
+        val model: extension.ExtensionModel =
+          stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
-final case class RegisteredExtension[GraphicsContext, View](
-    id: String,
-    extension: Extension[GraphicsContext, View],
-    isGraphical: Boolean
-) derives CanEqual
+        try extension.teardown(model)
+        catch
+          case NonFatal(e) =>
+            println(s"Extension teardown failed: ${e.getMessage}\n${e.getStackTrace().mkString("\n")}")

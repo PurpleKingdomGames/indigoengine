@@ -189,7 +189,7 @@ final case class Indigo(
   def provideContext(model: Model): Option[SDLContext] =
     None
 
-  def teardown: Unit =
+  def teardown(model: Model): Unit =
     ()
 
 object Indigo:
