@@ -41,10 +41,15 @@ sealed trait Extension[GraphicsContext, View]:
   /** Invoked when terminal apps exit (has no effect on JS). Provides an opportunity for sign-off messages to the user,
     * or for clean up side-effects to take place.
     *
+    * Unlike the main app, extensions have the ability to have stateful teardowns, since they have access to their
+    * extension's model, that can hold references to resources that require clean up. Extensions are cleaned up before
+    * the main app, and any non-fatal exceptions are caught and reported so that one failing extension doesn't prevent
+    * subsequent extensions from terminating cleanly.
+    *
     * Note: `teardown` may not be invoked if you run the native version through your build tool, but will be invoked if
     * you run the executable directly.
     */
-  def teardown: Unit
+  def teardown(model: ExtensionModel): Unit
 
 object Extension:
 

@@ -293,7 +293,7 @@ final case class Indigo(
           height = canvas.height
         )
 
-  def teardown: Unit =
+  def teardown(model: Model): Unit =
     ()
 
 object Indigo:
