@@ -7,31 +7,23 @@ import tyrian.*
 
 import scala.collection.mutable.ArrayBuffer
 
-final case class TestView(parts: List[String]) derives CanEqual
-object TestView:
-  given Monoid[TestView] =
-    Monoid.instance(TestView(Nil), (a, b) => TestView(a.parts ++ b.parts))
+class ExtensionRegisterTests extends munit.FunSuite {
 
-final case class TestCtx(label: String) derives CanEqual
+  test("teardown") {
 
-final class GraphicalRecorder(
-    _id: String,
-    contextHook: Int => Option[TestCtx] = _ => None
-) extends Extension.Graphical[TestCtx, TestView]:
-  type ExtensionModel = Int
-  val calls: ArrayBuffer[(TestCtx, Seconds, Int)] = ArrayBuffer.empty
-  def id: ExtensionId                             = ExtensionId(_id)
-  def init: Result[Int]                           = Result(0)
-  def update(m: Int): GlobalMsg => Result[Int]    = _ => Result(m)
-  def view(m: Int): TestView                      = TestView(Nil)
-  def watchers(m: Int): Batch[Watcher]            = Batch.empty
-  def draw(ctx: TestCtx, t: Seconds, m: Int): Int =
-    calls += ((ctx, t, m))
-    m + 1
-  def provideContext(m: Int): Option[TestCtx] = contextHook(m)
-  def teardown(m: Int): Unit                  = ()
+    var count = 0
 
-class ExtensionRegisterDrawTests extends munit.FunSuite {
+    val a = new TestExt("a", () => count = count + 1)
+    val b = new TestExt("b", () => throw new Exception("Ooops"))
+    val c = new TestExt("c", () => count = count + 1)
+
+    val register = new ExtensionRegister[Unit, TestView]()
+    val _        = register.register(Batch(a, b, c))
+
+    register.teardown
+
+    assertEquals(count, 2)
+  }
 
   test("Graphical: runtime ctx is used and model is updated") {
     val ext      = new GraphicalRecorder("g")
@@ -86,3 +78,38 @@ class ExtensionRegisterDrawTests extends munit.FunSuite {
   }
 
 }
+
+final class TestExt(_id: String, _teardown: () => Unit) extends Extension.Standard[TestView]:
+  type ExtensionModel = Unit
+
+  def id: ExtensionId                            = ExtensionId(_id)
+  def init: Result[Unit]                         = Result(())
+  def update(m: Unit): GlobalMsg => Result[Unit] = _ => Result(m)
+  def view(m: Unit): TestView                    = TestView(Nil)
+  def watchers(m: Unit): Batch[Watcher]          = Batch.empty
+  def provideContext(m: Int): Option[Unit]       = None
+  def teardown(m: Unit): Unit                    = _teardown()
+
+final case class TestView(parts: List[String]) derives CanEqual
+object TestView:
+  given Monoid[TestView] =
+    Monoid.instance(TestView(Nil), (a, b) => TestView(a.parts ++ b.parts))
+
+final case class TestCtx(label: String) derives CanEqual
+
+final class GraphicalRecorder(
+    _id: String,
+    contextHook: Int => Option[TestCtx] = _ => None
+) extends Extension.Graphical[TestCtx, TestView]:
+  type ExtensionModel = Int
+  val calls: ArrayBuffer[(TestCtx, Seconds, Int)] = ArrayBuffer.empty
+  def id: ExtensionId                             = ExtensionId(_id)
+  def init: Result[Int]                           = Result(0)
+  def update(m: Int): GlobalMsg => Result[Int]    = _ => Result(m)
+  def view(m: Int): TestView                      = TestView(Nil)
+  def watchers(m: Int): Batch[Watcher]            = Batch.empty
+  def draw(ctx: TestCtx, t: Seconds, m: Int): Int =
+    calls += ((ctx, t, m))
+    m + 1
+  def provideContext(m: Int): Option[TestCtx] = contextHook(m)
+  def teardown(m: Int): Unit                  = ()
