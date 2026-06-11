@@ -127,4 +127,4 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
         try extension.teardown(model)
         catch
           case NonFatal(e) =>
-            println(s"Extension teardown failed: ${e.getMessage}\n${e.getStackTrace().mkString("\n")}")
+            println(s"Extension teardown failed [${key}]: ${e.getMessage}\n${e.getStackTrace().mkString("\n")}")
