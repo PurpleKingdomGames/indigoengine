@@ -7,6 +7,7 @@ import tyrian.*
 
 import scala.collection.mutable.ArrayBuffer
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.throw"))
 class ExtensionRegisterTests extends munit.FunSuite {
 
   test("teardown") {
