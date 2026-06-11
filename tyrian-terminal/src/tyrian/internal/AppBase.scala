@@ -48,7 +48,7 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
   /** Invoked when terminal apps exit. Provides an opportunity for sign-off messages to the user, or for clean up
     * side-effects to take place.
     *
-    * The main app teardown is the last teardown process to take place, after the extensions have been torndown. Unlike
+    * The main app teardown is the last teardown process to take place, after the extensions have been torn down. Unlike
     * extensions, the main app teardown has no natural way to reach a model reference. A better place to put
     * functionality with stateful teardown requirements is, therefore, in an extension. Finally, no attempt is made to
     * recover from exceptions thrown in the app teardown process, since it is the last one on the way out.
