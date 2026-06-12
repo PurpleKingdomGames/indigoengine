@@ -71,7 +71,7 @@ object TyrianRuntime:
     val initialDraw =
       present.draw(dispatcher, renderer, model, view, onMsg, router)(using F, clock)
 
-    runCmd(initCmd) *> initialDraw *> model.get.flatMap(m => runSub(subscriptions(m))) *> msgLoop
+    initialDraw *> runCmd(initCmd) *> model.get.flatMap(m => runSub(subscriptions(m))) *> msgLoop
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def runCommands[F[_], Msg](msgQueue: Queue[F, Msg])(cmd: Cmd[F, Msg])(using F: Async[F]): F[Unit] =
