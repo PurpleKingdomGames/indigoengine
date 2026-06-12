@@ -189,6 +189,9 @@ final case class Indigo(
   def provideContext(model: Model): Option[SDLContext] =
     None
 
+  def prepare(model: Model): Unit =
+    ()
+
   def teardown(model: Model): Unit =
     ()
 
