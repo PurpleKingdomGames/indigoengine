@@ -45,6 +45,9 @@ object CounterExtension extends Extension.Standard[HtmlFragment]:
   def watchers(currentValue: Int): Batch[Watcher] =
     Batch.empty
 
+  def prepare(currentValue: Int): Unit =
+    ()
+
   def teardown(currentValue: Int): Unit =
     ()
 

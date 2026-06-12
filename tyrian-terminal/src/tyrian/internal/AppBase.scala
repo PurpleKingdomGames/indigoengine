@@ -45,6 +45,18 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     */
   def extensions(args: List[String], model: Model): Set[Extension[GraphicsContext, TerminalFragment]]
 
+  /** Invoked once on start up, guaranteed to run and complete before the first draw. Provides an opportunity for
+    * synchronous setup side-effects, such as putting the terminal into raw mode, so that the very first frame is
+    * rendered into a correctly prepared environment.
+    *
+    * `prepare` is the mirror of [[teardown]]: the main app is prepared before any extensions and before the first draw,
+    * and torn down last on the way out. Like the main app `teardown`, `prepare` has no natural way to reach a model
+    * reference, so stateful setup is better placed in an extension's `prepare`.
+    *
+    * Note: `prepare` has no effect on the JS platform.
+    */
+  def prepare: Unit
+
   /** Invoked when terminal apps exit. Provides an opportunity for sign-off messages to the user, or for clean up
     * side-effects to take place.
     *
@@ -133,7 +145,13 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
       _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub
 
-    TyrianApp.start[IO, Model, GlobalMsg](
+    val prepareAll: IO[Unit] =
+      IO {
+        prepare
+        extensionsRegister.prepare
+      }
+
+    prepareAll *> TyrianApp.start[IO, Model, GlobalMsg](
       initModel -> (initCmds |+| Cmd.Batch(extensionsCmds.toList)),
       combinedUpdate,
       combinedView,

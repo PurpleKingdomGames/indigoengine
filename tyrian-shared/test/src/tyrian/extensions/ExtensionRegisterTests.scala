@@ -10,13 +10,29 @@ import scala.collection.mutable.ArrayBuffer
 @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.throw"))
 class ExtensionRegisterTests extends munit.FunSuite {
 
+  test("prepare") {
+
+    var count = 0
+
+    val a = new TestExt("a", () => count = count + 1, () => ())
+    val b = new TestExt("b", () => throw new Exception("Ooops"), () => ())
+    val c = new TestExt("c", () => count = count + 1, () => ())
+
+    val register = new ExtensionRegister[Unit, TestView]()
+    val _        = register.register(Batch(a, b, c))
+
+    register.prepare
+
+    assertEquals(count, 2)
+  }
+
   test("teardown") {
 
     var count = 0
 
-    val a = new TestExt("a", () => count = count + 1)
-    val b = new TestExt("b", () => throw new Exception("Ooops"))
-    val c = new TestExt("c", () => count = count + 1)
+    val a = new TestExt("a", () => (), () => count = count + 1)
+    val b = new TestExt("b", () => (), () => throw new Exception("Ooops"))
+    val c = new TestExt("c", () => (), () => count = count + 1)
 
     val register = new ExtensionRegister[Unit, TestView]()
     val _        = register.register(Batch(a, b, c))
@@ -80,7 +96,7 @@ class ExtensionRegisterTests extends munit.FunSuite {
 
 }
 
-final class TestExt(_id: String, _teardown: () => Unit) extends Extension.Standard[TestView]:
+final class TestExt(_id: String, _prepare: () => Unit, _teardown: () => Unit) extends Extension.Standard[TestView]:
   type ExtensionModel = Unit
 
   def id: ExtensionId                            = ExtensionId(_id)
@@ -89,6 +105,7 @@ final class TestExt(_id: String, _teardown: () => Unit) extends Extension.Standa
   def view(m: Unit): TestView                    = TestView(Nil)
   def watchers(m: Unit): Batch[Watcher]          = Batch.empty
   def provideContext(m: Int): Option[Unit]       = None
+  def prepare(m: Unit): Unit                     = _prepare()
   def teardown(m: Unit): Unit                    = _teardown()
 
 final case class TestView(parts: List[String]) derives CanEqual
@@ -113,4 +130,5 @@ final class GraphicalRecorder(
     calls += ((ctx, t, m))
     m + 1
   def provideContext(m: Int): Option[TestCtx] = contextHook(m)
+  def prepare(m: Int): Unit                   = ()
   def teardown(m: Int): Unit                  = ()

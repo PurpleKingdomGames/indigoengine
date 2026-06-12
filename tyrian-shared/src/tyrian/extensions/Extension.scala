@@ -38,6 +38,16 @@ sealed trait Extension[GraphicsContext, View]:
     */
   def watchers(model: ExtensionModel): Batch[Watcher]
 
+  /** Invoked once when terminal apps start up, guaranteed to run and complete before the first draw (has no effect on
+    * JS). Provides an opportunity for synchronous setup side-effects, such as putting the terminal into raw mode, so
+    * that the very first frame is rendered into a correctly prepared environment.
+    *
+    * `prepare` is the mirror of [[teardown]]: extensions are prepared before the main app's first draw and torn down
+    * before the main app exits. Like `teardown`, it has access to the extension's model so that references to resources
+    * acquired here can be retained for later clean up.
+    */
+  def prepare(model: ExtensionModel): Unit
+
   /** Invoked when terminal apps exit (has no effect on JS). Provides an opportunity for sign-off messages to the user,
     * or for clean up side-effects to take place.
     *

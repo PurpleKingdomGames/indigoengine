@@ -115,6 +115,20 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
   def size: Int =
     registeredExtensions.length
 
+  def prepare: Unit =
+    registeredExtensions
+      .foreach: rss =>
+        val key       = rss.id
+        val extension = rss.extension
+
+        val model: extension.ExtensionModel =
+          stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
+
+        try extension.prepare(model)
+        catch
+          case NonFatal(e) =>
+            println(s"Extension prepare failed [${key}]: ${e.getMessage}\n${e.getStackTrace().take(3).mkString("\n")}")
+
   def teardown: Unit =
     registeredExtensions
       .foreach: rss =>

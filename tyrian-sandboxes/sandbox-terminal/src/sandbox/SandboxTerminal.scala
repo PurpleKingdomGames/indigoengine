@@ -40,6 +40,9 @@ object SandboxTerminal extends App[Unit, Model]:
   def extensions(args: List[String], model: Model): Set[Extension[Unit, TerminalFragment]] =
     Set()
 
+  def prepare: Unit =
+    println("Getting ready...")
+
   def teardown: Unit =
     println("Goodbye!")
 

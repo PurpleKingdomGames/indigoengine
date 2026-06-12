@@ -293,6 +293,9 @@ final case class Indigo(
           height = canvas.height
         )
 
+  def prepare(model: Model): Unit =
+    ()
+
   def teardown(model: Model): Unit =
     ()
 
