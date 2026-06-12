@@ -23,9 +23,9 @@ trait TyrianApp[F[_]: Async, Msg, Model]:
     */
   def update(model: Model): Msg => (Model, Cmd[F, Msg])
 
-  /** Used to render your current model into an HTML view.
+  /** Used to render your current model into a Console view.
     */
-  def view(model: Model): Terminal[Msg]
+  def view(model: Model): Console[Msg]
 
   /** Subscriptions are typically processes that run for a period of time and emit discrete events based on some world
     * event, e.g. a mouse moving might emit it's coordinates.
@@ -44,7 +44,7 @@ trait TyrianApp[F[_]: Async, Msg, Model]:
   private def _update(model: Model): Msg => (Model, Cmd[F, Msg]) =
     msg => update(model)(msg)
 
-  private def _view(model: Model): Terminal[Msg] =
+  private def _view(model: Model): Console[Msg] =
     view(model)
 
   private def _subscriptions(model: Model): Sub[F, Msg] =
@@ -82,12 +82,12 @@ object TyrianApp:
   def start[F[_]: Async, Model, Msg](
       init: (Model, Cmd[F, Msg]),
       update: Model => Msg => (Model, Cmd[F, Msg]),
-      view: Model => Terminal[Msg],
+      view: Model => Console[Msg],
       subscriptions: Model => Sub[F, Msg]
   ): F[Nothing] =
     val router: Location => Option[Msg] = _ => None
 
-    TyrianRuntime[F, Model, Msg, Terminal, Unit](
+    TyrianRuntime[F, Model, Msg, Console, Unit](
       router,
       init._1,
       init._2,

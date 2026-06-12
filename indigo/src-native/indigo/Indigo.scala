@@ -20,7 +20,7 @@ final case class Indigo(
     onLaunchFailure: Option[GlobalMsg],
     eventMapping: PartialIso[GlobalMsg, GlobalEvent],
     settings: Settings
-) extends Extension.Graphical[SDLContext, TerminalFragment]:
+) extends Extension.Graphical[SDLContext, ConsoleFragment]:
 
   type ExtensionModel = Model
 
@@ -167,8 +167,8 @@ final case class Indigo(
               .log(s"Indigo Extension failed to launch the game after ${Indigo.MaxStartupAttempts} attempts.")
       else Result(model)
 
-  def view(model: Model): TerminalFragment =
-    TerminalFragment.empty
+  def view(model: Model): ConsoleFragment =
+    ConsoleFragment.empty
 
   def watchers(model: Model): Batch[Watcher] =
     Batch(LogDrainWatcher(game))

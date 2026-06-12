@@ -6,7 +6,7 @@ import cats.effect.unsafe.implicits.global
 import indigoengine.shared.collections.Batch
 import tyrian.GlobalMsg
 import tyrian.Watcher
-import tyrian.classic.Terminal
+import tyrian.classic.Console
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionRegister
 import tyrian.platform.Cmd
@@ -49,7 +49,7 @@ trait SDLApp[Model]:
 
   /** Used to render your current model into a view.
     */
-  def view(model: Model): TerminalFragment
+  def view(model: Model): ConsoleFragment
 
   /** Watchers are typically processes that run for a period of time and emit discrete events based on some world event,
     * e.g. a mouse moving might emit it's coordinates.
@@ -57,7 +57,7 @@ trait SDLApp[Model]:
   def watchers(model: Model): Batch[Watcher]
 
   /** Extensions own per-frame rendering, invoked on the main thread by the runtime. */
-  def extensions(args: Array[String], model: Model): Set[Extension[SDLContext, TerminalFragment]]
+  def extensions(args: Array[String], model: Model): Set[Extension[SDLContext, ConsoleFragment]]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: Array[String]): (Model, Cmd[IO, GlobalMsg]) =
@@ -85,7 +85,7 @@ trait SDLApp[Model]:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private val extensionsRegister: ExtensionRegister[SDLContext, TerminalFragment] =
+  private val extensionsRegister: ExtensionRegister[SDLContext, ConsoleFragment] =
     new ExtensionRegister()
 
   final def main(args: Array[String]): Unit =
@@ -122,8 +122,8 @@ trait SDLApp[Model]:
             m -> (as |+| eCmds)
         }
 
-    def combinedView(model: Model): Terminal[GlobalMsg] =
-      (view(model) |+| extensionsRegister.view).toTerminal
+    def combinedView(model: Model): Console[GlobalMsg] =
+      (view(model) |+| extensionsRegister.view).toConsole
 
     def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
       _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub

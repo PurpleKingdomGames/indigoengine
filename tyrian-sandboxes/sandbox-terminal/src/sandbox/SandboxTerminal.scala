@@ -19,17 +19,13 @@ object SandboxTerminal extends App[Unit, Model]:
     case Msg.NoOp =>
       Result(model)
 
-  def view(model: Model): TerminalFragment =
+  def view(model: Model): ConsoleFragment =
     model.elapsed match
       case None =>
-        TerminalFragment(TerminalOps.Print("Waiting..."))
+        ConsoleFragment.println("Waiting...")
 
       case Some(t) =>
-        TerminalFragment(
-          Batch(
-            TerminalOps.Print(s"...tick (${t.toString()})")
-          )
-        )
+        ConsoleFragment.println(s"...tick (${t.toString()})")
 
   def watchers(model: Model): Batch[Watcher] =
     Batch(
@@ -37,7 +33,7 @@ object SandboxTerminal extends App[Unit, Model]:
       Watcher.timeout(5.seconds, Msg.Quit, "quit")
     )
 
-  def extensions(args: List[String], model: Model): Set[Extension[Unit, TerminalFragment]] =
+  def extensions(args: List[String], model: Model): Set[Extension[Unit, ConsoleFragment]] =
     Set()
 
   def prepare: Unit =
