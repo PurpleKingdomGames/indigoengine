@@ -5,11 +5,11 @@ import cats.effect.IO
 import cats.effect.IOApp
 import indigoengine.shared.collections.Batch
 import tyrian.Action
+import tyrian.ConsoleFragment
 import tyrian.GlobalMsg
 import tyrian.Result
-import tyrian.TerminalFragment
 import tyrian.Watcher
-import tyrian.classic.Terminal
+import tyrian.classic.Console
 import tyrian.classic.TyrianApp
 import tyrian.extensions.Extension
 import tyrian.extensions.ExtensionRegister
@@ -30,7 +30,7 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
 
   /** Used to render your current model into a view.
     */
-  def view(model: Model): TerminalFragment
+  def view(model: Model): ConsoleFragment
 
   /** Watchers are typically processes that run for a period of time and emit discrete events based on some world event,
     * e.g. a mouse moving might emit it's coordinates.
@@ -43,7 +43,7 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     * @param model
     *   The initial app model. Only provided once.
     */
-  def extensions(args: List[String], model: Model): Set[Extension[GraphicsContext, TerminalFragment]]
+  def extensions(args: List[String], model: Model): Set[Extension[GraphicsContext, ConsoleFragment]]
 
   /** Invoked once on start up, guaranteed to run and complete before the first draw. Provides an opportunity for
     * synchronous setup side-effects, such as putting the terminal into raw mode, so that the very first frame is
@@ -107,7 +107,7 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
   private def _subscriptions(model: Model): Sub[IO, GlobalMsg] =
     Watcher.internal.Many(watchers(model)).toSub
 
-  private[tyrian] val extensionsRegister: ExtensionRegister[GraphicsContext, TerminalFragment] =
+  private[tyrian] val extensionsRegister: ExtensionRegister[GraphicsContext, ConsoleFragment] =
     new ExtensionRegister()
 
   def appStart(args: List[String]): IO[Nothing] =
@@ -139,8 +139,8 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
             m -> (as |+| eCmds)
         }
 
-    def combinedView(model: Model): Terminal[GlobalMsg] =
-      (view(model) |+| extensionsRegister.view).toTerminal
+    def combinedView(model: Model): Console[GlobalMsg] =
+      (view(model) |+| extensionsRegister.view).toConsole
 
     def combinedSubscriptions(model: Model): Sub[IO, GlobalMsg] =
       _subscriptions(model) |+| Watcher.internal.Many(extensionsRegister.watchers).toSub

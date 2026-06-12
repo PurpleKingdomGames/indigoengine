@@ -7,7 +7,7 @@ import tyrian.*
 import scala.scalanative.unsafe.*
 import scala.scalanative.unsigned.*
 
-object TestSDLExtension extends Extension.Graphical[SDLContext, TerminalFragment]:
+object TestSDLExtension extends Extension.Graphical[SDLContext, ConsoleFragment]:
 
   type ExtensionModel = ExtModel
 
@@ -25,8 +25,8 @@ object TestSDLExtension extends Extension.Graphical[SDLContext, TerminalFragment
   def update(model: ExtModel): GlobalMsg => Result[ExtensionModel] =
     case _ => Result(model)
 
-  def view(model: ExtModel): TerminalFragment =
-    TerminalFragment.empty
+  def view(model: ExtModel): ConsoleFragment =
+    ConsoleFragment.empty
 
   def draw(context: SDLContext, runningTime: Seconds, model: ExtModel): ExtModel =
     val phase = ((runningTime.toMillis.toLong / 1000L) % 6L).toFloat / 6.0f

@@ -39,8 +39,8 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
     case Msg.NoOp =>
       Result(model)
 
-  def view(model: SandboxModel): TerminalFragment =
-    TerminalFragment.empty
+  def view(model: SandboxModel): ConsoleFragment =
+    ConsoleFragment.empty
 
   def watchers(model: SandboxModel): Batch[Watcher] =
     Batch(
@@ -51,7 +51,7 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
       }
     )
 
-  def extensions(args: Array[String], model: SandboxModel): Set[Extension[SDLContext, TerminalFragment]] =
+  def extensions(args: Array[String], model: SandboxModel): Set[Extension[SDLContext, ConsoleFragment]] =
     Set(TestSDLExtension)
 
 final case class SandboxModel(ticks: Long)

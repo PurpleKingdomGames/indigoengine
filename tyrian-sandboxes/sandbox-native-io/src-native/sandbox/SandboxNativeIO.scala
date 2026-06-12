@@ -1,7 +1,7 @@
 package sandbox
 
 import cats.effect.IO
-import tyrian.classic.Terminal
+import tyrian.classic.Console
 import tyrian.classic.TyrianIOApp
 import tyrian.classic.cmds.Logger
 import tyrian.classic.syntax.*
@@ -30,13 +30,13 @@ object SandboxNativeIO extends TyrianIOApp[Msg, Model]:
     case Msg.NoOp =>
       model -> Cmd.None
 
-  def view(model: Model): Terminal[Msg] =
+  def view(model: Model): Console[Msg] =
     model.timestamp match
       case None =>
-        Terminal.NoOp()
+        Console.NoOp()
 
       case Some(t) =>
-        Terminal.Print(s"...tick (${t.toString()})")
+        Console.println(s"...tick (${t.toString()})")
 
   def subscriptions(model: Model): Sub[IO, Msg] =
     val sub1 =

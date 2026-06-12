@@ -8,7 +8,7 @@ import cats.effect.std.Queue
 import cats.syntax.all.*
 import tyrian.GlobalMsg
 import tyrian.Location
-import tyrian.classic.Terminal
+import tyrian.classic.Console
 import tyrian.platform.Cmd
 import tyrian.platform.Sub
 import tyrian.platform.runtime.CmdHelper
@@ -23,7 +23,7 @@ final class TyrianSDLRuntime[Model](
     _currentSubs: AtomicCell[IO, List[(String, IO[Unit])]],
     _msgQueue: Queue[IO, GlobalMsg],
     _viewState: Ref[IO, Unit]
-)(using present: PresentView[Terminal, Unit]):
+)(using present: PresentView[Console, Unit]):
 
   def start(initCmds: Cmd[IO, GlobalMsg], initSubs: Model => Sub[IO, GlobalMsg]): IO[Unit] =
     val runCmd = runCommands(_msgQueue)
@@ -34,7 +34,7 @@ final class TyrianSDLRuntime[Model](
 
   def tick(
       update: Model => GlobalMsg => (Model, Cmd[IO, GlobalMsg]),
-      view: Model => Terminal[GlobalMsg],
+      view: Model => Console[GlobalMsg],
       subscriptions: Model => Sub[IO, GlobalMsg]
   ): IO[Unit] =
     val router: Location => Option[GlobalMsg] = _ => None
@@ -107,7 +107,7 @@ object TyrianSDLRuntime:
       dispatcher: Dispatcher[IO],
       initModel: Model
   )(using
-      present: PresentView[Terminal, Unit]
+      present: PresentView[Console, Unit]
   ): IO[TyrianSDLRuntime[Model]] =
     for {
       model       <- IO.ref(initModel)
