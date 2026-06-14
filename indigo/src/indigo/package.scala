@@ -104,6 +104,9 @@ object aliases:
   type UniformBlock = indigo.shaders.UniformBlock
   val UniformBlock: indigo.shaders.UniformBlock.type = indigo.shaders.UniformBlock
 
+  type UniformBlockName = indigo.shaders.UniformBlockName
+  val UniformBlockName: indigo.shaders.UniformBlockName.type = indigo.shaders.UniformBlockName
+
   val StandardShaders: indigo.shaders.StandardShaders.type = indigo.shaders.StandardShaders
 
   type ShaderPrimitive = indigo.shaders.ShaderPrimitive

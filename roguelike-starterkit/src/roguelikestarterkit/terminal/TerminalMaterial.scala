@@ -1,10 +1,6 @@
 package roguelikestarterkit.terminal
 
 import indigo.*
-import indigo.shaders.ShaderPrimitive
-import indigo.shaders.Uniform
-import indigo.shaders.UniformBlock
-import indigo.shaders.UniformBlockName
 import indigo.shaders.library.Lighting
 import ultraviolet.syntax.*
 
