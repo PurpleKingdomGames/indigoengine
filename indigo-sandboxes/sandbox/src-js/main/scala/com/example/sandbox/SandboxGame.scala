@@ -94,12 +94,21 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
   def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
     Outcome(SandboxModel.initialModel(startupData))
+      .addGlobalEvents(
+        StorageEvents.Store("test", "Hello, World!"),
+        StorageEvents.Load("test")
+      )
 
   def updateModel(
       context: Context,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModelShared.updateModel(context, model)
+    case StorageEvents.Loaded(k, v) =>
+      IndigoLogger.info(s"Loaded [$k]: $v")
+      Outcome(model)
+
+    case e =>
+      SandboxModelShared.updateModel(context, model)(e)
 
   def present(
       context: Context,
@@ -139,3 +148,8 @@ final case class SandboxViewModel(
 )
 
 final case class Log(message: String) extends GlobalEvent
+
+enum StorageEvents extends GlobalEvent:
+  case Store(key: String, value: String)
+  case Load(key: String)
+  case Loaded(key: String, value: String)
