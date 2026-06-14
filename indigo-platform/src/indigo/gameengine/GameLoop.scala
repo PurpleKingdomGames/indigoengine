@@ -2,7 +2,7 @@ package indigo.platform.gameengine
 
 import indigo.core.Outcome
 import indigo.core.config.EngineConfig
-import indigo.core.datatypes.Size
+import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.FrameTick
 import indigo.core.events.InputEvent
@@ -30,7 +30,7 @@ final class GameLoop[StartUpData, GameModel](
     initialModel: GameModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
-    giveScreenSize: () => Size
+    giveScreenSize: () => Rectangle
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -85,7 +85,7 @@ final class GameLoop[StartUpData, GameModel](
           Dice.fromSeconds(gameTime.running),
           gameTime,
           _inputState,
-          giveScreenSize() // Size(renderer.screenWidth, renderer.screenHeight)
+          giveScreenSize()
         ),
         _services
       )

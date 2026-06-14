@@ -25,14 +25,14 @@ final case class Window[A, ReferenceData](
     activeCheck: UIContext[ReferenceData] => WindowActive
 ):
 
-  def bounds(viewport: Size, magnification: Int): Bounds =
+  def bounds(viewport: Rectangle, magnification: Int): Bounds =
     position match
       case WindowPosition.Fixed(coords) =>
         Bounds(coords, dimensions)
 
       case WindowPosition.Anchored(anchor) =>
         Bounds(
-          anchor.calculatePosition(Dimensions(viewport) / magnification, dimensions),
+          anchor.calculatePosition(Dimensions(viewport.size) / magnification, dimensions),
           dimensions
         )
 

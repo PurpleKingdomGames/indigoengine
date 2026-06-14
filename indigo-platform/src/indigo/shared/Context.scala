@@ -2,7 +2,6 @@ package indigo.shared
 
 import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.Rectangle
-import indigo.core.datatypes.Size
 import indigo.core.dice.Dice
 import indigo.core.events.InputState
 import indigo.core.time.GameTime
@@ -55,7 +54,7 @@ object Context:
       gameTime: GameTime,
       dice: Dice,
       inputState: InputState,
-      viewport: Size,
+      viewport: Rectangle,
       boundaryLocator: BoundaryLocator
   ): Context =
     new Context(
@@ -77,7 +76,7 @@ object Context:
       val dice: Dice,
       val time: GameTime,
       val input: InputState,
-      val viewport: Size
+      val viewport: Rectangle
   ):
 
     def withDice(newDice: Dice): Frame =
@@ -89,15 +88,15 @@ object Context:
     def withInput(newInput: InputState): Frame =
       new Frame(dice, time, newInput, viewport)
 
-    def withViewport(newViewport: Size): Frame =
+    def withViewport(newViewport: Rectangle): Frame =
       new Frame(dice, time, input, newViewport)
 
   object Frame:
-    def apply(dice: Dice, time: GameTime, input: InputState, viewport: Size): Frame =
+    def apply(dice: Dice, time: GameTime, input: InputState, viewport: Rectangle): Frame =
       new Frame(dice, time, input, viewport)
 
     val initial: Frame =
-      new Frame(Dice.default, GameTime.zero, InputState.default, Size.zero)
+      new Frame(Dice.default, GameTime.zero, InputState.default, Rectangle.zero)
 
   /** The services that are available to the game, such as measuring text, finding the bounds of anything on screen, or
     * accessing a long running Random instance. Services are side-effecting, long running, and / or stateful.

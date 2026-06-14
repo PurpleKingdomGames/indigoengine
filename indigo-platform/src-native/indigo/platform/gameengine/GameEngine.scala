@@ -5,7 +5,7 @@ import indigo.core.animation.*
 import indigo.core.assets.AssetName
 import indigo.core.config.EngineConfig
 import indigo.core.datatypes.FontInfo
-import indigo.core.datatypes.Size
+import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
@@ -360,7 +360,7 @@ object GameEngine {
         initialModel,
         frameProccessor,
         startFrameLocked,
-        () => Size(renderer.screenWidth, renderer.screenHeight)
+        () => Rectangle(renderer.screenWidth, renderer.screenHeight)
       )
     )
 }
