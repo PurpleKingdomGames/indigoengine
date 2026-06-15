@@ -29,7 +29,7 @@ trait BasicGameRuntime[Model] extends App[WebGL2Context, Model]:
 
   /** Defines a partial two-way mapping of Indigo GlobalEvents and Tyrian GlobalMsgs. For example, if you want to save
     * your game you emit a GlobalEvent in Indigo, this mapping sees the event, and translates it to a GlobalMsg that can
-    * be matched in the [[updateModel]] function, you can then acknowledge the save by reversing the process.
+    * be matched in the [[update]] function, you can then acknowledge the save by reversing the process.
     */
   def eventMapping: PartialIso[GlobalMsg, GlobalEvent]
 
