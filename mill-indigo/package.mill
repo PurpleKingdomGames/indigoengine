@@ -10,8 +10,6 @@ import mill.util.BuildInfo.{millVersion, millBinPlatform}
 
 object `package` extends SharedJVM, SharedPublish:
 
-  // override def artifactName = "mill-indigo"
-
   def platformSuffix = s"_mill$millBinPlatform"
 
   def moduleDeps =
@@ -27,15 +25,3 @@ object `package` extends SharedJVM, SharedPublish:
       Seq(
         mvn"com.lihaoyi::mill-libs:$millVersion"
       )
-
-  // override def pomSettings =
-  //   PomSettings(
-  //     description = "mill-indigo",
-  //     organization = "io.indigoengine",
-  //     url = "https://github.com/PurpleKingdomGames/indigo",
-  //     licenses = Seq(License.MIT),
-  //     versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
-  //     developers = Seq(
-  //       Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
-  //     )
-  //   )
