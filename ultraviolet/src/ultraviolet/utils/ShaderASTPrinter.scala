@@ -16,11 +16,23 @@ import ultraviolet.macros.ShaderMacros
 object ShaderASTPrinter:
 
   inline def printAST[In, Out](inline shader: Shader[In, Out]): String =
-    val proc = ShaderMacros.toAST(shader)
+    val proc = ShaderMacros.toAST(shader, true)
+    print(proc)
+
+  inline def printAST[In, Out](inline shader: Shader[In, Out], inline useValidation: Boolean): String =
+    val proc = ShaderMacros.toAST(shader, useValidation)
     print(proc)
 
   inline def printASTTransformed[In, Out](inline shader: Shader[In, Out], inline version: ProgramVersion): String =
-    val proc = ShaderMacros.toASTTransformed(shader, version)
+    val proc = ShaderMacros.toASTTransformed(shader, version, true)
+    print(proc)
+
+  inline def printASTTransformed[In, Out](
+      inline shader: Shader[In, Out],
+      inline version: ProgramVersion,
+      inline useValidation: Boolean
+  ): String =
+    val proc = ShaderMacros.toASTTransformed(shader, version, useValidation)
     print(proc)
 
   def print(p: ProceduralShader): String =

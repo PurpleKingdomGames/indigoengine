@@ -137,7 +137,7 @@ class ShaderASTPrinterTests extends munit.FunSuite {
         val h: Float = 1.0f
       }
 
-    val proc   = ShaderMacros.toAST(fragment)
+    val proc   = ShaderMacros.toAST(fragment, true)
     val output = ShaderASTPrinter.print(proc)
 
     assert(output.startsWith("ProceduralShader"))
@@ -166,6 +166,25 @@ class ShaderASTPrinterTests extends munit.FunSuite {
 
     assert(output.startsWith("ProceduralShader"))
     assert(output.contains("Val 'h'"))
+  }
+
+  test("Can print and invalid AST (Example used: Nested named functions)") {
+    inline def fragment =
+      Shader {
+        def foo(i: Int): Int =
+          def bar(): Int = 10
+          bar()
+      }
+
+    val output =
+      ShaderASTPrinter.printAST(
+        fragment,
+        useValidation = false // Does not compile if set to true.
+      )
+
+    assert(clue(output).startsWith("ProceduralShader"))
+    assert(clue(output).contains("Function 'foo'"))
+    assert(clue(output).contains("Function 'bar'"))
   }
 
 }

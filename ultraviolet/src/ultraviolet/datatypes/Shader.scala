@@ -43,23 +43,43 @@ object Shader:
       toGLSL(ProgramVersion.GLSL_410, headers)
 
     inline def toGLSL(inline version: ProgramVersion): ShaderResult =
-      ShaderMacros.toGLSL(ctx, Nil, version)
+      ShaderMacros.toGLSL(ctx, Nil, version, true)
 
     inline def toGLSL(inline version: ProgramVersion, inline headers: List[ShaderHeader]): ShaderResult =
-      ShaderMacros.toGLSL(ctx, headers, version)
+      ShaderMacros.toGLSL(ctx, headers, version, true)
+
+    inline def toGLSL(
+        inline version: ProgramVersion,
+        inline headers: List[ShaderHeader],
+        inline useValidation: Boolean
+    ): ShaderResult =
+      ShaderMacros.toGLSL(ctx, headers, version, useValidation)
 
     /** Returns the `ProceduralShader` AST before any version-specific transformers are applied. Useful for debugging -
       * pair with `ShaderASTPrinter.print` for a readable tree view.
       */
     inline def toAST: ProceduralShader =
-      ShaderMacros.toAST(ctx)
+      ShaderMacros.toAST(ctx, true)
+
+    /** Returns the `ProceduralShader` AST before any version-specific transformers are applied. Useful for debugging -
+      * pair with `ShaderASTPrinter.print` for a readable tree view.
+      */
+    inline def toASTNoValidation: ProceduralShader =
+      ShaderMacros.toAST(ctx, false)
 
     /** Returns the `ProceduralShader` AST after the given version's transformers have been applied. Useful for
       * debugging - pair with `ShaderASTPrinter.print` for a readable tree view, and compare against `toAST` to see what
       * the transformers changed.
       */
     inline def toASTTransformed(inline version: ProgramVersion): ProceduralShader =
-      ShaderMacros.toASTTransformed(ctx, version)
+      ShaderMacros.toASTTransformed(ctx, version, true)
+
+    /** Returns the `ProceduralShader` AST after the given version's transformers have been applied. Useful for
+      * debugging - pair with `ShaderASTPrinter.print` for a readable tree view, and compare against `toAST` to see what
+      * the transformers changed.
+      */
+    inline def toASTTransformedNoValidation(inline version: ProgramVersion): ProceduralShader =
+      ShaderMacros.toASTTransformed(ctx, version, false)
 
     inline def run(in: In): Out = ctx(in)
 

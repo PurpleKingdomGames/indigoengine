@@ -57,7 +57,7 @@ class ProceduralShaderTests extends munit.FunSuite {
     // DebugAST.toAST(fragment)
 
     val actual =
-      ShaderMacros.toAST(fragment).find {
+      ShaderMacros.toAST(fragment, true).find {
         case r @ ShaderAST.DataTypes.vec2(_) => true
         case _                               => false
       }
@@ -92,7 +92,7 @@ class ProceduralShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      ShaderMacros.toAST(fragment).findAll {
+      ShaderMacros.toAST(fragment, true).findAll {
         case r @ ShaderAST.DataTypes.vec2(_) => true
         case _                               => false
       }

@@ -19,7 +19,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     val acc = new ListBuffer[String]()
 
-    val ast = ShaderMacros.toAST(fragment).main
+    val ast = ShaderMacros.toAST(fragment, true).main
 
     ast.traverse { case v @ ShaderAST.Val(id, _, _) =>
       acc += id

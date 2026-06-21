@@ -18,16 +18,18 @@ object ShaderMacros:
   inline def toGLSL[In, Out](
       inline shader: Shader[In, Out],
       inline headers: List[ShaderHeader],
-      inline version: ProgramVersion
+      inline version: ProgramVersion,
+      inline useValidation: Boolean
   ): ShaderResult =
-    ${ toGLSLImpl('{ shader }, '{ headers }, '{ version }) }
+    ${ toGLSLImpl('{ shader }, '{ headers }, '{ version }, '{ useValidation }) }
 
   @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def toGLSLImpl[In, Out: Type](
       shader: Expr[Shader[In, Out]],
       headers: Expr[List[ShaderHeader]],
-      version: Expr[ProgramVersion]
+      version: Expr[ProgramVersion],
+      useValidation: Expr[Boolean]
   )(using q: Quotes): Expr[ShaderResult] =
     import quotes.reflect.*
 
@@ -46,7 +48,7 @@ object ShaderMacros:
           |headers expr: ${headers.asTerm.show(using Printer.TreeStructure)}""".stripMargin
         )
       }
-      val p = buildProceduralShader(shader)
+      val p = buildProceduralShader(shader, useValidation)
 
       p.validate(v.requirements) match
         case ShaderValid.Valid =>
@@ -63,23 +65,25 @@ object ShaderMacros:
         report.errorAndAbort(e.message)
     }
 
-  inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader =
-    ${ toASTImpl('{ expr }) }
+  inline def toAST[In, Out](inline expr: Shader[In, Out], inline useValidation: Boolean): ProceduralShader =
+    ${ toASTImpl('{ expr }, '{ useValidation }) }
 
-  private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using
+  private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]], useValidation: Expr[Boolean])(using
       q: Quotes
   ): Expr[ProceduralShader] =
-    Expr(buildProceduralShader(expr))
+    Expr(buildProceduralShader(expr, useValidation))
 
   inline def toASTTransformed[In, Out](
       inline expr: Shader[In, Out],
-      inline version: ProgramVersion
+      inline version: ProgramVersion,
+      inline useValidation: Boolean
   ): ProceduralShader =
-    ${ toASTTransformedImpl('{ expr }, '{ version }) }
+    ${ toASTTransformedImpl('{ expr }, '{ version }, '{ useValidation }) }
 
   private[macros] def toASTTransformedImpl[In, Out: Type](
       expr: Expr[Shader[In, Out]],
-      version: Expr[ProgramVersion]
+      version: Expr[ProgramVersion],
+      useValidation: Expr[Boolean]
   )(using q: Quotes): Expr[ProceduralShader] =
     import quotes.reflect.*
 
@@ -91,14 +95,13 @@ object ShaderMacros:
       )
     }
 
-    val p = buildProceduralShader(expr)
+    val p = buildProceduralShader(expr, useValidation)
     Expr(p.applyTransformers(v.transformers))
 
-  private[macros] def buildProceduralShader[In, Out: Type](expr: Expr[Shader[In, Out]])(using
-      q: Quotes
+  private[macros] def buildProceduralShader[In, Out: Type](expr: Expr[Shader[In, Out]], useValidation: Expr[Boolean])(
+      using q: Quotes
   ): ProceduralShader = {
     import q.reflect.*
-    import ShaderProgramValidation.*
 
     val createAST = new CreateShaderAST[q.type](using q)
 
@@ -129,12 +132,25 @@ object ShaderMacros:
         "sampler2D"
       )
 
-    ProceduralShader(
-      validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
-      createAST.uboRegister.toList,
-      annotations,
-      validate(0, ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs)(main)
-    )
+    useValidation.value match
+      case Some(true) =>
+        ProceduralShader(
+          ShaderProgramValidation.validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
+          createAST.uboRegister.toList,
+          annotations,
+          ShaderProgramValidation.validate(
+            0,
+            ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs
+          )(main)
+        )
+
+      case _ =>
+        ProceduralShader(
+          defs,
+          createAST.uboRegister.toList,
+          annotations,
+          main
+        )
   }
 
   inline def fromFile(inline expr: String): RawGLSL = ${ fromFileImpl('{ expr }) }
