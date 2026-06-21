@@ -4,10 +4,10 @@ import ultraviolet.syntax.*
 
 object TileAndStretch:
 
-  inline def tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline def tileAndStretchChannel: (Int, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
     (
         fillType: Int,
-        fallback: vec4,
         srcChannel: sampler2D.type,
         channelPos: vec2,
         channelSize: vec2,
@@ -40,7 +40,17 @@ object TileAndStretch:
           )
 
         case _ =>
-          fallback
+          val clampedUV = clamp(uv * (entitySize / textureSize), 0.0f, 1.0f)
+
+          var col = vec4(0.0f)
+
+          if clampedUV.x < 1.0f && clampedUV.y < 1.0f then
+            col = texture2D(
+              srcChannel,
+              stretchedUVs(clampedUV, channelPos, channelSize)
+            )
+
+          col
 
   inline def stretchedUVs(uv: vec2, channelPos: vec2, channelSize: vec2): vec2 =
     channelPos + uv * channelSize

@@ -47,7 +47,7 @@ object ImageEffects:
           calculateRadialGradientOverlay
         val _calculateSaturation: (vec4, Float) => vec4 =
           calculateSaturation
-        val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
+        val _tileAndStretchChannel: (Int, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
           tileAndStretchChannel
 
         // 0 = normal 1 = stretch 2 = tile
@@ -56,7 +56,6 @@ object ImageEffects:
 
         env.CHANNEL_0 = _tileAndStretchChannel(
           fillType,
-          env.CHANNEL_0,
           env.SRC_CHANNEL,
           env.CHANNEL_0_POSITION,
           env.CHANNEL_0_SIZE,
@@ -67,7 +66,6 @@ object ImageEffects:
         )
         env.CHANNEL_1 = _tileAndStretchChannel(
           fillType,
-          env.CHANNEL_1,
           env.SRC_CHANNEL,
           env.CHANNEL_1_POSITION,
           env.CHANNEL_0_SIZE,
@@ -78,7 +76,6 @@ object ImageEffects:
         )
         env.CHANNEL_2 = _tileAndStretchChannel(
           fillType,
-          env.CHANNEL_2,
           env.SRC_CHANNEL,
           env.CHANNEL_2_POSITION,
           env.CHANNEL_0_SIZE,
@@ -89,7 +86,6 @@ object ImageEffects:
         )
         env.CHANNEL_3 = _tileAndStretchChannel(
           fillType,
-          env.CHANNEL_3,
           env.SRC_CHANNEL,
           env.CHANNEL_3_POSITION,
           env.CHANNEL_0_SIZE,

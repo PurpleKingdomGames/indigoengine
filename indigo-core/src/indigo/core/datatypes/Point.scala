@@ -79,8 +79,10 @@ final case class Point(x: Int, y: Int) derives CanEqual:
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
 
-  def toVector: Vector2 =
+  def toVector2: Vector2 =
     Vector2(x.toDouble, y.toDouble)
+  def toVector: Vector2 =
+    toVector2
 
   def toSize: Size =
     Size(x, y)

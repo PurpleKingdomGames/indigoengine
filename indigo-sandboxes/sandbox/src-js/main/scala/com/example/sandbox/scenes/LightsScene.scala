@@ -28,7 +28,7 @@ object LightsScene extends Scene[SandboxGameModel] {
     _ => Outcome(model)
 
   val graphic: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 0, 40, 40), LightingAssets.junctionBoxMaterialOn)
+    Graphic(40, 40, LightingAssets.junctionBoxMaterialOn)
       .withCrop(0, 0, 275, 200)
       .modifyMaterial(_.withFillType(FillType.Tile))
 

@@ -2,6 +2,7 @@ package indigo.render.pipeline.sceneprocessing
 
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
@@ -45,7 +46,7 @@ class SceneProcessorTests extends munit.FunSuite {
     )
 
   test("makeDisplayLayers - single layer with one graphic") {
-    val graphic = Graphic(Rectangle(10, 20, 200, 100), Material.Bitmap(AssetName("texture")))
+    val graphic = Graphic(Size(200, 100), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(10, 20, 200, 100))
     val scene   = SceneUpdateFragment(graphic)
 
     val result = SceneProcessor.makeDisplayLayers(
@@ -65,8 +66,8 @@ class SceneProcessorTests extends munit.FunSuite {
   }
 
   test("makeDisplayLayers - two separate layers") {
-    val graphic1 = Graphic(Rectangle(0, 0, 50, 50), Material.Bitmap(AssetName("texture")))
-    val graphic2 = Graphic(Rectangle(100, 100, 50, 50), Material.Bitmap(AssetName("texture")))
+    val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
+    val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
     val scene = SceneUpdateFragment(
       Layer(graphic1),
       Layer(graphic2)

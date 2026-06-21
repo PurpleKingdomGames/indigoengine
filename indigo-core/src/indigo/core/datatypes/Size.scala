@@ -47,8 +47,10 @@ final case class Size(width: Int, height: Int) derives CanEqual:
   def resizeBy(width: Int, height: Int): Size =
     resizeBy(Size(width, height))
 
-  def toVector: Vector2 =
+  def toVector2: Vector2 =
     Vector2(width.toDouble, height.toDouble)
+  def toVector: Vector2 =
+    toVector2
 
   def toPoint: Point =
     Point(width, height)

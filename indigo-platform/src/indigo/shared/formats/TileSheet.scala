@@ -34,8 +34,8 @@ final case class TileSheet(
   def graphicFromRectangle(boundsOpt: Option[Rectangle]): Option[Graphic[Material.Bitmap]] =
     boundsOpt.map { bounds =>
       Graphic(
-        bounds = bounds,
-        material = Material.Bitmap(assetName)
+        bounds.size,
+        Material.Bitmap(assetName)
       )
     }
 
