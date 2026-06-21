@@ -36,7 +36,7 @@ final case class TileSheet(
       Graphic(
         bounds.size,
         Material.Bitmap(assetName)
-      )
+      ).withCrop(bounds)
     }
 
   /** @param index
