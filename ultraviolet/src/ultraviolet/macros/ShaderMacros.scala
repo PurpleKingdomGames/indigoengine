@@ -132,8 +132,17 @@ object ShaderMacros:
         "sampler2D"
       )
 
+    // Defaults to validation enabled. Only disables validation explicitly.
     useValidation.value match
-      case Some(true) =>
+      case Some(false) =>
+        ProceduralShader(
+          defs,
+          createAST.uboRegister.toList,
+          annotations,
+          main
+        )
+
+      case _ =>
         ProceduralShader(
           ShaderProgramValidation.validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
           createAST.uboRegister.toList,
@@ -142,14 +151,6 @@ object ShaderMacros:
             0,
             ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs
           )(main)
-        )
-
-      case _ =>
-        ProceduralShader(
-          defs,
-          createAST.uboRegister.toList,
-          annotations,
-          main
         )
   }
 

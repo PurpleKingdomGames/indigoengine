@@ -168,7 +168,7 @@ class ShaderASTPrinterTests extends munit.FunSuite {
     assert(output.contains("Val 'h'"))
   }
 
-  test("Can print and invalid AST (Example used: Nested named functions)") {
+  test("Can print an invalid AST (Example used: Nested named functions)") {
     inline def fragment =
       Shader {
         def foo(i: Int): Int =
