@@ -28,8 +28,7 @@ object LightsScene extends Scene[SandboxGameModel] {
     _ => Outcome(model)
 
   val graphic: Graphic[Material.Bitmap] =
-    Graphic(40, 40, LightingAssets.junctionBoxMaterialOn)
-      .withCrop(0, 0, 275, 200)
+    Graphic(275, 200, LightingAssets.junctionBoxMaterialOn)
       .modifyMaterial(_.withFillType(FillType.Tile))
 
   val graphic2: Graphic[Material.ImageEffects] =
@@ -70,7 +69,7 @@ object LightsScene extends Scene[SandboxGameModel] {
           DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan, Radians.zero),
           PointLight.default
             .withSpecular(RGBA.White)
-            .moveTo(context.frame.input.mouse.position)
+            .moveTo(context.frame.input.mouse.position / 2)
             .withColor(RGBA.Red.mix(RGBA.White, 0.1))
             .withIntensity(2)
             .withFalloff(Falloff.smoothQuadratic.withRange(0, 80)),
