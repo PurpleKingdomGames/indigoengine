@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -65,36 +66,41 @@ object NineSliceScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Layer(
-            Batch(
-              Graphic(
-                boxSizeValue,
-                boxSizeValue,
-                Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
-              ).moveTo(5, 5),
-              // Shape
-              //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
-              //   .moveTo(5, 5),
-              Graphic(
-                boxSizeValue,
-                boxSizeValue,
-                Material.Bitmap(SandboxAssets.platform).nineSlice(Rectangle(8, 20, 112, 40))
-              ).moveTo(100, 5),
-              // Shape
-              //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
-              //   .moveTo(100, 5),
-              Graphic(
-                boxSizeValue,
-                boxSizeValue,
-                Material.Bitmap(SandboxAssets.window).nineSlice(Rectangle(3, 15, 121, 41))
-              ).moveTo(5, 100)
-              // Shape
-              //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
-              //   .moveTo(5, 100),
-            ) ++
-              crateStyles(graphic, (0 until 4).toBatch.map(col => Point(col * 100, 200)), false) ++
-              crateStyles(graphic.withCrop(32, 0, 32, 48), (0 until 4).toBatch.map(col => Point(col * 100, 300)), true)
-          ).withMagnificationForAll(2)
+          Constants.LayerKeys.game ->
+            Layer(
+              Batch(
+                Graphic(
+                  boxSizeValue,
+                  boxSizeValue,
+                  Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
+                ).moveTo(5, 5),
+                // Shape
+                //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+                //   .moveTo(5, 5),
+                Graphic(
+                  boxSizeValue,
+                  boxSizeValue,
+                  Material.Bitmap(SandboxAssets.platform).nineSlice(Rectangle(8, 20, 112, 40))
+                ).moveTo(100, 5),
+                // Shape
+                //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+                //   .moveTo(100, 5),
+                Graphic(
+                  boxSizeValue,
+                  boxSizeValue,
+                  Material.Bitmap(SandboxAssets.window).nineSlice(Rectangle(3, 15, 121, 41))
+                ).moveTo(5, 100)
+                // Shape
+                //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+                //   .moveTo(5, 100),
+              ) ++
+                crateStyles(graphic, (0 until 4).toBatch.map(col => Point(col * 100, 200)), false) ++
+                crateStyles(
+                  graphic.withCrop(32, 0, 32, 48),
+                  (0 until 4).toBatch.map(col => Point(col * 100, 300)),
+                  true
+                )
+            ).withMagnificationForAll(2)
         )
     )
   }
