@@ -269,7 +269,7 @@ object LegacyEffectsShaders:
         // ----------------------------------
         // Identical to ImageEffects (start)
 
-        // 0 = normal 1 = stretch 2 = tile
+        // 0 = normal, 1 = stretch, 2 = tile, 3 = nine-slice
         val fillType: Int =
           round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
 

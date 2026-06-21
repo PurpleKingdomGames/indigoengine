@@ -50,7 +50,7 @@ object ImageEffects:
         val _tileAndStretchChannel: (Int, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
           tileAndStretchChannel
 
-        // 0 = normal 1 = stretch 2 = tile
+        // 0 = normal, 1 = stretch, 2 = tile, 3 = nine-slice
         val fillType: Int =
           round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
 
