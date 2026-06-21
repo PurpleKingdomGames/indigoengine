@@ -192,6 +192,7 @@ final case class Clip[M <: Material](
           )
 
     Graphic(
+      size = size,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       position = position,
@@ -199,7 +200,7 @@ final case class Clip[M <: Material](
       scale = scale,
       ref = ref,
       flip = flip,
-      crop = Rectangle(framePositon * size.toPoint, size),
+      crop = Some(Rectangle(framePositon * size.toPoint, size)),
       material = material
     )
 

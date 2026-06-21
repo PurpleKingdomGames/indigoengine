@@ -31,13 +31,13 @@ object SandboxAssets {
     Graphic(32, 32, Material.Bitmap(dots))
 
   val redDot: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(dots)).withRef(8, 8)
+    Graphic(Size(16), Material.Bitmap(dots)).withRef(8, 8).withCrop(Rectangle(0, 0, 16, 16))
   val greenDot: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(16, 0, 16, 16), Material.Bitmap(dots)).withRef(8, 8)
+    Graphic(Size(16), Material.Bitmap(dots)).withRef(8, 8).withCrop(Rectangle(16, 0, 16, 16))
   val blueDot: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 16, 16, 16), Material.Bitmap(dots)).withRef(8, 8)
+    Graphic(Size(16), Material.Bitmap(dots)).withRef(8, 8).withCrop(Rectangle(0, 16, 16, 16))
   val yellowDot: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(16, 16, 16, 16), Material.Bitmap(dots)).withRef(8, 8)
+    Graphic(Size(16), Material.Bitmap(dots)).withRef(8, 8).withCrop(Rectangle(16, 16, 16, 16))
 
   val junctionBoxAlbedo: AssetName    = AssetName("junctionbox_albedo")
   val junctionBoxEmission: AssetName  = AssetName("junctionbox_emission")

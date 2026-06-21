@@ -102,20 +102,20 @@ object CaptureScreenScene extends Scene[SandboxGameModel]:
       SceneUpdateFragment(
         uiKey -> Layer(
           Batch(
-            Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
+            Graphic(16, 16, Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
             Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
           ) ++ ((model.captureScreenScene.screenshot1, model.captureScreenScene.screenshot2) match {
             case (Some(image1), Some(image2)) =>
               Batch(
                 Graphic(
-                  Rectangle(viewPort),
+                  viewPort,
                   Material.Bitmap(image1)
                 ).scaleBy(Vector2(screenshotScale))
                   .moveTo(viewPort.width - (viewPort.width * screenshotScale).toInt - 5, 5),
                 Box(bigRect, Fill.None, Stroke(1, RGBA.Black))
                   .moveTo(viewPort.width - (viewPort.width * screenshotScale).toInt - 5, 5),
                 Graphic(
-                  clippingRect,
+                  clippingRect.size,
                   Material.Bitmap(image2)
                 ).scaleBy(Vector2(screenshotScale))
                   .moveTo(

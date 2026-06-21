@@ -31,20 +31,20 @@ object RefractionScene extends Scene[SandboxGameModel] {
     _ => Outcome(model)
 
   val graphic: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 0, 64, 64), SandboxAssets.junctionBoxMaterial)
+    Graphic(64, 64, SandboxAssets.junctionBoxMaterial)
       .withRef(20, 20)
 
   val imageLight: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 0, 320, 240), SandboxAssets.imageLightMaterial)
+    Graphic(320, 240, SandboxAssets.imageLightMaterial)
       .moveBy(-14, -60)
 
   val distortion: Graphic[RefractionEntity] =
-    Graphic(Rectangle(0, 0, 240, 240), SandboxAssets.normalMapMaterial)
+    Graphic(240, 240, SandboxAssets.normalMapMaterial)
       .scaleBy(0.5, 0.5)
       .withRef(120, 120)
 
   val background: Graphic[Material.Bitmap] =
-    Graphic(Rectangle(0, 0, 790, 380), SandboxAssets.foliageMaterial)
+    Graphic(790, 380, SandboxAssets.foliageMaterial)
 
   def sliding: Signal[Graphic[RefractionEntity]] =
     Signal.SmoothPulse.map { d =>

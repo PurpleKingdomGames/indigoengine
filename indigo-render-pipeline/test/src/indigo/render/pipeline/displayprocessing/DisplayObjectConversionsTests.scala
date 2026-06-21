@@ -1,7 +1,7 @@
 package indigo.render.pipeline.displayprocessing
 
 import indigo.core.assets.AssetName
-import indigo.core.datatypes.Rectangle
+import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.events.GlobalEvent
 import indigo.core.time.GameTime
@@ -28,7 +28,8 @@ import indigoengine.shared.datatypes.Seconds
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val graphic: Graphic[?] =
-    Graphic(Rectangle(10, 20, 200, 100), Material.Bitmap(AssetName("texture")))
+    Graphic(Size(200, 100), Material.Bitmap(AssetName("texture")))
+      .moveTo(10, 20)
 
   val animationRegister = new AnimationsRegister
   val fontRegister      = new FontRegister

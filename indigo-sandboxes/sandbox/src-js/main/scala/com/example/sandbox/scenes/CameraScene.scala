@@ -44,7 +44,7 @@ object CameraScene extends Scene[SandboxGameModel] {
       SceneUpdateFragment(
         Layer(
           Graphic(
-            Rectangle(Point.zero, (SandboxGame.screenCenter * 4).toSize),
+            (SandboxGame.screenCenter * 4).toSize,
             SandboxAssets.foliageMaterial
           ),
           Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-16, -16)

@@ -16,7 +16,8 @@ import indigoengine.shared.datatypes.Radians
   */
 final case class Graphic[M <: Material](
     material: M,
-    crop: Rectangle,
+    size: Size,
+    crop: Option[Rectangle],
     eventHandlerEnabled: Boolean,
     eventHandler: ((Graphic[?], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
@@ -32,10 +33,7 @@ final case class Graphic[M <: Material](
     visitor.visitGraphic(this)
 
   def bounds: Rectangle =
-    BoundaryLocator.findBounds(this, position, crop.size, ref)
-
-  lazy val size: Size =
-    crop.size
+    BoundaryLocator.findBounds(this, position, size, ref)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -90,8 +88,20 @@ final case class Graphic[M <: Material](
   def withRef(x: Int, y: Int): Graphic[M] =
     withRef(Point(x, y))
 
+  def withSize(newSize: Size): Graphic[M] =
+    this.copy(size = newSize)
+  def resizeTo(newSize: Size): Graphic[M] =
+    withSize(newSize)
+  def resizeTo(width: Int, height: Int): Graphic[M] =
+    resizeTo(Size(width, height))
+
+  def resizeBy(amount: Size): Graphic[M] =
+    this.copy(size = size + amount)
+  def resizeBy(width: Int, height: Int): Graphic[M] =
+    resizeBy(Size(width, height))
+
   def withCrop(newCrop: Rectangle): Graphic[M] =
-    this.copy(crop = newCrop)
+    this.copy(crop = Option(newCrop))
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic[M] =
     withCrop(Rectangle(x, y, width, height))
 
@@ -111,6 +121,7 @@ object Graphic:
 
   def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
+      size = Size(width, height),
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       position = Point(x, y),
@@ -118,25 +129,13 @@ object Graphic:
       scale = Vector2.one,
       ref = Point.zero,
       flip = Flip.default,
-      crop = Rectangle(0, 0, width, height),
-      material = material
-    )
-
-  def apply[M <: Material](bounds: Rectangle, material: M): Graphic[M] =
-    Graphic(
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      position = bounds.position,
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      ref = Point.zero,
-      flip = Flip.default,
-      crop = bounds,
+      crop = None,
       material = material
     )
 
   def apply[M <: Material](width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
+      size = Size(width, height),
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       position = Point.zero,
@@ -144,12 +143,13 @@ object Graphic:
       scale = Vector2.one,
       ref = Point.zero,
       flip = Flip.default,
-      crop = Rectangle(0, 0, width, height),
+      crop = None,
       material = material
     )
 
   def apply[M <: Material](size: Size, material: M): Graphic[M] =
     Graphic(
+      size = size,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       position = Point.zero,
@@ -157,6 +157,6 @@ object Graphic:
       scale = Vector2.one,
       ref = Point.zero,
       flip = Flip.default,
-      crop = Rectangle(Point.zero, size),
+      crop = None,
       material = material
     )
