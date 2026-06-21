@@ -161,10 +161,11 @@ final case class FPSCounter[Model](
     s"""FPS $fps"""
 
   private def pickTint(fps: Int): RGBA =
-    val ts        = (if thresholds.isEmpty then defaultThresholds else thresholds).sortBy(_.threshold)
-    val baseColor = ts.headOption.map(_.color).getOrElse(RGBA.Silver)
-
-    ts.foldLeft(baseColor)((c, t) => if fps >= t.threshold then t.color else c)
+    (if thresholds.isEmpty then defaultThresholds else thresholds)
+      .filter(_.met(fps))
+      .maxByOption(_.threshold)
+      .map(_.color)
+      .getOrElse(RGBA.Silver)
 
 object FPSCounter:
 
