@@ -20,6 +20,7 @@ import indigo.shared.Context
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.shared.datatypes.Seconds
 
@@ -27,6 +28,7 @@ final case class FPSCounter[Model](
     id: SubSystemId,
     place: (Context, Size) => Point,
     targetFPS: Option[FPS],
+    thresholds: Batch[FPSThreshold],
     layerKey: Option[LayerKey],
     fontKey: FontKey,
     fontAsset: AssetName
@@ -35,10 +37,32 @@ final case class FPSCounter[Model](
   type SubSystemModel = FPSCounterState
   type ReferenceData  = Unit
 
+  private val idealFps: Int = targetFPS.getOrElse(FPS.`60`).toInt
+  private val defaultThresholds: Batch[FPSThreshold] =
+    Batch(
+      FPSThreshold(0, RGBA.Red),
+      FPSThreshold(idealFps / 2, RGBA.Yellow),
+      FPSThreshold(idealFps - (idealFps * 0.05).toInt, RGBA.Green)
+    )
+  private val decideNextFps: Int => Int =
+    targetFPS match
+      case None =>
+        frameCountSinceInterval => frameCountSinceInterval + 1
+
+      case Some(target) =>
+        frameCountSinceInterval => Math.min(target.toInt, frameCountSinceInterval + 1)
+
   def withPlaceFunction(
       place: (Context, Size) => Point
   ): FPSCounter[Model] =
-    copy(place = place)
+    this.copy(place = place)
+
+  def withThresholds(thresholds: Batch[FPSThreshold]): FPSCounter[Model] =
+    this.copy(thresholds = thresholds)
+  def addThreshold(threshold: FPSThreshold): FPSCounter[Model] =
+    this.copy(thresholds = thresholds :+ threshold)
+  def addThreshold(value: Int, color: RGBA): FPSCounter[Model] =
+    addThreshold(FPSThreshold(value, color))
 
   def moveTo(position: Point): FPSCounter[Model] =
     withPlaceFunction(place = (_, _) => position)
@@ -49,23 +73,14 @@ final case class FPSCounter[Model](
     withPlaceFunction(place = location)
 
   def withTargetFPS(targetFPS: FPS): FPSCounter[Model] =
-    copy(targetFPS = Option(targetFPS))
+    this.copy(targetFPS = Option(targetFPS))
   def clearTargetFPS: FPSCounter[Model] =
-    copy(targetFPS = None)
+    this.copy(targetFPS = None)
 
   def withLayerKey(layerKey: LayerKey): FPSCounter[Model] =
-    copy(layerKey = Option(layerKey))
+    this.copy(layerKey = Option(layerKey))
   def clearLayerKey: FPSCounter[Model] =
-    copy(layerKey = None)
-
-  private val idealFps: Int = targetFPS.getOrElse(FPS.`60`).toInt
-  private val decideNextFps: Int => Int =
-    targetFPS match
-      case None =>
-        frameCountSinceInterval => frameCountSinceInterval + 1
-
-      case Some(target) =>
-        frameCountSinceInterval => Math.min(target.toInt, frameCountSinceInterval + 1)
+    this.copy(layerKey = None)
 
   def eventFilter: GlobalEvent => Option[EventType] = {
     case FrameTick          => Some(FrameTick)
@@ -130,7 +145,7 @@ final case class FPSCounter[Model](
       textInstance
         .withText(formatText(model.fps.toString))
         .moveTo(model.bounds.position + 2)
-        .modifyMaterial(_.withTint(pickTint(idealFps, model.fps)))
+        .modifyMaterial(_.withTint(pickTint(model.fps)))
 
     val bg: Shape.Box =
       Shape
@@ -145,10 +160,11 @@ final case class FPSCounter[Model](
   private def formatText(fps: String): String =
     s"""FPS $fps"""
 
-  private def pickTint(targetFPS: Int, fps: Int): RGBA =
-    if (fps > targetFPS - (targetFPS * 0.05)) RGBA.Green
-    else if (fps > targetFPS / 2) RGBA.Yellow
-    else RGBA.Red
+  private def pickTint(fps: Int): RGBA =
+    val ts        = (if thresholds.isEmpty then defaultThresholds else thresholds).sortBy(_.threshold)
+    val baseColor = ts.headOption.map(_.color).getOrElse(RGBA.Silver)
+
+    ts.foldLeft(baseColor)((c, t) => if fps >= t.threshold then t.color else c)
 
 object FPSCounter:
 
@@ -158,13 +174,13 @@ object FPSCounter:
     (_, _) => Point(0, 0)
 
   def apply[Model](fontKey: FontKey, fontAsset: AssetName): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, None, None, fontKey, fontAsset)
+    FPSCounter(DefaultId, defaultPlaceFunction, None, Batch.empty, None, fontKey, fontAsset)
 
   def apply[Model](fontKey: FontKey, fontAsset: AssetName, targetFPS: FPS): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), None, fontKey, fontAsset)
+    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Batch.empty, None, fontKey, fontAsset)
 
   def apply[Model](fontKey: FontKey, fontAsset: AssetName, layerKey: LayerKey): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, None, Option(layerKey), fontKey, fontAsset)
+    FPSCounter(DefaultId, defaultPlaceFunction, None, Batch.empty, Option(layerKey), fontKey, fontAsset)
 
   def apply[Model](
       fontKey: FontKey,
@@ -172,10 +188,10 @@ object FPSCounter:
       targetFPS: FPS,
       layerKey: LayerKey
   ): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Option(layerKey), fontKey, fontAsset)
+    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Batch.empty, Option(layerKey), fontKey, fontAsset)
 
   def apply[Model](id: SubSystemId, position: Point, fontKey: FontKey, fontAsset: AssetName): FPSCounter[Model] =
-    FPSCounter(id, (_, _) => position, None, None, fontKey, fontAsset)
+    FPSCounter(id, (_, _) => position, None, Batch.empty, None, fontKey, fontAsset)
 
   def apply[Model](
       id: SubSystemId,
@@ -183,7 +199,7 @@ object FPSCounter:
       fontAsset: AssetName,
       targetFPS: FPS
   ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), None, fontKey, fontAsset)
+    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Batch.empty, None, fontKey, fontAsset)
 
   def apply[Model](
       id: SubSystemId,
@@ -191,7 +207,7 @@ object FPSCounter:
       fontAsset: AssetName,
       layerKey: LayerKey
   ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, None, Option(layerKey), fontKey, fontAsset)
+    FPSCounter(id, defaultPlaceFunction, None, Batch.empty, Option(layerKey), fontKey, fontAsset)
 
   def apply[Model](
       id: SubSystemId,
@@ -200,7 +216,7 @@ object FPSCounter:
       targetFPS: FPS,
       layerKey: LayerKey
   ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Option(layerKey), fontKey, fontAsset)
+    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Batch.empty, Option(layerKey), fontKey, fontAsset)
 
   final case class Move(to: Point) extends GlobalEvent
 
@@ -214,3 +230,7 @@ final case class FPSCounterState(
 object FPSCounterState:
   def initial(place: (Context, Size) => Point): FPSCounterState =
     FPSCounterState(place, Rectangle.zero, 0, Seconds.zero, 0)
+
+final case class FPSThreshold(threshold: Int, color: RGBA):
+  def met(value: Int): Boolean =
+    value >= threshold
