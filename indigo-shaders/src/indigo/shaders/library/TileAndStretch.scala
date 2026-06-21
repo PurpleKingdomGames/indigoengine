@@ -40,14 +40,13 @@ object TileAndStretch:
           )
 
         case _ =>
-          val clampedUV = clamp(uv * (entitySize / textureSize), 0.0f, 1.0f)
+          val croppedUV = uv * (entitySize / textureSize)
+          var col       = vec4(0.0f)
 
-          var col = vec4(0.0f)
-
-          if clampedUV.x < 1.0f && clampedUV.y < 1.0f then
+          if croppedUV.x <= 1.0f && croppedUV.y <= 1.0f then
             col = texture2D(
               srcChannel,
-              stretchedUVs(clampedUV, channelPos, channelSize)
+              stretchedUVs(croppedUV, channelPos, channelSize)
             )
 
           col
