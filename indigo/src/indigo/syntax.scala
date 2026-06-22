@@ -1,5 +1,6 @@
 package indigo
 
+import indigo.shaders.ToUniformBlock
 import indigo.shaders.UniformDataHelpers
 
 import scala.annotation.targetName
@@ -143,6 +144,9 @@ object syntax:
     extension (a: Array[Float])
       def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
         ultraviolet.syntax.array(a)
+
+    extension [A](a: A)(using s: ToUniformBlock.ShaderTypeOf[A])
+      def toShaderPrimitive: ShaderPrimitive = s.toShaderPrimitive(a)
 
   end shaders
 end syntax

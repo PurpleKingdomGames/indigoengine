@@ -1,5 +1,7 @@
 package indigo.shaders
 
+import ultraviolet.syntax.*
+
 class ToUniformBlockTests extends munit.FunSuite {
 
   def convert[A](value: A)(using c: ToUniformBlock[A]): UniformBlock =
@@ -23,9 +25,9 @@ class ToUniformBlockTests extends munit.FunSuite {
 
   test("toUniformBlock derives with array") {
 
-    final case class Foo(z: ultraviolet.syntax.array[3, Float]) derives ToUniformBlock
+    final case class Foo(z: array[3, Float]) derives ToUniformBlock
 
-    val actual = convert(Foo(ultraviolet.syntax.array[3, Float](1.0f, 2.0f, 3.0f)))
+    val actual = convert(Foo(array[3, Float](1.0f, 2.0f, 3.0f)))
 
     val expected =
       UniformBlock(

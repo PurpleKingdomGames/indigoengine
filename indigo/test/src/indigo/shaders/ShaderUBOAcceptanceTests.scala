@@ -2,6 +2,7 @@ package indigo.shaders
 
 import indigo.*
 import indigo.shaders.*
+import indigo.syntax.shaders.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
@@ -61,6 +62,31 @@ class ShaderUBOAcceptanceTests extends munit.FunSuite {
       |""".stripMargin.trim
 
     assertNoDiff(actual, expected)
+  }
+
+  test("toUniformBlock UV type conversion") {
+
+    val actual =
+      UniformBlock(
+        UniformBlockName("Foo"),
+        Uniform("x") -> 10.0f.toShaderPrimitive,
+        Uniform("y") -> 20.0f.toShaderPrimitive,
+        Uniform("z") -> array[3, Float](1.0f, 2.0f, 3.0f).toShaderPrimitive
+      )
+
+    val expected =
+      UniformBlock(
+        UniformBlockName("Foo"),
+        Uniform("x") -> ShaderPrimitive.float(10),
+        Uniform("y") -> ShaderPrimitive.float(20.0f),
+        Uniform("z") -> ShaderPrimitive.array(3, Array(1.0f, 2.0f, 3.0f))
+      )
+
+    assertEquals(actual.uniformHash, expected.uniformHash)
+    assertEquals(
+      actual.uniforms.map(_._2.toBatch.map(_.toString).mkString(", ")),
+      expected.uniforms.map(_._2.toBatch.map(_.toString).mkString(", "))
+    )
   }
 
 }
