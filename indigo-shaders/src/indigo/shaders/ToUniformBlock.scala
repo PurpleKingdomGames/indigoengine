@@ -17,6 +17,7 @@ import indigoengine.shared.datatypes.Seconds
 
 import scala.annotation.nowarn
 import scala.compiletime.*
+import scala.reflect.ClassTag
 
 trait ToUniformBlock[T]:
   def toUniformBlock(value: T): UniformBlock
@@ -48,7 +49,7 @@ object ToUniformBlock:
         case given ShaderTypeOf[T] => summonInline[ShaderTypeOf[T]]
         case _ =>
           error(
-            "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Radians, Millis, Seconds, Array[Float], js.Array[Float]], and UltraViolet [vec2, vec3, vec4, mat4]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
+            "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Radians, Millis, Seconds, and UltraViolet [vec2, vec3, vec4, mat4, array[length, values]]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
           )
       }
 
@@ -87,6 +88,10 @@ object ToUniformBlock:
     given ShaderTypeOf[ultraviolet.syntax.mat4] with
       def toShaderPrimitive(value: ultraviolet.syntax.mat4): ShaderPrimitive =
         ShaderPrimitive.mat4(Batch.fromVector(value.mat.toVector))
+
+    given [N <: Singleton, T: ClassTag](using IsShaderValue[T]): ShaderTypeOf[ultraviolet.syntax.array[N, T]] with
+      def toShaderPrimitive(value: ultraviolet.syntax.array[N, T]): ShaderPrimitive =
+        ShaderPrimitive.array[T](value.length, value.underlying)
 
     given ShaderTypeOf[Int] with
       def toShaderPrimitive(value: Int): ShaderPrimitive =
@@ -155,16 +160,6 @@ object ToUniformBlock:
     given ShaderTypeOf[Seconds] with
       def toShaderPrimitive(value: Seconds): ShaderPrimitive =
         ShaderPrimitive.float.fromSeconds(value)
-
-    given ShaderTypeOf[scala.Array[Float]] with
-      def toShaderPrimitive(value: Array[Float]): ShaderPrimitive =
-        ShaderPrimitive.rawArray(value)
-
-    // import scalajs.js.Array as JSArray
-
-    // given ShaderTypeOf[JSArray[Float]] with
-    //   def toShaderPrimitive(value: JSArray[Float]): ShaderPrimitive =
-    //     ShaderPrimitive.rawJSArray(value)
 
   final case class UBODef(name: String, fields: List[UBOField]):
     def toUniformBlock: UniformBlock =

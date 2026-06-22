@@ -93,10 +93,10 @@ class ShaderPrimitiveTests extends munit.FunSuite {
 
   }
 
-  test("can make a rawArray") {
+  test("can make a unsafeArray") {
 
     val actual =
-      rawArray(
+      unsafeArray(
         List[List[Float]](List(1, 1, 1, 1), List(2, 2, 2, 2), List(3, 3, 3, 3), List(4, 4, 4, 4)).flatten
       ).toBatch.toList
 

@@ -203,22 +203,23 @@ object ShaderPrimitive:
     def apply[T: ClassTag](size: Int, values: List[T])(using ev: IsShaderValue[T]): array[T] =
       array(size, ArraySeq.from[T](values))
 
-  /** Advanced usage only, a raw array of Float's to send to the fragment shader. Warning: The assumption here is that
-    * you know what you're doing i.e. how the packing/unpacking rules work. If you don't, use a normal shader `array`!
+  /** Advanced usage only, a raw 'unsafe' array of Float's to send to the fragment shader. Warning: The assumption here
+    * is that you know what you're doing i.e. how the packing/unpacking rules work. If you don't, use a normal shader
+    * `array`!
     *
     * @param arr
     *   The array of Floats to send
     */
-  final case class rawArray(arr: Array[Float]) extends ShaderPrimitive:
+  final case class unsafeArray(arr: Array[Float]) extends ShaderPrimitive:
     val length: Int           = arr.length
     val isArray: Boolean      = true
     def toBatch: Batch[Float] = Batch.fromVector(arr.toVector)
     val hash: String          = arr.mkString
-  object rawArray:
-    def apply(values: Float*): rawArray =
-      rawArray(values.toArray[Float])
-    def apply(values: List[Float]): rawArray =
-      rawArray(values.toArray)
+  object unsafeArray:
+    def apply(values: Float*): unsafeArray =
+      unsafeArray(values.toArray[Float])
+    def apply(values: List[Float]): unsafeArray =
+      unsafeArray(values.toArray)
 
   /** batch data to send to the fragment shader
     *
