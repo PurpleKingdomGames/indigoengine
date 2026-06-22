@@ -23,14 +23,14 @@ class ToUniformBlockTests extends munit.FunSuite {
 
   test("toUniformBlock derives with array") {
 
-    final case class Foo(z: Array[Float]) derives ToUniformBlock
+    final case class Foo(z: ultraviolet.syntax.array[3, Float]) derives ToUniformBlock
 
-    val actual = convert(Foo(Array(1.0f, 2.0f, 3.0f)))
+    val actual = convert(Foo(ultraviolet.syntax.array[3, Float](1.0f, 2.0f, 3.0f)))
 
     val expected =
       UniformBlock(
         UniformBlockName("Foo"),
-        Uniform("z") -> ShaderPrimitive.rawArray(1.0f, 2.0f, 3.0f)
+        Uniform("z") -> ShaderPrimitive.array(3, Array(1.0f, 2.0f, 3.0f))
       )
 
     assertEquals(actual.uniformHash, expected.uniformHash)

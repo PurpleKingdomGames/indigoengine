@@ -399,7 +399,7 @@ class PackUBOsTests extends munit.FunSuite {
 
     val uniforms =
       Batch(
-        Uniform("TEST") -> rawArray(Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f))
+        Uniform("TEST") -> unsafeArray(Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f))
       )
 
     val expected: Array[Float] =
