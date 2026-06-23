@@ -15,6 +15,7 @@ import indigoengine.shared.collections.Batch
 
 object GraphicConversion:
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def graphicToDisplayObject(leaf: Graphic[?], assetMapping: AssetMapping)(using
       QuickCache[Vector2],
       QuickCache[TextureRefAndOffset],
@@ -24,6 +25,16 @@ object GraphicConversion:
     val shaderData     = leaf.material.toShaderData
     val shaderDataHash = toCacheKey(shaderData)
     val materialName   = shaderData.channel0.get
+
+    TextureLookups
+      .validateChannelAtlases(
+        assetMapping,
+        shaderData.channel0,
+        shaderData.channel1,
+        shaderData.channel2,
+        shaderData.channel3
+      )
+      .foreach(msg => throw new Exception(msg))
 
     val emissiveOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
     val normalOffset   = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")

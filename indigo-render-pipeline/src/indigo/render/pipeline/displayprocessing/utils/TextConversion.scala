@@ -23,6 +23,7 @@ import indigoengine.shared.datatypes.Radians
 
 object TextConversion:
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def textLineToDisplayObjects(
       leaf: Text[?],
       assetMapping: AssetMapping,
@@ -53,6 +54,16 @@ object TextConversion:
           .append(leaf.fontKey.toString)
           .append(line.hashCode)
           .toString
+
+      TextureLookups
+        .validateChannelAtlases(
+          assetMapping,
+          shaderData.channel0,
+          shaderData.channel1,
+          shaderData.channel2,
+          shaderData.channel3
+        )
+        .foreach(msg => throw new Exception(msg))
 
       val emissiveOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
       val normalOffset   = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
@@ -110,6 +121,7 @@ object TextConversion:
       }
     }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def makeTextCloneDisplayObject(
       leaf: Text[?],
       assetMapping: AssetMapping
@@ -139,6 +151,17 @@ object TextConversion:
         val shaderData     = material.toShaderData
         val shaderDataHash = toCacheKey(shaderData)
         val materialName   = shaderData.channel0.get
+
+        TextureLookups
+          .validateChannelAtlases(
+            assetMapping,
+            shaderData.channel0,
+            shaderData.channel1,
+            shaderData.channel2,
+            shaderData.channel3
+          )
+          .foreach(msg => throw new Exception(msg))
+
         val emissiveOffset =
           TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
         val normalOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
