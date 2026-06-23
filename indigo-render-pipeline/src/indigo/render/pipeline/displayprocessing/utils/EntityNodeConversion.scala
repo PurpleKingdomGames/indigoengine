@@ -17,6 +17,7 @@ import indigoengine.shared.collections.Batch
 
 object EntityNodeConversion:
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def sceneEntityToDisplayObject(leaf: EntityNode[?], assetMapping: AssetMapping)(using
       QuickCache[TextureRefAndOffset],
       QuickCache[SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets],
@@ -24,17 +25,23 @@ object EntityNodeConversion:
   ): DisplayObject = {
     val shaderData: ShaderData = leaf.toShaderData
 
-    val channelOffset1 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel1)
-    val channelOffset2 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel2)
-    val channelOffset3 = TextureLookups.optionalAssetToOffset(assetMapping, shaderData.channel3)
+    val channel0  = shaderData.channel0.map(name => TextureLookups.lookupTexture(assetMapping, name))
+    val channel1 = shaderData.channel1.map(name => TextureLookups.lookupTexture(assetMapping, name))
+    val channel2 = shaderData.channel2.map(name => TextureLookups.lookupTexture(assetMapping, name))
+    val channel3 = shaderData.channel3.map(name => TextureLookups.lookupTexture(assetMapping, name))
+
+    TextureLookups.validateChannelAtlases(channel0, channel1, channel2, channel3).foreach { msg =>
+      throw new Exception(msg)
+    }
+
+    val channelOffset1 = channel1.fold(Vector2.zero)(_.offset)
+    val channelOffset2 = channel2.fold(Vector2.zero)(_.offset)
+    val channelOffset3 = channel3.fold(Vector2.zero)(_.offset)
 
     val bounds = Rectangle(Point.zero, leaf.size)
 
-    val texture =
-      shaderData.channel0.map(assetName => TextureLookups.lookupTexture(assetMapping, assetName))
-
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
-      texture match {
+      channel0 match {
         case None =>
           SpriteSheetFrame.defaultOffset
 
@@ -54,7 +61,7 @@ object EntityNodeConversion:
       ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
     val (txPos, txSize, aSize, atlasName) =
-      texture match
+      channel0 match
         case None =>
           (Vector2.zero, Vector2.zero, Vector2.zero, None)
 
