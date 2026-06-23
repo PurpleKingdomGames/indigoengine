@@ -26,7 +26,7 @@ object TextureLookups:
 
   private val imageTaggingGuidance: String =
     """Channels for a single material must be packed into the same texture atlas.
-    |Tag the related image assets together using AssetType.Tagged(\"related-images\")(...) so Indigo keeps them together.
+    |Tag the related image assets together using AssetType.Tagged("related-images")(...) so Indigo keeps them together.
     |""".stripMargin.trim
 
   /** Validates that all the texture channels of a single material resolve to the same texture atlas.
