@@ -393,7 +393,7 @@ class PackUBOsTests extends munit.FunSuite {
     assertEquals(resultB.toList, List[Float](10, 20, 30, 40))
   }
 
-  test("ubo packing - raw array of floats") {
+  test("ubo packing - a raw (unsafe) array of floats") {
 
     import indigo.shaders.ShaderPrimitive._
 

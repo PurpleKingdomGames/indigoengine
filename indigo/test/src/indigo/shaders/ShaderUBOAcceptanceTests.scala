@@ -1,14 +1,13 @@
 package indigo.shaders
 
 import indigo.*
-import indigo.shaders.*
 import indigo.syntax.shaders.*
 import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-/** This suite isn't connected to any code directly in this module, but it allows use to make a realistic example of
-  * deriving UBO's using the full Indigo APIs.
+/** This suite isn't connected to any code directly in this module, but it allows us to make a realistic example of
+  * deriving UBOs using the full Indigo APIs.
   */
 class ShaderUBOAcceptanceTests extends munit.FunSuite {
 
