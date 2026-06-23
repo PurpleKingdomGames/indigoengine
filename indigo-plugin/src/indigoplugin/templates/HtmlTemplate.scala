@@ -21,6 +21,7 @@ object HtmlTemplate {
       |        overflow-x: hidden;
       |        overflow-y: hidden;
       |        background-color: $backgroundColor;
+      |        touch-action: none;
       |      }
       |      #indigo-container canvas {
       |        ${
