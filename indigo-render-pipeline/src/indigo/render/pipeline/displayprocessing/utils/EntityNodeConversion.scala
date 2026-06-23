@@ -25,7 +25,7 @@ object EntityNodeConversion:
   ): DisplayObject = {
     val shaderData: ShaderData = leaf.toShaderData
 
-    val channel0  = shaderData.channel0.map(name => TextureLookups.lookupTexture(assetMapping, name))
+    val channel0 = shaderData.channel0.map(name => TextureLookups.lookupTexture(assetMapping, name))
     val channel1 = shaderData.channel1.map(name => TextureLookups.lookupTexture(assetMapping, name))
     val channel2 = shaderData.channel2.map(name => TextureLookups.lookupTexture(assetMapping, name))
     val channel3 = shaderData.channel3.map(name => TextureLookups.lookupTexture(assetMapping, name))
