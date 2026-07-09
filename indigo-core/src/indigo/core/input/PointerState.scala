@@ -66,8 +66,18 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
           case e: PointerEvent.Enter => instance.copy(maybePosition = Some(e.position), lastUpdateTime = time)
           case e: PointerEvent.Click =>
             e.button match {
-              case Some(value) => instance.copy(clicks = instance.clicks :+ (value, e.position), lastUpdateTime = time)
-              case None => instance.copy(isTapped = true, maybePosition = Some(e.position), lastUpdateTime = time)
+              case Some(value) =>
+                instance.copy(
+                  clicks = instance.clicks :+ (value, e.position),
+                  lastUpdateTime = time,
+                  maybePosition = Some(e.position)
+                )
+              case None =>
+                instance.copy(
+                  isTapped = true,
+                  maybePosition = Some(e.position),
+                  lastUpdateTime = time
+                )
             }
           case e: PointerEvent.Down =>
             e.button match {
@@ -77,9 +87,10 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
                   buttons = instance.buttons :+ value,
                   isDown =
                     (e.pointerType == PointerType.Mouse && value == MouseButton.LeftMouseButton) || instance.isDown,
-                  lastUpdateTime = time
+                  lastUpdateTime = time,
+                  maybePosition = Some(e.position)
                 )
-              case None => instance.copy(isDown = true, lastUpdateTime = time)
+              case None => instance.copy(isDown = true, lastUpdateTime = time, maybePosition = Some(e.position))
             }
           case e: PointerEvent.Up =>
             e.button match {
@@ -90,9 +101,10 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
                   isDown =
                     if e.pointerType == PointerType.Mouse && value == MouseButton.LeftMouseButton then false
                     else instance.isDown,
-                  lastUpdateTime = time
+                  lastUpdateTime = time,
+                  maybePosition = Some(e.position)
                 )
-              case None => instance.copy(isDown = false, lastUpdateTime = time)
+              case None => instance.copy(isDown = false, lastUpdateTime = time, maybePosition = Some(e.position))
             }
           // We should never reach here
           case _: PointerEvent.Leave => instance
