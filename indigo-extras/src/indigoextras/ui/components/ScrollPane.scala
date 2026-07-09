@@ -199,65 +199,18 @@ object ScrollPane:
         val scrollingActive =
           model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
 
-        val scrollOffset: Coords =
-          if scrollingActive then
-            Coords(
-              0,
-              ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
-            )
-          else Coords.zero
-
-        val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
-        val scrolledBounds = visibleBounds.moveBy(scrollOffset)
-        val ctx            = context.withParentBounds(visibleBounds).pushInputClip(visibleBounds)
-        val contentCtx     = ctx.withParentBounds(scrolledBounds)
+        val ctx        = viewportContext(context, model)
+        val contentCtx = scrolledContentContext(ctx, model, scrollingActive)
+        val scrollCtx  = scrollBarInputContext(ctx, model)
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit] =
-            ctx
-              .copy(reference = ())
-              .withParent(
-                ctx.parent
-                  .moveBy(
-                    Coords(
-                      model.dimensions.width - model.scrollBar.bounds.width,
-                      0
-                    )
-                  )
-                  .withAdditionalOffset(
-                    Coords(
-                      0,
-                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
-                    )
-                  )
-              )
-
-          c.updateModel(unitContext, model.scrollBar)(e)
+          c.updateModel(scrollCtx, model.scrollBar)(e)
 
         def updateScrollBarWith(events: Batch[GlobalEvent]): Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit] =
-            ctx
-              .copy(reference = ())
-              .withParent(
-                ctx.parent
-                  .moveBy(
-                    Coords(
-                      model.dimensions.width - model.scrollBar.bounds.width,
-                      0
-                    )
-                  )
-                  .withAdditionalOffset(
-                    Coords(
-                      0,
-                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
-                    )
-                  )
-              )
-
           events.foldLeft(Outcome(model.scrollBar)) { (acc, event) =>
-            acc.flatMap(c.updateModel(unitContext, _)(event))
+            acc.flatMap(c.updateModel(scrollCtx, _)(event))
           }
 
         def routeContent(event: GlobalEvent): Outcome[ComponentEntry[A, ReferenceData]] =
@@ -274,23 +227,7 @@ object ScrollPane:
 
         def scrollBarHit(event: GlobalEvent): Boolean =
           scrollingActive && summon[Component[Button[Unit], Unit]].hitTest(
-            ctx
-              .copy(reference = ())
-              .withParent(
-                ctx.parent
-                  .moveBy(
-                    Coords(
-                      model.dimensions.width - model.scrollBar.bounds.width,
-                      0
-                    )
-                  )
-                  .withAdditionalOffset(
-                    Coords(
-                      0,
-                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
-                    )
-                  )
-              ),
+            scrollCtx,
             model.scrollBar,
             event
           )
@@ -303,7 +240,7 @@ object ScrollPane:
             }
 
           case WheelEvent.Vertical(deltaY)
-              if model.scrollOptions.isEnabled && visibleBounds.contains(context.pointerCoords) =>
+              if model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip =>
             val scrollBy =
               val speed =
                 if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
@@ -385,38 +322,13 @@ object ScrollPane:
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
 
-      val scrollOffset: Coords =
-        if scrollingActive then
-          Coords(
-            0,
-            ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
-          )
-        else Coords.zero
-
-      val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
-      val scrolledBounds = visibleBounds.moveBy(scrollOffset)
-      val ctx            = context.withParentBounds(visibleBounds).pushInputClip(visibleBounds)
-      val contentCtx     = ctx.withParentBounds(scrolledBounds)
+      val ctx        = viewportContext(context, model)
+      val contentCtx = scrolledContentContext(ctx, model, scrollingActive)
+      val scrollCtx  = scrollBarInputContext(ctx, model)
 
       val scrollBarHit =
         scrollingActive && summon[Component[Button[Unit], Unit]].hitTest(
-          ctx
-            .copy(reference = ())
-            .withParent(
-              ctx.parent
-                .moveBy(
-                  Coords(
-                    model.dimensions.width - model.scrollBar.bounds.width,
-                    0
-                  )
-                )
-                .withAdditionalOffset(
-                  Coords(
-                    0,
-                    ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
-                  )
-                )
-            ),
+          scrollCtx,
           model.scrollBar,
           event
         )
@@ -426,7 +338,7 @@ object ScrollPane:
 
       event match
         case _: WheelEvent =>
-          contentHit || (model.scrollOptions.isEnabled && visibleBounds.contains(context.pointerCoords))
+          contentHit || (model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip)
 
         case _ =>
           scrollBarHit || contentHit
@@ -438,18 +350,8 @@ object ScrollPane:
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
 
-      val scrollOffset: Coords =
-        if scrollingActive then
-          Coords(
-            0,
-            ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
-          )
-        else Coords.zero
-
-      val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
-      val scrolledBounds = visibleBounds.moveBy(scrollOffset)
-      val contentCtx     =
-        context.withParentBounds(scrolledBounds).pushInputClip(visibleBounds)
+      val ctx        = viewportContext(context, model)
+      val contentCtx = scrolledContentContext(ctx, model, scrollingActive)
 
       val content =
         ContainerLikeFunctions
@@ -459,25 +361,13 @@ object ScrollPane:
             Batch(model.content)
           )
 
-      // This context is used for scrollbars , which only ever care about the visible space
-      val scrollbarBounds = visibleBounds
-      val ctx             = context.withParentBounds(scrollbarBounds).pushInputClip(scrollbarBounds)
-
       val layers: Outcome[Layer.Stack] =
         if scrollingActive then
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
+          val unitContext: UIContext[Unit]     = scrollBarPresentContext(ctx, model)
           val scrollbar =
             c.present(
-              unitContext
-                .withParentBounds(
-                  unitContext.parent.bounds.moveBy(
-                    Coords(
-                      model.dimensions.width - model.scrollBar.bounds.width,
-                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
-                    )
-                  )
-                ),
+              unitContext,
               model.scrollBar
             )
           val scrollBg =
@@ -653,6 +543,73 @@ object ScrollPane:
         content = updatedComponent,
         scrollBar = model.scrollBar.fixedDragArea(dragArea)
       )
+
+    private def scrollOffset(model: ScrollPane[A, ReferenceData], scrollingActive: Boolean): Coords =
+      if scrollingActive then
+        Coords(
+          0,
+          ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
+        )
+      else Coords.zero
+
+    private def viewportBounds(context: UIContext[ReferenceData], model: ScrollPane[A, ReferenceData]): Bounds =
+      Bounds(context.parent.coords, model.dimensions)
+
+    private def viewportContext(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData]
+    ): UIContext[ReferenceData] =
+      val bounds = viewportBounds(context, model)
+
+      context
+        .withParentBounds(bounds)
+        .pushInputClip(bounds)
+
+    private def scrolledContentContext(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData],
+        scrollingActive: Boolean
+    ): UIContext[ReferenceData] =
+      context.withParentBounds(
+        context.parent.bounds.moveBy(scrollOffset(model, scrollingActive))
+      )
+
+    private def scrollBarInputContext(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData]
+    ): UIContext[Unit] =
+      context
+        .copy(reference = ())
+        .withParent(
+          context.parent
+            .moveBy(
+              Coords(
+                model.dimensions.width - model.scrollBar.bounds.width,
+                0
+              )
+            )
+            .withAdditionalOffset(
+              Coords(
+                0,
+                ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
+              )
+            )
+        )
+
+    private def scrollBarPresentContext(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData]
+    ): UIContext[Unit] =
+      context
+        .copy(reference = ())
+        .withParentBounds(
+          context.parent.bounds.moveBy(
+            Coords(
+              model.dimensions.width - model.scrollBar.bounds.width,
+              ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
+            )
+          )
+        )
 
 enum ScrollPaneEvent extends GlobalEvent:
   case Scroll(bindingKey: BindingKey, amount: Int)

@@ -68,23 +68,17 @@ object ContainerLikeFunctions:
 
   def hitTest[ReferenceData](
       context: UIContext[ReferenceData],
-      dimensions: Dimensions,
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Boolean =
-    val _ = dimensions
-
     components.exists { c =>
       c.component.hitTest(routedChildContext(context, c), c.model)
     }
 
   def hitTest[ReferenceData](
       context: UIContext[ReferenceData],
-      dimensions: Dimensions,
       components: Batch[ComponentEntry[?, ReferenceData]],
       event: GlobalEvent
   ): Boolean =
-    val _ = dimensions
-
     components.exists { c =>
       c.component.hitTest(routedChildContext(context, c), c.model, event)
     }
@@ -95,7 +89,7 @@ object ContainerLikeFunctions:
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): GlobalEvent => Outcome[Batch[ComponentEntry[?, ReferenceData]]] =
     case event if PointerRouting.isRoutedEvent(event) =>
-      route(context, dimensions, components, event)
+      route(context, components, event)
 
     case event =>
       components
@@ -106,12 +100,9 @@ object ContainerLikeFunctions:
 
   private def route[ReferenceData](
       context: UIContext[ReferenceData],
-      dimensions: Dimensions,
       components: Batch[ComponentEntry[?, ReferenceData]],
       event: GlobalEvent
   ): Outcome[Batch[ComponentEntry[?, ReferenceData]]] =
-    val _ = dimensions
-
     val entries = components.toList
 
     val maybeTargetIndex =
@@ -138,7 +129,7 @@ object ContainerLikeFunctions:
         Batch(PointerRouting.enterFrom(move), move)
 
       case move: PointerEvent.Move =>
-        Batch(PointerRouting.leaveFrom(move), move)
+        Batch(PointerRouting.leaveFrom(move))
 
       case _: PointerEvent.Up | _: PointerEvent.Cancel | _: PointerEvent.Leave =>
         Batch(event)
