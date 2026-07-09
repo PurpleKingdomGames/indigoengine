@@ -139,16 +139,19 @@ final case class MouseState(
         val newInstance = event match {
           case e: MouseEvent.Move  => instance.copy(maybePosition = Some(e.position))
           case e: MouseEvent.Enter => instance.copy(maybePosition = Some(e.position))
-          case e: MouseEvent.Click => instance.copy(clicks = instance.clicks :+ (e.button, e.position))
+          case e: MouseEvent.Click =>
+            instance.copy(clicks = instance.clicks :+ (e.button, e.position), maybePosition = Some(e.position))
           case e: MouseEvent.Down =>
             instance.copy(
               downButtons = instance.downButtons :+ (e.button, e.position),
-              buttons = instance.buttons :+ e.button
+              buttons = instance.buttons :+ e.button,
+              maybePosition = Some(e.position)
             )
           case e: MouseEvent.Up =>
             instance.copy(
               upButtons = instance.upButtons :+ (e.button, e.position),
-              buttons = instance.buttons.filterNot(_ == e.button)
+              buttons = instance.buttons.filterNot(_ == e.button),
+              maybePosition = Some(e.position)
             )
           // We should never reach here
           case _: MouseEvent.Leave => instance
