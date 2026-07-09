@@ -20,6 +20,16 @@ trait Component[A, ReferenceData]:
       model: A
   ): GlobalEvent => Outcome[A]
 
+  /** True if this component, or one of its children, is a valid target for pointer routing at the current pointer
+    * position.
+    */
+  def hitTest(context: UIContext[ReferenceData], model: A): Boolean =
+    false
+
+  def hitTest(context: UIContext[ReferenceData], model: A, _event: GlobalEvent): Boolean =
+    val _ = _event
+    hitTest(context, model)
+
   /** Produce a renderable output for this component, based on the component's model.
     */
   def present(
@@ -44,6 +54,12 @@ object Component:
           model: Unit
       ): GlobalEvent => Outcome[Unit] =
         _ => Outcome(model)
+
+      override def hitTest(context: UIContext[ReferenceData], model: Unit): Boolean =
+        false
+
+      override def hitTest(context: UIContext[ReferenceData], model: Unit, event: GlobalEvent): Boolean =
+        false
 
       def present(
           context: UIContext[ReferenceData],

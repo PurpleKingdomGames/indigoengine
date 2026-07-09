@@ -118,24 +118,52 @@ object MaskedPane:
         model: MaskedPane[A, ReferenceData]
     ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
       case e =>
-        val ctx = context.withParentBounds(Bounds(context.parent.bounds.coords, model.dimensions))
+        val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
+        val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
 
-        model.content.component
-          .updateModel(ctx, model.content.model)(e)
-          .flatMap { updatedContent =>
-            Outcome(
-              model.copy(
-                content = model.content.copy(model = updatedContent)
-              )
-            )
+        ContainerLikeFunctions
+          .routeOrBroadcast(ctx, model.dimensions, Batch(model.content))(e)
+          .map { updated =>
+            updated.headOption
+              .map { content =>
+                model.copy(
+                  content = model.content.copy(model = content.model.asInstanceOf[A])
+                )
+              }
+              .getOrElse(model)
           }
+
+    override def hitTest(context: UIContext[ReferenceData], model: MaskedPane[A, ReferenceData]): Boolean =
+      val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
+      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+
+      ContainerLikeFunctions.hitTest(
+        ctx,
+        model.dimensions,
+        Batch(model.content)
+      )
+
+    override def hitTest(
+        context: UIContext[ReferenceData],
+        model: MaskedPane[A, ReferenceData],
+        event: GlobalEvent
+    ): Boolean =
+      val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
+      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+
+      ContainerLikeFunctions.hitTest(
+        ctx,
+        model.dimensions,
+        Batch(model.content),
+        event
+      )
 
     def present(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
     ): Outcome[Layer] =
       val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds)
+      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
 
       val content =
         ContainerLikeFunctions

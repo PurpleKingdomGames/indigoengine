@@ -129,47 +129,69 @@ object ComponentList:
         // What we're doing here it updating the stateMap, not the content function.
         // However, to do that properly, we need to reflow the content too, to make sure things
         // like pointer clicks are still in the right place.
-        val nextOffset =
-          ContainerLikeFunctions
-            .calculateNextOffset[ReferenceData](model.dimensions, model.layout)
-
         val entries =
-          model.content(context)
+          contentReflow(
+            context,
+            model.dimensions,
+            model.layout,
+            model.content(context).map { entry =>
+              model.stateMap.get(entry.id) match
+                case None =>
+                  entry
+
+                case Some(savedState) =>
+                  entry.copy(model = savedState.asInstanceOf[entry.Out])
+            }
+          )
 
         val nextStateMap =
-          entries
-            .foldLeft(Outcome(Batch.empty[ComponentEntry[?, ReferenceData]])) { (accum, entry) =>
-              accum.flatMap { acc =>
-                val offset = nextOffset(context, acc)
-
-                val updated =
-                  model.stateMap.get(entry.id) match
-                    case None =>
-                      // No entry, so we make one based on the component's default state
-                      entry.component
-                        .updateModel(
-                          context.withParentBounds(context.parent.bounds.moveBy(offset)),
-                          entry.model
-                        )(e)
-                        .map(m => entry.copy(offset = offset, model = m))
-
-                    case Some(savedState) =>
-                      // We have an entry, so we update it
-                      entry.component
-                        .updateModel(
-                          context.withParentBounds(context.parent.bounds.moveBy(offset)),
-                          savedState.asInstanceOf[entry.Out]
-                        )(e)
-                        .map(m => entry.copy(offset = offset, model = m))
-
-                updated.map(u => acc :+ u)
-              }
-            }
+          ContainerLikeFunctions
+            .routeOrBroadcast(context, model.dimensions, entries)(e)
             .map(_.map(e => e.id -> e.model).toMap)
 
         nextStateMap.map { newStateMap =>
           model.copy(stateMap = newStateMap)
         }
+
+    override def hitTest(context: UIContext[ReferenceData], model: ComponentList[ReferenceData]): Boolean =
+      val entries =
+        contentReflow(
+          context,
+          model.dimensions,
+          model.layout,
+          model.content(context).map { entry =>
+            model.stateMap.get(entry.id) match
+              case None =>
+                entry
+
+              case Some(savedState) =>
+                entry.copy(model = savedState.asInstanceOf[entry.Out])
+          }
+        )
+
+      ContainerLikeFunctions.hitTest(context, model.dimensions, entries)
+
+    override def hitTest(
+        context: UIContext[ReferenceData],
+        model: ComponentList[ReferenceData],
+        event: GlobalEvent
+    ): Boolean =
+      val entries =
+        contentReflow(
+          context,
+          model.dimensions,
+          model.layout,
+          model.content(context).map { entry =>
+            model.stateMap.get(entry.id) match
+              case None =>
+                entry
+
+              case Some(savedState) =>
+                entry.copy(model = savedState.asInstanceOf[entry.Out])
+          }
+        )
+
+      ContainerLikeFunctions.hitTest(context, model.dimensions, entries, event)
 
     def present(
         context: UIContext[ReferenceData],

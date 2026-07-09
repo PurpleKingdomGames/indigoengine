@@ -879,6 +879,27 @@ object PointerEvent:
       pointerType: PointerType
   ) extends PointerEvent
   object Enter:
+    def apply(pointerId: PointerId, position: Point, movementPosition: Point, pointerType: PointerType): Enter =
+      Enter(
+        pointerId = pointerId,
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = movementPosition,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
@@ -891,6 +912,27 @@ object PointerEvent:
       pointerType: PointerType
   ) extends PointerEvent
   object Leave:
+    def apply(pointerId: PointerId, position: Point, movementPosition: Point, pointerType: PointerType): Leave =
+      Leave(
+        pointerId = pointerId,
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = movementPosition,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 

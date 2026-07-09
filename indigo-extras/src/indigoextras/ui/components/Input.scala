@@ -143,9 +143,7 @@ object Input:
         model: Input[ReferenceData]
     ): GlobalEvent => Outcome[Input[ReferenceData]] =
       case _: PointerEvent.Click
-          if context.isActive && Bounds(model.dimensions)
-            .moveBy(context.parent.coords)
-            .contains(context.pointerCoords) =>
+          if context.isActive && coordsInBounds(context.pointerCoords, Bounds(model.dimensions), context) =>
 
         val cursorPos = Input.findCursorPosition(
           context.pointerCoords.x - context.parent.coords.x,
@@ -193,6 +191,14 @@ object Input:
 
       case _ =>
         Outcome(model)
+
+    override def hitTest(context: UIContext[ReferenceData], model: Input[ReferenceData]): Boolean =
+      coordsInBounds(context.pointerCoords, Bounds(model.dimensions), context)
+
+    override def hitTest(context: UIContext[ReferenceData], model: Input[ReferenceData], event: GlobalEvent): Boolean =
+      event match
+        case _: WheelEvent => false
+        case _             => hitTest(context, model)
 
     def present(
         context: UIContext[ReferenceData],
@@ -279,5 +285,11 @@ object Input:
 
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, correctedPosition)
   }
+
+  private def coordsInBounds[ReferenceData](pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
+    context.pointerIsWithinInputClip &&
+      bounds
+        .moveBy(context.parent.coords + context.parent.additionalOffset)
+        .contains(pnt)
 
 final case class InputTextModified(updatedText: String, nextCursorPosition: Int)

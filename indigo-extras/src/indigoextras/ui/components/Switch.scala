@@ -4,6 +4,7 @@ import indigo.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.UIContext
+import indigoextras.ui.datatypes.Coords
 
 import datatypes.BoundsType
 import datatypes.SwitchState
@@ -136,15 +137,11 @@ object Switch:
         )
 
       case _: PointerEvent.Down
-          if context.isActive && model.bounds
-            .moveBy(context.parent.coords + context.parent.additionalOffset)
-            .contains(context.pointerCoords) =>
+          if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
         Outcome(model.copy(isDown = true))
 
       case _: PointerEvent.Up
-          if context.isActive && model.isDown && model.bounds
-            .moveBy(context.parent.coords + context.parent.additionalOffset)
-            .contains(context.pointerCoords) =>
+          if context.isActive && model.isDown && coordsInBounds(context.pointerCoords, model.bounds, context) =>
         val next    = model.state.toggle
         val updated = model.copy(state = next, isDown = false)
         Outcome(updated)
@@ -156,6 +153,14 @@ object Switch:
 
       case _ =>
         Outcome(model)
+
+    override def hitTest(context: UIContext[ReferenceData], model: Switch[ReferenceData]): Boolean =
+      coordsInBounds(context.pointerCoords, model.bounds, context)
+
+    override def hitTest(context: UIContext[ReferenceData], model: Switch[ReferenceData], event: GlobalEvent): Boolean =
+      event match
+        case _: WheelEvent => false
+        case _             => hitTest(context, model)
 
     def present(
         context: UIContext[ReferenceData],
@@ -204,3 +209,9 @@ object Switch:
               context.parent.bounds.height - padding.top - padding.bottom
             )
           )
+
+  private def coordsInBounds[ReferenceData](pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
+    context.pointerIsWithinInputClip &&
+      bounds
+        .moveBy(context.parent.coords + context.parent.additionalOffset)
+        .contains(pnt)
