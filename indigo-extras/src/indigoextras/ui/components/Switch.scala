@@ -136,8 +136,7 @@ object Switch:
           )
         )
 
-      case _: PointerEvent.Down
-          if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+      case _: PointerEvent.Down if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
         Outcome(model.copy(isDown = true))
 
       case _: PointerEvent.Up

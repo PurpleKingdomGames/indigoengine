@@ -92,11 +92,9 @@ object ContainerLikeFunctions:
       route(context, components, event)
 
     case event =>
-      components
-        .map { c =>
-          updateEntry(childContext(context, dimensions, c), c, Batch(event))
-        }
-        .sequence
+      components.map { c =>
+        updateEntry(childContext(context, dimensions, c), c, Batch(event))
+      }.sequence
 
   private def route[ReferenceData](
       context: UIContext[ReferenceData],

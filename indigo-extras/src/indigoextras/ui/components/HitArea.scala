@@ -209,7 +209,11 @@ object HitArea:
     override def hitTest(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
       btn.hitTest(context, model.toButton)
 
-    override def hitTest(context: UIContext[ReferenceData], model: HitArea[ReferenceData], event: GlobalEvent): Boolean =
+    override def hitTest(
+        context: UIContext[ReferenceData],
+        model: HitArea[ReferenceData],
+        event: GlobalEvent
+    ): Boolean =
       btn.hitTest(context, model.toButton, event)
 
     def present(
