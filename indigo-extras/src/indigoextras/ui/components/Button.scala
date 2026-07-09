@@ -287,12 +287,20 @@ object Button:
 
       case _: PointerEvent.Up =>
         // Released Outside.
-        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
+          .addGlobalEvents(
+            if model.isOver then model.leave(context.reference)
+            else Batch.empty
+          )
 
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointer.isDown =>
         // Released outside the window at some point.
-        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
+          .addGlobalEvents(
+            if model.isOver then model.leave(context.reference)
+            else Batch.empty
+          )
 
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>

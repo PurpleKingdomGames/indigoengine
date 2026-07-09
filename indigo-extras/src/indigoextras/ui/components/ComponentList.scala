@@ -169,7 +169,7 @@ object ComponentList:
           }
         )
 
-      ContainerLikeFunctions.hitTest(context, model.dimensions, entries)
+      ContainerLikeFunctions.hitTest(context, entries)
 
     override def hitTest(
         context: UIContext[ReferenceData],
@@ -191,7 +191,7 @@ object ComponentList:
           }
         )
 
-      ContainerLikeFunctions.hitTest(context, model.dimensions, entries, event)
+      ContainerLikeFunctions.hitTest(context, entries, event)
 
     def present(
         context: UIContext[ReferenceData],

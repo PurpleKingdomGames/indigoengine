@@ -10,9 +10,6 @@ object PointerRouting:
       case _: WheelEvent   => true
       case _               => false
 
-  def isPointerMove(event: GlobalEvent): Boolean =
-    event.isInstanceOf[PointerEvent.Move]
-
   def enterFrom(move: PointerEvent.Move): PointerEvent.Enter =
     PointerEvent.Enter(
       pointerId = move.pointerId,

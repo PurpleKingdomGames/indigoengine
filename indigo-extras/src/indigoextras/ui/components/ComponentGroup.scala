@@ -165,14 +165,14 @@ object ComponentGroup:
         )
 
     override def hitTest(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Boolean =
-      ContainerLikeFunctions.hitTest(context, model.dimensions, model.components)
+      ContainerLikeFunctions.hitTest(context, model.components)
 
     override def hitTest(
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData],
         event: GlobalEvent
     ): Boolean =
-      ContainerLikeFunctions.hitTest(context, model.dimensions, model.components, event)
+      ContainerLikeFunctions.hitTest(context, model.components, event)
 
     def present(
         context: UIContext[ReferenceData],

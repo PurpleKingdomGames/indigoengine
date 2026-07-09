@@ -139,7 +139,6 @@ object MaskedPane:
 
       ContainerLikeFunctions.hitTest(
         ctx,
-        model.dimensions,
         Batch(model.content)
       )
 
@@ -153,7 +152,6 @@ object MaskedPane:
 
       ContainerLikeFunctions.hitTest(
         ctx,
-        model.dimensions,
         Batch(model.content),
         event
       )
