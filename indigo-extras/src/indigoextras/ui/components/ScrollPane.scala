@@ -233,14 +233,12 @@ object ScrollPane:
           )
 
         e match
-          case wheel: WheelEvent
-              if model.content.component.hitTest(contentCtx, model.content.model, wheel) =>
+          case wheel: WheelEvent if model.content.component.hitTest(contentCtx, model.content.model, wheel) =>
             routeContent(wheel).map { updatedContent =>
               model.copy(content = updatedContent)
             }
 
-          case WheelEvent.Vertical(deltaY)
-              if model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip =>
+          case WheelEvent.Vertical(deltaY) if model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip =>
             val scrollBy =
               val speed =
                 if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
@@ -292,7 +290,7 @@ object ScrollPane:
                   Outcome(model.content)
 
             for {
-              updatedContent <- contentUpdate
+              updatedContent   <- contentUpdate
               updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
             } yield model.copy(
               content = updatedContent,
@@ -301,7 +299,7 @@ object ScrollPane:
 
           case event =>
             for {
-              updatedContent  <- routeContent(event)
+              updatedContent   <- routeContent(event)
               updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
             } yield model.copy(
               content = updatedContent,
