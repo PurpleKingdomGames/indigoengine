@@ -206,6 +206,12 @@ object HitArea:
         val s = model.stroke
         btn.updateModel(context, model.toButton)(e).map(_.toHitArea.copy(fill = f, stroke = s))
 
+    override def hitTest(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
+      btn.hitTest(context, model.toButton)
+
+    override def hitTest(context: UIContext[ReferenceData], model: HitArea[ReferenceData], event: GlobalEvent): Boolean =
+      btn.hitTest(context, model.toButton, event)
+
     def present(
         context: UIContext[ReferenceData],
         model: HitArea[ReferenceData]

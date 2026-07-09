@@ -13,7 +13,8 @@ final case class UIContext[ReferenceData](
     // The following are all the same as in SubSystemContext
     reference: ReferenceData,
     frame: Context.Frame,
-    services: Context.Services
+    services: Context.Services,
+    inputClip: Option[Bounds] = Option.empty
 ):
 
   lazy val isActive: Boolean =
@@ -27,6 +28,30 @@ final case class UIContext[ReferenceData](
 
   def withParentBounds(newBounds: Bounds): UIContext[ReferenceData] =
     withParent(parent.withBounds(newBounds))
+
+  def withInputClip(newClip: Bounds): UIContext[ReferenceData] =
+    this.copy(inputClip = Option(newClip))
+
+  def pushInputClip(newClip: Bounds): UIContext[ReferenceData] =
+    this.copy(inputClip = inputClip.map(intersect(_, newClip)).orElse(Option(newClip)))
+
+  def pointerIsWithinInputClip: Boolean =
+    inputClip.forall(_.contains(pointerCoords))
+
+  def pointerIsWithin(bounds: Bounds): Boolean =
+    pointerIsWithinInputClip &&
+      bounds
+        .moveBy(parent.coords + parent.additionalOffset)
+        .contains(pointerCoords)
+
+  private def intersect(a: Bounds, b: Bounds): Bounds =
+    val left   = math.max(a.left, b.left)
+    val top    = math.max(a.top, b.top)
+    val right  = math.min(a.right, b.right)
+    val bottom = math.min(a.bottom, b.bottom)
+
+    if right <= left || bottom <= top then Bounds.zero
+    else Bounds(left, top, right - left, bottom - top)
 
   def moveParentTo(newPosition: Coords): UIContext[ReferenceData] =
     withParent(parent.moveTo(newPosition))

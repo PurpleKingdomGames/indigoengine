@@ -195,34 +195,9 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
-      case WheelEvent.Vertical(deltaY)
-          if model.scrollOptions.isEnabled && Bounds(context.parent.coords, model.dimensions)
-            .contains(context.pointerCoords) =>
-        val scrollBy =
-          val speed =
-            if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
-          val clamped =
-            Math.min(
-              model.scrollOptions.maxScrollSpeed,
-              Math.max(model.scrollOptions.minScrollSpeed, speed)
-            )
-          val coords =
-            if deltaY < 0 then -clamped else clamped
-
-          coords.toDouble / model.dimensions.height.toDouble
-
-        Outcome(
-          model.copy(
-            scrollAmount = Math.min(1.0d, Math.max(0.0d, model.scrollAmount + scrollBy))
-          )
-        )
-
       case e =>
         val scrollingActive =
           model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-
-        val ctx =
-          context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
 
         val scrollOffset: Coords =
           if scrollingActive then
@@ -231,6 +206,11 @@ object ScrollPane:
               ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
             )
           else Coords.zero
+
+        val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
+        val scrolledBounds = visibleBounds.moveBy(scrollOffset)
+        val ctx            = context.withParentBounds(visibleBounds).pushInputClip(visibleBounds)
+        val contentCtx     = ctx.withParentBounds(scrolledBounds)
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
@@ -255,24 +235,155 @@ object ScrollPane:
 
           c.updateModel(unitContext, model.scrollBar)(e)
 
-        for {
-          updatedContent <- model.content.component
-            .updateModel(ctx.withParentBounds(ctx.parent.bounds.moveBy(scrollOffset)), model.content.model)(e)
-          updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
-        } yield model.copy(
-          content = model.content.copy(model = updatedContent),
-          scrollBar = updatedScrollBar
-        )
+        def updateScrollBarWith(events: Batch[GlobalEvent]): Outcome[Button[Unit]] =
+          val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
+          val unitContext: UIContext[Unit] =
+            ctx
+              .copy(reference = ())
+              .withParent(
+                ctx.parent
+                  .moveBy(
+                    Coords(
+                      model.dimensions.width - model.scrollBar.bounds.width,
+                      0
+                    )
+                  )
+                  .withAdditionalOffset(
+                    Coords(
+                      0,
+                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
+                    )
+                  )
+              )
 
-    def present(
+          events.foldLeft(Outcome(model.scrollBar)) { (acc, event) =>
+            acc.flatMap(c.updateModel(unitContext, _)(event))
+          }
+
+        def routeContent(event: GlobalEvent): Outcome[ComponentEntry[A, ReferenceData]] =
+          ContainerLikeFunctions
+            .routeOrBroadcast(contentCtx, model.dimensions, Batch(model.content))(event)
+            .map(_.headOption.map(_.asInstanceOf[ComponentEntry[A, ReferenceData]]).getOrElse(model.content))
+
+        def updateContentWith(events: Batch[GlobalEvent]): Outcome[ComponentEntry[A, ReferenceData]] =
+          events
+            .foldLeft(Outcome(model.content.model)) { (acc, event) =>
+              acc.flatMap(model.content.component.updateModel(contentCtx, _)(event))
+            }
+            .map(updated => model.content.copy(model = updated))
+
+        def scrollBarHit(event: GlobalEvent): Boolean =
+          scrollingActive && summon[Component[Button[Unit], Unit]].hitTest(
+            ctx
+              .copy(reference = ())
+              .withParent(
+                ctx.parent
+                  .moveBy(
+                    Coords(
+                      model.dimensions.width - model.scrollBar.bounds.width,
+                      0
+                    )
+                  )
+                  .withAdditionalOffset(
+                    Coords(
+                      0,
+                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
+                    )
+                  )
+              ),
+            model.scrollBar,
+            event
+          )
+
+        e match
+          case wheel: WheelEvent
+              if model.content.component.hitTest(contentCtx, model.content.model, wheel) =>
+            routeContent(wheel).map { updatedContent =>
+              model.copy(content = updatedContent)
+            }
+
+          case WheelEvent.Vertical(deltaY)
+              if model.scrollOptions.isEnabled && visibleBounds.contains(context.pointerCoords) =>
+            val scrollBy =
+              val speed =
+                if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
+              val clamped =
+                Math.min(
+                  model.scrollOptions.maxScrollSpeed,
+                  Math.max(model.scrollOptions.minScrollSpeed, speed)
+                )
+              val coords =
+                if deltaY < 0 then -clamped else clamped
+
+              coords.toDouble / model.dimensions.height.toDouble
+
+            Outcome(
+              model.copy(
+                scrollAmount = Math.min(1.0d, Math.max(0.0d, model.scrollAmount + scrollBy))
+              )
+            )
+
+          case move: PointerEvent.Move if scrollBarHit(move) =>
+            for {
+              updatedContent <- updateContentWith(Batch(PointerRouting.leaveFrom(move)))
+              updatedScrollBar <-
+                if scrollingActive then updateScrollBarWith(Batch(PointerRouting.enterFrom(move), move))
+                else Outcome(model.scrollBar)
+            } yield model.copy(
+              content = updatedContent,
+              scrollBar = updatedScrollBar
+            )
+
+          case move: PointerEvent.Move =>
+            for {
+              updatedContent <- routeContent(move)
+              updatedScrollBar <-
+                if scrollingActive then updateScrollBarWith(Batch(PointerRouting.leaveFrom(move), move))
+                else Outcome(model.scrollBar)
+            } yield model.copy(
+              content = updatedContent,
+              scrollBar = updatedScrollBar
+            )
+
+          case pointer: PointerEvent if scrollBarHit(pointer) =>
+            val contentUpdate =
+              pointer match
+                case _: PointerEvent.Up | _: PointerEvent.Cancel | _: PointerEvent.Leave =>
+                  updateContentWith(Batch(pointer))
+
+                case _ =>
+                  Outcome(model.content)
+
+            for {
+              updatedContent <- contentUpdate
+              updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
+            } yield model.copy(
+              content = updatedContent,
+              scrollBar = updatedScrollBar
+            )
+
+          case event =>
+            for {
+              updatedContent  <- routeContent(event)
+              updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
+            } yield model.copy(
+              content = updatedContent,
+              scrollBar = updatedScrollBar
+            )
+
+    override def hitTest(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
-    ): Outcome[Layer] =
+    ): Boolean =
+      hitTest(context, model, PointerEvent.Move(context.pointerCoords.unsafeToPoint))
+
+    override def hitTest(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData],
+        event: GlobalEvent
+    ): Boolean =
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-
-      val ctx =
-        context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
 
       val scrollOffset: Coords =
         if scrollingActive then
@@ -282,13 +393,75 @@ object ScrollPane:
           )
         else Coords.zero
 
+      val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
+      val scrolledBounds = visibleBounds.moveBy(scrollOffset)
+      val ctx            = context.withParentBounds(visibleBounds).pushInputClip(visibleBounds)
+      val contentCtx     = ctx.withParentBounds(scrolledBounds)
+
+      val scrollBarHit =
+        scrollingActive && summon[Component[Button[Unit], Unit]].hitTest(
+          ctx
+            .copy(reference = ())
+            .withParent(
+              ctx.parent
+                .moveBy(
+                  Coords(
+                    model.dimensions.width - model.scrollBar.bounds.width,
+                    0
+                  )
+                )
+                .withAdditionalOffset(
+                  Coords(
+                    0,
+                    ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
+                  )
+                )
+            ),
+          model.scrollBar,
+          event
+        )
+
+      val contentHit =
+        model.content.component.hitTest(contentCtx, model.content.model, event)
+
+      event match
+        case _: WheelEvent =>
+          contentHit || (model.scrollOptions.isEnabled && visibleBounds.contains(context.pointerCoords))
+
+        case _ =>
+          scrollBarHit || contentHit
+
+    def present(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData]
+    ): Outcome[Layer] =
+      val scrollingActive =
+        model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
+
+      val scrollOffset: Coords =
+        if scrollingActive then
+          Coords(
+            0,
+            ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
+          )
+        else Coords.zero
+
+      val visibleBounds  = Bounds(context.parent.coords, model.dimensions)
+      val scrolledBounds = visibleBounds.moveBy(scrollOffset)
+      val contentCtx     =
+        context.withParentBounds(scrolledBounds).pushInputClip(visibleBounds)
+
       val content =
         ContainerLikeFunctions
           .present(
-            ctx.withParentBounds(ctx.parent.bounds.moveBy(scrollOffset)),
+            contentCtx,
             model.dimensions,
             Batch(model.content)
           )
+
+      // This context is used for scrollbars , which only ever care about the visible space
+      val scrollbarBounds = visibleBounds
+      val ctx             = context.withParentBounds(scrollbarBounds).pushInputClip(scrollbarBounds)
 
       val layers: Outcome[Layer.Stack] =
         if scrollingActive then

@@ -154,25 +154,25 @@ object ComponentGroup:
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =
-      e =>
-        model.components
-          .map { c =>
-            c.component
-              .updateModel(
-                context
-                  .withParentBounds(Bounds(context.parent.bounds.moveBy(c.offset).coords, model.dimensions)),
-                c.model
-              )(e)
-              .map { updated =>
-                c.copy(model = updated)
-              }
-          }
-          .sequence
-          .map { updatedComponents =>
+      ContainerLikeFunctions
+        .routeOrBroadcast(context, model.dimensions, model.components)
+        .andThen(
+          _.map { updatedComponents =>
             model.copy(
               components = updatedComponents
             )
           }
+        )
+
+    override def hitTest(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Boolean =
+      ContainerLikeFunctions.hitTest(context, model.dimensions, model.components)
+
+    override def hitTest(
+        context: UIContext[ReferenceData],
+        model: ComponentGroup[ReferenceData],
+        event: GlobalEvent
+    ): Boolean =
+      ContainerLikeFunctions.hitTest(context, model.dimensions, model.components, event)
 
     def present(
         context: UIContext[ReferenceData],
