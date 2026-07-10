@@ -1,6 +1,7 @@
 package indigo.scenegraph
 
 import indigo.core.datatypes.LayerKey
+import indigo.core.render.Magnification
 import indigo.scenegraph.materials.BlendMaterial
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
@@ -35,7 +36,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Able to add an optional layer from a constructor (None)") {
 
     val actual =
-      SceneUpdateFragment(Option.empty[Layer])
+      SceneUpdateFragment(Option.empty[LayerEntry])
 
     val expected =
       SceneUpdateFragment.empty
@@ -50,56 +51,56 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
       SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty))
 
     val actual =
-      scene.addLayer(LayerKey("key A") -> Layer.empty)
+      scene.addLayer(LayerEntry(LayerKey("key A"), Layer.empty))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, None)
+    assertEquals(actual.layers.head.config.magnification.map(_.toInt), None)
 
   }
 
   test("Adding a layer with an existing key merges magnification down (some, some)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty.withMagnification(2))
+      SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x2))
 
     val actual =
-      scene.addLayer(LayerEntry(LayerKey("key A"), Layer.empty.withMagnification(1)))
+      scene.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x1))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
+    assertEquals(actual.layers.head.config.magnification.map(_.toInt), Some(2))
 
   }
 
   test("Adding a layer with an existing key merges magnification down (none, some)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty)
+      SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty))
 
     val actual =
-      scene.addLayer(LayerKey("key A") -> Layer.empty.withMagnification(1))
+      scene.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x1))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(1))
+    assertEquals(actual.layers.head.config.magnification.map(_.toInt), Some(1))
 
   }
 
   test("Adding a layer with an existing key merges magnification down (some, none)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty.withMagnification(2))
+      SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x2))
 
     val actual =
-      scene.addLayer(LayerKey("key A") -> Layer.empty)
+      scene.addLayer(LayerEntry(LayerKey("key A"), Layer.empty))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
+    assertEquals(actual.layers.head.config.magnification.map(_.toInt), Some(2))
 
   }
 
   test("Replace layers using withLayers") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty)
+      SceneUpdateFragment.empty.addLayers(LayerKey("key A") -> Layer.empty)
 
     val actual =
       scene.withLayers(LayerKey("key B") -> Layer.empty)
@@ -107,8 +108,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     assert(actual.layers.length == 1)
 
     actual.layers.head match
-      case LayerEntry.NoKey(_) => fail("Should have been a tagged layer entry")
-      case LayerEntry.Keyed(key, _) =>
+      case LayerEntry(key, _, _) =>
         assertEquals(key, LayerKey("key B"))
 
   }
@@ -116,16 +116,16 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("SUF append preseves layer keys") {
 
     val sceneA: SceneUpdateFragment =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty.withMagnification(2))
+      SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x2))
 
     val sceneB: SceneUpdateFragment =
-      SceneUpdateFragment.empty.addLayer(LayerKey("key A") -> Layer.empty.withMagnification(3))
+      SceneUpdateFragment.empty.addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x3))
 
     val actual: SceneUpdateFragment =
       sceneA |+| sceneB
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
+    assertEquals(actual.layers.head.config.magnification.map(_.toInt), Some(2))
 
   }
 
@@ -156,37 +156,39 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Modify layers") {
     val scene =
       SceneUpdateFragment.empty
-        .addLayer(LayerKey("key A") -> Layer.empty.withMagnification(1))
-        .addLayer(LayerKey("key B") -> Layer.empty.withMagnification(1))
+        .addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x1))
+        .addLayer(LayerEntry(LayerKey("key B"), Layer.empty).withMagnification(Magnification.x1))
 
     val actual =
-      scene.modifyLayers {
-        case LayerEntry.NoKey(_) =>
-          fail("Should have been a tagged layer entry")
-
-        case l @ LayerEntry.Keyed(key, layer) =>
-          l.withKey(LayerKey(key.toString + "?")).withMagnificationForAll(2)
+      scene.modifyLayers { case le @ LayerEntry(key, _, _) =>
+        le.withKey(LayerKey(key.show + "?")).withMagnification(Magnification.x2)
       }
 
-    assert(actual.layers.flatMap(_.toBatch).length == 2)
+    assert(actual.layers.length == 2)
 
     assertEquals(
-      actual.layers.map(_.giveKey.get).toList,
+      actual.layers.map(_.key).toList,
       List(LayerKey("key A?"), LayerKey("key B?"))
     )
-    assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
+    assertEquals(
+      actual.layers.map(_.config.magnification.map(_.toInt)).toList,
+      List(Some(2), Some(2))
+    )
   }
 
   test("Setting the magnification for all layers") {
     val scene =
       SceneUpdateFragment.empty
-        .addLayer(LayerKey("key A") -> Layer.empty.withMagnification(1))
-        .addLayer(LayerKey("key B") -> Layer.empty.withMagnification(1))
+        .addLayer(LayerEntry(LayerKey("key A"), Layer.empty).withMagnification(Magnification.x1))
+        .addLayer(LayerEntry(LayerKey("key B"), Layer.empty).withMagnification(Magnification.x1))
 
     val actual =
-      scene.withMagnification(2)
+      scene.withMagnification(Magnification.x2)
 
-    assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
+    assertEquals(
+      actual.layers.map(_.config.magnification.map(_.toInt)).toList,
+      List(Some(2), Some(2))
+    )
   }
 
   test("Merging SUF's with layer stacks") {
@@ -214,7 +216,6 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
             Layer.Content.empty
           )
         )
-        .addLayer(Layer.empty)
 
     val actual =
       sceneA |+| sceneB
@@ -236,7 +237,6 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
             Layer.Content.empty
           )
         )
-        .addLayer(Layer.empty)
 
     assertEquals(actual, expected)
 
@@ -245,7 +245,6 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
 
     val expectedBatch =
       Batch(
-        Layer.Content.empty,
         Layer.Content.empty,
         Layer.Content.empty,
         Layer.Content.empty,

@@ -1,6 +1,5 @@
 package indigo.render.pipeline.datatypes
 
-import indigo.core.datatypes.LayerKey
 import indigo.scenegraph.Blend
 import indigo.scenegraph.Camera
 import indigo.shaders.ShaderId
@@ -8,7 +7,6 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
 
 final case class DisplayLayer(
-    layerKey: Option[LayerKey],
     entities: Batch[DisplayEntity],
     lightsData: Batch[Float],
     bgColor: RGBA,

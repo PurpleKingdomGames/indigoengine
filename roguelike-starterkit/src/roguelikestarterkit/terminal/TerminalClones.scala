@@ -11,9 +11,9 @@ final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTi
   def combine(other: TerminalClones): TerminalClones =
     TerminalClones(blanks ++ other.blanks, clones ++ other.clones)
 
-  def toSceneUpdateFragment: SceneUpdateFragment =
+  def toSceneUpdateFragment(layerKey: LayerKey): SceneUpdateFragment =
     SceneUpdateFragment(
-      Batch(LayerEntry(Layer.Content(clones))),
+      Batch(LayerEntry(layerKey, Layer.Content(clones))),
       Batch.empty,
       None,
       None,
@@ -24,11 +24,9 @@ final case class TerminalClones(blanks: Batch[CloneBlank], clones: Batch[CloneTi
   def toLayer: Layer.Content =
     Layer.Content(
       clones,
+      blanks,
       Batch.empty,
       None,
-      None,
-      None,
-      blanks,
       None
     )
 

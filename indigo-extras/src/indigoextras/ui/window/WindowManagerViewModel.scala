@@ -4,8 +4,8 @@ import indigo.*
 import indigoextras.ui.datatypes.UIContext
 
 final case class WindowManagerViewModel[ReferenceData](
-    windows: Batch[WindowViewModel[ReferenceData]],
-    magnification: Int
+    windows: Batch[WindowViewModel[ReferenceData]] // ,
+    // magnification: Magnification
 ):
   def prune(model: WindowManagerModel[ReferenceData]): WindowManagerViewModel[ReferenceData] =
     this.copy(windows = windows.filter(w => model.windows.exists(_.id == w.id)))
@@ -23,12 +23,12 @@ final case class WindowManagerViewModel[ReferenceData](
   def pointerIsOver: Batch[WindowId] =
     windows.collect { case wvm if wvm.pointerIsOver => wvm.id }
 
-  def changeMagnification(next: Int): WindowManagerViewModel[ReferenceData] =
-    this.copy(
-      windows = windows.map(_.copy(magnification = next)),
-      magnification = next
-    )
+  // def changeMagnification(next: Magnification): WindowManagerViewModel[ReferenceData] =
+  //   this.copy(
+  //     windows = windows.map(_.copy(magnification = next)),
+  //     magnification = next
+  //   )
 
 object WindowManagerViewModel:
-  def initial[ReferenceData](magnification: Int): WindowManagerViewModel[ReferenceData] =
-    WindowManagerViewModel(Batch.empty, magnification)
+  def initial[ReferenceData] /*(magnification: Magnification)*/: WindowManagerViewModel[ReferenceData] =
+    WindowManagerViewModel(Batch.empty /*, magnification*/ )

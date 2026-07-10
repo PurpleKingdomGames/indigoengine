@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
@@ -37,7 +38,7 @@ object ClipScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        Constants.LayerKeys.game -> Layer(
           (0 to 7).toBatch.flatMap { i =>
             model.dude.dude.clips
               .get(CycleLabel("walk right"))
@@ -120,7 +121,7 @@ object ClipScene extends Scene[SandboxGameModel]:
             makeDudeAnim(CycleLabel("walk left"), Point(232, 200), model.dude.dude.clips) ++
             makeDudeAnim(CycleLabel("walk up"), Point(200, 232), model.dude.dude.clips) ++
             makeDudeAnim(CycleLabel("walk down"), Point(232, 232), model.dude.dude.clips)
-        ).withMagnification(1)
+        )
       )
     )
 

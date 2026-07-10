@@ -25,6 +25,7 @@ object MultipleWindowsScene extends Scene[GameModel]:
     Set(
       WindowManager[GameModel, Int](
         SubSystemId("window manager 2"),
+        Constants.LayerKeys.ui,
         Constants.magnification,
         Size(GameModel.defaultCharSheet.charSize),
         _.pointerOverWindows.length

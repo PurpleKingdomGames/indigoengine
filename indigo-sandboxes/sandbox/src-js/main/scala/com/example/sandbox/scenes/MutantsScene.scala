@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -75,7 +76,7 @@ object MutantsScene extends Scene[SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         Mutants(cloneId, data)
         // Mutants(cloneId, dataMax)
         // gfx

@@ -44,12 +44,11 @@ object OriginalScene extends Scene[SandboxGameModel] {
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
-          LayerKey("bg") -> Layer.empty
-            .withMagnification(1)
+        .addLayers(
+          SandboxView.bgLayerKey -> Layer.empty
         ) |+| scene
-        .addLayer(
-          LayerKey("bg") -> Layer(
+        .addLayers(
+          SandboxView.bgLayerKey -> Layer(
             CustomShape(
               0,
               0,
@@ -59,8 +58,8 @@ object OriginalScene extends Scene[SandboxGameModel] {
             )
           )
         )
-        .addLayer(
-          Layer(
+        .addLayers(
+          SandboxView.gameLayerKey -> Layer(
             Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),
             CustomShape(
               140,

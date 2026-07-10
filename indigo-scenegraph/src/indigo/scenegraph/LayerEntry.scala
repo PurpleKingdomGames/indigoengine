@@ -1,63 +1,89 @@
 package indigo.scenegraph
 
 import indigo.core.datatypes.LayerKey
+import indigo.core.render.Magnification
 import indigoengine.shared.collections.Batch
 
-/** Layer entries are holders for Layers, that can either be tagged or untagged. If a layer entry is tagged with a
-  * `LayerKey`, then if two SceneUpdateFragements are merged together, two entries will the same layerKey will be
-  * combined at the depth of the original.
+/** Layer entries are holders for Layers. Layer entries are tagged with a `LayerKey`, the purpose of which is that when
+  * two SceneUpdateFragements are merged together, two entries will the same layerKey will be combined at the depth of
+  * the original. Layer entries also hold the configuration for the layers it looks after.
   */
-enum LayerEntry:
-  def layer: Layer
-
-  case NoKey(layer: Layer)
-  case Keyed(layerKey: LayerKey, layer: Layer)
+final case class LayerEntry(key: LayerKey, layer: Layer, config: LayerEntry.Config):
+  def withKey(newKey: LayerKey): LayerEntry =
+    this.copy(key = newKey)
 
   def hasKey(layerKey: LayerKey): Boolean =
-    this match
-      case _: LayerEntry.NoKey => false
-      case l: LayerEntry.Keyed => l.layerKey == layerKey
-
-  def giveKey: Option[LayerKey] =
-    this match
-      case NoKey(_)           => None
-      case Keyed(layerKey, _) => Option(layerKey)
-
-  def withKey(newKey: LayerKey): LayerEntry =
-    LayerEntry.Keyed(newKey, this.layer)
+    key == layerKey
 
   def withLayer(newLayer: Layer): LayerEntry =
-    this match
-      case l: LayerEntry.NoKey => l.copy(layer = newLayer)
-      case l: LayerEntry.Keyed => l.copy(layer = newLayer)
+    this.copy(layer = newLayer)
+
+  def withConfig(newConfig: LayerEntry.Config): LayerEntry =
+    this.copy(config = newConfig)
+
+  def withMagnification(newMagnification: Magnification): LayerEntry =
+    withConfig(config.withMagnification(newMagnification))
+  def clearMagnification: LayerEntry =
+    withMagnification(Magnification.x1)
+
+  def withVisibility(isVisible: Boolean): LayerEntry =
+    withConfig(config.withVisibility(isVisible))
+  def show: LayerEntry =
+    withVisibility(true)
+  def hide: LayerEntry =
+    withVisibility(false)
 
   def modify(f: LayerEntry => LayerEntry): LayerEntry =
     f(this)
   def modifyLayer(pf: PartialFunction[Layer, Layer]): LayerEntry =
-    this match
-      case l: LayerEntry.NoKey => l.copy(layer = layer.modify(pf))
-      case l: LayerEntry.Keyed => l.copy(layer = layer.modify(pf))
-
-  /** Apply a magnification to this layer entry's layer, and all it's child layers.
-    *
-    * @param level
-    */
-  def withMagnificationForAll(level: Int): LayerEntry =
-    this.modifyLayer(_.withMagnificationForAll(level))
+    this.copy(layer = layer.modify(pf))
 
   def toBatch: Batch[Layer.Content] =
     layer.toBatch
 
 object LayerEntry:
 
-  def apply(layerKey: LayerKey, layer: Layer): LayerEntry =
-    LayerEntry.Keyed(layerKey, layer)
+  def apply(key: LayerKey, layer: Layer): LayerEntry =
+    LayerEntry(key, layer, Config.default)
 
-  def apply(maybeKey: Option[LayerKey], layer: Layer): LayerEntry =
-    maybeKey.fold(LayerEntry(layer))(layerKey => LayerEntry(layerKey, layer))
+  def apply(key: LayerKey, layer: Layer, magnification: Magnification): LayerEntry =
+    LayerEntry(key, layer, Config.default.withMagnification(magnification))
 
-  def apply(keyAndLayer: (LayerKey, Layer)): LayerEntry =
-    LayerEntry.Keyed(keyAndLayer._1, keyAndLayer._2)
+  /** Contains the configuration for this layer entry.
+    *
+    * Fields are optional to support left-bias monoidal merging.
+    */
+  final case class Config(
+      magnification: Option[Magnification],
+      visible: Option[Boolean]
+  ):
 
-  def apply(layer: Layer): LayerEntry =
-    LayerEntry.NoKey(layer)
+    def |+|(other: Config): Config =
+      Config(
+        this.magnification.orElse(other.magnification),
+        this.visible.orElse(other.visible)
+      )
+
+    def withMagnification(newMagnification: Magnification): Config =
+      this.copy(magnification = Some(newMagnification))
+    def clearMagnification: Config =
+      this.copy(magnification = None)
+
+    def giveMagnification: Magnification =
+      magnification.getOrElse(Magnification.x1)
+
+    def withVisibility(isVisible: Boolean): Config =
+      this.copy(visible = Some(isVisible))
+    def show: Config =
+      withVisibility(true)
+    def hide: Config =
+      withVisibility(false)
+
+    def isVisible: Boolean =
+      visible.getOrElse(true)
+    def isHidden: Boolean =
+      !isVisible
+
+  object Config:
+    val default: Config =
+      Config(None, None)

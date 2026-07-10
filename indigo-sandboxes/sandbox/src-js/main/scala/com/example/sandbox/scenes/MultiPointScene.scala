@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
@@ -104,7 +105,7 @@ object MultiPointScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        Constants.LayerKeys.game -> Layer(
           // Pen data
           Text("Pen", Fonts.fontKey, textMaterial).moveTo(10, 10),
           Text(s"${model.pen.pos.x},${model.pen.pos.y}", Fonts.fontKey, textMaterial).moveTo(10, 30),
@@ -155,7 +156,7 @@ object MultiPointScene extends Scene[SandboxGameModel]:
             textMaterial
           ).moveTo(10, 380),
           Text(s"Is ${if model.pointer.isDown then "Down" else "Up"}", Fonts.fontKey, textMaterial).moveTo(10, 400)
-        ).withMagnification(1)
+        )
       )
     )
 

@@ -3,10 +3,8 @@ package indigo.scenes
 import indigo.core.Outcome
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
-import indigo.scenegraph.Layer
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
-import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 
 /** Describes the functions that a valid scene must implement.
@@ -50,7 +48,7 @@ object Scene {
       type SceneModel = Unit
 
       val sceneFragment =
-        Outcome(SceneUpdateFragment(Batch.empty[Layer]))
+        Outcome(SceneUpdateFragment.empty)
 
       val modelOutcome = Outcome(())
 

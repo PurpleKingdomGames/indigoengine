@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -34,7 +35,7 @@ object ViewportResizeScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Layer(
+          Constants.LayerKeys.game -> Layer(
             Graphic(
               model.viewportSize,
               Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))

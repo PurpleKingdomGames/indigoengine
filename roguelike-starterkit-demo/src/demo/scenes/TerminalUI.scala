@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.GameEvent
 import demo.models.GameModel
 import indigo.*
@@ -34,7 +35,7 @@ object TerminalUI extends Scene[GameModel]:
       Outcome(model)
 
     case e =>
-      val ctx = UIContext(context.toContext, 1)
+      val ctx = UIContext(context.toContext, Magnification.x3)
         .withSnapGrid(TerminalUIComponents.charSheet.size)
         .moveParentBy(Coords(5, 5))
 
@@ -46,13 +47,16 @@ object TerminalUI extends Scene[GameModel]:
       context: SceneContext,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
-    val ctx = UIContext(context.toContext, 1)
+    val ctx = UIContext(context.toContext, Magnification.x3)
       .withSnapGrid(TerminalUIComponents.charSheet.size)
       .moveParentBy(Coords(5, 5))
 
     model.button
       .present(ctx)
-      .map(l => SceneUpdateFragment(l))
+      .map { l =>
+        SceneUpdateFragment(Constants.LayerKeys.ui)(l)
+          .withMagnification(Magnification.x3)
+      }
 
 object TerminalUIComponents:
 

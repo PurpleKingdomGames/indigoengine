@@ -20,6 +20,9 @@ object aliases:
   type ScreenCaptureConfig = indigo.core.render.ScreenCaptureConfig
   val ScreenCaptureConfig: indigo.core.render.ScreenCaptureConfig.type = indigo.core.render.ScreenCaptureConfig
 
+  type Magnification = indigo.core.render.Magnification
+  val Magnification: indigo.core.render.Magnification.type = indigo.core.render.Magnification
+
   val logger: indigo.core.utils.IndigoLogger.type = indigo.core.utils.IndigoLogger
 
   type Startup[SuccessType] = shared.Startup[SuccessType]

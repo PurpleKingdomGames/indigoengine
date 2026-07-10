@@ -100,8 +100,9 @@ object NineSliceScene extends Scene[SandboxGameModel] {
                   (0 until 4).toBatch.map(col => Point(col * 100, 300)),
                   true
                 )
-            ).withMagnificationForAll(2)
+            )
         )
+        .withMagnification(Magnification(4))
     )
   }
 

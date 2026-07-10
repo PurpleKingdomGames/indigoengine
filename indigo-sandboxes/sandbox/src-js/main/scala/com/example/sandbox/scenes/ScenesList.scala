@@ -43,5 +43,6 @@ object ScenesList:
       PerformerPhysicsScene,
       ViewportResizeScene,
       MultiPointScene,
-      BgAudioScene
+      BgAudioScene,
+      MagnificationScene
     )

@@ -25,11 +25,11 @@ object ColourWindowScene extends Scene[GameModel]:
     Set(
       WindowManager[GameModel, Unit](
         SubSystemId("window manager"),
+        Constants.LayerKeys.ui,
         Constants.magnification,
         Size(GameModel.defaultCharSheet.charSize),
         _ => ()
       )
-        .withLayerKey(LayerKey("UI Layer"))
         .register(
           ColourWindow.window(
             GameModel.defaultCharSheet
@@ -91,7 +91,6 @@ object ColourWindowScene extends Scene[GameModel]:
                   model.pointerOverWindows.mkString("[", ",", "]")
               )
               .moveTo(0, 260)
-          ),
-        LayerKey("UI Layer") -> Layer.Stack.empty
-      )
+          )
+      ).withMagnification(Magnification.x2)
     )

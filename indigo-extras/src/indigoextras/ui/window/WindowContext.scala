@@ -1,5 +1,6 @@
 package indigoextras.ui.window
 
+import indigo.core.render.Magnification
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.UIContext
 
@@ -8,7 +9,7 @@ final case class WindowContext[ReferenceData](
     bounds: Bounds,
     hasFocus: Boolean,
     pointerIsOver: Boolean,
-    magnification: Int
+    magnification: Magnification
 )
 
 object WindowContext:
@@ -23,5 +24,5 @@ object WindowContext:
       model.bounds(context.frame.viewport, context.magnification),
       model.hasFocus,
       viewModel.pointerIsOver,
-      viewModel.magnification
+      context.magnification
     )

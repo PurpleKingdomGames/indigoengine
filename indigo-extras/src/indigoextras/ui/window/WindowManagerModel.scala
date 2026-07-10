@@ -78,7 +78,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
   def focused: Option[Window[?, ReferenceData]] =
     windows.find(_.hasFocus)
 
-  def windowAt(coords: Coords, viewport: Rectangle, magnification: Int): Option[WindowId] =
+  def windowAt(coords: Coords, viewport: Rectangle, magnification: Magnification): Option[WindowId] =
     windows.reverse.find(_.bounds(viewport, magnification).contains(coords)).map(_.id)
 
   def moveTo(
@@ -86,7 +86,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       position: Coords,
       space: Space,
       viewport: Rectangle,
-      magnification: Int
+      magnification: Magnification
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>
@@ -118,7 +118,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       dimensions: Dimensions,
       space: Space,
       viewport: Rectangle,
-      magnification: Int
+      magnification: Magnification
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>
@@ -139,7 +139,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       bounds: Bounds,
       space: Space,
       viewport: Rectangle,
-      magnification: Int
+      magnification: Magnification
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>

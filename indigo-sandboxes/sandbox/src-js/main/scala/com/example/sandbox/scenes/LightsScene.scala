@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -62,8 +63,8 @@ object LightsScene extends Scene[SandboxGameModel] {
       Point(550, 400) / 2 / 2
 
     Outcome(
-      SceneUpdateFragment(graphic, graphic2, shape)
-        .withMagnification(2)
+      SceneUpdateFragment(Constants.LayerKeys.game)(graphic, graphic2, shape)
+        .withMagnification(Magnification(2))
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.1)),
           DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan, Radians.zero),

@@ -10,6 +10,8 @@ import indigoextras.ui.syntax.*
 
 object ComponentUIScene extends Scene[SandboxGameModel]:
 
+  val magnification = Magnification.x3
+
   type SceneModel = SandboxGameModel
 
   val name: SceneName =
@@ -37,7 +39,7 @@ object ComponentUIScene extends Scene[SandboxGameModel]:
 
     case e =>
       val ctx =
-        UIContext.fromContext(context.toContext, model.num, 1)
+        UIContext.fromContext(context.toContext, model.num, magnification)
 
       model.components.update(ctx)(e).map { cl =>
         model.copy(components = cl)
@@ -48,16 +50,19 @@ object ComponentUIScene extends Scene[SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     model.components
-      .present(UIContext.fromContext(context.toContext, model.num, 1))
+      .present(UIContext.fromContext(context.toContext, model.num, magnification))
       .map {
         case l: Layer.Stack =>
           SceneUpdateFragment(
-            Constants.LayerKeys.game -> Layer.Stack(
-              l.layers.map {
-                case l: Layer.Content => l.withMagnification(1)
-                case l                => l
-              }
-            )
+            LayerEntry(
+              Constants.LayerKeys.game,
+              Layer.Stack(
+                l.layers.map {
+                  case l: Layer.Content => l
+                  case l                => l
+                }
+              )
+            ).withMagnification(magnification)
           )
 
         case l: Layer.Content =>

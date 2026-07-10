@@ -3,7 +3,9 @@ package indigo.shared.subsystems
 import indigo.core.Outcome
 import indigo.core.assets.AssetName
 import indigo.core.datatypes.FontKey
+import indigo.core.datatypes.LayerKey
 import indigo.core.events.GlobalEvent
+import indigo.scenegraph.Layer
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.Text
 import indigo.scenegraph.materials.Material
@@ -37,7 +39,9 @@ final case class PointsTrackerExample(num: Int, startingPoints: Int) extends Sub
 
   def present(context: SubSystemContext[Int], points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(Text(points.toString, 0, 0, FontKey(""), Material.Bitmap(AssetName("Testing"))))
+      SceneUpdateFragment(
+        LayerKey("test") -> Layer(Text(points.toString, 0, 0, FontKey(""), Material.Bitmap(AssetName("Testing"))))
+      )
     )
 }
 

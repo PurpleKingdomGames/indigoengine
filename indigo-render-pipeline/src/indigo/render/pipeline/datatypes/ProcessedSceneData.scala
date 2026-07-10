@@ -1,6 +1,5 @@
 package indigo.render.pipeline.datatypes
 
-import indigo.render.pipeline.datatypes.DisplayLayer
 import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.datatypes.DisplayObjectUniformData
 import indigo.scenegraph.Camera

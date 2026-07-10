@@ -333,7 +333,7 @@ object ScrollPane:
             stack.toBatch.map {
               _.withBlendMaterial(
                 LayerMask(
-                  ctx.parent.bounds.toScreenSpace(ctx.snapGrid * ctx.magnification)
+                  ctx.parent.bounds.toScreenSpace(ctx.snapGrid * ctx.magnification.toInt)
                 )
               )
             }

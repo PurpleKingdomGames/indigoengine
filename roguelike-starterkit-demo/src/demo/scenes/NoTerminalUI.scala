@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.GameEvent
 import demo.models.ChangeValue
 import demo.models.GameModel
@@ -37,7 +38,7 @@ object NoTerminalUI extends Scene[GameModel]:
 
     case e =>
       val ctx =
-        UIContext(context.toContext.forSubSystems.copy(reference = model.num), Size(1), 1)
+        UIContext(context.toContext.forSubSystems.copy(reference = model.num), Size(1), Magnification.x1)
       summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
         model.copy(components = cl)
       }
@@ -47,8 +48,8 @@ object NoTerminalUI extends Scene[GameModel]:
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     model.components
-      .present(UIContext(context.toContext.forSubSystems.copy(reference = 0), Size(1), 1))
-      .map(l => SceneUpdateFragment(l))
+      .present(UIContext(context.toContext.forSubSystems.copy(reference = 0), Size(1), Magnification.x1))
+      .map(l => SceneUpdateFragment(Constants.LayerKeys.game -> l))
 
 object NoTerminalUIComponents:
 

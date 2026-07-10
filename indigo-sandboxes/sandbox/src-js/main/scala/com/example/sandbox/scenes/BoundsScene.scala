@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
@@ -95,7 +96,7 @@ object BoundsScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        Constants.LayerKeys.game -> Layer(
           Batch(
             graphic,
             Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),

@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
@@ -41,7 +42,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
       val ctx =
         UIContext(context.toContext)
           .withReferenceData(4)
-          .withMagnification(2)
+          .withMagnification(Magnification.x2)
 
       for {
         s <- model.scrollPane.update(ctx.moveParentTo(50, 10))(e)
@@ -57,6 +58,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
       UIContext(context.toContext)
         .withReferenceData(4)
         .moveParentTo(50, 10)
+        .withMagnification(Magnification.x2)
 
     val scrollPaneBorder =
       Shape.Box(
@@ -68,8 +70,13 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
     for {
       s <- model.scrollPane.present(ctx)
       b <- model.button.present(ctx.moveParentTo(10, 10))
-    } yield SceneUpdateFragment(b, s)
-      .addLayer(Layer(scrollPaneBorder))
+    } yield SceneUpdateFragment.empty
+      .addLayers(
+        Constants.LayerKeys.game -> b,
+        Constants.LayerKeys.game -> s,
+        Constants.LayerKeys.game -> Layer(scrollPaneBorder)
+      )
+      .withMagnification(Magnification.x2)
 
   object CustomComponents:
 

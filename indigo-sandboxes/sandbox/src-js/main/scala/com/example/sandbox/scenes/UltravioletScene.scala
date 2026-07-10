@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import indigo.*
 import indigo.scenes.*
@@ -35,7 +36,7 @@ object UltravioletScene extends Scene[SandboxGameModel] {
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
+        .addLayer(Constants.LayerKeys.game)(
           Layer(
             BlankEntity(10, 10, 150, 150, ShaderData(UVShaders.voronoiId)),
             BlankEntity(140, 50, 32, 32, ShaderData(UVShaders.circleId))

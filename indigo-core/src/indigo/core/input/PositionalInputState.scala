@@ -4,19 +4,19 @@ import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 
 trait PositionalInputState:
-  /** Coordinates relative to the magnification level, regardless of whether the pointer has a verified position
+  /** Coordinates relative to the screen, regardless of whether the pointer has a verified position
     */
   def position: Point = maybePosition.getOrElse(Point.zero)
 
-  /** Coordinates relative to the magnification level, if the pointer is currently has a position
+  /** Coordinates relative to the screen, if the pointer is currently has a position
     */
   val maybePosition: Option[Point]
 
-  /** The X position relative to the magnification level
+  /** The X position relative to the screen
     */
   def x: Int = position.x
 
-  /** The Y position relative to the magnification level
+  /** The Y position relative to the screen
     */
   def y: Int = position.y
 

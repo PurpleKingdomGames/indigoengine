@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
@@ -49,4 +50,4 @@ object RogueTerminalEmulatorScene extends Scene[GameModel]:
         Graphic(10, 10, TerminalMaterial(Assets.assets.AnikkiSquare10x10, fg, bg))
       }
 
-    Outcome(tiles.toSceneUpdateFragment)
+    Outcome(tiles.toSceneUpdateFragment(Constants.LayerKeys.game).withMagnification(Magnification.x3))

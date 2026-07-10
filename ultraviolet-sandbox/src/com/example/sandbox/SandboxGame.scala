@@ -110,7 +110,10 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
+      SceneUpdateFragment(
+        SandboxView.bgLayerKey   -> Layer.empty,
+        SandboxView.gameLayerKey -> Layer.empty
+      )
     )
 
 final case class Dude(

@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
@@ -77,13 +78,16 @@ object ConfettiScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
-          model.particles.map(particlesToCloneTiles)
-        ).withMagnification(1),
-        Layer(
-          count.withText(s"count: ${model.particles.length * spawnCount}")
-        ).withMagnification(1)
+        Constants.LayerKeys.game -> Layer.Stack(
+          Layer(
+            model.particles.map(particlesToCloneTiles)
+          ),
+          Layer(
+            count.withText(s"count: ${model.particles.length * spawnCount}")
+          )
+        )
       ).addCloneBlanks(cloneBlanks)
+        .withMagnification(Magnification(2))
     )
 
 final case class ConfettiModel(color: Int, particles: Batch[Batch[Particle]]):

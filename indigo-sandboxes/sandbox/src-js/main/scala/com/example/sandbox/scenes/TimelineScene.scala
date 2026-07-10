@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Dude
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
@@ -93,7 +94,7 @@ object TimelineScene extends Scene[SandboxGameModel]:
     val dude = model.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         tl(2.seconds).atOrLast(context.frame.time.running)(crate).toBatch ++
           spriteTimeline
             .at(context.frame.time.running)(dude)

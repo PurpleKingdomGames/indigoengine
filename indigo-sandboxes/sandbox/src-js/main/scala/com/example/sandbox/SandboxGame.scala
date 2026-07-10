@@ -13,7 +13,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(NineSliceScene.name)
+    Some(ComponentUIScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxGameModel]] =
     ScenesList.scenes
@@ -36,9 +36,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
           Fonts.fontKey,
-          SandboxAssets.smallFontName
+          SandboxAssets.smallFontName,
+          Constants.LayerKeys.fps
         )
-          .withLayerKey(Constants.LayerKeys.fps)
           .placeAt { (context, bounds) =>
             Point(0, context.frame.viewport.height - bounds.height)
           }
@@ -124,10 +124,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         Constants.LayerKeys.background -> Layer.Stack.empty,
         Constants.LayerKeys.game       -> Layer.Stack.empty,
         Constants.LayerKeys.windows    -> Layer.Stack.empty,
-        Constants.LayerKeys.fps ->
-          Layer.empty
-            .withCamera(Camera.default)
-            .withMagnification(1)
+        Constants.LayerKeys.fps        -> Layer.empty.withCamera(Camera.default)
       )
     )
 

@@ -8,7 +8,7 @@ final case class WindowViewModel[ReferenceData](
     id: WindowId,
     modelHashCode: Int,
     pointerIsOver: Boolean,
-    magnification: Int
+    magnification: Magnification
 ):
 
   def update[A](
@@ -20,7 +20,7 @@ final case class WindowViewModel[ReferenceData](
 
 object WindowViewModel:
 
-  def initial[ReferenceData](id: WindowId, magnification: Int): WindowViewModel[ReferenceData] =
+  def initial[ReferenceData](id: WindowId, magnification: Magnification): WindowViewModel[ReferenceData] =
     WindowViewModel(
       id,
       0,
@@ -42,7 +42,7 @@ object WindowViewModel:
     case PointerEvent.Move(pt)
         if viewModel.pointerIsOver && !model
           .bounds(context.frame.viewport, context.magnification)
-          .toScreenSpace(context.snapGrid)
+          .toScreenSpace(context.snapGrid * context.magnification.toInt)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = false))
         .addGlobalEvents(WindowEvent.PointerOut(model.id))
@@ -50,7 +50,7 @@ object WindowViewModel:
     case PointerEvent.Move(pt)
         if !viewModel.pointerIsOver && model
           .bounds(context.frame.viewport, context.magnification)
-          .toScreenSpace(context.snapGrid)
+          .toScreenSpace(context.snapGrid * context.magnification.toInt)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = true))
         .addGlobalEvents(WindowEvent.PointerOver(model.id))

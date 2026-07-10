@@ -1,5 +1,6 @@
 package indigo.scenegraph
 
+import indigo.core.datatypes.Point
 import indigo.scenegraph.materials.BlendMaterial
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
@@ -82,10 +83,10 @@ class LayerTests extends munit.FunSuite {
   }
 
   test("modify - Content layer") {
-    val l = Layer.Content.empty.withMagnification(1)
+    val l = Layer.Content.empty.withCamera(Camera.Fixed(Point(1)))
 
-    val actual   = l.modify { case l: Layer.Content => l.withMagnification(2) }
-    val expected = Layer.Content.empty.withMagnification(2)
+    val actual   = l.modify { case l: Layer.Content => l.withCamera(Camera.Fixed(Point(2))) }
+    val expected = Layer.Content.empty.withCamera(Camera.Fixed(Point(2)))
 
     assertEquals(actual, expected)
   }
@@ -102,25 +103,25 @@ class LayerTests extends munit.FunSuite {
   test("modify - perform a deep modification") {
     val l = Layer.Stack(
       Layer.Stack(
-        Layer.Content.empty.withMagnification(1),
-        Layer.Content.empty.withMagnification(1),
-        Layer.Content.empty.withMagnification(1)
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(1))),
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(1))),
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(1)))
       ),
-      Layer.Content.empty.withMagnification(1),
-      Layer.Content.empty.withMagnification(1),
-      Layer.Content.empty.withMagnification(1)
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(1))),
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(1))),
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(1)))
     )
 
-    val actual = l.modify { case l: Layer.Content => l.withMagnification(2) }
+    val actual = l.modify { case l: Layer.Content => l.withCamera(Camera.Fixed(Point(2))) }
     val expected = Layer.Stack(
       Layer.Stack(
-        Layer.Content.empty.withMagnification(2),
-        Layer.Content.empty.withMagnification(2),
-        Layer.Content.empty.withMagnification(2)
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(2))),
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(2))),
+        Layer.Content.empty.withCamera(Camera.Fixed(Point(2)))
       ),
-      Layer.Content.empty.withMagnification(2),
-      Layer.Content.empty.withMagnification(2),
-      Layer.Content.empty.withMagnification(2)
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(2))),
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(2))),
+      Layer.Content.empty.withCamera(Camera.Fixed(Point(2)))
     )
 
     assertEquals(actual, expected)
@@ -129,16 +130,13 @@ class LayerTests extends munit.FunSuite {
   test("Layer.Stack cons") {
     val l = Layer.Stack(Layer.Content.empty, Layer.Content.empty, Layer.Content.empty)
 
-    val actual = Layer.Content.empty.withMagnification(2) :: l
+    val actual = Layer.Content.empty.withCamera(Camera.Fixed(Point(2))) :: l
 
     assertEquals(actual.layers.length, 4)
 
     actual.layers.head match
-      case Layer.Content(nodes, lights, magnification, visible, blending, cloneBlanks, camera) =>
-        assertEquals(
-          magnification,
-          Some(2)
-        )
+      case c: Layer.Content =>
+        assertEquals(c.camera, Some(Camera.Fixed(Point(2))))
 
       case _ =>
         fail("match failed")

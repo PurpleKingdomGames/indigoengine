@@ -18,7 +18,7 @@ object SandboxView:
     }
 
     SceneUpdateFragment.empty
-      .addLayer(
+      .addLayers(
         LayerKey("game") ->
           Layer.Stack(
             Layer.Content(

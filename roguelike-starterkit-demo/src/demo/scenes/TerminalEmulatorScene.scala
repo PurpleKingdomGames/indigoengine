@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
@@ -54,6 +55,7 @@ object TerminalEmulatorScene extends Scene[GameModel]:
       }
 
     Outcome(
-      SceneUpdateFragment(tiles.clones)
+      SceneUpdateFragment(Constants.LayerKeys.game)(tiles.clones)
         .addCloneBlanks(tiles.blanks)
+        .withMagnification(Magnification.x2)
     )

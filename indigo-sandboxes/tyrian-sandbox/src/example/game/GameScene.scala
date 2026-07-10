@@ -34,7 +34,7 @@ final case class GameScene(clockwise: Boolean) extends Scene[Unit]:
       else Radians(-Radians.fromSeconds(context.frame.time.running * 0.25).toDouble)
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(LayerKey("game"))(
         Shape
           .Box(
             Rectangle(0, 0, 60, 60),

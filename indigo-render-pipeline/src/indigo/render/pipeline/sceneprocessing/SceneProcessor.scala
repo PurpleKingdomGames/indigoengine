@@ -130,7 +130,8 @@ object SceneProcessor:
 
     var i = 0
     while i < compacted.length do
-      val (maybeLayerKey, contentLayers) = compacted(i)
+      val (contentLayers, magnification) = compacted(i)
+      val magnificationOpt               = if magnification.toInt > 1 then Option(magnification.toInt) else None
 
       var j = 0
       while j < contentLayers.length do
@@ -148,11 +149,10 @@ object SceneProcessor:
 
         layerResults.append(
           DisplayLayer(
-            maybeLayerKey,
             conversionResults.displayEntities,
             BuildLightingData.makeLightsData(scene.lights ++ content.lights),
             blending.clearColor.getOrElse(RGBA.Zero),
-            content.magnification,
+            magnificationOpt,
             blending.entity,
             blending.layer,
             shaderData.shaderId,

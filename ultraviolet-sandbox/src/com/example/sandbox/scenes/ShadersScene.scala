@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.SandboxGameModel
+import com.example.sandbox.SandboxView
 import com.example.sandbox.shaders.*
 import indigo.*
 import indigo.scenes.*
@@ -33,7 +34,7 @@ object ShadersScene extends Scene[SandboxGameModel] {
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        SandboxView.gameLayerKey -> Layer(
           BlankEntity(100, 100, ShaderData(BoxShader.shader.id))
             .moveTo(0, 0),
           BlankEntity(100, 100, ShaderData(CircleShader.shader.id))
@@ -46,7 +47,7 @@ object ShadersScene extends Scene[SandboxGameModel] {
             .moveTo(100, 100),
           BlankEntity(100, 100, ShaderData(TriangleShader.shader.id))
             .moveTo(200, 100)
-        ).withMagnification(1)
+        )
       )
     )
 

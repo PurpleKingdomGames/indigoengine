@@ -4,6 +4,7 @@ import indigo.core.datatypes.Fill
 import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
+import indigo.core.render.Magnification
 import indigo.scenegraph.Camera
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
@@ -31,7 +32,7 @@ class CompactLayersTests extends munit.FunSuite:
 
   lazy val uncompacted: Batch[LayerEntry] =
     Batch(
-      LayerEntry(Layer.empty),
+      LayerEntry(LayerKey("a"), Layer.empty).withMagnification(Magnification.x2),
       LayerEntry(LayerKey("b"), Layer.empty),
       LayerEntry(
         LayerKey("c"),
@@ -54,22 +55,49 @@ class CompactLayersTests extends munit.FunSuite:
       )
     )
 
-  lazy val compacted: Batch[(Option[LayerKey], Batch[Layer.Content])] =
+  lazy val compacted: Batch[(Batch[Layer.Content], Magnification)] =
     Batch(
-      (None, Batch(Layer.Content.empty)),
-      (Some(LayerKey("b")), Batch(Layer.Content.empty)),
+      (Batch(Layer.Content.empty), Magnification.x2),
+      (Batch(Layer.Content.empty), Magnification.default),
       (
-        Some(LayerKey("c")),
         Batch(
           Layer.Content(shape, shape)
-        )
+        ),
+        Magnification.default
       ),
       (
-        Some(LayerKey("d")),
         Batch(
           Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
           Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
           Layer.Content(shape)
-        )
+        ),
+        Magnification.default
       )
     )
+
+  test("magnification is applied once per LayerEntry, not compounded by nesting") {
+    val entry: LayerEntry =
+      LayerEntry(
+        LayerKey("deeply-nested"),
+        Layer.Stack(
+          Layer.Content(shape),
+          Layer.Stack(
+            Layer.Content(shape),
+            Layer.Stack(
+              Layer.Content(shape)
+            )
+          )
+        )
+      ).withMagnification(Magnification.x2)
+
+    val actual =
+      CompactLayers.compactLayers(Batch(entry))
+
+    // One group, carrying the entry's single x2 magnification - not x2 * x2 * x2.
+    assertEquals(actual.length, 1)
+
+    val (contents, magnification) = actual.head
+    assertEquals(magnification, Magnification.x2)
+    // All nested content layers share the same camera/blend/lights, so they compact to one.
+    assertEquals(contents, Batch(Layer.Content(shape, shape, shape)))
+  }

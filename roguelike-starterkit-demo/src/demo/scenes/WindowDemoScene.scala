@@ -23,6 +23,7 @@ object WindowDemoScene extends Scene[GameModel]:
     Set(
       WindowManager[GameModel](
         SubSystemId("demo window manager"),
+        Constants.LayerKeys.ui,
         Constants.magnification
       )
         .withLayerKey(LayerKey("UI Layer"))
