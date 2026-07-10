@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -43,7 +44,7 @@ object LegacyEffectsScene extends Scene[SandboxGameModel] {
     val viewCenter: Point = SandboxGame.screenCenter + Point(0, -25)
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         graphic // tint - identical to ImageEffects material
           .moveTo(viewCenter)
           .moveBy(0, -40)

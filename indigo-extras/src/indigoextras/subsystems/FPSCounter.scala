@@ -29,7 +29,7 @@ final case class FPSCounter[Model](
     place: (Context, Size) => Point,
     targetFPS: Option[FPS],
     thresholds: Batch[FPSThreshold],
-    layerKey: Option[LayerKey],
+    layerKey: LayerKey,
     fontKey: FontKey,
     fontAsset: AssetName
 ) extends SubSystem[Model]:
@@ -78,9 +78,7 @@ final case class FPSCounter[Model](
     this.copy(targetFPS = None)
 
   def withLayerKey(layerKey: LayerKey): FPSCounter[Model] =
-    this.copy(layerKey = Option(layerKey))
-  def clearLayerKey: FPSCounter[Model] =
-    this.copy(layerKey = None)
+    this.copy(layerKey = layerKey)
 
   def eventFilter: GlobalEvent => Option[EventType] = {
     case FrameTick          => Some(FrameTick)
@@ -174,33 +172,29 @@ object FPSCounter:
   private val defaultPlaceFunction: (Context, Size) => Point =
     (_, _) => Point(0, 0)
 
-  def apply[Model](fontKey: FontKey, fontAsset: AssetName): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, None, Batch.empty, None, fontKey, fontAsset)
-
-  def apply[Model](fontKey: FontKey, fontAsset: AssetName, targetFPS: FPS): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Batch.empty, None, fontKey, fontAsset)
-
   def apply[Model](fontKey: FontKey, fontAsset: AssetName, layerKey: LayerKey): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, None, Batch.empty, Option(layerKey), fontKey, fontAsset)
+    FPSCounter(DefaultId, defaultPlaceFunction, None, Batch.empty, layerKey, fontKey, fontAsset)
+
+  def apply[Model](fontKey: FontKey, fontAsset: AssetName, layerKey: LayerKey, targetFPS: FPS): FPSCounter[Model] =
+    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Batch.empty, layerKey, fontKey, fontAsset)
 
   def apply[Model](
+      id: SubSystemId,
+      position: Point,
       fontKey: FontKey,
       fontAsset: AssetName,
-      targetFPS: FPS,
       layerKey: LayerKey
   ): FPSCounter[Model] =
-    FPSCounter(DefaultId, defaultPlaceFunction, Option(targetFPS), Batch.empty, Option(layerKey), fontKey, fontAsset)
-
-  def apply[Model](id: SubSystemId, position: Point, fontKey: FontKey, fontAsset: AssetName): FPSCounter[Model] =
-    FPSCounter(id, (_, _) => position, None, Batch.empty, None, fontKey, fontAsset)
+    FPSCounter(id, (_, _) => position, None, Batch.empty, layerKey, fontKey, fontAsset)
 
   def apply[Model](
       id: SubSystemId,
       fontKey: FontKey,
       fontAsset: AssetName,
+      layerKey: LayerKey,
       targetFPS: FPS
   ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Batch.empty, None, fontKey, fontAsset)
+    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Batch.empty, layerKey, fontKey, fontAsset)
 
   def apply[Model](
       id: SubSystemId,
@@ -208,16 +202,7 @@ object FPSCounter:
       fontAsset: AssetName,
       layerKey: LayerKey
   ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, None, Batch.empty, Option(layerKey), fontKey, fontAsset)
-
-  def apply[Model](
-      id: SubSystemId,
-      fontKey: FontKey,
-      fontAsset: AssetName,
-      targetFPS: FPS,
-      layerKey: LayerKey
-  ): FPSCounter[Model] =
-    FPSCounter(id, defaultPlaceFunction, Option(targetFPS), Batch.empty, Option(layerKey), fontKey, fontAsset)
+    FPSCounter(id, defaultPlaceFunction, None, Batch.empty, layerKey, fontKey, fontAsset)
 
   final case class Move(to: Point) extends GlobalEvent
 

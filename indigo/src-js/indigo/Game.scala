@@ -412,7 +412,7 @@ object Game:
     ): Outcome[SceneUpdateFragment] =
       Outcome(
         SceneUpdateFragment(
-          Layer(
+          LayerKey("shaderplayground") -> Layer(
             BlankEntity(
               model.viewport,
               ShaderData(

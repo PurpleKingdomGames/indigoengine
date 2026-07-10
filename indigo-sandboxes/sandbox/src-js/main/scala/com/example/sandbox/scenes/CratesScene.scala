@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -50,7 +51,7 @@ object CratesScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        Constants.LayerKeys.game -> Layer(
           graphic.moveTo(16, 16),
           CloneTiles(
             cloneId,

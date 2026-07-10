@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -243,7 +244,7 @@ object WaypointScene extends Scene[SandboxGameModel]:
       )
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         pentagramPathGraphics ++
           decagonPathGraphics ++
           waypointGraphics ++

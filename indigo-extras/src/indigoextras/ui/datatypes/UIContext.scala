@@ -9,7 +9,7 @@ final case class UIContext[ReferenceData](
     snapGrid: Size,
     _pointerCoords: Coords,
     state: UIState,
-    magnification: Int,
+    magnification: Magnification,
     // The following are all the same as in SubSystemContext
     reference: ReferenceData,
     frame: Context.Frame,
@@ -20,7 +20,7 @@ final case class UIContext[ReferenceData](
     state == UIState.Active
 
   lazy val pointerCoords: Coords =
-    Coords(_pointerCoords.unsafeToPoint / snapGrid.toPoint)
+    Coords.fromScreenSpace(_pointerCoords.unsafeToPoint, snapGrid * magnification.toInt)
 
   def withParent(newParent: Parent): UIContext[ReferenceData] =
     this.copy(parent = newParent)
@@ -61,7 +61,7 @@ final case class UIContext[ReferenceData](
   def makeInActive: UIContext[ReferenceData] =
     withState(UIState.InActive)
 
-  def withMagnification(newMagnification: Int): UIContext[ReferenceData] =
+  def withMagnification(newMagnification: Magnification): UIContext[ReferenceData] =
     this.copy(magnification = newMagnification)
 
   def withReferenceData[NewReferenceData](newReference: NewReferenceData): UIContext[NewReferenceData] =
@@ -74,7 +74,7 @@ object UIContext:
   def apply[ReferenceData](
       subSystemContext: SubSystemContext[ReferenceData],
       snapGrid: Size,
-      magnification: Int
+      magnification: Magnification
   ): UIContext[ReferenceData] =
     UIContext(
       Parent.default,
@@ -87,27 +87,27 @@ object UIContext:
       subSystemContext.services
     )
 
-  def apply(ctx: Context, magnification: Int): UIContext[Unit] =
+  def apply(ctx: Context, magnification: Magnification): UIContext[Unit] =
     fromContext(ctx, (), magnification)
 
   def apply(ctx: Context): UIContext[Unit] =
-    fromContext(ctx, (), 1)
+    fromContext(ctx, (), Magnification.x1)
 
-  def apply(ctx: SceneContext, magnification: Int): UIContext[Unit] =
+  def apply(ctx: SceneContext, magnification: Magnification): UIContext[Unit] =
     fromSceneContext(ctx, (), magnification)
 
   def apply(ctx: SceneContext): UIContext[Unit] =
-    fromSceneContext(ctx, (), 1)
+    fromSceneContext(ctx, (), Magnification.x1)
 
   def fromContext[ReferenceData](
       ctx: Context,
       reference: ReferenceData,
-      magnification: Int
+      magnification: Magnification
   ): UIContext[ReferenceData] =
     UIContext(
       Parent.default,
       Size.one,
-      Coords(ctx.frame.input.pointer.position / Point.one),
+      Coords(ctx.frame.input.pointer.position),
       UIState.Active,
       magnification,
       reference,
@@ -118,14 +118,14 @@ object UIContext:
   def fromSceneContext[ReferenceData](
       ctx: SceneContext,
       reference: ReferenceData,
-      magnification: Int
+      magnification: Magnification
   ): UIContext[ReferenceData] =
     fromContext(ctx.toContext, reference, magnification)
 
   def fromSubSystemContext[ReferenceData](
       ctx: SubSystemContext[?],
       reference: ReferenceData,
-      magnification: Int
+      magnification: Magnification
   ): UIContext[ReferenceData] =
     fromContext(ctx.toContext, reference, magnification)
 

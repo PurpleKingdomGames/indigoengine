@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
@@ -65,7 +66,8 @@ object LightingScene extends Scene[GameModel]:
     val pt = Signal.Orbit(Point(50), 20).affectTime(0.5).at(context.sceneRunning).toPoint
 
     Outcome(
-      tiles.toSceneUpdateFragment
+      tiles
+        .toSceneUpdateFragment(Constants.LayerKeys.game)
         .withLights(
           AmbientLight(RGBA.Red),
           PointLight(pt, RGBA.White)

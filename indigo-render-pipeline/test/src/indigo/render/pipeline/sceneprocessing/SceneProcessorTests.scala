@@ -1,6 +1,7 @@
 package indigo.render.pipeline.sceneprocessing
 
 import indigo.core.assets.AssetName
+import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
@@ -47,7 +48,7 @@ class SceneProcessorTests extends munit.FunSuite {
 
   test("makeDisplayLayers - single layer with one graphic") {
     val graphic = Graphic(Size(200, 100), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(10, 20, 200, 100))
-    val scene   = SceneUpdateFragment(graphic)
+    val scene   = SceneUpdateFragment(LayerKey("test"))(graphic)
 
     val result = SceneProcessor.makeDisplayLayers(
       scene,
@@ -57,6 +58,7 @@ class SceneProcessorTests extends munit.FunSuite {
     )
 
     val (layers, cloneBlanks) = result
+
     assertEquals(layers.length, 1)
 
     val layer = layers(0)
@@ -69,8 +71,8 @@ class SceneProcessorTests extends munit.FunSuite {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
     val scene = SceneUpdateFragment(
-      Layer(graphic1),
-      Layer(graphic2)
+      LayerKey("a") -> Layer(graphic1),
+      LayerKey("b") -> Layer(graphic2)
     )
 
     val result = SceneProcessor.makeDisplayLayers(
@@ -81,6 +83,7 @@ class SceneProcessorTests extends munit.FunSuite {
     )
 
     val (layers, _) = result
+
     assertEquals(layers.length, 2)
     assertEquals(layers(0).entities.length, 1)
     assertEquals(layers(1).entities.length, 1)
@@ -97,6 +100,7 @@ class SceneProcessorTests extends munit.FunSuite {
     )
 
     val (layers, _) = result
+
     assertEquals(layers.length, 0)
   }
 }

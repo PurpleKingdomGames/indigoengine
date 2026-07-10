@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import indigo.*
 import indigo.scenes.*
@@ -59,4 +60,8 @@ object BoxesScene extends Scene[SandboxGameModel]:
       context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment(Layer(shapes).withMagnification(1)))
+    Outcome(
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer(shapes)
+      )
+    )

@@ -1,6 +1,6 @@
 package indigo.render.pipeline.sceneprocessing.utils
 
-import indigo.core.datatypes.LayerKey
+import indigo.core.render.Magnification
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
 import indigoengine.shared.collections.Batch
@@ -10,28 +10,21 @@ import scala.annotation.tailrec
 object CompactLayers:
 
   /** Compact layers by squashing layers that have the same properties.
+    *
+    * Note: Layer Entries are already compacted because they get merged by key in an earler step.
     */
-  def compactLayers(layerEntries: Batch[LayerEntry]): Batch[(Option[LayerKey], Batch[Layer.Content])] =
-    layerEntries.map {
-      case LayerEntry.NoKey(layer: Layer.Content) =>
-        val ls = if layer.visible.getOrElse(true) then Batch(layer) else Batch.empty
+  def compactLayers(layerEntries: Batch[LayerEntry]): Batch[(Batch[Layer.Content], Magnification)] =
+    layerEntries.flatMap {
+      case LayerEntry(_, _, cfg) if cfg.isHidden =>
+        Batch.empty
 
-        (None, ls)
+      case LayerEntry(_, layer: Layer.Content, cfg) =>
+        Batch((Batch(layer), cfg.giveMagnification))
 
-      case LayerEntry.NoKey(stack: Layer.Stack) =>
+      case LayerEntry(_, stack: Layer.Stack, cfg) =>
         val ls = compactContentLayers(stack.toBatch)
-
-        (None, ls)
-
-      case LayerEntry.Keyed(key, layer: Layer.Content) =>
-        val ls = if layer.visible.getOrElse(true) then Batch(layer) else Batch.empty
-
-        (Option(key), ls)
-
-      case LayerEntry.Keyed(key, stack: Layer.Stack) =>
-        val ls = compactContentLayers(stack.toBatch)
-
-        (Option(key), ls)
+        if ls.isEmpty then Batch.empty
+        else Batch((ls, cfg.giveMagnification))
     }
 
   def compactContentLayers(contentLayers: Batch[Layer.Content]): Batch[Layer.Content] =
@@ -42,8 +35,7 @@ object CompactLayers:
         val head = remaining.head
         val tail = remaining.tail
 
-        if head.visible.exists(_ == false) then rec(tail, current, acc)
-        else if canCompactLayers(current, head) then
+        if canCompactLayers(current, head) then
           rec(
             tail,
             current.copy(nodes = current.nodes ++ head.nodes, cloneBlanks = current.cloneBlanks ++ head.cloneBlanks),
@@ -51,13 +43,10 @@ object CompactLayers:
           )
         else rec(tail, head, acc :+ current)
 
-    val contentLayersFirstIsVisible =
-      contentLayers.dropWhile(l => l.visible.exists(_ == false))
-
-    if contentLayersFirstIsVisible.length < 2 then contentLayersFirstIsVisible
+    if contentLayers.length < 2 then contentLayers
     else
-      val head = contentLayersFirstIsVisible.head
-      val tail = contentLayersFirstIsVisible.tail
+      val head = contentLayers.head
+      val tail = contentLayers.tail
 
       rec(tail, head, Batch.empty)
 
@@ -65,8 +54,4 @@ object CompactLayers:
     * we can compact them.
     */
   def canCompactLayers(a: Layer.Content, b: Layer.Content): Boolean =
-    a.lights == b.lights &&
-      a.magnification == b.magnification &&
-      a.visible == b.visible &&
-      a.blending == b.blending &&
-      a.camera == b.camera
+    a.lights == b.lights && a.blending == b.blending && a.camera == b.camera

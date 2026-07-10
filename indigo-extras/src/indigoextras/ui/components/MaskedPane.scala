@@ -157,7 +157,7 @@ object MaskedPane:
                   Bounds(
                     ctx.parent.coords,
                     model.dimensions
-                  ).toScreenSpace(ctx.snapGrid * ctx.magnification)
+                  ).toScreenSpace(ctx.snapGrid * ctx.magnification.toInt)
                 )
               )
             }

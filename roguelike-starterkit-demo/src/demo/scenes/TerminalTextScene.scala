@@ -1,6 +1,7 @@
 package demo.scenes
 
 import demo.Assets
+import demo.Constants
 import demo.models.GameModel
 import indigo.*
 import roguelikestarterkit.*
@@ -41,7 +42,7 @@ object TerminalTextScene extends Scene[GameModel]:
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         Text(
           message,
           RoguelikeTiles.Size10x10.Fonts.fontKey,
@@ -63,7 +64,7 @@ object TerminalTextScene extends Scene[GameModel]:
             RGBA.Magenta.withAlpha(0.75)
           )
         ).moveBy(0, 80)
-      )
+      ).withMagnification(Magnification.x2)
     )
 
   def customShader(shaderId: ShaderId): UltravioletShader =

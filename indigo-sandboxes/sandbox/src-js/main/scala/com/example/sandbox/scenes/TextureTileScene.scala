@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -40,7 +41,7 @@ object TextureTileScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Layer(
+          Constants.LayerKeys.game -> Layer(
             Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots))
               .withRef(16, 16)
               .moveTo(SandboxGame.screenCenter)

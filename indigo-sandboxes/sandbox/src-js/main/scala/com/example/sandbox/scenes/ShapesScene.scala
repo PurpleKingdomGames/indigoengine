@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import indigo.*
 import indigo.scenes.*
@@ -78,7 +79,7 @@ object ShapesScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
+        .addLayer(Constants.LayerKeys.game)(
           Shape.Circle(
             circlePosition,
             20,

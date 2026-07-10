@@ -78,7 +78,7 @@ object ShapesScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
+        .addLayer(LayerKey("game"))(
           Shape.Circle(
             circlePosition,
             20,

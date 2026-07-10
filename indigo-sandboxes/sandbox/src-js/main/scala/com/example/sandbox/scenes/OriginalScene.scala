@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxView
@@ -38,14 +39,14 @@ object OriginalScene extends Scene[SandboxGameModel] {
 
     Outcome(
       scene
-        .addLayer(
-          LayerKey("bg") ->
+        .addLayers(
+          Constants.LayerKeys.background ->
             Layer(
               BlankEntity(0, 0, 228 * 3, 140 * 3, ShaderData(Shaders.seaId))
-            ).withMagnification(1)
+            )
         )
-        .addLayer(
-          LayerKey("game") ->
+        .addLayers(
+          Constants.LayerKeys.game ->
             Layer(
               Batch(
                 Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),

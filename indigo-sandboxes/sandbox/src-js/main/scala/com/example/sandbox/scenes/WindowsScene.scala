@@ -25,7 +25,7 @@ object WindowsScene extends Scene[SandboxGameModel]:
     Set(
       WindowManager[Unit, SandboxGameModel, Int](
         id = SubSystemId("window-manager"),
-        magnification = 2,
+        magnification = Magnification.x2,
         snapGrid = Size.one,
         extractReference = _.num,
         startUpData = (),

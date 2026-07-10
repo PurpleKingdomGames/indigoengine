@@ -46,8 +46,9 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
         .withSubSystems(
           FPSCounter(
             RoguelikeTiles.Size10x10.Fonts.fontKey,
-            Assets.assets.AnikkiSquare10x10
-          ).moveTo(Point(10, 350))
+            Assets.assets.AnikkiSquare10x10,
+            Constants.LayerKeys.fps
+          ) // .moveTo(Point(10, 10))
         )
     )
 
@@ -77,7 +78,16 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
       context: Context,
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+    Outcome(
+      SceneUpdateFragment(
+        Constants.LayerKeys.background -> Layer.empty,
+        Constants.LayerKeys.game       -> Layer.empty,
+        Constants.LayerKeys.ui         -> Layer.empty
+      )
+        .addLayers(
+          LayerEntry(Constants.LayerKeys.fps, Layer.empty, Magnification.x2)
+        )
+    )
 
 enum GameEvent extends GlobalEvent:
   case NoOp

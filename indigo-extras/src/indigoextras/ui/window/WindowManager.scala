@@ -6,11 +6,11 @@ import indigoextras.ui.datatypes.UIState
 
 final case class WindowManager[StartUpData, Model, RefData](
     id: SubSystemId,
-    initialMagnification: Int,
+    initialMagnification: Magnification,
     snapGrid: Size,
     extractReference: Model => RefData,
     startUpData: StartUpData,
-    layerKey: Option[LayerKey],
+    layerKey: LayerKey,
     windows: Batch[Window[?, RefData]]
 ) extends SubSystem[Model]:
   type EventType      = GlobalEvent
@@ -25,7 +25,7 @@ final case class WindowManager[StartUpData, Model, RefData](
 
   def initialModel: Outcome[ModelHolder[ReferenceData]] =
     Outcome(
-      ModelHolder.initial(windows, initialMagnification)
+      ModelHolder.initial(windows /*, initialMagnification*/ )
     )
 
   def update(
@@ -35,13 +35,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UIContext(context, snapGrid, model.viewModel.magnification),
+          UIContext(context, snapGrid, initialMagnification),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UIContext(context, snapGrid, model.viewModel.magnification),
+            UIContext(context, snapGrid, initialMagnification),
             updatedModel,
             model.viewModel
           )(e)
@@ -53,7 +53,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UIContext(context, snapGrid, model.viewModel.magnification),
+      UIContext(context, snapGrid, initialMagnification),
       model.model,
       model.viewModel
     )
@@ -105,43 +105,47 @@ final case class WindowManager[StartUpData, Model, RefData](
   /** Allows you to set the layer key that the WindowManager will use to present the windows.
     */
   def withLayerKey(newLayerKey: LayerKey): WindowManager[StartUpData, Model, ReferenceData] =
-    this.copy(layerKey = Option(newLayerKey))
+    this.copy(layerKey = newLayerKey)
 
 object WindowManager:
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
-  def apply[Model](id: SubSystemId): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, 1, Size(1), _ => (), (), None, Batch.empty)
+  def apply[Model](id: SubSystemId, layerKey: LayerKey): WindowManager[Unit, Model, Unit] =
+    WindowManager(id, Magnification.x1, Size(1), _ => (), (), layerKey, Batch.empty)
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
   def apply[Model](
       id: SubSystemId,
-      magnification: Int
+      layerKey: LayerKey,
+      magnification: Magnification
   ): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, magnification, Size(1), _ => (), (), None, Batch.empty)
+    WindowManager(id, magnification, Size(1), _ => (), (), layerKey, Batch.empty)
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
   def apply[Model](
       id: SubSystemId,
-      magnification: Int,
+      layerKey: LayerKey,
+      magnification: Magnification,
       snapGrid: Size
   ): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, magnification, snapGrid, _ => (), (), None, Batch.empty)
+    WindowManager(id, magnification, snapGrid, _ => (), (), layerKey, Batch.empty)
 
   def apply[Model, ReferenceData](
       id: SubSystemId,
-      magnification: Int,
+      layerKey: LayerKey,
+      magnification: Magnification,
       snapGrid: Size,
       extractReference: Model => ReferenceData
   ): WindowManager[Unit, Model, ReferenceData] =
-    WindowManager(id, magnification, snapGrid, extractReference, (), None, Batch.empty)
+    WindowManager(id, magnification, snapGrid, extractReference, (), layerKey, Batch.empty)
 
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
-      magnification: Int,
+      layerKey: LayerKey,
+      magnification: Magnification,
       snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData
@@ -152,25 +156,7 @@ object WindowManager:
       snapGrid,
       extractReference,
       startUpData,
-      None,
-      Batch.empty
-    )
-
-  def apply[StartUpData, Model, ReferenceData](
-      id: SubSystemId,
-      magnification: Int,
-      snapGrid: Size,
-      extractReference: Model => ReferenceData,
-      startUpData: StartUpData,
-      layerKey: LayerKey
-  ): WindowManager[StartUpData, Model, ReferenceData] =
-    WindowManager(
-      id,
-      magnification,
-      snapGrid,
-      extractReference,
-      startUpData,
-      Option(layerKey),
+      layerKey,
       Batch.empty
     )
 
@@ -299,8 +285,8 @@ object WindowManager:
     case WindowEvent.PointerOut(_) =>
       Outcome(model)
 
-    case WindowEvent.ChangeMagnification(_) =>
-      Outcome(model)
+    // case WindowEvent.ChangeMagnification(_) =>
+    //   Outcome(model)
 
     case WindowEvent.CloseFocused =>
       model.focused match
@@ -319,8 +305,8 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
-    case WindowEvent.ChangeMagnification(next) =>
-      Outcome(viewModel.changeMagnification(next))
+    // case WindowEvent.ChangeMagnification(next) =>
+    //   Outcome(viewModel.changeMagnification(next))
 
     case e =>
       val windowUnderPointer =
@@ -333,7 +319,7 @@ object WindowManager:
           else
             prunedVM.windows.find(_.id == m.id) match
               case None =>
-                Batch(Outcome(WindowViewModel.initial(m.id, viewModel.magnification)))
+                Batch(Outcome(WindowViewModel.initial(m.id, context.magnification)))
 
               case Some(vm) =>
                 Batch(
@@ -351,7 +337,7 @@ object WindowManager:
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
   private[window] def present[ReferenceData](
-      layerKey: Option[LayerKey],
+      layerKey: LayerKey,
       context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
@@ -383,16 +369,10 @@ object WindowManager:
         .sequence
 
     windowLayers.map { layers =>
-      layerKey match
-        case None =>
-          SceneUpdateFragment(
-            LayerEntry(Layer.Stack(layers))
-          )
-
-        case Some(key) =>
-          SceneUpdateFragment(
-            LayerEntry(key -> Layer.Stack(layers))
-          )
+      SceneUpdateFragment(
+        LayerEntry(layerKey, Layer.Stack(layers))
+          .withMagnification(context.magnification)
+      )
     }
 
 final case class ModelHolder[ReferenceData](
@@ -401,10 +381,10 @@ final case class ModelHolder[ReferenceData](
 )
 object ModelHolder:
   def initial[ReferenceData](
-      windows: Batch[Window[?, ReferenceData]],
-      magnification: Int
+      windows: Batch[Window[?, ReferenceData]] // ,
+      // magnification: Magnification
   ): ModelHolder[ReferenceData] =
     ModelHolder(
       WindowManagerModel.initial.register(windows),
-      WindowManagerViewModel.initial(magnification)
+      WindowManagerViewModel.initial // (magnification)
     )

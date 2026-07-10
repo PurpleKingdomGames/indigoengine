@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -60,17 +61,17 @@ object RefractionScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Layer(
+          Constants.LayerKeys.game -> Layer(
             background,
             graphic.moveTo(viewCenter),
             graphic.moveTo(viewCenter).moveBy(-60, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
             graphic.moveTo(viewCenter).moveBy(-30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
             graphic.moveTo(viewCenter).moveBy(30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
             graphic.moveTo(viewCenter).moveBy(60, 0).withMaterial(SandboxAssets.junctionBoxMaterial)
-          ).withMagnification(2),
-          Layer(imageLight)
+          ),
+          Constants.LayerKeys.game -> Layer(imageLight)
             .withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5))),
-          Layer(
+          Constants.LayerKeys.game -> Layer(
             distortion.moveTo(viewCenter + Point(50, 0)),
             sliding.affectTime(0.3).at(context.frame.time.running)
           ).withBlending(
@@ -82,6 +83,7 @@ object RefractionScene extends Scene[SandboxGameModel] {
             )
           )
         )
+        .withMagnification(Magnification(2))
     )
   }
 

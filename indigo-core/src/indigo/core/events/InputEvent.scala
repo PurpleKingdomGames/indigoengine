@@ -91,27 +91,27 @@ trait PositionalInputEvent extends InputEvent:
     */
   def pointerId: PointerId
 
-  /** Coordinates relative to the magnification level
+  /** Coordinates relative to the screen
     */
   def position: Point
 
-  /** The X position relative to the magnification level
+  /** The X position relative to the screen
     */
   def x: Int = position.x
 
-  /** The Y position relative to the magnification level
+  /** The Y position relative to the screen
     */
   def y: Int = position.y
 
-  /** The delta position between this event and the last event relative to the magnification level
+  /** The delta position between this event and the last event relative to the screen
     */
   def movementPosition: Point
 
-  /** The delta X position between this event and the last event relative to the magnification level
+  /** The delta X position between this event and the last event relative to the screen
     */
   def movementX: Int = movementPosition.x
 
-  /** The delta Y position between this event and the last event relative to the magnification level
+  /** The delta Y position between this event and the last event relative to the screen
     */
   def movementY: Int = movementPosition.y
 
@@ -122,11 +122,11 @@ sealed trait MouseEvent extends PositionalInputEvent:
     */
   def pointerId: PointerId
 
-  /** Coordinates relative to the magnification level
+  /** Coordinates relative to the screen
     */
   def position: Point
 
-  /** The delta position between this event and the last event relative to the magnification level
+  /** The delta position between this event and the last event relative to the screen
     */
   def movementPosition: Point
 
@@ -138,9 +138,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param button
     *   The button that was clicked
     */
@@ -250,9 +250,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param button
     *   The button that was released
     */
@@ -351,9 +351,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param button
     *   The button that was pressed down
     */
@@ -393,9 +393,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     */
   final case class Move(
       pointerId: PointerId,
@@ -433,9 +433,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     */
   final case class Enter(
       pointerId: PointerId,
@@ -461,9 +461,9 @@ object MouseEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the mouse pointer relative to the magnification level
+    *   The position of the mouse pointer relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     */
   final case class Leave(
       pointerId: PointerId,
@@ -571,11 +571,11 @@ sealed trait TouchEvent extends PositionalInputEvent:
   /** The identifier of the finger that triggered the event */
   def fingerId: FingerId
 
-  /** Coordinates relative to the magnification level
+  /** Coordinates relative to the screen
     */
   def position: Point
 
-  /** The delta position between this event and the last event relative to the magnification level
+  /** The delta position between this event and the last event relative to the screen
     */
   def movementPosition: Point
 
@@ -591,9 +591,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the tap relative to the magnification level
+    *   The position of the tap relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the tap (between 0 and 1)
     */
@@ -631,9 +631,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger release relative to the magnification level
+    *   The position of the finger release relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -674,9 +674,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger press relative to the magnification level
+    *   The position of the finger press relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -717,9 +717,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger relative to the magnification level
+    *   The position of the finger relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -749,9 +749,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger relative to the magnification level
+    *   The position of the finger relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -773,9 +773,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger relative to the magnification level
+    *   The position of the finger relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -801,9 +801,9 @@ object TouchEvent:
     * @param fingerId
     *   The unique identifier for the finger input
     * @param position
-    *   The position of the finger relative to the magnification level
+    *   The position of the finger relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the touch (between 0 and 1)
     */
@@ -825,7 +825,7 @@ sealed trait PenEvent extends PositionalInputEvent:
     */
   def pointerId: PointerId
 
-  /** Coordinates relative to the magnification level
+  /** Coordinates relative to the screen
     */
   def position: Point
 
@@ -841,9 +841,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     * @param button
@@ -898,9 +898,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     * @param button
@@ -948,9 +948,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     * @param button
@@ -1004,9 +1004,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     */
@@ -1033,9 +1033,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     */
@@ -1054,9 +1054,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     */
@@ -1078,9 +1078,9 @@ object PenEvent:
     * @param pointerId
     *   The unique identifier for the pointer input
     * @param position
-    *   The position of the pen relative to the magnification level
+    *   The position of the pen relative to the screen
     * @param movementPosition
-    *   The delta position between this event and the last event relative to the magnification level
+    *   The delta position between this event and the last event relative to the screen
     * @param pressure
     *   The normalised pressure of the pen (between 0 and 1)
     */
@@ -1100,12 +1100,12 @@ end PenEvent
   */
 sealed trait PointerEvent extends PositionalInputEvent:
 
-  /** The width (magnitude on the X axis), of the contact geometry of the pointer relative to the magnification level
+  /** The width (magnitude on the X axis), of the contact geometry of the pointer relative to the screen
     */
   @deprecated("Being removed to simplify Input", "0.22.0")
   def width: Int
 
-  /** The height (magnitude on the Y axis), of the contact geometry of the pointer relative to the magnification level
+  /** The height (magnitude on the Y axis), of the contact geometry of the pointer relative to the screen
     */
   @deprecated("Being removed to simplify Input", "0.22.0")
   def height: Int

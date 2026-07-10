@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
@@ -122,7 +123,7 @@ object LineReflectionScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
+        .addLayer(Constants.LayerKeys.game)(
           Batch(
             // Surface
             Shape.Line(
@@ -145,13 +146,13 @@ object LineReflectionScene extends Scene[SandboxGameModel]:
           ) ++
             reflection
         )
-        .addLayer(
+        .addLayer(Constants.LayerKeys.game)(
           Layer(text)
-            .withMagnification(1)
             .withCamera(
               Camera
                 .Fixed(SandboxGame.screenCenter * 2)
                 .withZoom(Zoom.x05)
             )
         )
+        .withMagnification(Magnification(2))
     )

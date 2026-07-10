@@ -22,7 +22,7 @@ import indigoextras.subsystems.AutomataEvent.*
 final case class Automata[Model](
     poolKey: AutomataPoolKey,
     automaton: Automaton,
-    layerKey: Option[LayerKey],
+    layerKey: LayerKey,
     maxPoolSize: Option[Int]
 ) extends SubSystem[Model]:
   type EventType      = AutomataEvent
@@ -127,11 +127,8 @@ final case class Automata[Model](
 
 object Automata:
 
-  def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton): Automata[Model] =
-    Automata(poolKey, automaton, None, None)
-
   def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton, layerKey: LayerKey): Automata[Model] =
-    Automata(poolKey, automaton, Some(layerKey), None)
+    Automata(poolKey, automaton, layerKey, None)
 
   def renderNoLayer(pool: Batch[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(

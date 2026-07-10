@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -48,12 +49,14 @@ object CameraWithCloneTilesScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer
-          .Content(
-            CloneTiles(cloneId, crates)
-          )
-          .withCamera(Camera.LookAt(Point(96)))
-          .withMagnification(2)
-          .addCloneBlanks(cloneBlanks)
-      )
+        LayerEntry(
+          Constants.LayerKeys.game,
+          Layer
+            .Content(
+              CloneTiles(cloneId, crates)
+            )
+            .withCamera(Camera.LookAt(Point(96)))
+            .addCloneBlanks(cloneBlanks)
+        )
+      ).withMagnification(Magnification(2))
     )

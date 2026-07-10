@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import indigo.*
 import indigo.scenes.*
@@ -60,8 +61,8 @@ object ManyEventHandlers extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
+        Constants.LayerKeys.game -> Layer(
           sprites(model.dude.dude.sprite.withRef(Point.zero).moveTo(Point.zero))
-        ).withMagnification(1)
+        )
       )
     )

@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import indigo.*
@@ -54,7 +55,7 @@ object BoundingCircleScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
+        .addLayer(Constants.LayerKeys.game)(
           // Our bounding circle
           Shape.Circle(
             circle.position.toPoint,

@@ -45,7 +45,7 @@ object LoadScene extends Scene[Model]:
       context.services.bounds.find(tb).getOrElse(Rectangle(0, 0, 0, 0))
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(LayerKey("game"))(
         tb.moveTo(400 - (bounds.width / 2), 10)
       )
     )

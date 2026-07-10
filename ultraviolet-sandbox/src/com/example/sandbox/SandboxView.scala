@@ -4,6 +4,9 @@ import indigo.*
 
 object SandboxView:
 
+  val bgLayerKey: LayerKey   = LayerKey("bg")
+  val gameLayerKey: LayerKey = LayerKey("game")
+
   val dudeCloneId: CloneId = CloneId("Dude")
 
   def updateView(
@@ -15,13 +18,13 @@ object SandboxView:
       println("Mouse clicked at: " + pt.toString())
 
     SceneUpdateFragment.empty
-      .addLayer(
+      .addLayer(gameLayerKey)(
         Layer(
           gameLayer(model, model.viewModel) ++ uiLayer(bl)
         )
         // .withBlend(Blend.Alpha)
       )
-      .addLayer(
+      .addLayer(gameLayerKey)(
         if (model.viewModel.useLightingLayer)
           Layer(lightingLayer(mouse))
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))

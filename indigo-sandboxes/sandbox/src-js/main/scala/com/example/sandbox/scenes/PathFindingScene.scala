@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.*
+import com.example.sandbox.Constants
 import indigo.*
 import indigo.scenes.*
 import indigoextras.pathfinding.*
@@ -75,7 +76,7 @@ object PathFindingScene extends Scene[SandboxGameModel]:
     val path = PathFinder.findPath(start, end, pathBuilder).getOrElse(Batch.empty) // if no path found, return empty
 
     Outcome(
-      SceneUpdateFragment(
+      SceneUpdateFragment(Constants.LayerKeys.game)(
         Batch.combineAll(
           (for {
             y <- 0 until gridSize
