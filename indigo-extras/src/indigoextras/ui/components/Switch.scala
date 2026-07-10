@@ -3,8 +3,8 @@ package indigoextras.ui.components
 import indigo.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.UIContext
 import indigoextras.ui.datatypes.Coords
+import indigoextras.ui.datatypes.UIContext
 
 import datatypes.BoundsType
 import datatypes.SwitchState
