@@ -111,7 +111,7 @@ final case class Window[A, ReferenceData](
   def open: Window[A, ReferenceData] =
     withState(WindowState.Open)
   def close: Window[A, ReferenceData] =
-    withState(WindowState.Closed)
+    withState(WindowState.Closed).blur
 
   def isOpen: Boolean =
     state == WindowState.Open
