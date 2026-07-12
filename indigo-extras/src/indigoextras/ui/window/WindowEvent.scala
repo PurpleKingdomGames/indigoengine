@@ -94,3 +94,26 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
       case GiveFocusAt(_)         => None
       case ChangeMagnification(_) => None
       case CloseFocused           => None
+
+  def isNotification: Boolean =
+    this match
+      case Opened(id)             => true
+      case Closed(id)             => true
+      case Focused(id)            => true
+      case Blurred(id)            => true
+      case PointerOver(id)        => true
+      case PointerOut(id)         => true
+      case Resized(id)            => true
+      case ChangeMagnification(_) => true
+      case Open(id)               => false
+      case OpenAt(id, _)          => false
+      case Close(id)              => false
+      case Toggle(id)             => false
+      case Move(id, _, _)         => false
+      case Anchor(id, _)          => false
+      case Resize(id, _, _)       => false
+      case Transform(id, _, _)    => false
+      case Refresh(id)            => false
+      case Focus(id)              => false
+      case GiveFocusAt(_)         => false
+      case CloseFocused           => false
