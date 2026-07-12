@@ -216,6 +216,9 @@ object HitArea:
     ): Boolean =
       btn.hitTest(context, model.toButton, event)
 
+    override def hasPointerCapture(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
+      btn.hasPointerCapture(context, model.toButton)
+
     def present(
         context: UIContext[ReferenceData],
         model: HitArea[ReferenceData]

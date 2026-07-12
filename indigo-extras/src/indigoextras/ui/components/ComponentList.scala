@@ -193,6 +193,27 @@ object ComponentList:
 
       ContainerLikeFunctions.hitTest(context, entries, event)
 
+    override def hasPointerCapture(
+        context: UIContext[ReferenceData],
+        model: ComponentList[ReferenceData]
+    ): Boolean =
+      val entries =
+        contentReflow(
+          context,
+          model.dimensions,
+          model.layout,
+          model.content(context).map { entry =>
+            model.stateMap.get(entry.id) match
+              case None =>
+                entry
+
+              case Some(savedState) =>
+                entry.copy(model = savedState.asInstanceOf[entry.Out])
+          }
+        )
+
+      ContainerLikeFunctions.hasPointerCapture(context, entries)
+
     def present(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]

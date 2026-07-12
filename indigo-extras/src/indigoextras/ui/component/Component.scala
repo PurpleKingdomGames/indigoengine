@@ -30,6 +30,10 @@ trait Component[A, ReferenceData]:
     val _ = _event
     hitTest(context, model)
 
+  /** True when this component owns pointer input until the current pointer interaction ends. */
+  def hasPointerCapture(context: UIContext[ReferenceData], model: A): Boolean =
+    false
+
   /** Produce a renderable output for this component, based on the component's model.
     */
   def present(

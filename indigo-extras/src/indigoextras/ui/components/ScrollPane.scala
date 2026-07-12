@@ -341,6 +341,25 @@ object ScrollPane:
         case _ =>
           scrollBarHit || contentHit
 
+    override def hasPointerCapture(
+        context: UIContext[ReferenceData],
+        model: ScrollPane[A, ReferenceData]
+    ): Boolean =
+      val scrollingActive =
+        model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
+
+      val ctx        = viewportContext(context, model)
+      val contentCtx = scrolledContentContext(ctx, model, scrollingActive)
+      val scrollCtx  = scrollBarInputContext(ctx, model)
+
+      val scrollBarCaptured =
+        scrollingActive && summon[Component[Button[Unit], Unit]].hasPointerCapture(scrollCtx, model.scrollBar)
+
+      val contentCaptured =
+        model.content.component.hasPointerCapture(contentCtx, model.content.model)
+
+      scrollBarCaptured || contentCaptured
+
     def present(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]

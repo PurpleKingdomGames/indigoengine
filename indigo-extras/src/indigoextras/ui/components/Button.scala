@@ -342,6 +342,9 @@ object Button:
         case _: WheelEvent => false
         case _             => hitTest(context, model)
 
+    override def hasPointerCapture(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
+      model.isDown
+
     def present(
         context: UIContext[ReferenceData],
         model: Button[ReferenceData]
