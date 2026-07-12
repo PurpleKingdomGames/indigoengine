@@ -83,6 +83,14 @@ object ContainerLikeFunctions:
       c.component.hitTest(routedChildContext(context, c), c.model, event)
     }
 
+  def hasPointerCapture[ReferenceData](
+      context: UIContext[ReferenceData],
+      components: Batch[ComponentEntry[?, ReferenceData]]
+  ): Boolean =
+    components.exists { c =>
+      c.component.hasPointerCapture(routedChildContext(context, c), c.model)
+    }
+
   def routeOrBroadcast[ReferenceData](
       context: UIContext[ReferenceData],
       dimensions: Dimensions,
@@ -104,12 +112,29 @@ object ContainerLikeFunctions:
   ): Outcome[Batch[ComponentEntry[?, ReferenceData]]] =
     val entries = components.toList
 
-    val maybeTargetIndex =
+    val indexedEntries =
       entries.zipWithIndex.reverse
-        .find { case (entry, _) =>
-          entry.component.hitTest(routedChildContext(context, entry), entry.model, event)
-        }
-        .map(_._2)
+
+    val maybeCapturedIndex =
+      event match
+        case _: PointerEvent =>
+          indexedEntries
+            .find { case (entry, _) =>
+              entry.component.hasPointerCapture(routedChildContext(context, entry), entry.model)
+            }
+            .map(_._2)
+
+        case _ =>
+          None
+
+    val maybeTargetIndex =
+      maybeCapturedIndex.orElse(
+        indexedEntries
+          .find { case (entry, _) =>
+            entry.component.hitTest(routedChildContext(context, entry), entry.model, event)
+          }
+          .map(_._2)
+      )
 
     Batch
       .fromSeq(entries.zipWithIndex)

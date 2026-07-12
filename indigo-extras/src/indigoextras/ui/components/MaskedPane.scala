@@ -156,6 +156,15 @@ object MaskedPane:
         event
       )
 
+    override def hasPointerCapture(
+        context: UIContext[ReferenceData],
+        model: MaskedPane[A, ReferenceData]
+    ): Boolean =
+      val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
+      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+
+      ContainerLikeFunctions.hasPointerCapture(ctx, Batch(model.content))
+
     def present(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
