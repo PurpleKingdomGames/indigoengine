@@ -48,6 +48,12 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Focuses the top window at the given location */
   case GiveFocusAt(coords: Coords)
 
+  /** Informs the game when a window has gained focus */
+  case Focused(id: WindowId)
+
+  /** Informs the game when a window has lost focus */
+  case Blurred(id: WindowId)
+
   /** Moves a window to the location given */
   case Move(id: WindowId, position: Coords, space: Space)
 
@@ -83,6 +89,8 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
       case Transform(id, _, _)    => Some(id)
       case Refresh(id)            => Some(id)
       case Focus(id)              => Some(id)
+      case Focused(id)            => Some(id)
+      case Blurred(id)            => Some(id)
       case GiveFocusAt(_)         => None
       case ChangeMagnification(_) => None
       case CloseFocused           => None

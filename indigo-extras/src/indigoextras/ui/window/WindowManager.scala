@@ -168,30 +168,33 @@ object WindowManager:
   private[window] def updateModel[ReferenceData](
       context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData]
-  ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
-    case e: WindowEvent =>
-      modalWindowOpen(model) match
-        case None =>
-          handleWindowEvents(context, model)(e)
+  ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] = e =>
+    val outcome = e match
+      case e: WindowEvent =>
+        modalWindowOpen(model) match
+          case None =>
+            handleWindowEvents(context, model)(e)
 
-        case modelId =>
-          if modelId == e.windowId then handleWindowEvents(context, model)(e)
-          else Outcome(model)
+          case modelId =>
+            if e.isNotification || modelId == e.windowId then handleWindowEvents(context, model)(e)
+            else Outcome(model)
 
-    case e: PointerEvent.Down =>
-      updateWindows(context, model, modalWindowOpen(model))(e)
-        .addGlobalEvents(WindowEvent.GiveFocusAt(context.pointerCoords))
+      case e: PointerEvent.Down =>
+        updateWindows(context, model, modalWindowOpen(model))(e)
+          .addGlobalEvents(WindowEvent.GiveFocusAt(context.pointerCoords))
 
-    case FrameTick =>
-      modalWindowOpen(model) match
-        case None =>
-          updateWindows(context, model, None)(FrameTick)
+      case FrameTick =>
+        modalWindowOpen(model) match
+          case None =>
+            updateWindows(context, model, None)(FrameTick)
 
-        case _id @ Some(id) =>
-          updateWindows(context, model, _id)(FrameTick).map(_.focusOn(id))
+          case _id @ Some(id) =>
+            updateWindows(context, model, _id)(FrameTick).map(_.focusOn(id))
 
-    case e =>
-      updateWindows(context, model, modalWindowOpen(model))(e)
+      case e =>
+        updateWindows(context, model, modalWindowOpen(model))(e)
+
+    attachFocusEvents(outcome, model)
 
   private def updateWindows[ReferenceData](
       context: UIContext[ReferenceData],
@@ -374,6 +377,25 @@ object WindowManager:
           .withMagnification(context.magnification)
       )
     }
+
+  private def attachFocusEvents[ReferenceData](
+      model: Outcome[WindowManagerModel[ReferenceData]],
+      prevModel: WindowManagerModel[ReferenceData]
+  ): Outcome[WindowManagerModel[ReferenceData]] =
+
+    model.flatMap(model =>
+      val prevFocusIds    = prevModel.windows.filter(_.hasFocus).map(_.id)
+      val currentFocusIds = model.windows.filter(w => w.hasFocus).map(_.id)
+
+      Outcome(model).addGlobalEvents(
+        prevFocusIds
+          .filter(w => currentFocusIds.exists(w1 => w1 == w) == false)
+          .map(w => WindowEvent.Blurred(w)) ++
+          currentFocusIds
+            .filter(w => prevFocusIds.exists(w1 => w == w1) == false)
+            .map(w => WindowEvent.Focused(w))
+      )
+    )
 
 final case class ModelHolder[ReferenceData](
     model: WindowManagerModel[ReferenceData],
