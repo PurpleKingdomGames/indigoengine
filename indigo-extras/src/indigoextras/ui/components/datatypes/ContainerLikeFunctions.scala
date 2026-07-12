@@ -89,7 +89,7 @@ object ContainerLikeFunctions:
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): GlobalEvent => Outcome[Batch[ComponentEntry[?, ReferenceData]]] =
     case event if PointerRouting.isRoutedEvent(event) =>
-      route(context, components, event)
+      route(context, dimensions, components, event)
 
     case event =>
       components.map { c =>
@@ -98,6 +98,7 @@ object ContainerLikeFunctions:
 
   private def route[ReferenceData](
       context: UIContext[ReferenceData],
+      dimensions: Dimensions,
       components: Batch[ComponentEntry[?, ReferenceData]],
       event: GlobalEvent
   ): Outcome[Batch[ComponentEntry[?, ReferenceData]]] =
@@ -117,7 +118,7 @@ object ContainerLikeFunctions:
           routedEvents(event, maybeTargetIndex.contains(index))
 
         if events.isEmpty then Outcome(entry)
-        else updateEntry(routedChildContext(context, entry), entry, events)
+        else updateEntry(childContext(context, dimensions, entry), entry, events)
       }
       .sequence
 
