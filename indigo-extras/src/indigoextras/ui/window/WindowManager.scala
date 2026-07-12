@@ -279,18 +279,6 @@ object WindowManager:
     case WindowEvent.Transform(id, bounds, space) =>
       model.transformTo(id, bounds, space, context.frame.viewport, context.magnification).refresh(context, id)
 
-    case WindowEvent.Resized(_) =>
-      Outcome(model)
-
-    case WindowEvent.PointerOver(_) =>
-      Outcome(model)
-
-    case WindowEvent.PointerOut(_) =>
-      Outcome(model)
-
-    case WindowEvent.ChangeMagnification(_) =>
-      Outcome(model)
-
     case WindowEvent.CloseFocused =>
       model.focused match
         case None =>
@@ -299,8 +287,9 @@ object WindowManager:
         case Some(window) =>
           model.close(window.id)
 
-    // Pass through opened and closed events so that windows can deal with them
-    case e: (WindowEvent.Opened | WindowEvent.Closed) =>
+    // Pass through notification type events so that windows can deal with them
+    case e: (WindowEvent.Opened | WindowEvent.Closed | WindowEvent.Focused | WindowEvent.Blurred | WindowEvent.Resized |
+          WindowEvent.PointerOver | WindowEvent.PointerOut | WindowEvent.ChangeMagnification) =>
       updateWindows(context, model, modalWindowOpen(model))(e)
 
   private[window] def updateViewModel[ReferenceData](
