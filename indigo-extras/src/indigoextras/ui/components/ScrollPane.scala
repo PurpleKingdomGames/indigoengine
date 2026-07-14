@@ -306,7 +306,7 @@ object ScrollPane:
               scrollBar = updatedScrollBar
             )
 
-    def hitTest(
+    override def hitTest(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData],
         event: GlobalEvent
@@ -335,7 +335,7 @@ object ScrollPane:
         case _ =>
           scrollBarHit || contentHit
 
-    def hasPointerCapture(
+    override def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): Boolean =

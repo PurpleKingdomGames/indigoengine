@@ -3,7 +3,6 @@ package indigoextras.ui.components
 import indigo.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
 
 import datatypes.BoundsType
@@ -136,11 +135,11 @@ object Switch:
           )
         )
 
-      case _: PointerEvent.Down if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+      case _: PointerEvent.Down if context.isActive && coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(isDown = true))
 
       case _: PointerEvent.Up
-          if context.isActive && model.isDown && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+          if context.isActive && model.isDown && coordsInBounds(context.pointerCoords, context, model) =>
         val next    = model.state.toggle
         val updated = model.copy(state = next, isDown = false)
         Outcome(updated)
@@ -153,12 +152,7 @@ object Switch:
       case _ =>
         Outcome(model)
 
-    def hitTest(context: UIContext[ReferenceData], model: Switch[ReferenceData], event: GlobalEvent): Boolean =
-      event match
-        case _: WheelEvent => false
-        case _             => coordsInBounds(context.pointerCoords, model.bounds, context)
-
-    def hasPointerCapture(context: UIContext[ReferenceData], model: Switch[ReferenceData]): Boolean =
+    override def hasPointerCapture(context: UIContext[ReferenceData], model: Switch[ReferenceData]): Boolean =
       model.isDown
 
     def present(
@@ -208,9 +202,3 @@ object Switch:
               context.parent.bounds.height - padding.top - padding.bottom
             )
           )
-
-  private def coordsInBounds[ReferenceData](pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
-    context.pointerIsWithinActiveInputBounds &&
-      bounds
-        .moveBy(context.parent.coords + context.parent.additionalOffset)
-        .contains(pnt)

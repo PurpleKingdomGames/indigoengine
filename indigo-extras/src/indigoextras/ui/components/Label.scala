@@ -3,10 +3,10 @@ package indigoextras.ui.components
 import indigo.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
+import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
 
 import scala.annotation.targetName
-import indigoextras.ui.datatypes.Coords
 
 /** Labels are a simple `Component` that render text.
   */
@@ -99,16 +99,5 @@ object Label:
     ): Label[ReferenceData] =
       model
 
-    def hitTest(context: UIContext[ReferenceData], model: Label[ReferenceData], event: GlobalEvent): Boolean =
-      event match
-        case _: WheelEvent => false
-        case _ => coordsInBounds(context.pointerCoords, model.calculateBounds(context, model.text(context)), context)
-
-    def hasPointerCapture(context: UIContext[ReferenceData], model: Label[ReferenceData]): Boolean =
+    override def hitTest(context: UIContext[ReferenceData], model: Label[ReferenceData], event: GlobalEvent): Boolean =
       false
-
-    private def coordsInBounds[ReferenceData](pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
-      context.pointerIsWithinActiveInputBounds &&
-        bounds
-          .moveBy(context.parent.coords + context.parent.additionalOffset)
-          .contains(pnt)
