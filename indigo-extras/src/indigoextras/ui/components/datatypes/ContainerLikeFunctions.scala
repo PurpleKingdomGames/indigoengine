@@ -96,6 +96,40 @@ object ContainerLikeFunctions:
         updateEntry(childContext(context, dimensions, c), c, Batch(event))
       }.sequence
 
+  /** Routing for containers that hold exactly one, statically typed, child. There is no target to select, so all that
+    * remains is to decide whether the child is the target, and to synthesise the enter/leave events that go with that.
+    */
+  def routeOne[A, ReferenceData](
+      context: UIContext[ReferenceData],
+      dimensions: Dimensions,
+      component: ComponentEntry[A, ReferenceData]
+  ): GlobalEvent => Outcome[ComponentEntry[A, ReferenceData]] =
+    case event if PointerRouting.isRoutedEvent(event) =>
+      val isTarget =
+        isCaptured(context, component, event) ||
+          component.component.hitTest(routedChildContext(context, component), component.model, event)
+
+      val events =
+        routedEvents(event, isTarget)
+
+      if events.isEmpty then Outcome(component)
+      else updateEntry(childContext(context, dimensions, component), component, events)
+
+    case event =>
+      updateEntry(childContext(context, dimensions, component), component, Batch(event))
+
+  private def isCaptured[ReferenceData](
+      context: UIContext[ReferenceData],
+      component: ComponentEntry[?, ReferenceData],
+      event: GlobalEvent
+  ): Boolean =
+    event match
+      case _: PointerEvent =>
+        component.component.hasPointerCapture(routedChildContext(context, component), component.model)
+
+      case _ =>
+        false
+
   private def route[ReferenceData](
       context: UIContext[ReferenceData],
       dimensions: Dimensions,
@@ -108,16 +142,9 @@ object ContainerLikeFunctions:
       entries.zipWithIndex.reverse
 
     val maybeCapturedIndex =
-      event match
-        case _: PointerEvent =>
-          indexedEntries
-            .find { case (entry, _) =>
-              entry.component.hasPointerCapture(routedChildContext(context, entry), entry.model)
-            }
-            .map(_._2)
-
-        case _ =>
-          None
+      indexedEntries
+        .find { case (entry, _) => isCaptured(context, entry, event) }
+        .map(_._2)
 
     val maybeTargetIndex =
       maybeCapturedIndex.orElse(

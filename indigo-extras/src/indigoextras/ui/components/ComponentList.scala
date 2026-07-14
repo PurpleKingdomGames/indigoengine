@@ -18,21 +18,6 @@ final case class ComponentList[ReferenceData] private[components] (
     dimensions: Dimensions,
     background: Bounds => Layer
 ):
-
-  private def addSingle[A](entry: UIContext[ReferenceData] => (ComponentId, A))(using
-      c: Component[A, ReferenceData]
-  ): ComponentList[ReferenceData] =
-    val f =
-      (ctx: UIContext[ReferenceData]) =>
-        content(ctx) :+ {
-          val (id, a) = entry(ctx)
-          ComponentEntry(id, Coords.zero, a, c, None)
-        }
-
-    this.copy(
-      content = f
-    )
-
   def addOne[A](entry: UIContext[ReferenceData] => (ComponentId, A))(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
@@ -140,100 +125,37 @@ object ComponentList:
         model: ComponentList[ReferenceData]
     ): GlobalEvent => Outcome[ComponentList[ReferenceData]] =
       case e =>
-        // What we're doing here it updating the stateMap, not the content function.
-        // However, to do that properly, we need to reflow the content too, to make sure things
-        // like pointer clicks are still in the right place.
-        val entries =
-          contentReflow(
-            context,
-            model.dimensions,
-            model.layout,
-            model.content(context).map { entry =>
-              model.stateMap.get(entry.id) match
-                case None =>
-                  entry
-
-                case Some(savedState) =>
-                  entry.copy(model = savedState.asInstanceOf[entry.Out])
-            }
-          )
-
         val nextStateMap =
           ContainerLikeFunctions
-            .routeOrBroadcast(context, model.dimensions, entries)(e)
+            .routeOrBroadcast(context, model.dimensions, entries(context, model))(e)
             .map(_.map(e => e.id -> e.model).toMap)
 
         nextStateMap.map { newStateMap =>
           model.copy(stateMap = newStateMap)
         }
 
-    def hitTest(
+    override def hitTest(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData],
         event: GlobalEvent
     ): Boolean =
-      val entries =
-        contentReflow(
-          context,
-          model.dimensions,
-          model.layout,
-          model.content(context).map { entry =>
-            model.stateMap.get(entry.id) match
-              case None =>
-                entry
+      ContainerLikeFunctions.hitTest(context, entries(context, model), event)
 
-              case Some(savedState) =>
-                entry.copy(model = savedState.asInstanceOf[entry.Out])
-          }
-        )
-
-      ContainerLikeFunctions.hitTest(context, entries, event)
-
-    def hasPointerCapture(
+    override def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Boolean =
-      val entries =
-        contentReflow(
-          context,
-          model.dimensions,
-          model.layout,
-          model.content(context).map { entry =>
-            model.stateMap.get(entry.id) match
-              case None =>
-                entry
-
-              case Some(savedState) =>
-                entry.copy(model = savedState.asInstanceOf[entry.Out])
-          }
-        )
-
-      ContainerLikeFunctions.hasPointerCapture(context, entries)
+      ContainerLikeFunctions.hasPointerCapture(context, entries(context, model))
 
     def present(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Outcome[Layer] =
-      // Pull the state out of the stateMap and present it
-      val entries =
-        model
-          .content(context)
-          .map { entry =>
-            model.stateMap.get(entry.id) match
-              case None =>
-                // No entry, so we use the default.
-                entry
-
-              case Some(savedState) =>
-                // We have an entry, so overwrite the model with it.
-                entry.copy(model = savedState.asInstanceOf[entry.Out])
-          }
-
       ContainerLikeFunctions
         .present(
           context,
           model.dimensions,
-          contentReflow(context, model.dimensions, model.layout, entries)
+          entries(context, model)
         )
         .map { components =>
           val background = model.background(Bounds(context.parent.coords, model.dimensions))
@@ -248,6 +170,27 @@ object ComponentList:
         model: ComponentList[ReferenceData]
     ): ComponentList[ReferenceData] =
       model
+
+    /** Rebuilds the entries from the content function, restoring each child's last known state from the stateMap, and
+      * reflows their layout offsets so that things like pointer clicks land in the right place.
+      */
+    private def entries(
+        context: UIContext[ReferenceData],
+        model: ComponentList[ReferenceData]
+    ): Batch[ComponentEntry[?, ReferenceData]] =
+      contentReflow(
+        context,
+        model.dimensions,
+        model.layout,
+        model.content(context).map { entry =>
+          model.stateMap.get(entry.id) match
+            case None =>
+              entry
+
+            case Some(savedState) =>
+              entry.copy(model = savedState.asInstanceOf[entry.Out])
+        }
+      )
 
     private def contentReflow(
         context: UIContext[ReferenceData],

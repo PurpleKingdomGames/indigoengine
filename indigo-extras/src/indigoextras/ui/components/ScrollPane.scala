@@ -214,9 +214,7 @@ object ScrollPane:
           }
 
         def routeContent(event: GlobalEvent): Outcome[ComponentEntry[A, ReferenceData]] =
-          ContainerLikeFunctions
-            .routeOrBroadcast(contentCtx, model.dimensions, Batch(model.content))(event)
-            .map(_.headOption.map(_.asInstanceOf[ComponentEntry[A, ReferenceData]]).getOrElse(model.content))
+          ContainerLikeFunctions.routeOne(contentCtx, model.dimensions, model.content)(event)
 
         def updateContentWith(events: Batch[GlobalEvent]): Outcome[ComponentEntry[A, ReferenceData]] =
           events
