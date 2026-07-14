@@ -133,7 +133,7 @@ object MaskedPane:
               .getOrElse(model)
           }
 
-    def hitTest(
+    override def hitTest(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData],
         event: GlobalEvent
@@ -147,7 +147,7 @@ object MaskedPane:
         event
       )
 
-    def hasPointerCapture(
+    override def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
     ): Boolean =

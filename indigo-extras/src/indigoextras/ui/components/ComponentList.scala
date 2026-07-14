@@ -79,6 +79,20 @@ final case class ComponentList[ReferenceData] private[components] (
   def withBackground(present: Bounds => Layer): ComponentList[ReferenceData] =
     this.copy(background = present)
 
+  private def addSingle[A](entry: UIContext[ReferenceData] => (ComponentId, A))(using
+      c: Component[A, ReferenceData]
+  ): ComponentList[ReferenceData] =
+    val f =
+      (ctx: UIContext[ReferenceData]) =>
+        content(ctx) :+ {
+          val (id, a) = entry(ctx)
+          ComponentEntry(id, Coords.zero, a, c, None)
+        }
+
+    this.copy(
+      content = f
+    )
+
 object ComponentList:
 
   def apply[ReferenceData, A](

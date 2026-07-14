@@ -2,6 +2,7 @@ package indigoextras.ui.component
 
 import indigo.*
 import indigoextras.ui.datatypes.Bounds
+import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
 
 /** A typeclass that confirms that some type `A` can be used as a `Component` provides the necessary operations for that
@@ -13,7 +14,13 @@ trait Component[A, ReferenceData]:
     */
   def bounds(context: UIContext[ReferenceData], model: A): Bounds
 
-  /** Update this componenet's model.
+  def coordsInBounds(pnt: Coords, context: UIContext[ReferenceData], model: A): Boolean =
+    context.pointerIsWithinActiveInputBounds &&
+      bounds(context, model)
+        .moveBy(context.parent.coords + context.parent.additionalOffset)
+        .contains(pnt)
+
+  /** Update this component's model.
     */
   def updateModel(
       context: UIContext[ReferenceData],
@@ -23,10 +30,14 @@ trait Component[A, ReferenceData]:
   /** Indicates if this component, or one of its children, is a valid target for pointer routing at the current pointer
     * position.
     */
-  def hitTest(context: UIContext[ReferenceData], model: A, event: GlobalEvent): Boolean
+  def hitTest(context: UIContext[ReferenceData], model: A, event: GlobalEvent): Boolean =
+    event match
+      // By default wheel events don't execute a hit test - this may be overriden by things like scroll panes
+      case _: WheelEvent => false
+      case _             => coordsInBounds(context.pointerCoords, context, model)
 
   /** Indicates if this component owns pointer input until the current pointer interaction ends. */
-  def hasPointerCapture(context: UIContext[ReferenceData], model: A): Boolean
+  def hasPointerCapture(context: UIContext[ReferenceData], model: A): Boolean = false
 
   /** Produce a renderable output for this component, based on the component's model.
     */
@@ -52,12 +63,6 @@ object Component:
           model: Unit
       ): GlobalEvent => Outcome[Unit] =
         _ => Outcome(model)
-
-      def hitTest(context: UIContext[ReferenceData], model: Unit, event: GlobalEvent): Boolean =
-        false
-
-      def hasPointerCapture(context: UIContext[ReferenceData], model: Unit): Boolean =
-        false
 
       def present(
           context: UIContext[ReferenceData],

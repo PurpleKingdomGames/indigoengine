@@ -263,25 +263,25 @@ object Button:
 
       case _: PointerEvent.Move
           if context.isActive && !model.isDown && model.isOver &&
-            !coordsInBounds(context.pointerCoords, model.bounds, context) =>
+            !coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Up, isOver = false))
           .addGlobalEvents(model.leave(context.reference))
 
       case _: PointerEvent.Move
           if context.isActive && !model.isDown && !model.isOver &&
-            coordsInBounds(context.pointerCoords, model.bounds, context) =>
+            coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Over, isOver = true))
           .addGlobalEvents(model.enter(context.reference))
 
-      case _: PointerEvent.Click if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+      case _: PointerEvent.Click if context.isActive && coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Over, isDown = false, isOver = true, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
-      case _: PointerEvent.Down if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+      case _: PointerEvent.Down if context.isActive && coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, isOver = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
-      case _: PointerEvent.Up if context.isActive && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+      case _: PointerEvent.Up if context.isActive && coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Over, isDown = false, isOver = true, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
 
@@ -334,12 +334,7 @@ object Button:
       case _ =>
         Outcome(model)
 
-    def hitTest(context: UIContext[ReferenceData], model: Button[ReferenceData], event: GlobalEvent): Boolean =
-      event match
-        case _: WheelEvent => false
-        case _             => coordsInBounds(context.pointerCoords, model.bounds, context)
-
-    def hasPointerCapture(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
+    override def hasPointerCapture(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
       model.isDown
 
     def present(
@@ -406,12 +401,6 @@ object Button:
               context.parent.bounds.height - padding.top - padding.bottom
             )
           )
-
-    private def coordsInBounds(pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
-      context.pointerIsWithinActiveInputBounds &&
-        bounds
-          .moveBy(context.parent.coords + context.parent.additionalOffset)
-          .contains(pnt)
 
 enum ButtonState derives CanEqual:
   case Up, Over, Down
