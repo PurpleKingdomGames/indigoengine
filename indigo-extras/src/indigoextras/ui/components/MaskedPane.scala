@@ -122,16 +122,8 @@ object MaskedPane:
         val ctx          = context.withParentBounds(adjustBounds).pushActiveInputBounds(adjustBounds)
 
         ContainerLikeFunctions
-          .routeOrBroadcast(ctx, model.dimensions, Batch(model.content))(e)
-          .map { updated =>
-            updated.headOption
-              .map { content =>
-                model.copy(
-                  content = model.content.copy(model = content.model.asInstanceOf[A])
-                )
-              }
-              .getOrElse(model)
-          }
+          .routeOne(ctx, model.dimensions, model.content)(e)
+          .map(updated => model.copy(content = updated))
 
     override def hitTest(
         context: UIContext[ReferenceData],

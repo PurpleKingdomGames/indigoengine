@@ -229,26 +229,27 @@ object Button:
       case FrameTick =>
         val newBounds =
           model.boundsType match
-            case BoundsType.Fixed(bounds) =>
-              bounds
+            case BoundsType.Fixed(bounds)         => bounds
+            case BoundsType.Calculated(calculate) => calculate(context, ())
+            case _                                => model.bounds
 
-            case BoundsType.Calculated(calculate) =>
-              calculate(context, ())
+        val updated =
+          model.copy(bounds = newBounds)
 
-            case _ =>
-              model.bounds
+        val stillOver =
+          context.isActive && coordsInBounds(context.pointerCoords, context, updated)
 
-        Outcome(
-          model.copy(
-            bounds = newBounds
-          )
-        )
+        if model.isDown && context.isActive then Outcome(updated)
+        else if context.isActive == false || (model.isOver && !stillOver) then
+          Outcome(updated.copy(state = ButtonState.Up, isOver = false))
+            .addGlobalEvents(model.leave(context.reference))
+        else Outcome(updated)
 
       case FocusEvent.LostFocus | FocusEvent.ApplicationLostFocus =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
 
       case _: PointerEvent.Enter
-          if context.isActive && !model.isDown && coordsInBounds(context.pointerCoords, model.bounds, context) =>
+          if context.isActive && !model.isDown && coordsInBounds(context.pointerCoords, context, model) =>
         Outcome(model.copy(state = ButtonState.Over, isOver = true))
           .addGlobalEvents(
             if model.isOver then Batch.empty else model.enter(context.reference)
