@@ -82,7 +82,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     */
   def focus(id: WindowId): WindowManager[StartUpData, Model, ReferenceData] =
     val reordered =
-      windows.find(_.id == id) match
+      windows.find(w => w.isOpen && w.id == id) match
         case None =>
           windows
 
@@ -194,7 +194,7 @@ object WindowManager:
       case e =>
         updateWindows(context, model, modalWindowOpen(model))(e)
 
-    attachFocusEvents(outcome, model)
+    attachWindowEvents(outcome, model)
 
   private def updateWindows[ReferenceData](
       context: UIContext[ReferenceData],
@@ -253,19 +253,21 @@ object WindowManager:
         .addGlobalEvents(WindowInternalEvent.Redraw)
 
     case WindowEvent.Open(id) =>
-      model.open(id).addGlobalEvents(WindowEvent.Focus(id))
+      Outcome(model.open(id).focusOn(id))
 
     case WindowEvent.OpenAt(id, coords) =>
-      model
-        .open(id)
-        .map(_.moveTo(id, coords, Space.Screen, context.frame.viewport, context.magnification))
-        .addGlobalEvents(WindowEvent.Focus(id))
+      Outcome(
+        model
+          .open(id)
+          .moveTo(id, coords, Space.Screen, context.frame.viewport, context.magnification)
+          .focusOn(id)
+      )
 
     case WindowEvent.Close(id) =>
-      model.close(id)
+      Outcome(model.close(id))
 
     case WindowEvent.Toggle(id) =>
-      model.toggle(id)
+      Outcome(model.toggle(id))
 
     case WindowEvent.Move(id, coords, space) =>
       Outcome(model.moveTo(id, coords, space, context.frame.viewport, context.magnification))
@@ -285,7 +287,7 @@ object WindowManager:
           Outcome(model)
 
         case Some(window) =>
-          model.close(window.id)
+          Outcome(model.close(window.id))
 
     case WindowEvent.ChangeMagnification(_) =>
       Outcome(model)
@@ -373,24 +375,47 @@ object WindowManager:
       )
     }
 
-  private def attachFocusEvents[ReferenceData](
-      model: Outcome[WindowManagerModel[ReferenceData]],
+  private def attachWindowEvents[ReferenceData](
+      outcome: Outcome[WindowManagerModel[ReferenceData]],
       prevModel: WindowManagerModel[ReferenceData]
   ): Outcome[WindowManagerModel[ReferenceData]] =
 
-    model.flatMap(model =>
-      val prevFocusIds    = prevModel.windows.filter(_.hasFocus).map(_.id)
-      val currentFocusIds = model.windows.filter(w => w.hasFocus).map(_.id)
+    outcome match
+      case Outcome.Error(_, _) =>
+        outcome
 
-      Outcome(model).addGlobalEvents(
-        prevFocusIds
-          .filter(w => currentFocusIds.exists(w1 => w1 == w) == false)
-          .map(w => WindowEvent.Blurred(w)) ++
-          currentFocusIds
-            .filter(w => prevFocusIds.exists(w1 => w == w1) == false)
-            .map(w => WindowEvent.Focused(w))
-      )
-    )
+      case Outcome.Result(model, globalEvents) =>
+        Outcome.Result(model, windowEvents(prevModel, model) ++ globalEvents)
+
+  private def windowEvents[ReferenceData](
+      prevModel: WindowManagerModel[ReferenceData],
+      model: WindowManagerModel[ReferenceData]
+  ): Batch[WindowEvent] =
+    val prevOpenIds    = prevModel.windows.filter(_.isOpen).map(_.id)
+    val currentOpenIds = model.windows.filter(_.isOpen).map(_.id)
+
+    val prevFocusIds    = prevModel.windows.filter(_.hasFocus).map(_.id)
+    val currentFocusIds = model.windows.filter(_.hasFocus).map(_.id)
+
+    val opened =
+      currentOpenIds
+        .filter(id => prevOpenIds.exists(_ == id) == false)
+        .map(WindowEvent.Opened.apply)
+
+    val focusChanged =
+      prevFocusIds
+        .filter(w => currentFocusIds.exists(w1 => w1 == w) == false)
+        .map(w => WindowEvent.Blurred(w)) ++
+        currentFocusIds
+          .filter(w => prevFocusIds.exists(w1 => w == w1) == false)
+          .map(w => WindowEvent.Focused(w))
+
+    val closed =
+      prevOpenIds
+        .filter(id => currentOpenIds.exists(_ == id) == false)
+        .map(WindowEvent.Closed.apply)
+
+    opened ++ focusChanged ++ closed
 
 final case class ModelHolder[ReferenceData](
     model: WindowManagerModel[ReferenceData],
