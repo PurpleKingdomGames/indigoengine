@@ -164,17 +164,14 @@ object ComponentGroup:
           }
         )
 
-    override def hitTest(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Boolean =
-      ContainerLikeFunctions.hitTest(context, model.components)
-
-    override def hitTest(
+    def hitTest(
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData],
         event: GlobalEvent
     ): Boolean =
       ContainerLikeFunctions.hitTest(context, model.components, event)
 
-    override def hasPointerCapture(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Boolean =
+    def hasPointerCapture(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Boolean =
       ContainerLikeFunctions.hasPointerCapture(context, model.components)
 
     def present(

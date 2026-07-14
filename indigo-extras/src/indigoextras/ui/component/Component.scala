@@ -20,19 +20,13 @@ trait Component[A, ReferenceData]:
       model: A
   ): GlobalEvent => Outcome[A]
 
-  /** True if this component, or one of its children, is a valid target for pointer routing at the current pointer
+  /** Indicates if this component, or one of its children, is a valid target for pointer routing at the current pointer
     * position.
     */
-  def hitTest(context: UIContext[ReferenceData], model: A): Boolean =
-    false
+  def hitTest(context: UIContext[ReferenceData], model: A, event: GlobalEvent): Boolean
 
-  def hitTest(context: UIContext[ReferenceData], model: A, _event: GlobalEvent): Boolean =
-    val _ = _event
-    hitTest(context, model)
-
-  /** True when this component owns pointer input until the current pointer interaction ends. */
-  def hasPointerCapture(context: UIContext[ReferenceData], model: A): Boolean =
-    false
+  /** Indicates if this component owns pointer input until the current pointer interaction ends. */
+  def hasPointerCapture(context: UIContext[ReferenceData], model: A): Boolean
 
   /** Produce a renderable output for this component, based on the component's model.
     */
@@ -59,10 +53,10 @@ object Component:
       ): GlobalEvent => Outcome[Unit] =
         _ => Outcome(model)
 
-      override def hitTest(context: UIContext[ReferenceData], model: Unit): Boolean =
+      def hitTest(context: UIContext[ReferenceData], model: Unit, event: GlobalEvent): Boolean =
         false
 
-      override def hitTest(context: UIContext[ReferenceData], model: Unit, event: GlobalEvent): Boolean =
+      def hasPointerCapture(context: UIContext[ReferenceData], model: Unit): Boolean =
         false
 
       def present(

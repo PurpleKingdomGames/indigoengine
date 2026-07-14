@@ -153,25 +153,7 @@ object ComponentList:
           model.copy(stateMap = newStateMap)
         }
 
-    override def hitTest(context: UIContext[ReferenceData], model: ComponentList[ReferenceData]): Boolean =
-      val entries =
-        contentReflow(
-          context,
-          model.dimensions,
-          model.layout,
-          model.content(context).map { entry =>
-            model.stateMap.get(entry.id) match
-              case None =>
-                entry
-
-              case Some(savedState) =>
-                entry.copy(model = savedState.asInstanceOf[entry.Out])
-          }
-        )
-
-      ContainerLikeFunctions.hitTest(context, entries)
-
-    override def hitTest(
+    def hitTest(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData],
         event: GlobalEvent
@@ -193,7 +175,7 @@ object ComponentList:
 
       ContainerLikeFunctions.hitTest(context, entries, event)
 
-    override def hasPointerCapture(
+    def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Boolean =

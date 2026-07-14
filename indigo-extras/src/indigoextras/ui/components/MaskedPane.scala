@@ -119,7 +119,7 @@ object MaskedPane:
     ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
       case e =>
         val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-        val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+        val ctx          = context.withParentBounds(adjustBounds).pushActiveInputBounds(adjustBounds)
 
         ContainerLikeFunctions
           .routeOrBroadcast(ctx, model.dimensions, Batch(model.content))(e)
@@ -133,22 +133,13 @@ object MaskedPane:
               .getOrElse(model)
           }
 
-    override def hitTest(context: UIContext[ReferenceData], model: MaskedPane[A, ReferenceData]): Boolean =
-      val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
-
-      ContainerLikeFunctions.hitTest(
-        ctx,
-        Batch(model.content)
-      )
-
-    override def hitTest(
+    def hitTest(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData],
         event: GlobalEvent
     ): Boolean =
       val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+      val ctx          = context.withParentBounds(adjustBounds).pushActiveInputBounds(adjustBounds)
 
       ContainerLikeFunctions.hitTest(
         ctx,
@@ -156,12 +147,12 @@ object MaskedPane:
         event
       )
 
-    override def hasPointerCapture(
+    def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
     ): Boolean =
       val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+      val ctx          = context.withParentBounds(adjustBounds).pushActiveInputBounds(adjustBounds)
 
       ContainerLikeFunctions.hasPointerCapture(ctx, Batch(model.content))
 
@@ -170,7 +161,7 @@ object MaskedPane:
         model: MaskedPane[A, ReferenceData]
     ): Outcome[Layer] =
       val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds).pushInputClip(adjustBounds)
+      val ctx          = context.withParentBounds(adjustBounds).pushActiveInputBounds(adjustBounds)
 
       val content =
         ContainerLikeFunctions

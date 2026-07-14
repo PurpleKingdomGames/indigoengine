@@ -206,17 +206,14 @@ object HitArea:
         val s = model.stroke
         btn.updateModel(context, model.toButton)(e).map(_.toHitArea.copy(fill = f, stroke = s))
 
-    override def hitTest(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
-      btn.hitTest(context, model.toButton)
-
-    override def hitTest(
+    def hitTest(
         context: UIContext[ReferenceData],
         model: HitArea[ReferenceData],
         event: GlobalEvent
     ): Boolean =
       btn.hitTest(context, model.toButton, event)
 
-    override def hasPointerCapture(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
+    def hasPointerCapture(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Boolean =
       btn.hasPointerCapture(context, model.toButton)
 
     def present(
