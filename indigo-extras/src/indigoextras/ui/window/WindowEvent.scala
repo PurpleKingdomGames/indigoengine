@@ -25,6 +25,15 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Informs the game when a window has closed */
   case Closed(id: WindowId)
 
+  /** Informs the game when a window has gained focus */
+  case Focused(id: WindowId)
+
+  /** Informs the game when a window has lost focus */
+  case Blurred(id: WindowId)
+
+  /** Informs the game that magnification of all windows has changed */
+  case MagnificationChanged(newMagnification: Int)
+
   // User sent events
 
   /** Tells a window to open */
@@ -48,12 +57,6 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Focuses the top window at the given location */
   case GiveFocusAt(coords: Coords)
 
-  /** Informs the game when a window has gained focus */
-  case Focused(id: WindowId)
-
-  /** Informs the game when a window has lost focus */
-  case Blurred(id: WindowId)
-
   /** Moves a window to the location given */
   case Move(id: WindowId, position: Coords, space: Space)
 
@@ -74,46 +77,48 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
 
   def windowId: Option[WindowId] =
     this match
-      case PointerOver(id)        => Some(id)
-      case PointerOut(id)         => Some(id)
-      case Resized(id)            => Some(id)
-      case Opened(id)             => Some(id)
-      case Closed(id)             => Some(id)
-      case Open(id)               => Some(id)
-      case OpenAt(id, _)          => Some(id)
-      case Close(id)              => Some(id)
-      case Toggle(id)             => Some(id)
-      case Move(id, _, _)         => Some(id)
-      case Anchor(id, _)          => Some(id)
-      case Resize(id, _, _)       => Some(id)
-      case Transform(id, _, _)    => Some(id)
-      case Refresh(id)            => Some(id)
-      case Focus(id)              => Some(id)
-      case Focused(id)            => Some(id)
-      case Blurred(id)            => Some(id)
-      case GiveFocusAt(_)         => None
-      case ChangeMagnification(_) => None
-      case CloseFocused           => None
+      case PointerOver(id)         => Some(id)
+      case PointerOut(id)          => Some(id)
+      case Resized(id)             => Some(id)
+      case Opened(id)              => Some(id)
+      case Closed(id)              => Some(id)
+      case Open(id)                => Some(id)
+      case OpenAt(id, _)           => Some(id)
+      case Close(id)               => Some(id)
+      case Toggle(id)              => Some(id)
+      case Move(id, _, _)          => Some(id)
+      case Anchor(id, _)           => Some(id)
+      case Resize(id, _, _)        => Some(id)
+      case Transform(id, _, _)     => Some(id)
+      case Refresh(id)             => Some(id)
+      case Focus(id)               => Some(id)
+      case Focused(id)             => Some(id)
+      case Blurred(id)             => Some(id)
+      case GiveFocusAt(_)          => None
+      case ChangeMagnification(_)  => None
+      case MagnificationChanged(_) => None
+      case CloseFocused            => None
 
-  def isNotification: Boolean =
+  private[window] def isNotification: Boolean =
     this match
-      case Opened(id)             => true
-      case Closed(id)             => true
-      case Focused(id)            => true
-      case Blurred(id)            => true
-      case PointerOver(id)        => true
-      case PointerOut(id)         => true
-      case Resized(id)            => true
-      case ChangeMagnification(_) => true
-      case Open(id)               => false
-      case OpenAt(id, _)          => false
-      case Close(id)              => false
-      case Toggle(id)             => false
-      case Move(id, _, _)         => false
-      case Anchor(id, _)          => false
-      case Resize(id, _, _)       => false
-      case Transform(id, _, _)    => false
-      case Refresh(id)            => false
-      case Focus(id)              => false
-      case GiveFocusAt(_)         => false
-      case CloseFocused           => false
+      case Opened(id)              => true
+      case Closed(id)              => true
+      case Focused(id)             => true
+      case Blurred(id)             => true
+      case PointerOver(id)         => true
+      case PointerOut(id)          => true
+      case Resized(id)             => true
+      case MagnificationChanged(_) => true
+      case ChangeMagnification(_)  => false
+      case Open(id)                => false
+      case OpenAt(id, _)           => false
+      case Close(id)               => false
+      case Toggle(id)              => false
+      case Move(id, _, _)          => false
+      case Anchor(id, _)           => false
+      case Resize(id, _, _)        => false
+      case Transform(id, _, _)     => false
+      case Refresh(id)             => false
+      case Focus(id)               => false
+      case GiveFocusAt(_)          => false
+      case CloseFocused            => false

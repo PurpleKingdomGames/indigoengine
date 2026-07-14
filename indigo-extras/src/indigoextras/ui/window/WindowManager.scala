@@ -287,9 +287,12 @@ object WindowManager:
         case Some(window) =>
           model.close(window.id)
 
+    case WindowEvent.ChangeMagnification(_) =>
+      Outcome(model)
+
     // Pass through notification type events so that windows can deal with them
     case e: (WindowEvent.Opened | WindowEvent.Closed | WindowEvent.Focused | WindowEvent.Blurred | WindowEvent.Resized |
-          WindowEvent.PointerOver | WindowEvent.PointerOut | WindowEvent.ChangeMagnification) =>
+          WindowEvent.PointerOver | WindowEvent.PointerOut | WindowEvent.MagnificationChanged) =>
       updateWindows(context, model, modalWindowOpen(model))(e)
 
   private[window] def updateViewModel[ReferenceData](
@@ -299,6 +302,9 @@ object WindowManager:
   ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
     case WindowEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
+        .addGlobalEvents(
+          if next != viewModel.magnification then Batch(WindowEvent.MagnificationChanged(next)) else Batch.empty
+        )
 
     case e =>
       val windowUnderPointer =
