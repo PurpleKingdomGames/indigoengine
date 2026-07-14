@@ -334,15 +334,12 @@ object Button:
       case _ =>
         Outcome(model)
 
-    override def hitTest(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
-      coordsInBounds(context.pointerCoords, model.bounds, context)
-
-    override def hitTest(context: UIContext[ReferenceData], model: Button[ReferenceData], event: GlobalEvent): Boolean =
+    def hitTest(context: UIContext[ReferenceData], model: Button[ReferenceData], event: GlobalEvent): Boolean =
       event match
         case _: WheelEvent => false
-        case _             => hitTest(context, model)
+        case _             => coordsInBounds(context.pointerCoords, model.bounds, context)
 
-    override def hasPointerCapture(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
+    def hasPointerCapture(context: UIContext[ReferenceData], model: Button[ReferenceData]): Boolean =
       model.isDown
 
     def present(
@@ -411,7 +408,7 @@ object Button:
           )
 
     private def coordsInBounds(pnt: Coords, bounds: Bounds, context: UIContext[ReferenceData]): Boolean =
-      context.pointerIsWithinInputClip &&
+      context.pointerIsWithinActiveInputBounds &&
         bounds
           .moveBy(context.parent.coords + context.parent.additionalOffset)
           .contains(pnt)

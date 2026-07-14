@@ -68,14 +68,6 @@ object ContainerLikeFunctions:
 
   def hitTest[ReferenceData](
       context: UIContext[ReferenceData],
-      components: Batch[ComponentEntry[?, ReferenceData]]
-  ): Boolean =
-    components.exists { c =>
-      c.component.hitTest(routedChildContext(context, c), c.model)
-    }
-
-  def hitTest[ReferenceData](
-      context: UIContext[ReferenceData],
       components: Batch[ComponentEntry[?, ReferenceData]],
       event: GlobalEvent
   ): Boolean =

@@ -238,7 +238,7 @@ object ScrollPane:
               model.copy(content = updatedContent)
             }
 
-          case WheelEvent.Vertical(deltaY) if model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip =>
+          case WheelEvent.Vertical(deltaY) if model.scrollOptions.isEnabled && ctx.pointerIsWithinActiveInputBounds =>
             val scrollBy =
               val speed =
                 if model.dimensions.height > 0 then model.dimensions.height / 10 else 1
@@ -306,13 +306,7 @@ object ScrollPane:
               scrollBar = updatedScrollBar
             )
 
-    override def hitTest(
-        context: UIContext[ReferenceData],
-        model: ScrollPane[A, ReferenceData]
-    ): Boolean =
-      hitTest(context, model, PointerEvent.Move(context.pointerCoords.unsafeToPoint))
-
-    override def hitTest(
+    def hitTest(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData],
         event: GlobalEvent
@@ -336,12 +330,12 @@ object ScrollPane:
 
       event match
         case _: WheelEvent =>
-          contentHit || (model.scrollOptions.isEnabled && ctx.pointerIsWithinInputClip)
+          contentHit || (model.scrollOptions.isEnabled && ctx.pointerIsWithinActiveInputBounds)
 
         case _ =>
           scrollBarHit || contentHit
 
-    override def hasPointerCapture(
+    def hasPointerCapture(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): Boolean =
@@ -580,7 +574,7 @@ object ScrollPane:
 
       context
         .withParentBounds(bounds)
-        .pushInputClip(bounds)
+        .pushActiveInputBounds(bounds)
 
     private def scrolledContentContext(
         context: UIContext[ReferenceData],

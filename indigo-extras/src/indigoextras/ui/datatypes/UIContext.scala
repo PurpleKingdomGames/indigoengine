@@ -14,7 +14,7 @@ final case class UIContext[ReferenceData](
     reference: ReferenceData,
     frame: Context.Frame,
     services: Context.Services,
-    inputClip: Option[Bounds] = Option.empty
+    activeInputBounds: Option[Bounds] = Option.empty
 ):
 
   lazy val isActive: Boolean =
@@ -29,17 +29,17 @@ final case class UIContext[ReferenceData](
   def withParentBounds(newBounds: Bounds): UIContext[ReferenceData] =
     withParent(parent.withBounds(newBounds))
 
-  def withInputClip(newClip: Bounds): UIContext[ReferenceData] =
-    this.copy(inputClip = Option(newClip))
+  def withActiveInputBounds(newClip: Bounds): UIContext[ReferenceData] =
+    this.copy(activeInputBounds = Option(newClip))
 
-  def pushInputClip(newClip: Bounds): UIContext[ReferenceData] =
-    this.copy(inputClip = inputClip.map(intersect(_, newClip)).orElse(Option(newClip)))
+  def pushActiveInputBounds(newClip: Bounds): UIContext[ReferenceData] =
+    this.copy(activeInputBounds = activeInputBounds.map(intersect(_, newClip)).orElse(Option(newClip)))
 
-  def pointerIsWithinInputClip: Boolean =
-    inputClip.forall(_.contains(pointerCoords))
+  def pointerIsWithinActiveInputBounds: Boolean =
+    activeInputBounds.forall(_.contains(pointerCoords))
 
   def pointerIsWithin(bounds: Bounds): Boolean =
-    pointerIsWithinInputClip &&
+    pointerIsWithinActiveInputBounds &&
       bounds
         .moveBy(parent.coords + parent.additionalOffset)
         .contains(pointerCoords)
