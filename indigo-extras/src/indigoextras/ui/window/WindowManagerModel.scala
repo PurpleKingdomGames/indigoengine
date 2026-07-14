@@ -15,36 +15,22 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
   ): WindowManagerModel[ReferenceData] =
     this.copy(windows = windows ++ windowModels)
 
-  def open(ids: WindowId*): Outcome[WindowManagerModel[ReferenceData]] =
+  def open(ids: WindowId*): WindowManagerModel[ReferenceData] =
     open(Batch.fromSeq(ids))
 
-  def open(ids: Batch[WindowId]): Outcome[WindowManagerModel[ReferenceData]] =
-    Outcome(
-      this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w)),
-      ids.filter(id => windows.exists(_.id == id)).map(WindowEvent.Opened.apply)
-    )
+  def open(ids: Batch[WindowId]): WindowManagerModel[ReferenceData] =
+    this.copy(windows = windows.map(w => if ids.exists(_ == w.id) then w.open else w))
 
-  def close(id: WindowId): Outcome[WindowManagerModel[ReferenceData]] =
-    Outcome(
-      this.copy(windows = windows.map(w => if w.id == id then w.close else w)),
-      Batch(WindowEvent.Closed(id))
-    )
+  def close(id: WindowId): WindowManagerModel[ReferenceData] =
+    this.copy(windows = windows.map(w => if w.id == id then w.close else w))
 
-  def toggle(id: WindowId): Outcome[WindowManagerModel[ReferenceData]] =
+  def toggle(id: WindowId): WindowManagerModel[ReferenceData] =
     windows.find(_.id == id).map(_.isOpen) match
       case None =>
-        Outcome(this)
+        this
 
       case Some(isOpen) =>
-        Outcome(
-          this.copy(
-            windows = windows.map { w =>
-              if w.id == id then if isOpen then w.close else w.open
-              else w
-            }
-          ),
-          Batch(if isOpen then WindowEvent.Closed(id) else WindowEvent.Opened(id))
-        )
+        if isOpen then close(id) else open(id)
 
   def focusAt(
       coords: Coords,
@@ -66,7 +52,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
 
   def focusOn(id: WindowId): WindowManagerModel[ReferenceData] =
     val reordered =
-      windows.find(_.id == id) match
+      windows.find(w => w.isOpen && w.id == id) match
         case None =>
           windows
 
