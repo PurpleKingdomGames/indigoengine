@@ -305,7 +305,8 @@ object WindowManager:
     case WindowEvent.ChangeMagnification(next) =>
       Outcome(viewModel.changeMagnification(next))
         .addGlobalEvents(
-          if next != viewModel.magnification then Batch(WindowEvent.MagnificationChanged(next)) else Batch.empty
+          if next.toInt != viewModel.magnification.toInt then Batch(WindowEvent.MagnificationChanged(next))
+          else Batch.empty
         )
 
     case e =>

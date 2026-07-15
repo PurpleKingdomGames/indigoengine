@@ -32,7 +32,7 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   case Blurred(id: WindowId)
 
   /** Informs the game that magnification of all windows has changed */
-  case MagnificationChanged(newMagnification: Int)
+  case MagnificationChanged(newMagnification: Magnification)
 
   // User sent events
 
