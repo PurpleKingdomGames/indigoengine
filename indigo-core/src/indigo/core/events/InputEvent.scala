@@ -3,11 +3,6 @@ package indigo.core.events
 import indigo.core.constants.Key
 import indigo.core.datatypes.Point
 import indigo.core.events.MouseEvent.Move
-import indigo.core.events.MouseEvent.Wheel
-import indigoengine.shared.collections.Batch
-import indigoengine.shared.datatypes.Radians
-
-import scala.annotation.nowarn
 
 /** Tags events for input devices like mice and keyboards. `InputEvent`s work in partnership with `InputState`. Events
   * represent a one time thing that happened since the last frame, while the state represents the _ongoing_ state of an
@@ -130,7 +125,6 @@ sealed trait MouseEvent extends PositionalInputEvent:
     */
   def movementPosition: Point
 
-@nowarn("msg=deprecated")
 object MouseEvent:
 
   /** The mouse button was clicked
@@ -147,102 +141,26 @@ object MouseEvent:
   final case class Click(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
       button: MouseButton
   ) extends MouseEvent
   object Click:
-    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Click =
       Click(
         PointerId.unknown,
         position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
-    @nowarn("msg=deprecated")
+
     def apply(position: Point): Click =
       Click(
         PointerId.unknown,
         position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
     def unapply(e: Click): Option[Point] =
-      Option(e.position)
-
-  @deprecated("Use `MouseEvents.Up` instead", "0.22.0")
-  final case class MouseUp(
-      pointerId: PointerId,
-      position: Point,
-      buttons: Batch[MouseButton],
-      isAltKeyDown: Boolean,
-      isCtrlKeyDown: Boolean,
-      isMetaKeyDown: Boolean,
-      isShiftKeyDown: Boolean,
-      movementPosition: Point,
-      button: MouseButton
-  ) extends MouseEvent
-  object MouseUp:
-    @nowarn("msg=deprecated")
-    def apply(position: Point): MouseUp =
-      MouseUp(
-        PointerId.unknown,
-        position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = MouseButton.LeftMouseButton
-      )
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int): MouseUp =
-      MouseUp(
-        PointerId.unknown,
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = MouseButton.LeftMouseButton
-      )
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int, button: MouseButton): MouseUp =
-      MouseUp(
-        PointerId.unknown,
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = button
-      )
-    def unapply(e: MouseUp): Option[Point] =
       Option(e.position)
 
   /** The mouse button was released
@@ -285,65 +203,6 @@ object MouseEvent:
         button = button
       )
     def unapply(e: Up): Option[Point] =
-      Option(e.position)
-
-  /** The mouse button was pressed down.
-    * @param button
-    *   The button that was pressed down
-    */
-  @deprecated("Use `MouseEvents.Down` instead", "0.22.0")
-  final case class MouseDown(
-      pointerId: PointerId,
-      position: Point,
-      buttons: Batch[MouseButton],
-      isAltKeyDown: Boolean,
-      isCtrlKeyDown: Boolean,
-      isMetaKeyDown: Boolean,
-      isShiftKeyDown: Boolean,
-      movementPosition: Point,
-      button: MouseButton
-  ) extends MouseEvent
-  object MouseDown:
-    @nowarn("msg=deprecated")
-    def apply(position: Point): MouseDown =
-      MouseDown(
-        PointerId.unknown,
-        position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = MouseButton.LeftMouseButton
-      )
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int): MouseDown =
-      MouseDown(
-        PointerId.unknown,
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = MouseButton.LeftMouseButton
-      )
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int, button: MouseButton): MouseDown =
-      MouseDown(
-        PointerId.unknown,
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        button = button
-      )
-    def unapply(e: MouseDown): Option[Point] =
       Option(e.position)
 
   /** The mouse button was pressed down
@@ -400,29 +259,13 @@ object MouseEvent:
   final case class Move(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
   object Move:
-    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Move =
       Move(
         PointerId.unknown,
         position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero
       )
     def unapply(e: Move): Option[Point] =
@@ -440,16 +283,6 @@ object MouseEvent:
   final case class Enter(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
   object Enter:
@@ -468,16 +301,6 @@ object MouseEvent:
   final case class Leave(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
   object Leave:
@@ -501,63 +324,6 @@ object MouseEvent:
   object Cancel:
     def unapply(e: Cancel): Option[Point] =
       Option(e.position)
-
-  /** The mouse wheel was rotated a certain amount around an axis.
-    *
-    * @param deltaX
-    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the X axis was scrolled
-    * @param deltaY
-    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
-    * @param deltaZ
-    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the Z axis was scrolled
-    */
-  @deprecated("Use `WheelEvent.Move` instead", "0.22.0")
-  final case class Wheel(
-      position: Point,
-      buttons: Batch[MouseButton],
-      isAltKeyDown: Boolean,
-      isCtrlKeyDown: Boolean,
-      isMetaKeyDown: Boolean,
-      isShiftKeyDown: Boolean,
-      movementPosition: Point,
-      deltaX: Double,
-      deltaY: Double,
-      deltaZ: Double
-  ) extends MouseEvent:
-    def pointerId = PointerId.unknown
-  object Wheel:
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int, deltaX: Double, deltaY: Double, deltaZ: Double): Wheel =
-      Wheel(
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        deltaX = deltaX,
-        deltaY = deltaY,
-        deltaZ = deltaZ
-      )
-
-    @nowarn("msg=deprecated")
-    def apply(x: Int, y: Int, deltaY: Double): Wheel =
-      Wheel(
-        position = Point(x, y),
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
-        movementPosition = Point.zero,
-        deltaX = 0,
-        deltaY = deltaY,
-        deltaZ = 0
-      )
-    @nowarn("msg=deprecated")
-    def unapply(e: Wheel): Option[(Point, Double)] =
-      Option((e.position, e.deltaY))
 
 end MouseEvent
 
@@ -1017,7 +783,6 @@ object PenEvent:
       pressure: Double
   ) extends PenEvent
   object Move:
-    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Move =
       Move(
         PointerId.unknown,
@@ -1100,90 +865,18 @@ end PenEvent
   */
 sealed trait PointerEvent extends PositionalInputEvent:
 
-  /** The width (magnitude on the X axis), of the contact geometry of the pointer relative to the screen
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def width: Int
-
-  /** The height (magnitude on the Y axis), of the contact geometry of the pointer relative to the screen
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def height: Int
-
-  /** The normalized pressure of the pointer input in the range 0 to 1, where 0 and 1 represent the minimum and maximum
-    * pressure the hardware is capable of detecting, respectively.
-    */
-  @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-  def pressure: Double
-
-  /** The normalized tangential pressure of the pointer input (also known as barrel pressure or cylinder stress) in the
-    * range -1 to 1, where 0 is the neutral position of the control.
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def tangentialPressure: Double
-
-  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the Y–Z plane and
-    * the plane containing both the pointer (e.g. pen stylus) axis and the Y axis.
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def tiltX: Radians
-
-  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the X–Z plane and
-    * the plane containing both the pointer (e.g. pen stylus) axis and the X axis.
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def tiltY: Radians
-
-  /** The clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the
-    * range 0 to 6.265732 (0 to 359 degrees)
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def twist: Radians
-
   /** Indicates the device type that caused the event (mouse, pen, touch, etc.)
     */
   def pointerType: PointerType
 
-  /** Indicates whether the pointer is considered primary - like first finger during multi-touch gesture
-    */
-  @deprecated("Being removed to simplify Input", "0.22.0")
-  def isPrimary: Boolean
-
-@nowarn("msg=deprecated")
 object PointerEvent:
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
   final case class Enter(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
-      pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean
+      pointerType: PointerType
   ) extends PointerEvent
   object Enter:
     def unapply(e: Enter): Option[Point] =
@@ -1194,34 +887,8 @@ object PointerEvent:
   final case class Leave(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
-      pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean
+      pointerType: PointerType
   ) extends PointerEvent
   object Leave:
     def unapply(e: Leave): Option[Point] =
@@ -1232,34 +899,8 @@ object PointerEvent:
   final case class Down(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
       pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
   object Down:
@@ -1278,27 +919,13 @@ object PointerEvent:
     def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): Down =
       Down(Point(x, y), button, pointerType)
 
-    @nowarn("msg=deprecated")
     def apply(position: Point, button: MouseButton, pointerType: PointerType): Down =
       Down(
         pointerId = PointerId.unknown,
         position = position,
-        buttons = Batch(button),
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
         button = Some(button),
-        width = 0,
-        height = 0,
-        pressure = 0,
-        tangentialPressure = 0,
-        tiltX = Radians.zero,
-        tiltY = Radians.zero,
-        twist = Radians.zero,
-        pointerType = pointerType,
-        isPrimary = true
+        pointerType = pointerType
       )
 
     def unapply(e: Down): Option[Point] =
@@ -1309,34 +936,8 @@ object PointerEvent:
   final case class Up(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
       pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
   object Up:
@@ -1355,27 +956,13 @@ object PointerEvent:
     def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): Up =
       Up(Point(x, y), button, pointerType)
 
-    @nowarn("msg=deprecated")
     def apply(position: Point, button: MouseButton, pointerType: PointerType): Up =
       Up(
         pointerId = PointerId.unknown,
         position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
         button = Some(button),
-        width = 0,
-        height = 0,
-        pressure = 0,
-        tangentialPressure = 0,
-        tiltX = Radians.zero,
-        tiltY = Radians.zero,
-        twist = Radians.zero,
-        pointerType = pointerType,
-        isPrimary = true
+        pointerType = pointerType
       )
 
     def unapply(e: Up): Option[Point] =
@@ -1385,34 +972,8 @@ object PointerEvent:
   final case class Click(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
       pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
   object Click:
@@ -1431,27 +992,13 @@ object PointerEvent:
     def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): Click =
       Click(Point(x, y), button, pointerType)
 
-    @nowarn("msg=deprecated")
     def apply(position: Point, button: MouseButton, pointerType: PointerType): Click =
       Click(
         pointerId = PointerId.unknown,
         position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
         button = Some(button),
-        width = 0,
-        height = 0,
-        pressure = 0,
-        tangentialPressure = 0,
-        tiltX = Radians.zero,
-        tiltY = Radians.zero,
-        twist = Radians.zero,
-        pointerType = pointerType,
-        isPrimary = true
+        pointerType = pointerType
       )
     def unapply(e: Click): Option[Point] =
       Option(e.position)
@@ -1461,34 +1008,8 @@ object PointerEvent:
   final case class Move(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
-      pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean
+      pointerType: PointerType
   ) extends PointerEvent
   object Move:
     def apply(position: Point): Move =
@@ -1498,26 +1019,12 @@ object PointerEvent:
     def apply(x: Int, y: Int, pointerType: PointerType): Move =
       Move(Point(x, y), pointerType)
 
-    @nowarn("msg=deprecated")
     def apply(position: Point, pointerType: PointerType): Move =
       Move(
         pointerId = PointerId.unknown,
         position = position,
-        buttons = Batch.empty,
-        isAltKeyDown = false,
-        isCtrlKeyDown = false,
-        isMetaKeyDown = false,
-        isShiftKeyDown = false,
         movementPosition = Point.zero,
-        width = 0,
-        height = 0,
-        pressure = 0,
-        tangentialPressure = 0,
-        tiltX = Radians.zero,
-        tiltY = Radians.zero,
-        twist = Radians.zero,
-        pointerType = pointerType,
-        isPrimary = true
+        pointerType = pointerType
       )
 
     def unapply(e: Move): Option[Point] =
@@ -1532,81 +1039,11 @@ object PointerEvent:
   final case class Cancel(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
       movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
-      pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean
+      pointerType: PointerType
   ) extends PointerEvent
   object Cancel:
     def unapply(e: Cancel): Option[Point] =
-      Option(e.position)
-
-  /** The pointer is no longer sending events because:
-    *   - the pointing device is moved out of the hit boundaries
-    *   - the PointerUp event was fired on a device that doesn't support hover
-    *   - after firing the PointerCancel event
-    *   - when a pen stylus leaves the hover range detectable by the digitizer.
-    */
-
-  @deprecated("Use `PointerEvent.Leave` instead", "0.22.0")
-  final case class Out(
-      pointerId: PointerId,
-      position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
-      buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
-      isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
-      isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
-      isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
-      isShiftKeyDown: Boolean,
-      movementPosition: Point,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      width: Int,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      height: Int,
-      @deprecated("Use `TouchEvent.pressure` instead", "0.22.0")
-      pressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tangentialPressure: Double,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltX: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      tiltY: Radians,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      twist: Radians,
-      pointerType: PointerType,
-      @deprecated("Being removed to simplify Input", "0.22.0")
-      isPrimary: Boolean
-  ) extends PointerEvent
-  object Out:
-    def unapply(e: Out): Option[Point] =
       Option(e.position)
 
 /** Represents all keyboard events

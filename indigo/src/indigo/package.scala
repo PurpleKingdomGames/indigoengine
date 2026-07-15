@@ -202,11 +202,6 @@ object aliases:
   type MouseButton = indigo.core.events.MouseButton
   val MouseButton: indigo.core.events.MouseButton.type = indigo.core.events.MouseButton
 
-  @deprecated("Use `ScrollDirection` instead", "0.22.0")
-  type MouseWheel = indigo.core.events.MouseWheel
-  @deprecated("Use `ScrollDirection` instead", "0.22.0")
-  val MouseWheel: indigo.core.events.MouseWheel.type = indigo.core.events.MouseWheel
-
   type TouchState = indigo.core.input.TouchState
   val TouchState: indigo.core.input.TouchState.type = indigo.core.input.TouchState
 

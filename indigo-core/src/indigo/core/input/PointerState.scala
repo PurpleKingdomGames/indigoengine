@@ -8,8 +8,6 @@ import indigo.core.events.PointerType
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 
-import scala.annotation.nowarn
-
 final case class PointerState(instances: Batch[Pointer]) extends ButtonInputState with PositionalInputState {
 
   /** The position of the most recently updated pointer instance, or None if no instances exist
@@ -52,7 +50,6 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
     */
   val isDown = isDownAt.isEmpty == false
 
-  @nowarn("msg=deprecated")
   def calculateNext(events: Batch[PointerEvent], time: Millis) =
     val newInstances = events.foldLeft(
       // Reset the frame state for all instances
@@ -101,8 +98,6 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
           case _: PointerEvent.Leave => instance
           // We should never reach here
           case _: PointerEvent.Cancel => instance
-          // Deprecated
-          case _: PointerEvent.Out => instance
         }
 
         instances.filterNot(_.pointerId == event.pointerId) :+ newInstance

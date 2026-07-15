@@ -10,8 +10,6 @@ import indigo.core.input.Wheel
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
 
-import scala.annotation.nowarn
-
 /** Holds a snapshot of the states of the various input types as they were entering this frame.
   *
   * @param mouse
@@ -77,8 +75,7 @@ object InputState {
       gamepadState: Gamepad,
       time: Millis
   ): InputState =
-    @nowarn("msg=deprecated")
-    val state = InputState(
+    InputState(
       previous.mouse.calculateNext(events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
       gamepadState,
@@ -87,6 +84,4 @@ object InputState {
       previous.touch.calculateNext(events.collect { case e: TouchEvent => e }),
       previous.pointer.calculateNext(events.collect { case e: PointerEvent => e }, time)
     )
-
-    state
 }
