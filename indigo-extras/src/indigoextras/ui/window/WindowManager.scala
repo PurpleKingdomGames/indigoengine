@@ -25,7 +25,7 @@ final case class WindowManager[StartUpData, Model, RefData](
 
   def initialModel: Outcome[ModelHolder[ReferenceData]] =
     Outcome(
-      ModelHolder.initial(windows /*, initialMagnification*/ )
+      ModelHolder.initial(windows, initialMagnification)
     )
 
   def update(
@@ -35,13 +35,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UIContext(context, snapGrid, initialMagnification),
+          UIContext(context, snapGrid, model.viewModel.magnification),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UIContext(context, snapGrid, initialMagnification),
+            UIContext(context, snapGrid, model.viewModel.magnification),
             updatedModel,
             model.viewModel
           )(e)
@@ -53,7 +53,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UIContext(context, snapGrid, initialMagnification),
+      UIContext(context, snapGrid, model.viewModel.magnification),
       model.model,
       model.viewModel
     )
@@ -285,8 +285,8 @@ object WindowManager:
     case WindowEvent.PointerOut(_) =>
       Outcome(model)
 
-    // case WindowEvent.ChangeMagnification(_) =>
-    //   Outcome(model)
+    case WindowEvent.ChangeMagnification(_) =>
+      Outcome(model)
 
     case WindowEvent.CloseFocused =>
       model.focused match
@@ -305,8 +305,8 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): GlobalEvent => Outcome[WindowManagerViewModel[ReferenceData]] =
-    // case WindowEvent.ChangeMagnification(next) =>
-    //   Outcome(viewModel.changeMagnification(next))
+    case WindowEvent.ChangeMagnification(next) =>
+      Outcome(viewModel.changeMagnification(next))
 
     case e =>
       val windowUnderPointer =
@@ -381,10 +381,10 @@ final case class ModelHolder[ReferenceData](
 )
 object ModelHolder:
   def initial[ReferenceData](
-      windows: Batch[Window[?, ReferenceData]] // ,
-      // magnification: Magnification
+      windows: Batch[Window[?, ReferenceData]],
+      magnification: Magnification
   ): ModelHolder[ReferenceData] =
     ModelHolder(
       WindowManagerModel.initial.register(windows),
-      WindowManagerViewModel.initial // (magnification)
+      WindowManagerViewModel.initial(magnification)
     )

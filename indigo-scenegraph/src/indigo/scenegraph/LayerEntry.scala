@@ -24,7 +24,7 @@ final case class LayerEntry(key: LayerKey, layer: Layer, config: LayerEntry.Conf
   def withMagnification(newMagnification: Magnification): LayerEntry =
     withConfig(config.withMagnification(newMagnification))
   def clearMagnification: LayerEntry =
-    withMagnification(Magnification.x1)
+    withConfig(config.clearMagnification)
 
   def withVisibility(isVisible: Boolean): LayerEntry =
     withConfig(config.withVisibility(isVisible))

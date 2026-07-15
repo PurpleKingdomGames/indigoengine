@@ -189,10 +189,20 @@ object SceneUpdateFragment:
           case x @ LayerEntry(k, ll, cfgA) if t == k =>
             val newLayer =
               (ll, l) match
-                case (a: Layer.Stack, b: Layer.Content)   => a.append(b)
-                case (a: Layer.Stack, b: Layer.Stack)     => a ++ b
-                case (a: Layer.Content, b: Layer.Content) => a |+| b
-                case (a: Layer.Content, b: Layer.Stack)   => a :: b
+                case (a: Layer.Stack, b: Layer.Content) =>
+                  a.append(b)
+
+                case (a: Layer.Stack, b: Layer.Stack) =>
+                  a ++ b
+
+                case (a: Layer.Content, b: Layer.Content) =>
+                  // For now, we add them both to a stack and move on, so as to preserve
+                  // possible differences in the layer properties, like blending.
+                  // Later in the pipeline they will be compacted, if they can be.
+                  Layer.Stack(a, b)
+
+                case (a: Layer.Content, b: Layer.Stack) =>
+                  a :: b
 
             LayerEntry(t, newLayer, cfgA |+| cfgB)
 

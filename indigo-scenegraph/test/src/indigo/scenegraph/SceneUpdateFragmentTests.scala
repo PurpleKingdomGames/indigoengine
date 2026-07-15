@@ -223,7 +223,10 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val expected =
       SceneUpdateFragment.empty
         .addLayers(
-          LayerKey("a") -> Layer.Content.empty,
+          LayerKey("a") -> Layer.Stack(
+            Layer.Content.empty,
+            Layer.Content.empty
+          ),
           LayerKey("b") -> Layer.Stack(
             Layer.Content.empty,
             Layer.Stack(
@@ -245,6 +248,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
 
     val expectedBatch =
       Batch(
+        Layer.Content.empty,
         Layer.Content.empty,
         Layer.Content.empty,
         Layer.Content.empty,
