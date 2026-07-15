@@ -20,7 +20,7 @@ final case class UIContext[ReferenceData](
     state == UIState.Active
 
   lazy val pointerCoords: Coords =
-    Coords.fromScreenSpace(_pointerCoords.unsafeToPoint, snapGrid * magnification.toInt)
+    Coords.fromScreenSpace(_pointerCoords.unsafeToPoint, snapGrid, magnification)
 
   def withParent(newParent: Parent): UIContext[ReferenceData] =
     this.copy(parent = newParent)

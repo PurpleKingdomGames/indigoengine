@@ -22,8 +22,20 @@ object Bounds:
     inline def unsafeToRectangle: Rectangle = r
     inline def coords: Coords               = Coords(r.position)
     inline def dimensions: Dimensions       = Dimensions(r.size)
-    inline def toScreenSpace(charSize: Size): Rectangle =
+
+    /** Converts this into a 1:1 local coordinate space shared with the surrounding entities, i.e. magnification is
+      * being handled for us, elsewhere. Typically used for rendering entities into layers where magnification will be
+      * applied at the surrounding `LayerEntry` level.
+      */
+    inline def toLocalSpace(charSize: Size): Rectangle =
       Rectangle(r.position * charSize.toPoint, r.size * charSize)
+
+    /** Converts this into screen space, i.e. the coordinates align with drawn pixels, e.g. for mouse/pointer hit
+      * detection. To do that, magnification must be taken into consideration explicitly.
+      */
+    inline def toScreenSpace(charSize: Size, magnification: Magnification): Rectangle =
+      val cs = charSize * magnification.toInt
+      Rectangle(r.position * cs.toPoint, r.size * cs)
 
     inline def x: Int      = r.x
     inline def y: Int      = r.y

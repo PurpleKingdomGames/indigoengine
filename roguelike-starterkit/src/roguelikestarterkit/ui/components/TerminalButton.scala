@@ -43,8 +43,8 @@ object TerminalButton:
             .toCloneTiles(
               CloneId(s"button_${charSheet.assetName.toString}"),
               button.bounds.coords
-                .toScreenSpace(charSheet.size)
-                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+                .toLocalSpace(charSheet.size)
+                .moveBy(context.parent.coords.toLocalSpace(charSheet.size)),
               charSheet.charCrops
             ) { case (fg, bg) =>
               graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))
@@ -86,8 +86,8 @@ object TerminalButton:
             .toCloneTiles(
               CloneId(s"button_${charSheet.assetName.toString}"),
               bounds.coords
-                .toScreenSpace(charSheet.size)
-                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+                .toLocalSpace(charSheet.size)
+                .moveBy(context.parent.coords.toLocalSpace(charSheet.size)),
               charSheet.charCrops
             ) { case (fg, bg) =>
               graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

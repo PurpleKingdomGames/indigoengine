@@ -151,7 +151,7 @@ object TerminalScrollPane:
       bounds =>
         Layer(
           Shape.Box(
-            bounds.toScreenSpace(charSheet.size),
+            bounds.toLocalSpace(charSheet.size),
             defaultBgColor
           )
         )

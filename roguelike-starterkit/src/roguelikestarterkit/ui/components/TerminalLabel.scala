@@ -31,7 +31,7 @@ object TerminalLabel:
           .putLine(Point.zero, label.text(context), fgColor, bgColor)
           .toCloneTiles(
             CloneId(s"label_${charSheet.assetName.toString}"),
-            context.parent.coords.toScreenSpace(charSheet.size),
+            context.parent.coords.toLocalSpace(charSheet.size),
             charSheet.charCrops
           ) { case (fg, bg) =>
             graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

@@ -84,7 +84,7 @@ object ColourWindow:
       .withBackground { bounds =>
         Layer(
           Shape.Box(
-            bounds.toScreenSpace(charSheet.size),
+            bounds.toLocalSpace(charSheet.size),
             Fill.Color(RGBA.Cyan.withAlpha(0.5))
           )
         )
@@ -102,8 +102,8 @@ object ColourWindow:
             case None =>
               Shape.Box(
                 Rectangle(
-                  ctx.parent.coords.toScreenSpace(charSheet.size),
-                  btn.bounds(ctx).dimensions.toScreenSpace(charSheet.size)
+                  ctx.parent.coords.toLocalSpace(charSheet.size),
+                  btn.bounds(ctx).dimensions.toLocalSpace(charSheet.size)
                 ),
                 Fill.Color(colour)
               )
@@ -111,8 +111,8 @@ object ColourWindow:
             case Some(strokeColor) =>
               Shape.Box(
                 Rectangle(
-                  ctx.parent.coords.toScreenSpace(charSheet.size),
-                  btn.bounds(ctx).dimensions.toScreenSpace(charSheet.size)
+                  ctx.parent.coords.toLocalSpace(charSheet.size),
+                  btn.bounds(ctx).dimensions.toLocalSpace(charSheet.size)
                 ),
                 Fill.Color(colour),
                 Stroke(2, strokeColor)

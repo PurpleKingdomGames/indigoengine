@@ -7,8 +7,7 @@ import indigoextras.ui.datatypes.UIContext
 final case class WindowViewModel[ReferenceData](
     id: WindowId,
     modelHashCode: Int,
-    pointerIsOver: Boolean,
-    magnification: Magnification
+    pointerIsOver: Boolean
 ):
 
   def update[A](
@@ -20,12 +19,11 @@ final case class WindowViewModel[ReferenceData](
 
 object WindowViewModel:
 
-  def initial[ReferenceData](id: WindowId, magnification: Magnification): WindowViewModel[ReferenceData] =
+  def initial[ReferenceData](id: WindowId): WindowViewModel[ReferenceData] =
     WindowViewModel(
       id,
       0,
-      false,
-      magnification
+      false
     )
 
   def updateViewModel[A, ReferenceData](
@@ -42,7 +40,7 @@ object WindowViewModel:
     case PointerEvent.Move(pt)
         if viewModel.pointerIsOver && !model
           .bounds(context.frame.viewport, context.magnification)
-          .toScreenSpace(context.snapGrid * context.magnification.toInt)
+          .toScreenSpace(context.snapGrid, context.magnification)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = false))
         .addGlobalEvents(WindowEvent.PointerOut(model.id))
@@ -50,7 +48,7 @@ object WindowViewModel:
     case PointerEvent.Move(pt)
         if !viewModel.pointerIsOver && model
           .bounds(context.frame.viewport, context.magnification)
-          .toScreenSpace(context.snapGrid * context.magnification.toInt)
+          .toScreenSpace(context.snapGrid, context.magnification)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = true))
         .addGlobalEvents(WindowEvent.PointerOver(model.id))

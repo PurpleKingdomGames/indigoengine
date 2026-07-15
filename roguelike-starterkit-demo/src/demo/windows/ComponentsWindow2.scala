@@ -74,8 +74,8 @@ object ComponentsWindow2:
             Layer(
               Shape.Box(
                 Rectangle(
-                  bounds.coords.toScreenSpace(charSheet.size),
-                  bounds.dimensions.toScreenSpace(charSheet.size)
+                  bounds.coords.toLocalSpace(charSheet.size),
+                  bounds.dimensions.toLocalSpace(charSheet.size)
                 ),
                 Fill.Color(RGBA.Magenta.withAlpha(0.5))
               )
