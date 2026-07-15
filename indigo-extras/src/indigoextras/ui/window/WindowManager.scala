@@ -319,7 +319,7 @@ object WindowManager:
           else
             prunedVM.windows.find(_.id == m.id) match
               case None =>
-                Batch(Outcome(WindowViewModel.initial(m.id, context.magnification)))
+                Batch(Outcome(WindowViewModel.initial(m.id)))
 
               case Some(vm) =>
                 Batch(

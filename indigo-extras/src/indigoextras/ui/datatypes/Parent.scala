@@ -1,12 +1,9 @@
 package indigoextras.ui.datatypes
 
 import indigo.core.datatypes.Rectangle
-import indigo.core.datatypes.Size
 
 final case class Parent(bounds: Bounds, additionalOffset: Coords):
 
-  def toRectangle(snapGrid: Size): Rectangle =
-    bounds.toScreenSpace(snapGrid)
   lazy val unsafeToRectangle: Rectangle =
     bounds.unsafeToRectangle
 

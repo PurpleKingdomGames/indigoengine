@@ -81,7 +81,7 @@ object TerminalWindow:
         .put(tiles)
         .toCloneTiles(
           CloneId("terminal_window_tile_clone_id"),
-          context.bounds.coords.toScreenSpace(charSheet.size),
+          context.bounds.coords.toLocalSpace(charSheet.size),
           charSheet.charCrops
         ) { case (fg, bg) =>
           graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

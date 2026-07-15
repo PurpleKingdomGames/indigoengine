@@ -25,7 +25,7 @@ object DemoWindow:
                 .Bitmap(Assets.assets.window)
                 .nineSlice(Rectangle(3, 15, 121, 41))
             ),
-            Shape.Box(ctx.bounds.toScreenSpace(Size(1)), Fill.None, Stroke(1, RGBA.Green))
+            Shape.Box(ctx.bounds.toLocalSpace(Size(1)), Fill.None, Stroke(1, RGBA.Green))
           )
         )
       }

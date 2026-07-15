@@ -56,7 +56,7 @@ object Label:
   def fromText[ReferenceData](textInstance: Text[?]): Label[ReferenceData] =
     Label(
       _ => textInstance.text,
-      (ctx, _) => Outcome(Layer.Content(textInstance.moveTo(ctx.parent.coords.toScreenSpace(ctx.snapGrid)))),
+      (ctx, _) => Outcome(Layer.Content(textInstance.moveTo(ctx.parent.coords.toLocalSpace(ctx.snapGrid)))),
       (ctx, _) => Bounds(ctx.services.bounds.get(textInstance))
     )
 
@@ -70,7 +70,7 @@ object Label:
           Layer.Content(
             textInstance
               .withText(lbl.text(ctx))
-              .moveTo(ctx.parent.coords.toScreenSpace(ctx.snapGrid))
+              .moveTo(ctx.parent.coords.toLocalSpace(ctx.snapGrid))
           )
         ),
       (ctx, lbl) => Bounds(ctx.services.bounds.get(textInstance.withText(lbl)))

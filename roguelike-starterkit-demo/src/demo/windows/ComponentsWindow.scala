@@ -81,8 +81,8 @@ object ComponentsWindow:
               Shape.Box(
                 btn
                   .bounds(ctx)
-                  .toScreenSpace(charSheet.size)
-                  .moveTo(ctx.parent.coords.toScreenSpace(charSheet.size)),
+                  .toLocalSpace(charSheet.size)
+                  .moveTo(ctx.parent.coords.toLocalSpace(charSheet.size)),
                 Fill.LinearGradient(Point.zero, RGBA.Cyan, Point(50, 0), RGBA.Magenta)
               )
             )
@@ -98,7 +98,7 @@ object ComponentsWindow:
               .putLine(Point.zero, label.text(ctx), RGBA.Red, RGBA.Zero)
               .toCloneTiles(
                 CloneId("label"),
-                ctx.parent.coords.toScreenSpace(charSheet.size),
+                ctx.parent.coords.toLocalSpace(charSheet.size),
                 charSheet.charCrops
               ) { case (fg, bg) =>
                 graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

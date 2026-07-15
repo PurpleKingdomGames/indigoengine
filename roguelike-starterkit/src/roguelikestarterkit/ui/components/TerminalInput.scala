@@ -43,7 +43,7 @@ object TerminalInput:
     Batch(
       Shape.Box(
         Rectangle(
-          (offset + Coords(cursorPosition, 0) + 1).toScreenSpace(charSheet.size),
+          (offset + Coords(cursorPosition, 0) + 1).toLocalSpace(charSheet.size),
           Size(
             Math.max(1, charSheet.size.width / 5).toInt,
             charSheet.size.height
@@ -94,8 +94,8 @@ object TerminalInput:
             .toCloneTiles(
               CloneId(s"input_${charSheet.assetName.toString}"),
               bounds.coords
-                .toScreenSpace(charSheet.size)
-                .moveBy(context.parent.coords.toScreenSpace(charSheet.size)),
+                .toLocalSpace(charSheet.size)
+                .moveBy(context.parent.coords.toLocalSpace(charSheet.size)),
               charSheet.charCrops
             ) { case (fg, bg) =>
               graphic.withMaterial(TerminalMaterial(charSheet.assetName, fg, bg))

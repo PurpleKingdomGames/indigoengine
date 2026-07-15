@@ -16,10 +16,21 @@ object Dimensions:
   val one: Dimensions  = Dimensions(1, 1)
 
   extension (d: Dimensions)
-    private[datatypes] inline def toSize: Size     = d
-    inline def unsafeToSize: Size                  = d
-    inline def toCoords: Coords                    = Coords(d.toPoint)
-    inline def toScreenSpace(charSize: Size): Size = d * charSize
+    private[datatypes] inline def toSize: Size = d
+    inline def unsafeToSize: Size              = d
+    inline def toCoords: Coords                = Coords(d.toPoint)
+
+    /** Converts this into a 1:1 local coordinate space shared with the surrounding entities, i.e. magnification is
+      * being handled for us, elsewhere. Typically used for rendering entities into layers where magnification will be
+      * applied at the surrounding `LayerEntry` level.
+      */
+    inline def toLocalSpace(charSize: Size): Size = d * charSize
+
+    /** Converts this into screen space, i.e. the coordinates align with drawn pixels, e.g. for mouse/pointer hit
+      * detection. To do that, magnification must be taken into consideration explicitly.
+      */
+    inline def toScreenSpace(charSize: Size, magnification: Magnification): Size =
+      d * (charSize * magnification.toInt)
 
     inline def width: Int  = d.width
     inline def height: Int = d.height

@@ -32,13 +32,13 @@ class UIContextTests extends munit.FunSuite {
 
   test("pointerCoords is the inverse of toScreenSpace") {
     // A component drawn at grid coord `c` occupies screen pixels
-    // `c.toScreenSpace(snapGrid * magnification)`. A pointer over that top-left
+    // `c.toScreenSpace(snapGrid, magnification)`. A pointer over that top-left
     // pixel must hit-test back to `c`.
     val snapGrid      = Size(8)
     val magnification = Magnification.x2
     val coord         = Coords(3, 5)
 
-    val screenPos = coord.toScreenSpace(snapGrid * magnification.toInt)
+    val screenPos = coord.toScreenSpace(snapGrid, magnification)
 
     val ctx =
       UIContext(Context.initial, magnification)

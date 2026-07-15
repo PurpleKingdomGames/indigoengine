@@ -24,10 +24,7 @@ final case class WindowManagerViewModel[ReferenceData](
     windows.collect { case wvm if wvm.pointerIsOver => wvm.id }
 
   def changeMagnification(next: Magnification): WindowManagerViewModel[ReferenceData] =
-    this.copy(
-      windows = windows.map(_.copy(magnification = next)),
-      magnification = next
-    )
+    this.copy(magnification = next)
 
 object WindowManagerViewModel:
   def initial[ReferenceData](magnification: Magnification): WindowManagerViewModel[ReferenceData] =
