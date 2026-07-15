@@ -61,16 +61,3 @@ trait PositionalInputState:
     */
   def wasAt(x: Int, y: Int): Boolean =
     wasAt(Point(x, y))
-
-  @deprecated("Use `wasAt` instead", "0.22.0")
-  def wasPositionAt(position: Point): Boolean = wasAt(position)
-
-  @deprecated("Use `wasAt` instead", "0.22.0")
-  def wasPositionAt(x: Int, y: Int): Boolean = wasAt(Point(x, y))
-
-  @deprecated("Use `wasWithin` instead", "0.22.0")
-  def wasPositionWithin(bounds: Rectangle): Boolean = wasWithin(bounds)
-
-  @deprecated("Use `wasWithin` instead", "0.22.0")
-  def wasPositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
-    wasWithin(Rectangle(x, y, width, height))

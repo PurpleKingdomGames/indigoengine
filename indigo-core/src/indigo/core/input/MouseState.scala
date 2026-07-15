@@ -4,22 +4,13 @@ import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.events.MouseButton
 import indigo.core.events.MouseEvent
-import indigo.core.events.MouseWheel
 import indigo.core.events.PointerId
-import indigo.core.events.PointerType
 import indigoengine.shared.collections.Batch
 
-import scala.annotation.nowarn
-
-@nowarn("msg=deprecated")
 final case class MouseState(
-    val instances: Batch[Mouse],
-    @deprecated("Use `InputState.Wheel` instead", "0.22.0")
-    val wheelEvents: Batch[MouseEvent.Wheel]
+    val instances: Batch[Mouse]
 ) extends ButtonInputState
     with PositionalInputState {
-  @deprecated("This will soon be removed", "0.22.0")
-  val pointerType: Option[PointerType] = Some(PointerType.Mouse)
 
   /** The primary mouse instance
     */
@@ -86,9 +77,6 @@ final case class MouseState(
     */
   def wasDownAt(x: Int, y: Int): Boolean = wasDownAt(Point(x, y))
 
-  @deprecated("Use `MouseState.wasButtonUpWithin` instead", "0.22.0")
-  def wasUpWithin(bounds: Rectangle, mouseButton: MouseButton): Boolean = wasButtonUpWithin(bounds, mouseButton)
-
   /** Whether the left mouse button was up within the specified bounds in this frame
     *
     * @param bounds
@@ -112,9 +100,6 @@ final case class MouseState(
   def wasUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasUpWithin(
     Rectangle(x, y, width, height)
   )
-
-  @deprecated("Use `MouseState.wasButtonDownWithin` instead", "0.22.0")
-  def wasDownWithin(bounds: Rectangle, mouseButton: MouseButton): Boolean = wasButtonDownWithin(bounds, mouseButton)
 
   /** Whether the left mouse button was down within the specified bounds in this frame
     *
@@ -140,19 +125,6 @@ final case class MouseState(
     Rectangle(x, y, width, height)
   )
 
-  @deprecated("Use `InputState.Wheel` instead", "0.22.0")
-  lazy val scrolled: Option[MouseWheel] =
-
-    @nowarn("msg=deprecated")
-    val amount = wheelEvents.foldLeft(0d) { case (acc, e) =>
-      acc + e.deltaY
-    }
-
-    if amount == 0 then Option.empty[MouseWheel]
-    else if amount < 0 then Some(MouseWheel.ScrollUp)
-    else Some(MouseWheel.ScrollDown)
-
-  @nowarn("msg=deprecated")
   def calculateNext(events: Batch[MouseEvent]) =
     val newInstances = events.foldLeft(
       // Reset the frame state for all mouse instances
@@ -182,19 +154,16 @@ final case class MouseState(
           case _: MouseEvent.Leave => instance
           // We should never reach here
           case _: MouseEvent.Cancel => instance
-          // Deprecated events
-          case _: (MouseEvent.MouseDown | MouseEvent.MouseUp | MouseEvent.Wheel) => instance
         }
 
         instances.filterNot(_.pointerId == event.pointerId) :+ newInstance
     )
 
-    this.copy(instances = newInstances, wheelEvents = events.collect { case e: MouseEvent.Wheel => e })
+    this.copy(instances = newInstances)
 }
 
 object MouseState:
-  @nowarn("msg=deprecated")
-  val default: MouseState = MouseState(Batch.empty, Batch.empty)
+  val default: MouseState = MouseState(Batch.empty)
 
   private def getOrCreate(id: PointerId, instances: Batch[Mouse]) =
     instances

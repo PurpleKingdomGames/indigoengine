@@ -22,7 +22,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
   def onPointerMove(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
     val pointerType      = e.toPointerType
 
@@ -30,21 +29,8 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Move(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
-        pointerType,
-        e.isPrimary
+        pointerType
       )
 
     val events =
@@ -54,11 +40,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
             MouseEvent.Move(
               PointerId(e.pointerId),
               position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
               movementPosition
             )
           )
@@ -93,7 +74,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
   def onPointerEnter(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
     val pointerType      = e.toPointerType
 
@@ -101,36 +81,17 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Enter(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
-        pointerType,
-        e.isPrimary
+        pointerType
       )
 
     val events =
       pointerType match
         case PointerType.Mouse =>
-          @nowarn("msg=deprecated")
           val mouseEnter =
             MouseEvent.Enter(
               PointerId(e.pointerId),
               position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
               movementPosition
             )
 
@@ -160,11 +121,10 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Unknown =>
           Batch.empty
 
-    Option(Msg.WorldEvents(Batch(enterEvent) ++ events))
+    Option(Msg.WorldEvents(enterEvent +: events))
 
   def onPointerLeave(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
     val pointerType      = e.toPointerType
 
@@ -172,58 +132,17 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Leave(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
-        pointerType,
-        e.isPrimary
-      )
-
-    @nowarn("msg=deprecated")
-    val outEvent =
-      PointerEvent.Out(
-        PointerId(e.pointerId),
-        position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
-        movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
-        pointerType,
-        e.isPrimary
+        pointerType
       )
 
     val events =
       pointerType match
         case PointerType.Mouse =>
-          @nowarn("msg=deprecated")
           val mouseLeave =
             MouseEvent.Leave(
               PointerId(e.pointerId),
               position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
               movementPosition
             )
 
@@ -253,12 +172,11 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Unknown =>
           Batch.empty
 
-    Option(Msg.WorldEvents(Batch(leaveEvent, outEvent) ++ events))
+    Option(Msg.WorldEvents(leaveEvent +: events))
 
   def onPointerDown(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val pointerType      = e.toPointerType
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
 
     // A pen being touched to a touchpad, or a finger touching a screen both result in a left button being registered
@@ -276,21 +194,8 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Down(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
         pointerType,
-        e.isPrimary,
         MouseButton.fromOrdinalOpt(button)
       )
 
@@ -299,22 +204,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Mouse =>
           MouseButton.fromOrdinalOpt(button) match
             case Some(btn) =>
-              @nowarn("msg=deprecated")
-              val mouseDown =
-                MouseEvent.MouseDown(
-                  PointerId(e.pointerId),
-                  position,
-                  buttons,
-                  e.altKey,
-                  e.ctrlKey,
-                  e.metaKey,
-                  e.shiftKey,
-                  movementPosition,
-                  btn
-                )
-
               Batch(
-                mouseDown,
                 MouseEvent.Down(
                   PointerId(e.pointerId),
                   position,
@@ -358,7 +248,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
   def onPointerUp(clickTimeMs: Long)(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
     val pointerType      = e.toPointerType
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
 
     val button = if pointerType == PointerType.Mouse then e.button else e.button - 1
@@ -371,21 +260,8 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
             PointerEvent.Click(
               PointerId(e.pointerId),
               position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
               movementPosition,
-              e.width.toInt,
-              e.height.toInt,
-              e.pressure,
-              e.tangentialPressure,
-              Radians.fromDegrees(Degrees(e.tiltX)),
-              Radians.fromDegrees(Degrees(e.tiltY)),
-              Radians.fromDegrees(Degrees(e.twist)),
               pointerType,
-              e.isPrimary,
               btn
             )
 
@@ -396,11 +272,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
                   MouseEvent.Click(
                     PointerId(e.pointerId),
                     position,
-                    buttons,
-                    e.altKey,
-                    e.ctrlKey,
-                    e.metaKey,
-                    e.shiftKey,
                     movementPosition,
                     btn.get
                   )
@@ -431,7 +302,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
               case PointerType.Unknown | PointerType.Mouse =>
                 Batch.empty
 
-          Batch(click) ++ typed
+          click +: typed
 
         case _ =>
           Batch.empty
@@ -447,21 +318,8 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Up(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
         pointerType,
-        e.isPrimary,
         MouseButton.fromOrdinalOpt(button)
       )
 
@@ -470,22 +328,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
         case PointerType.Mouse =>
           MouseButton.fromOrdinalOpt(e.button) match
             case Some(btn) =>
-              @nowarn("msg=deprecated")
-              val mouseUp =
-                MouseEvent.MouseUp(
-                  PointerId(e.pointerId),
-                  position,
-                  buttons,
-                  e.altKey,
-                  e.ctrlKey,
-                  e.metaKey,
-                  e.shiftKey,
-                  movementPosition,
-                  btn
-                )
-
               Batch(
-                mouseUp,
                 MouseEvent.Up(
                   PointerId(e.pointerId),
                   position,
@@ -528,7 +371,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
 
   def onPointerCancel(e: dom.PointerEvent): Option[Msg.WorldEvents] =
     val position         = e.position(canvas)
-    val buttons          = e.indigoButtons
     val movementPosition = e.movementPosition
     val pointerType      = e.toPointerType
 
@@ -536,21 +378,8 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       PointerEvent.Cancel(
         PointerId(e.pointerId),
         position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
         movementPosition,
-        e.width.toInt,
-        e.height.toInt,
-        e.pressure,
-        e.tangentialPressure,
-        Radians.fromDegrees(Degrees(e.tiltX)),
-        Radians.fromDegrees(Degrees(e.tiltY)),
-        Radians.fromDegrees(Degrees(e.twist)),
-        pointerType,
-        e.isPrimary
+        pointerType
       )
 
     val events =
@@ -633,25 +462,6 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
     )
 
   def onWheel(e: dom.WheelEvent): Option[Msg.WorldEvents] =
-    val position         = e.position(canvas)
-    val buttons          = e.indigoButtons
-    val movementPosition = e.movementPosition
-
-    @nowarn("msg=deprecated")
-    val wheel =
-      MouseEvent.Wheel(
-        position,
-        buttons,
-        e.altKey,
-        e.ctrlKey,
-        e.metaKey,
-        e.shiftKey,
-        movementPosition,
-        e.deltaX,
-        e.deltaY,
-        e.deltaZ
-      )
-
     val deltaMode =
       e.deltaMode match
         case dom.WheelEvent.DOM_DELTA_PIXEL => WheelEvent.DeltaMode.Pixel
@@ -668,7 +478,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
       val zs = if e.deltaZ != 0 then Batch(WheelEvent.Depth(e.deltaZ, deltaMode)) else Batch.empty
       xs ++ ys ++ zs
 
-    Option(Msg.WorldEvents(Batch(wheel, move) ++ axisEvents))
+    Option(Msg.WorldEvents(move +: axisEvents))
 
   @nowarn("msg=unused")
   def onCanvasFocus(e: dom.FocusEvent): Option[Msg.WorldEvents] =
