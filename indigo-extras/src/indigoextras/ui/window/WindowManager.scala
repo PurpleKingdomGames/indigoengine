@@ -392,29 +392,37 @@ object WindowManager:
       prevModel: WindowManagerModel[ReferenceData],
       model: WindowManagerModel[ReferenceData]
   ): Batch[WindowEvent] =
-    val prevOpenIds    = prevModel.windows.filter(_.isOpen).map(_.id)
-    val currentOpenIds = model.windows.filter(_.isOpen).map(_.id)
+    val prevOpenIds    = prevModel.windows.filter(_.isOpen).map(_.id).toSet
+    val currentOpenIds = model.windows.filter(_.isOpen).map(_.id).toSet
 
-    val prevFocusIds    = prevModel.windows.filter(_.hasFocus).map(_.id)
-    val currentFocusIds = model.windows.filter(_.hasFocus).map(_.id)
+    val prevFocusIds    = prevModel.windows.filter(_.hasFocus).map(_.id).toSet
+    val currentFocusIds = model.windows.filter(_.hasFocus).map(_.id).toSet
 
     val opened =
-      currentOpenIds
-        .filter(id => prevOpenIds.exists(_ == id) == false)
-        .map(WindowEvent.Opened.apply)
+      Batch.fromSet(
+        currentOpenIds
+          .filterNot(prevOpenIds.contains)
+          .map(WindowEvent.Opened.apply)
+      )
 
     val focusChanged =
-      prevFocusIds
-        .filter(w => currentFocusIds.exists(w1 => w1 == w) == false)
-        .map(w => WindowEvent.Blurred(w)) ++
-        currentFocusIds
-          .filter(w => prevFocusIds.exists(w1 => w == w1) == false)
-          .map(w => WindowEvent.Focused(w))
+      Batch.fromSet(
+        prevFocusIds
+          .filterNot(currentFocusIds.contains)
+          .map(w => WindowEvent.Blurred(w))
+      ) ++
+        Batch.fromSet(
+          currentFocusIds
+            .filterNot(prevFocusIds.contains)
+            .map(w => WindowEvent.Focused(w))
+        )
 
     val closed =
-      prevOpenIds
-        .filter(id => currentOpenIds.exists(_ == id) == false)
-        .map(WindowEvent.Closed.apply)
+      Batch.fromSet(
+        prevOpenIds
+          .filterNot(currentOpenIds.contains)
+          .map(WindowEvent.Closed.apply)
+      )
 
     opened ++ focusChanged ++ closed
 
