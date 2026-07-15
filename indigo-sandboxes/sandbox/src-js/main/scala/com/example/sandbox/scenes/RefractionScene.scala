@@ -83,7 +83,7 @@ object RefractionScene extends Scene[SandboxGameModel] {
             )
           )
         )
-        .withMagnification(Magnification(2))
+        .withMagnification(Magnification.x2)
     )
   }
 

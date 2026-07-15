@@ -60,29 +60,29 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Changes the bounds of a window */
   case Transform(id: WindowId, bounds: Bounds, space: Space)
 
-  // /** Changes the magnification of all windows */
-  // case ChangeMagnification(newMagnification: Magnification)
+  /** Changes the magnification of all windows */
+  case ChangeMagnification(newMagnification: Magnification)
 
   /** Tells a window request its content to refresh */
   case Refresh(id: WindowId)
 
   def windowId: Option[WindowId] =
     this match
-      case PointerOver(id)     => Some(id)
-      case PointerOut(id)      => Some(id)
-      case Resized(id)         => Some(id)
-      case Opened(id)          => Some(id)
-      case Closed(id)          => Some(id)
-      case Open(id)            => Some(id)
-      case OpenAt(id, _)       => Some(id)
-      case Close(id)           => Some(id)
-      case Toggle(id)          => Some(id)
-      case Move(id, _, _)      => Some(id)
-      case Anchor(id, _)       => Some(id)
-      case Resize(id, _, _)    => Some(id)
-      case Transform(id, _, _) => Some(id)
-      case Refresh(id)         => Some(id)
-      case Focus(id)           => Some(id)
-      case GiveFocusAt(_)      => None
-      // case ChangeMagnification(_) => None
-      case CloseFocused => None
+      case PointerOver(id)        => Some(id)
+      case PointerOut(id)         => Some(id)
+      case Resized(id)            => Some(id)
+      case Opened(id)             => Some(id)
+      case Closed(id)             => Some(id)
+      case Open(id)               => Some(id)
+      case OpenAt(id, _)          => Some(id)
+      case Close(id)              => Some(id)
+      case Toggle(id)             => Some(id)
+      case Move(id, _, _)         => Some(id)
+      case Anchor(id, _)          => Some(id)
+      case Resize(id, _, _)       => Some(id)
+      case Transform(id, _, _)    => Some(id)
+      case Refresh(id)            => Some(id)
+      case Focus(id)              => Some(id)
+      case GiveFocusAt(_)         => None
+      case ChangeMagnification(_) => None
+      case CloseFocused           => None

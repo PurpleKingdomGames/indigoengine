@@ -1,6 +1,6 @@
 package indigo.core.render
 
-/** Represents the amount to magnify / scale the pixels by. Automatically clamped to a range of 1 to 16, typical useage
+/** Represents the amount to magnify / scale the pixels by. Automatically clamped to a range of 1 to 16, typical usage
   * is <= x4.
   */
 opaque type Magnification = Int

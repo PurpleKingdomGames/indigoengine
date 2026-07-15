@@ -102,7 +102,6 @@ object NineSliceScene extends Scene[SandboxGameModel] {
                 )
             )
         )
-        .withMagnification(Magnification(4))
     )
   }
 
