@@ -207,27 +207,10 @@ object WindowManager:
 
       model.windows
         .map { w =>
-          val windowActive =
-            w.activeCheck(context)
+          val windowActive = w.activeCheck(context)
 
           val ctx =
-            windowActive match
-              case WindowActive.Active =>
-                context.withState(
-                  modalWindow match
-                    case Some(id) if id == w.id =>
-                      UIState.Active
-
-                    case Some(_) =>
-                      UIState.InActive
-
-                    case None =>
-                      if w.hasFocus || windowUnderPointer.exists(_ == w.id) then UIState.Active
-                      else UIState.InActive
-                )
-
-              case WindowActive.InActive =>
-                context.withState(UIState.InActive)
+            context.withState(calculateUIState(w, modalWindow, windowUnderPointer))
 
           val windowUpdateFocus =
             if w.hasFocus && windowActive.isInActive then w.blur
@@ -310,6 +293,7 @@ object WindowManager:
         )
 
     case e =>
+      val modalWindow = modalWindowOpen(model)
       val windowUnderPointer =
         model.windowAt(context.pointerCoords, context.frame.viewport, context.magnification)
 
@@ -325,10 +309,7 @@ object WindowManager:
               case Some(vm) =>
                 Batch(
                   vm.update(
-                    context.copy(state =
-                      if m.hasFocus || windowUnderPointer.exists(_ == m.id) then UIState.Active
-                      else UIState.InActive
-                    ),
+                    context.withState(calculateUIState(m, modalWindow, windowUnderPointer)),
                     m,
                     e
                   )
@@ -343,6 +324,7 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
+    val modalWindow        = modalWindowOpen(model)
     val windowUnderPointer = model.windowAt(context.pointerCoords, context.frame.viewport, context.magnification)
 
     val windowLayers: Outcome[Batch[Layer]] =
@@ -358,10 +340,7 @@ object WindowManager:
               Batch(
                 WindowView
                   .present(
-                    context.copy(state =
-                      if m.hasFocus || windowUnderPointer.exists(_ == m.id) then UIState.Active
-                      else UIState.InActive
-                    ),
+                    context.withState(calculateUIState(m, modalWindow, windowUnderPointer)),
                     m,
                     vm
                   )
@@ -375,6 +354,23 @@ object WindowManager:
           .withMagnification(context.magnification)
       )
     }
+
+  private def calculateUIState[ReferenceData](
+      window: Window[?, ReferenceData],
+      modalWindowId: Option[WindowId],
+      windowUnderPointerId: Option[WindowId]
+  ): UIState =
+    modalWindowId match
+      case Some(id) if id == window.id =>
+        if window.hasFocus then UIState.Focused else UIState.Active
+
+      case Some(_) =>
+        UIState.InActive
+
+      case None =>
+        if window.hasFocus then UIState.Focused
+        else if windowUnderPointerId.exists(_ == window.id) then UIState.Active
+        else UIState.InActive
 
   private def attachWindowEvents[ReferenceData](
       outcome: Outcome[WindowManagerModel[ReferenceData]],

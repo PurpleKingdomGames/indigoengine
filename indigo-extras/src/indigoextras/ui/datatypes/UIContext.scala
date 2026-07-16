@@ -17,8 +17,8 @@ final case class UIContext[ReferenceData](
     activeInputBounds: Option[Bounds] = Option.empty
 ):
 
-  lazy val isActive: Boolean =
-    state == UIState.Active
+  lazy val isActive: Boolean  = state.isActive
+  lazy val isFocused: Boolean = state.isFocused
 
   lazy val pointerCoords: Coords =
     Coords.fromScreenSpace(_pointerCoords.unsafeToPoint, snapGrid, magnification)
@@ -155,12 +155,17 @@ object UIContext:
     fromContext(ctx.toContext, reference, magnification)
 
 enum UIState derives CanEqual:
-  case Active, InActive
+  case Active, InActive, Focused
 
   def isActive: Boolean =
     this match
-      case UIState.Active   => true
-      case UIState.InActive => false
+      case UIState.Active | UIState.Focused => true
+      case UIState.InActive                 => false
+
+  def isFocused: Boolean =
+    this match
+      case UIState.Focused                   => true
+      case UIState.Active | UIState.InActive => false
 
   def isInActive: Boolean =
     !isActive
