@@ -204,6 +204,21 @@ object CustomUI:
       }
         .withText((ctx: UIContext[Int]) => "Count: " + ctx.reference)
 
+    val statusLabel: Label[Int] =
+      Label[Int](
+        "Status: ",
+        (ctx, _) => Bounds(ctx.services.bounds.get(textInstance.withText(s"""Status: ${ctx.state}""")))
+      ) { case (ctx, _) =>
+        Outcome(
+          Layer(
+            textInstance
+              .withText(s"""Status: ${ctx.state}""")
+              .moveTo(ctx.parent.coords.unsafeToPoint)
+          )
+        )
+      }
+        .withText((ctx: UIContext[Int]) => "Count: " + ctx.reference)
+
     MaskedPane(
       BoundsMode.offset(-2, -22),
       ComponentGroup(BoundsMode.inherit)
@@ -213,6 +228,7 @@ object CustomUI:
           Label.fromText(textInstance.withText("Testing")),
           Label.fromText[Int](textInstance)(ctx => "How many? " + ctx.reference)
         )
+        .add(statusLabel)
     )
 
   def titleBar(title: String): Button[Int] =
