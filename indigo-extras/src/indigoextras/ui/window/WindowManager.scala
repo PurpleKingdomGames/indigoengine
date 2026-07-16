@@ -360,17 +360,20 @@ object WindowManager:
       modalWindowId: Option[WindowId],
       windowUnderPointerId: Option[WindowId]
   ): UIState =
-    modalWindowId match
-      case Some(id) if id == window.id =>
-        if window.hasFocus then UIState.Focused else UIState.Active
+    // Closed windows are always inactive
+    if window.isClosed then UIState.InActive
+    else
+      modalWindowId match
+        case Some(id) if id == window.id =>
+          if window.hasFocus then UIState.Focused else UIState.Active
 
-      case Some(_) =>
-        UIState.InActive
+        case Some(_) =>
+          UIState.InActive
 
-      case None =>
-        if window.hasFocus then UIState.Focused
-        else if windowUnderPointerId.exists(_ == window.id) then UIState.Active
-        else UIState.InActive
+        case None =>
+          if window.hasFocus then UIState.Focused
+          else if windowUnderPointerId.exists(_ == window.id) then UIState.Active
+          else UIState.InActive
 
   private def attachWindowEvents[ReferenceData](
       outcome: Outcome[WindowManagerModel[ReferenceData]],
