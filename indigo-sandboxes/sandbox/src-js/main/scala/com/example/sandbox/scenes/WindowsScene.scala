@@ -207,17 +207,17 @@ object CustomUI:
     val statusLabel: Label[Int] =
       Label[Int](
         "Status: ",
-        (ctx, _) => Bounds(ctx.services.bounds.get(textInstance.withText(s"""Status: ${ctx.state}""")))
-      ) { case (ctx, _) =>
+        (ctx, label) => Bounds(ctx.services.bounds.get(textInstance.withText(label)))
+      ) { case (ctx, label) =>
         Outcome(
           Layer(
             textInstance
-              .withText(s"""Status: ${ctx.state}""")
+              .withText(label.text(ctx))
               .moveTo(ctx.parent.coords.unsafeToPoint)
           )
         )
       }
-        .withText((ctx: UIContext[Int]) => "Count: " + ctx.reference)
+        .withText((ctx: UIContext[Int]) => "Status: " + ctx.state)
 
     MaskedPane(
       BoundsMode.offset(-2, -22),
