@@ -64,7 +64,7 @@ enum Language(val code: String, val name: String) derives CanEqual:
   case Ganda            extends Language("lg", "Ganda")
   case Georgian         extends Language("ka", "Georgian")
   case German           extends Language("de", "German")
-  case Greek            extends Language("el", "Greek, Modern (1453–)")
+  case Greek            extends Language("el", "Greek, Modern")
   case Guarani          extends Language("gn", "Guarani")
   case Gujarati         extends Language("gu", "Gujarati")
   case Haitian          extends Language("ht", "Haitian, Haitian Creole")
