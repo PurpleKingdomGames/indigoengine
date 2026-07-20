@@ -210,7 +210,9 @@ object WindowManager:
           val windowActive = w.activeCheck(context)
 
           val ctx =
-            context.withState(calculateUIState(w, modalWindow, windowUnderPointer))
+            context.withState(
+              calculateUIState(w, w.activeCheck(context) == WindowActive.Active, modalWindow, windowUnderPointer)
+            )
 
           val windowUpdateFocus =
             if w.hasFocus && windowActive.isInActive then w.blur
@@ -309,7 +311,14 @@ object WindowManager:
               case Some(vm) =>
                 Batch(
                   vm.update(
-                    context.withState(calculateUIState(m, modalWindow, windowUnderPointer)),
+                    context.withState(
+                      calculateUIState(
+                        m,
+                        m.activeCheck(context) == WindowActive.Active,
+                        modalWindow,
+                        windowUnderPointer
+                      )
+                    ),
                     m,
                     e
                   )
@@ -340,7 +349,14 @@ object WindowManager:
               Batch(
                 WindowView
                   .present(
-                    context.withState(calculateUIState(m, modalWindow, windowUnderPointer)),
+                    context.withState(
+                      calculateUIState(
+                        m,
+                        m.activeCheck(context) == WindowActive.Active,
+                        modalWindow,
+                        windowUnderPointer
+                      )
+                    ),
                     m,
                     vm
                   )
@@ -357,11 +373,12 @@ object WindowManager:
 
   private def calculateUIState[ReferenceData](
       window: Window[?, ReferenceData],
+      isActive: Boolean,
       modalWindowId: Option[WindowId],
       windowUnderPointerId: Option[WindowId]
   ): UIState =
     // Closed windows are always inactive
-    if window.isClosed then UIState.InActive
+    if window.isClosed || isActive == false then UIState.InActive
     else
       modalWindowId match
         case Some(id) if id == window.id =>
