@@ -129,7 +129,10 @@ class LocaleTests extends munit.FunSuite:
 
   test("parsing is case insensitive") {
     assertEquals(Locale.fromString("EN_gb"), Some(Locale(Language.English, Some(Country.UnitedKingdom), None)))
-    assertEquals(Locale.fromString("ZH_HANT_tw"), Some(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant))))
+    assertEquals(
+      Locale.fromString("ZH_HANT_tw"),
+      Some(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)))
+    )
   }
 
   test("rejects unknown subtags") {
@@ -183,4 +186,76 @@ class LocaleTests extends munit.FunSuite:
   test("the country subtag does not affect direction") {
     assert(Locale(Language.Arabic, Some(Country.Egypt), None).isRightToLeft)
     assert(!Locale(Language.English, Some(Country.UnitedKingdom), None).isRightToLeft)
+  }
+
+  test("renders a private use subtag last") {
+    assertEquals(Locale(Language.English, None, None, Some("pirate")).toString, "en_x_pirate")
+    assertEquals(
+      Locale(Language.English, Some(Country.UnitedKingdom), Some(Script.Latn), Some("pirate")).toString,
+      "en_Latn_GB_x_pirate"
+    )
+  }
+
+  test("parses a private use subtag") {
+    assertEquals(Locale.fromString("en_x_pirate"), Some(Locale(Language.English, None, None, Some("pirate"))))
+    assertEquals(
+      Locale.fromString("en_Latn_GB_x_pirate"),
+      Some(Locale(Language.English, Some(Country.UnitedKingdom), Some(Script.Latn), Some("pirate")))
+    )
+  }
+
+  test("a private use locale survives a round trip through its rendered form") {
+    val locales =
+      Batch(
+        Locale(Language.English, None, None, Some("pirate")),
+        Locale(Language.English, Some(Country.UnitedKingdom), Some(Script.Latn), Some("pirate"))
+      )
+
+    locales.foreach { locale =>
+      assertEquals(Locale.fromString(locale.toString), Some(locale))
+    }
+  }
+
+  test("falls back from a private use locale to the real one it extends") {
+    assertEquals(
+      Locale(Language.English, None, None, Some("pirate")).fallbacks,
+      Batch(
+        Locale(Language.English, None, None, Some("pirate")),
+        Locale(Language.English, None, None)
+      )
+    )
+
+    assertEquals(
+      Locale(Language.English, Some(Country.UnitedKingdom), None, Some("pirate")).fallbacks,
+      Batch(
+        Locale(Language.English, Some(Country.UnitedKingdom), None, Some("pirate")),
+        Locale(Language.English, None, None, Some("pirate")),
+        Locale(Language.English, Some(Country.UnitedKingdom), None),
+        Locale(Language.English, None, None)
+      )
+    )
+  }
+
+  test("negotiates a private use locale, then degrades to the language it extends") {
+    val pirate = Locale(Language.English, None, None, Some("pirate"))
+
+    assertEquals(
+      Locale.negotiate(Batch(pirate), Batch(Locale(Language.English, None, None), pirate)),
+      Some(pirate)
+    )
+
+    assertEquals(
+      Locale.negotiate(Batch(pirate), Batch(Locale(Language.English, None, None))),
+      Some(Locale(Language.English, None, None))
+    )
+  }
+
+  test("a private use subtag never collides with a real one") {
+    assertEquals(Locale.fromString("en_x_pirate").flatMap(_.country), None)
+    assertEquals(Locale.fromString("en_x_pirate").flatMap(_.script), None)
+    assertEquals(Locale.fromString("en_x_GB"), Some(Locale(Language.English, None, None, Some("GB"))))
+  }
+
+  test("tolerates a private use marker with nothing after it") {
+    assertEquals(Locale.fromString("en_x"), Some(Locale(Language.English, None, None)))
   }
