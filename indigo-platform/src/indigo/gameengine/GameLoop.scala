@@ -19,6 +19,7 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 import scala.collection.mutable
+import indigo.platform.locale.LocaleService
 
 final class GameLoop[StartUpData, GameModel](
     updateAssetCollection: AssetCollection => Unit,
@@ -30,7 +31,8 @@ final class GameLoop[StartUpData, GameModel](
     initialModel: GameModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
-    giveScreenSize: () => Rectangle
+    giveScreenSize: () => Rectangle,
+    localeService: LocaleService
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -46,7 +48,7 @@ final class GameLoop[StartUpData, GameModel](
   private val _randomInstance: scala.util.Random = new scala.util.Random()
 
   private lazy val _services: Context.Services =
-    Context.Services(boundaryLocator, _randomInstance)
+    Context.Services(boundaryLocator, _randomInstance, localeService)
 
   def gameModelState: GameModel = _gameModelState
   def lock(): Unit              = _frameLocked = true

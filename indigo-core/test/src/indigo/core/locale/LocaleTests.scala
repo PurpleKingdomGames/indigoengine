@@ -96,20 +96,33 @@ class LocaleTests extends munit.FunSuite:
 
   test("parses each combination of subtags") {
     assertEquals(Locale.fromString("en"), Some(Locale(Language.English, None, None)))
-    assertEquals(Locale.fromString("en_GB"), Some(Locale(Language.English, Some(Country.UnitedKingdom), None)))
-    assertEquals(Locale.fromString("zh_Hant"), Some(Locale(Language.Chinese, None, Some(Script.Hant))))
+    assertEquals(Locale.fromString("en-GB"), Some(Locale(Language.English, Some(Country.UnitedKingdom), None)))
+    assertEquals(Locale.fromString("zh-Hant"), Some(Locale(Language.Chinese, None, Some(Script.Hant))))
     assertEquals(
-      Locale.fromString("zh_Hant_TW"),
+      Locale.fromString("zh-Hant-TW"),
       Some(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)))
     )
   }
 
-  test("tells a lone script subtag apart from a lone country subtag") {
-    assertEquals(Locale.fromString("zh_TW").flatMap(_.country), Some(Country.Taiwan))
-    assertEquals(Locale.fromString("zh_TW").flatMap(_.script), None)
+  test("tolerates underscores in place of hyphens, and a mixture of the two") {
+    assertEquals(Locale.fromString("en_GB"), Some(Locale(Language.English, Some(Country.UnitedKingdom), None)))
+    assertEquals(
+      Locale.fromString("zh_Hant_TW"),
+      Some(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)))
+    )
+    assertEquals(
+      Locale.fromString("zh-Hant_TW"),
+      Some(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)))
+    )
+    assertEquals(Locale.fromString("en_x-pirate"), Some(Locale(Language.English, None, None, Some("pirate"))))
+  }
 
-    assertEquals(Locale.fromString("zh_Hant").flatMap(_.script), Some(Script.Hant))
-    assertEquals(Locale.fromString("zh_Hant").flatMap(_.country), None)
+  test("tells a lone script subtag apart from a lone country subtag") {
+    assertEquals(Locale.fromString("zh-TW").flatMap(_.country), Some(Country.Taiwan))
+    assertEquals(Locale.fromString("zh-TW").flatMap(_.script), None)
+
+    assertEquals(Locale.fromString("zh-Hant").flatMap(_.script), Some(Script.Hant))
+    assertEquals(Locale.fromString("zh-Hant").flatMap(_.country), None)
   }
 
   test("every locale survives a round trip through its rendered form") {
@@ -149,14 +162,14 @@ class LocaleTests extends munit.FunSuite:
 
   test("renders as language, then script, then country") {
     assertEquals(Locale(Language.English, None, None).toString, "en")
-    assertEquals(Locale(Language.English, Some(Country.UnitedKingdom), None).toString, "en_GB")
-    assertEquals(Locale(Language.Chinese, None, Some(Script.Hant)).toString, "zh_Hant")
-    assertEquals(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)).toString, "zh_Hant_TW")
+    assertEquals(Locale(Language.English, Some(Country.UnitedKingdom), None).toString, "en-GB")
+    assertEquals(Locale(Language.Chinese, None, Some(Script.Hant)).toString, "zh-Hant")
+    assertEquals(Locale(Language.Chinese, Some(Country.Taiwan), Some(Script.Hant)).toString, "zh-Hant-TW")
   }
 
   test("renders each subtag in its conventional case") {
-    assertEquals(Locale(Language.Arabic, Some(Country.Egypt), Some(Script.Arab)).toString, "ar_Arab_EG")
-    assertEquals(Locale(Language.SichuanYi, Some(Country.China), Some(Script.Yiii)).toString, "ii_Yiii_CN")
+    assertEquals(Locale(Language.Arabic, Some(Country.Egypt), Some(Script.Arab)).toString, "ar-Arab-EG")
+    assertEquals(Locale(Language.SichuanYi, Some(Country.China), Some(Script.Yiii)).toString, "ii-Yiii-CN")
   }
 
   test("uses the script subtag to decide direction, when there is one") {
@@ -189,10 +202,10 @@ class LocaleTests extends munit.FunSuite:
   }
 
   test("renders a private use subtag last") {
-    assertEquals(Locale(Language.English, None, None, Some("pirate")).toString, "en_x_pirate")
+    assertEquals(Locale(Language.English, None, None, Some("pirate")).toString, "en-x-pirate")
     assertEquals(
       Locale(Language.English, Some(Country.UnitedKingdom), Some(Script.Latn), Some("pirate")).toString,
-      "en_Latn_GB_x_pirate"
+      "en-Latn-GB-x-pirate"
     )
   }
 
