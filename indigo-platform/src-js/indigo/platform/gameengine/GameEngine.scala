@@ -9,6 +9,7 @@ import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
+import indigo.core.locale.Locale
 import indigo.core.utils.IndigoLogger
 import indigo.platform.IndigoCoreServices
 import indigo.platform.JsPlatform
@@ -16,6 +17,7 @@ import indigo.platform.assets.*
 import indigo.platform.audio.AudioService
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.gameengine.GameLoop
+import indigo.platform.locale.LocaleService
 import indigo.render.Renderer
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.datatypes.ProcessedSceneData
@@ -35,6 +37,7 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
+import org.scalajs.dom
 
 import scala.compiletime.uninitialized
 
@@ -362,7 +365,15 @@ object GameEngine {
         initialModel,
         frameProccessor,
         startFrameLocked,
-        () => Rectangle(renderer.screenWidth, renderer.screenHeight)
+        () => Rectangle(renderer.screenWidth, renderer.screenHeight),
+        new LocaleService {
+          def current: Option[Locale] = Locale.fromString(dom.window.navigator.language)
+          def preferred: Batch[Locale] = Batch.fromJSArray(
+            dom.window.navigator.languages
+              .map(Locale.fromString)
+              .collect { case Some(v) => v }
+          )
+        }
       )
     )
 }

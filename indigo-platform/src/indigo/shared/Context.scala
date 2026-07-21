@@ -9,6 +9,8 @@ import indigo.scenegraph.SceneNode
 import indigo.scenegraph.TextLine
 import indigo.scenegraph.registers.BoundaryLocator
 import indigoengine.shared.collections.Batch
+import indigo.core.locale.Locale as CoreLocale
+import indigo.platform.locale.LocaleService
 
 /** The Context is the context in which the current frame will be processed.
   *
@@ -55,7 +57,8 @@ object Context:
       dice: Dice,
       inputState: InputState,
       viewport: Rectangle,
-      boundaryLocator: BoundaryLocator
+      boundaryLocator: BoundaryLocator,
+      localeService: LocaleService
   ): Context =
     new Context(
       Frame(
@@ -66,7 +69,8 @@ object Context:
       ),
       Services(
         boundaryLocator,
-        scala.util.Random(Dice.DefaultSeed)
+        scala.util.Random(Dice.DefaultSeed),
+        localeService
       )
     )
 
@@ -104,21 +108,25 @@ object Context:
   trait Services:
     def bounds: Services.Bounds
     def random: Services.Random
+    def locale: Services.Locale
 
   object Services:
 
     def apply(
         boundaryLocator: BoundaryLocator,
-        _random: scala.util.Random
+        _random: scala.util.Random,
+        localeService: LocaleService
     ): Services =
       new Services:
         def bounds: Services.Bounds = Bounds(boundaryLocator)
         def random: Services.Random = Random(_random)
+        def locale: Services.Locale = Services.Locale(localeService)
 
     def noop: Services =
       new Services:
-        def bounds: Bounds = Bounds.noop
-        def random: Random = Random.noop
+        def bounds: Bounds          = Bounds.noop
+        def random: Random          = Random.noop
+        def locale: Services.Locale = Services.Locale.noop
 
     trait Bounds:
       /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly
@@ -218,3 +226,18 @@ object Context:
           def shuffle[A](xs: List[A]): List[A]                            = xs
           def shuffle[A](xs: Batch[A]): Batch[A]                          = xs
           def alphanumeric(take: Int): List[Char]                         = List.fill(take)(' ')
+
+    trait Locale:
+      def current: Option[CoreLocale]
+      def preferred: Batch[CoreLocale]
+
+    object Locale:
+      def apply(service: LocaleService): Services.Locale =
+        new Services.Locale:
+          def current: Option[CoreLocale]  = service.current
+          def preferred: Batch[CoreLocale] = service.preferred
+
+      val noop: Locale =
+        new Locale:
+          def current: Option[CoreLocale]  = None
+          def preferred: Batch[CoreLocale] = Batch.empty

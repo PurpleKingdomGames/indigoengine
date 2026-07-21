@@ -5,7 +5,7 @@ import indigoengine.shared.collections.Batch
 /** A language, optionally narrowed by the country and script it is used in
   *
   * @param privateUse
-  *   The BCP 47 private use subtag, e.g. "pirate" in "en_x_pirate". Reserved by the standard for locales of your own
+  *   The BCP 47 private use subtag, e.g. "pirate" in "en-x-pirate". Reserved by the standard for locales of your own
   *   invention, so it can never collide with a real language, country or script
   */
 final case class Locale(
@@ -46,12 +46,16 @@ final case class Locale(
   override def toString: String =
     val subtags =
       s"${language.code.toLowerCase}${script
-          .map(s => s"_${s.code.toLowerCase.capitalize}")
-          .getOrElse("")}${country.map(c => s"_${c.code.toUpperCase}").getOrElse("")}"
+          .map(s => s"-${s.code.toLowerCase.capitalize}")
+          .getOrElse("")}${country.map(c => s"-${c.code.toUpperCase}").getOrElse("")}"
 
-    privateUse.map(p => s"${subtags}_x_$p").getOrElse(subtags)
+    privateUse.map(p => s"${subtags}-x-$p").getOrElse(subtags)
 
 object Locale:
+  val default: Locale = Locale(Language.English)
+
+  def apply(language: Language): Locale =
+    Locale(language, None, None, None)
 
   /** A locale with no private use subtag */
   def apply(language: Language, country: Option[Country], script: Option[Script]): Locale =
@@ -77,13 +81,13 @@ object Locale:
     * @return
     */
   def fromString(locale: String): Option[Locale] =
-    val subtags  = locale.split("_")
+    val subtags  = locale.split("[-_]")
     val markerAt = subtags.indexWhere(_.equalsIgnoreCase("x"))
 
     val split = if markerAt >= 0 then subtags.take(markerAt) else subtags
 
     val privateUse =
-      if markerAt >= 0 then Option(subtags.drop(markerAt + 1).mkString("_")).filter(_.nonEmpty)
+      if markerAt >= 0 then Option(subtags.drop(markerAt + 1).mkString("-")).filter(_.nonEmpty)
       else None
 
     split.headOption
