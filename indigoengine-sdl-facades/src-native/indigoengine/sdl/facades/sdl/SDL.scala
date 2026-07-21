@@ -38,3 +38,9 @@ object SDL:
 
   def SDL_Delay(ms: UInt): Unit = extern
   def SDL_GetError(): CString   = extern
+
+  // SDL_Locale { const char *language; const char *country; }
+  type SDL_Locale = CStruct2[CString, CString]
+
+  def SDL_GetPreferredLocales(count: Ptr[CInt]): Ptr[Ptr[SDL_Locale]] = extern
+  def SDL_free(mem: Ptr[Byte]): Unit                                  = extern

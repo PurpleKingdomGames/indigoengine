@@ -9,14 +9,13 @@ import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.GlobalEvent
 import indigo.core.input.GamepadInputCapture
-import indigo.core.locale.Locale
 import indigo.core.utils.IndigoLogger
 import indigo.platform.IndigoCoreServices
 import indigo.platform.NativePlatform
 import indigo.platform.assets.*
 import indigo.platform.audio.AudioService
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.locale.LocaleService
+import indigo.platform.locale.NativeLocaleService
 import indigo.render.Renderer
 import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.assets.AssetMapping
@@ -363,10 +362,7 @@ object GameEngine {
         frameProccessor,
         startFrameLocked,
         () => Rectangle(renderer.screenWidth, renderer.screenHeight),
-        new LocaleService {
-          def current: Option[Locale]  = ???
-          def preferred: Batch[Locale] = ???
-        }
+        NativeLocaleService()
       )
     )
 }
