@@ -44,5 +44,6 @@ object ScenesList:
       ViewportResizeScene,
       MultiPointScene,
       BgAudioScene,
-      MagnificationScene
+      MagnificationScene,
+      LocaleScene
     )

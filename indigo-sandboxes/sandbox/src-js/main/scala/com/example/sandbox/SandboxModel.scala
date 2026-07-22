@@ -6,6 +6,7 @@ import com.example.sandbox.scenes.CaptureScreenScene
 import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.InputStateModel
+import com.example.sandbox.scenes.LocaleUI
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PerformerPhysicsSceneModel
 import com.example.sandbox.scenes.PerformerSceneModel
@@ -29,6 +30,7 @@ final case class SandboxGameModel(
     components: ComponentGroup[Int],
     scrollPane: ScrollPane[ComponentList[Int], Int],
     button: Button[Int],
+    localeButton: Button[Unit],
     meshData: MeshData,
     actorScene: ActorSceneModel,
     actorPhysicsScene: ActorPhysicsSceneModel,
@@ -61,6 +63,7 @@ object SandboxModel:
       SandboxModelShared.components,
       ComponentUIScene2.CustomComponents.pane,
       SandboxModelShared.customButton,
+      LocaleUI.currentLocaleButton,
       MeshData(
         points,
         superTriangle,
