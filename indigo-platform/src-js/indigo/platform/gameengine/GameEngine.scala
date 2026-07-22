@@ -38,6 +38,7 @@ import org.scalajs.dom.html
 
 import scala.compiletime.uninitialized
 import indigo.platform.locale.BrowserLocaleService
+import indigo.platform.locale.LocaleService
 
 final class GameEngine[StartUpData, GameModel](
     services: IndigoCoreServices[html.Image, ImageData],
@@ -56,6 +57,7 @@ final class GameEngine[StartUpData, GameModel](
   private val shaderRegister: ShaderRegister         = new ShaderRegister()
   private val boundaryLocator: BoundaryLocator       = new BoundaryLocator(animationsRegister, fontRegister)
   private val sceneProcessor: SceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+  private val localeService: LocaleService   = new BrowserLocaleService()
   private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream()
   private[gameengine] val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
   private[gameengine] val audioService: AudioService               = services.audioService
@@ -201,6 +203,7 @@ final class GameEngine[StartUpData, GameModel](
               initialisedGameLoop <- GameEngine.initialiseGameLoop(
                 this,
                 boundaryLocator,
+                localeService,
                 sceneProcessor,
                 engineConfig,
                 m,
@@ -345,6 +348,7 @@ object GameEngine {
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
       gameEngine: GameEngine[StartUpData, GameModel],
       boundaryLocator: BoundaryLocator,
+      localeService: LocaleService,
       sceneProcessor: SceneProcessor,
       engineConfig: EngineConfig,
       initialModel: GameModel,
@@ -364,7 +368,7 @@ object GameEngine {
         frameProccessor,
         startFrameLocked,
         () => Rectangle(renderer.screenWidth, renderer.screenHeight),
-        BrowserLocaleService()
+        localeService
       )
     )
 }
