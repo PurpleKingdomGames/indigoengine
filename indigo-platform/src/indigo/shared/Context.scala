@@ -108,6 +108,11 @@ object Context:
   trait Services:
     def bounds: Services.Bounds
     def random: Services.Random
+
+    /** Accesses locales on the users system
+      *
+      * @return
+      */
     def locale: Services.Locale
 
   object Services:
@@ -228,7 +233,16 @@ object Context:
           def alphanumeric(take: Int): List[Char]                         = List.fill(take)(' ')
 
     trait Locale:
+      /** The current active system locale. None if no locale has been specified
+        *
+        * @return
+        */
       def current: Option[CoreLocale]
+
+      /** A `Batch` of locales available to the game in user preference order (most preferred to least)
+        *
+        * @return
+        */
       def preferred: Batch[CoreLocale]
 
     object Locale:
