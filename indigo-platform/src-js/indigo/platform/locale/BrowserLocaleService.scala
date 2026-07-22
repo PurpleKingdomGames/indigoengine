@@ -10,6 +10,7 @@ final case class BrowserLocaleService() extends LocaleService:
       dom.window.navigator.languages
         .map(Locale.fromString)
         .collect { case Some(v) => v }
+        .distinct
     )
 
   lazy val current: Option[Locale] = preferred.headOption
