@@ -5,12 +5,16 @@ import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.InputState
 import indigo.core.locale.Locale as CoreLocale
+import indigo.core.time.DateTime as CoreDateTime
 import indigo.core.time.GameTime
 import indigo.platform.locale.LocaleService
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.TextLine
 import indigo.scenegraph.registers.BoundaryLocator
 import indigoengine.shared.collections.Batch
+import indigo.platform.time.DateTimeService
+import indigo.core.time.DateFormat
+import indigo.core.time.TimeFormat
 
 /** The Context is the context in which the current frame will be processed.
   *
@@ -58,7 +62,8 @@ object Context:
       inputState: InputState,
       viewport: Rectangle,
       boundaryLocator: BoundaryLocator,
-      localeService: LocaleService
+      localeService: LocaleService,
+      dateTimeService: DateTimeService
   ): Context =
     new Context(
       Frame(
@@ -70,7 +75,8 @@ object Context:
       Services(
         boundaryLocator,
         scala.util.Random(Dice.DefaultSeed),
-        localeService
+        localeService,
+        dateTimeService
       )
     )
 
@@ -115,23 +121,32 @@ object Context:
       */
     def locale: Services.Locale
 
+    /** Accesses the systems current date and time
+      *
+      * @return
+      */
+    def datetime: Services.DateTime
+
   object Services:
 
     def apply(
         boundaryLocator: BoundaryLocator,
         _random: scala.util.Random,
-        localeService: LocaleService
+        localeService: LocaleService,
+        dateTimeService: DateTimeService
     ): Services =
       new Services:
-        def bounds: Services.Bounds = Bounds(boundaryLocator)
-        def random: Services.Random = Random(_random)
-        def locale: Services.Locale = Services.Locale(localeService)
+        def bounds: Services.Bounds     = Bounds(boundaryLocator)
+        def random: Services.Random     = Random(_random)
+        def locale: Services.Locale     = Services.Locale(localeService)
+        def datetime: Services.DateTime = Services.DateTime(dateTimeService)
 
     def noop: Services =
       new Services:
-        def bounds: Bounds          = Bounds.noop
-        def random: Random          = Random.noop
-        def locale: Services.Locale = Services.Locale.noop
+        def bounds: Bounds              = Bounds.noop
+        def random: Random              = Random.noop
+        def locale: Services.Locale     = Services.Locale.noop
+        def datetime: Services.DateTime = Services.DateTime.noop
 
     trait Bounds:
       /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly
@@ -255,3 +270,27 @@ object Context:
         new Locale:
           def current: Option[CoreLocale]  = None
           def preferred: Batch[CoreLocale] = Batch.empty
+
+    trait DateTime:
+      /** The current system date/time
+        *
+        * @return
+        */
+      def current: CoreDateTime
+
+      def dateformat: DateFormat
+
+      def timeformat: TimeFormat
+
+    object DateTime:
+      def apply(service: DateTimeService): Services.DateTime =
+        new Services.DateTime:
+          def current: CoreDateTime  = service.current
+          def dateformat: DateFormat = service.dateformat
+          def timeformat: TimeFormat = service.timeformat
+
+      val noop: DateTime =
+        new DateTime:
+          def current: CoreDateTime  = CoreDateTime(0L, 0)
+          def dateformat: DateFormat = DateFormat.YearMonthDay
+          def timeformat: TimeFormat = TimeFormat.TwentyFourHour
