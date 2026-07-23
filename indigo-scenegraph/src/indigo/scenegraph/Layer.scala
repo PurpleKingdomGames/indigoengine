@@ -48,8 +48,8 @@ enum Layer derives CanEqual:
       nodes: Batch[SceneNode],
       cloneBlanks: Batch[CloneBlank],
       lights: Batch[Light],
-      blending: Option[Blending], // TODO: Can we make this non-optional?
-      camera: Option[Camera]      // TODO: Can we make this non-optional?
+      blending: Option[Blending],
+      camera: Option[Camera]
   )
 
   def toBatch: Batch[Layer.Content] =

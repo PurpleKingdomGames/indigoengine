@@ -36,3 +36,5 @@ object Magnification:
     def increase: Magnification = clampToRange(m.toInt + 1)
     def decrease: Magnification = clampToRange(m.toInt - 1)
     def toInt: Int              = m
+
+  given CanEqual[Magnification, Magnification] = CanEqual.derived
