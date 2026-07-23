@@ -76,7 +76,7 @@ jobs:
     - name: Clean and trigger meta build
       run: ./mill --no-server --disable-ticker clean
     - name: Compile
-      run: ./mill --no-server --disable-ticker __.native.compile
+      run: ./mill --no-server --disable-ticker -j1 __.native.compile
     - name: Check formatting
       run: ./mill --no-server --disable-ticker __.native.checkFormat
     - name: Check linting
