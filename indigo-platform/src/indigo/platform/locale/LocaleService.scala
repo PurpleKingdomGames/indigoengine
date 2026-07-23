@@ -10,10 +10,10 @@ trait LocaleService:
     *
     * @return
     */
-  lazy val current: Option[Locale]
+  def current: Option[Locale]
 
   /** A `Batch` of locales available to the game in user preference order (most preferred to least)
     *
     * @return
     */
-  lazy val preferred: Batch[Locale]
+  def preferred: Batch[Locale]

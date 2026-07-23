@@ -5,7 +5,7 @@ import indigoengine.shared.collections.Batch
 import org.scalajs.dom
 
 final case class BrowserLocaleService() extends LocaleService:
-  lazy val preferred: Batch[Locale] =
+  private lazy val locales: Batch[Locale] =
     Batch.fromJSArray(
       dom.window.navigator.languages
         .map(Locale.fromString)
@@ -13,4 +13,6 @@ final case class BrowserLocaleService() extends LocaleService:
         .distinct
     )
 
-  lazy val current: Option[Locale] = preferred.headOption
+  def preferred: Batch[Locale] = locales
+
+  def current: Option[Locale] = preferred.headOption

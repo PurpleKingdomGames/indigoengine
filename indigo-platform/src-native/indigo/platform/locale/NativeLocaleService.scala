@@ -6,8 +6,10 @@ import indigoengine.shared.collections.Batch
 import scala.scalanative.unsafe.*
 
 final case class NativeLocaleService() extends LocaleService:
-  lazy val preferred: Batch[Locale] = readTags
-  lazy val current: Option[Locale]  = preferred.headOption
+  private lazy val locales: Batch[Locale] = readTags
+
+  def preferred: Batch[Locale] = locales
+  def current: Option[Locale]  = preferred.headOption
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def readTags: Batch[Locale] =
