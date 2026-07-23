@@ -109,7 +109,7 @@ object Context:
     def bounds: Services.Bounds
     def random: Services.Random
 
-    /** Accesses locales on the users system
+    /** Accesses locales on the user's system
       *
       * @return
       */
