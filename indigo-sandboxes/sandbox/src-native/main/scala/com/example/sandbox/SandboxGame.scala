@@ -8,7 +8,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox-native")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ShapesScene.name)
+    Some(LocaleScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxGameModel]] =
     ScenesList.scenes
@@ -37,13 +37,18 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       context: Context,
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    case _ => Outcome(model)
+    case _ =>
+      Outcome(model)
 
   def present(
       context: Context,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+    Outcome(
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Stack.empty
+      )
+    )
 
 final case class SandboxBootData()
 final case class SandboxStartupData()
