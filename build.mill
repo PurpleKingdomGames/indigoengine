@@ -90,6 +90,9 @@ trait SharedNative extends Shared, ScalaNativeModule:
       Seq("-lSDL3", "-lGL")
 
   object test extends Shared, ScalaNativeTests, ScalafixModule, ScalafmtModule:
+    def nativeLinkingOptions = SharedNative.this.nativeLinkingOptions
+    def forkEnv              = SharedNative.this.forkEnv
+
     def mvnDeps = Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",

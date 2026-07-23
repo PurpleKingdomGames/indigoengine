@@ -60,6 +60,10 @@ jobs:
       JAVA_OPTS: -Xmx4G -Xss8m -XX:+UseG1GC
     steps:
     - uses: actions/checkout@v4
+    - name: Install SDL3
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsdl3-dev libgl1-mesa-dev
     - uses: coursier/cache-action@v6
     - uses: coursier/setup-action@v1
       with:
