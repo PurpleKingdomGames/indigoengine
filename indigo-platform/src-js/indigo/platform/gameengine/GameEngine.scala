@@ -39,6 +39,8 @@ import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 
 import scala.compiletime.uninitialized
+import indigo.platform.time.DateTimeService
+import indigo.platform.time.BrowserDateTimeService
 
 final class GameEngine[StartUpData, GameModel](
     services: IndigoCoreServices[html.Image, ImageData],
@@ -56,8 +58,9 @@ final class GameEngine[StartUpData, GameModel](
   private val fontRegister: FontRegister             = new FontRegister()
   private val shaderRegister: ShaderRegister         = new ShaderRegister()
   private val boundaryLocator: BoundaryLocator       = new BoundaryLocator(animationsRegister, fontRegister)
-  private val sceneProcessor: SceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
-  private val localeService: LocaleService   = new BrowserLocaleService()
+  private val sceneProcessor: SceneProcessor   = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+  private val localeService: LocaleService     = new BrowserLocaleService()
+  private val dateTimeService: DateTimeService = new BrowserDateTimeService()
   private[indigo] val globalEventStream: GlobalEventStream         = new GlobalEventStream()
   private[gameengine] val gamepadInputCapture: GamepadInputCapture = services.gamepadInputCapture
   private[gameengine] val audioService: AudioService               = services.audioService
@@ -204,6 +207,7 @@ final class GameEngine[StartUpData, GameModel](
                 this,
                 boundaryLocator,
                 localeService,
+                dateTimeService,
                 sceneProcessor,
                 engineConfig,
                 m,
@@ -349,6 +353,7 @@ object GameEngine {
       gameEngine: GameEngine[StartUpData, GameModel],
       boundaryLocator: BoundaryLocator,
       localeService: LocaleService,
+      dateTimeService: DateTimeService,
       sceneProcessor: SceneProcessor,
       engineConfig: EngineConfig,
       initialModel: GameModel,
@@ -368,7 +373,8 @@ object GameEngine {
         frameProccessor,
         startFrameLocked,
         () => Rectangle(renderer.screenWidth, renderer.screenHeight),
-        localeService
+        localeService,
+        dateTimeService
       )
     )
 }
