@@ -11,6 +11,7 @@ import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
 import indigo.platform.locale.LocaleService
+import indigo.platform.time.DateTimeService
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
@@ -32,7 +33,8 @@ final class GameLoop[StartUpData, GameModel](
     frameProcessor: FrameProcessor[StartUpData, GameModel],
     startFrameLocked: Boolean,
     giveScreenSize: () => Rectangle,
-    localeService: LocaleService
+    localeService: LocaleService,
+    dateTimeService: DateTimeService
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -48,7 +50,7 @@ final class GameLoop[StartUpData, GameModel](
   private val _randomInstance: scala.util.Random = new scala.util.Random()
 
   private lazy val _services: Context.Services =
-    Context.Services(boundaryLocator, _randomInstance, localeService)
+    Context.Services(boundaryLocator, _randomInstance, localeService, dateTimeService)
 
   def gameModelState: GameModel = _gameModelState
   def lock(): Unit              = _frameLocked = true
