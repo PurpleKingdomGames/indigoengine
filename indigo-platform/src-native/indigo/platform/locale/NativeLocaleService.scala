@@ -6,12 +6,10 @@ import indigoengine.shared.collections.Batch
 import scala.scalanative.unsafe.*
 
 final case class NativeLocaleService() extends LocaleService:
-  private lazy val locales: Batch[Locale] = readTags.map(Locale.fromString).collect { case Some(v) => v }
+  lazy val preferred: Batch[Locale] = readTags
+  lazy val current: Option[Locale]  = preferred.headOption
 
-  def preferred: Batch[Locale] = locales
-  def current: Option[Locale]  = locales.headOption
-
-  private def readTags: Batch[String] =
+  private def readTags: Batch[Locale] =
     val countPtr = stackalloc[CInt]()
     val locales  = SDL_GetPreferredLocales(countPtr)
 
@@ -31,4 +29,9 @@ final case class NativeLocaleService() extends LocaleService:
         )
 
       SDL_free(locales.asInstanceOf[Ptr[Byte]])
-      tags.filterNot(_.isEmpty)
+
+      tags
+        .filterNot(_.isEmpty)
+        .map(Locale.fromString)
+        .collect { case Some(v) => v }
+        .distinct

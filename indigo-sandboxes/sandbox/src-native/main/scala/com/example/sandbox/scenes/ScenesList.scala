@@ -7,5 +7,6 @@ object ScenesList:
 
   val scenes: NonEmptyBatch[Scene[SandboxGameModel]] =
     NonEmptyBatch(
-      ShapesScene
+      ShapesScene,
+      LocaleScene
     )
