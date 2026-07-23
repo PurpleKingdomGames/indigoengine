@@ -87,7 +87,8 @@ trait SharedNative extends Shared, ScalaNativeModule:
     else if (os.contains("mac"))
       Seq("-L/opt/homebrew/lib", "-lSDL3", "-framework", "OpenGL")
     else
-      Seq("-lSDL3", "-lGL")
+      val libDir = Option(System.getenv("SDL_LIBDIR")).filter(_.nonEmpty).map(dir => s"-L$dir").toSeq
+      libDir ++ Seq("-lSDL3", "-lGL")
 
   object test extends Shared, ScalaNativeTests, ScalafixModule, ScalafmtModule:
     def nativeLinkingOptions = SharedNative.this.nativeLinkingOptions

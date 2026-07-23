@@ -61,9 +61,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install SDL3
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libsdl3-dev libgl1-mesa-dev
+      id: sdl
+      uses: libsdl-org/setup-sdl@main
+      with:
+        version: 3-head
+        install-linux-dependencies: true
+        add-to-environment: true
+    - name: Expose SDL3 lib dir to the build
+      run: echo "SDL_LIBDIR=${{ steps.sdl.outputs.prefix }}/lib" >> "$GITHUB_ENV"
     - uses: coursier/cache-action@v6
     - uses: coursier/setup-action@v1
       with:
