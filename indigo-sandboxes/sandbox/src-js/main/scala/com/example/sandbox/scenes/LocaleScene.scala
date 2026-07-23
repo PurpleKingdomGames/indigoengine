@@ -9,6 +9,8 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
+import indigo.core.time.DateFormat
+import indigo.core.time.TimeFormat
 
 object LocaleScene extends Scene[SandboxGameModel]:
 
@@ -51,9 +53,10 @@ object LocaleScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     model.localeButton
       .present(LocaleUI.uiContext(context.toContext))
+      .combine(LocaleUI.dateTimeLabel.present(LocaleUI.uiContext(context.toContext)))
       .map { buttonLayer =>
         SceneUpdateFragment(
-          Constants.LayerKeys.game -> buttonLayer
+          Constants.LayerKeys.game -> Layer.Stack(Batch(buttonLayer._1, buttonLayer._2))
         ).withMagnification(LocaleUI.magnification)
       }
 
@@ -68,7 +71,7 @@ object LocaleUI:
       "",
       TestFont.fontKey,
       SandboxAssets.testFontMaterial
-    )
+    ).withAlignment(TextAlignment.Center)
 
   def currentLocaleText(ctx: UIContext[?]): String =
     ctx.services.locale.current.map(_.toString).getOrElse("Unknown locale")
@@ -77,12 +80,11 @@ object LocaleUI:
     Bounds(ctx.services.bounds.get(textInstance.withText(text)))
 
   def uiContext(context: Context): UIContext[Unit] =
-    val ctx  = UIContext(context).withMagnification(magnification)
-    val size = textBounds(ctx, currentLocaleText(ctx)).dimensions
+    val ctx = UIContext(context).withMagnification(magnification)
 
     ctx.moveParentTo(
-      (SandboxGame.gameWidth - size.width) / 2,
-      (SandboxGame.gameHeight - size.height) / 2
+      SandboxGame.gameWidth / 2,
+      SandboxGame.gameHeight / 2
     )
 
   val currentLocaleButton: Button[Unit] =
@@ -107,6 +109,19 @@ object LocaleUI:
         )
       }
       .onClick(WindowEvent.OpenAt(windowId, Coords(20, 20)))
+
+  def dateTimeLabel: Label[Unit] =
+    Label[Unit](currentDateTimeString, (ctx, s) => textBounds(ctx, s))((ctx, _) =>
+      Outcome(
+        Layer(
+          textInstance
+            .withText(currentDateTimeString(ctx))
+            .withMaterial(SandboxAssets.testFontMaterial.withTint(RGBA.White))
+            .moveTo(ctx.parent.coords.unsafeToPoint)
+            .moveBy(Point(0, 50))
+        )
+      )
+    )
 
   val localesWindow: Window[ComponentGroup[Unit], Unit] =
     Window(
@@ -275,3 +290,29 @@ object LocaleUI:
           ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       }
+
+  def currentDateTimeString(ctx: UIContext[Unit]): String =
+    val date = ctx.services.datetime.current
+
+    val year  = f"${date.year}%04d"
+    val month = f"${date.month}%02d"
+    val day   = f"${date.day}%02d"
+
+    val dateStr = ctx.services.datetime.dateformat match
+      case DateFormat.YearMonthDay => s"$year-$month-$day"
+      case DateFormat.DayMonthYear => s"$day-$month-$year"
+      case DateFormat.MonthDayYear => s"$month-$day-$year"
+
+    val minute = f"${date.minute}%02d"
+    val second = f"${date.second}%02d"
+    val millis = f"${date.millisecond}%03d"
+
+    val timeStr = ctx.services.datetime.timeformat match
+      case TimeFormat.TwentyFourHour =>
+        s"${f"${date.hour}%02d"}:$minute:$second.$millis"
+      case TimeFormat.TwelveHour =>
+        val hour12   = { val h = date.hour % 12; if h == 0 then 12 else h }
+        val meridiem = if date.hour < 12 then "AM" else "PM"
+        s"${f"$hour12%02d"}:$minute:$second.$millis $meridiem"
+
+    s"$dateStr $timeStr"
