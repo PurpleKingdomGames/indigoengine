@@ -6,6 +6,7 @@ import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.events.GlobalEvent
+import indigo.core.render.Magnification
 import indigo.core.time.GameTime
 import indigo.core.utils.QuickCache
 import indigo.render.pipeline.assets.AssetMapping
@@ -14,6 +15,7 @@ import indigo.render.pipeline.assets.TextureRefAndOffset
 import indigo.render.pipeline.displayprocessing.DisplayObjectConversions
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.Layer
+import indigo.scenegraph.LayerEntry
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.materials.Material
 import indigo.scenegraph.registers.AnimationsRegister
@@ -67,12 +69,34 @@ class SceneProcessorTests extends munit.FunSuite {
     assertEquals(layer.bgColor, RGBA.Zero)
   }
 
-  test("makeDisplayLayers - two separate layers") {
+  test("makeDisplayLayers - two layer entries with the same properties compact into one") {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
     val scene = SceneUpdateFragment(
       LayerKey("a") -> Layer(graphic1),
       LayerKey("b") -> Layer(graphic2)
+    )
+
+    val result = SceneProcessor.makeDisplayLayers(
+      scene,
+      Batch.empty[GlobalEvent],
+      (_: GlobalEvent) => (),
+      doc
+    )
+
+    val (layers, _) = result
+
+    assertEquals(layers.length, 1)
+    assertEquals(layers(0).entities.length, 2)
+  }
+
+  test("makeDisplayLayers - two layer entries with different magnifications remain separate") {
+    val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
+    val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
+    val scene = SceneUpdateFragment(
+      LayerKey("a") -> Layer(graphic1)
+    ).addLayer(
+      LayerEntry(LayerKey("b"), Layer(graphic2)).withMagnification(Magnification.x2)
     )
 
     val result = SceneProcessor.makeDisplayLayers(

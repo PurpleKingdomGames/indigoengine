@@ -27,6 +27,107 @@ class CompactLayersTests extends munit.FunSuite:
     assertEquals(clue(actual), clue(expected))
   }
 
+  test("magnification is applied once per LayerEntry, not compounded by nesting") {
+    val entry: LayerEntry =
+      LayerEntry(
+        LayerKey("deeply-nested"),
+        Layer.Stack(
+          Layer.Content(shape),
+          Layer.Stack(
+            Layer.Content(shape),
+            Layer.Stack(
+              Layer.Content(shape)
+            )
+          )
+        )
+      ).withMagnification(Magnification.x2)
+
+    val actual =
+      CompactLayers.compactLayers(Batch(entry))
+
+    // One group, carrying the entry's single x2 magnification - not x2 * x2 * x2.
+    assertEquals(actual.length, 1)
+
+    val (contents, magnification) = actual.head
+    assertEquals(magnification, Magnification.x2)
+    // All nested content layers share the same camera/blend/lights, so they compact to one.
+    assertEquals(contents, Batch(Layer.Content(shape, shape, shape)))
+  }
+
+  test("hidden entries are removed, allowing their neighbours to merge") {
+    val entries: Batch[LayerEntry] =
+      Batch(
+        LayerEntry(LayerKey("a"), Layer.Content(shape)),
+        LayerEntry(LayerKey("b"), Layer.Content(shape)).hide,
+        LayerEntry(LayerKey("c"), Layer.Content(shape))
+      )
+
+    val actual =
+      CompactLayers.compactLayers(entries)
+
+    val expected =
+      Batch(
+        (Batch(Layer.Content(shape, shape)), Magnification.x1)
+      )
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
+  test("compactByMagnification") {
+
+    // This would be the results of 'unstacking'
+    val unstacked =
+      Batch(
+        (Batch(Layer.Content.empty), Magnification.x2),
+        (Batch(Layer.Content.empty), Magnification.x1),
+        (Batch(Layer.Content.empty), Magnification.x1),
+        (Batch(Layer.Content.empty), Magnification.x1),
+        (Batch(Layer.Content(shape, shape)), Magnification.x1),
+        (
+          Batch(
+            Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
+            Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
+            Layer.Content(shape)
+          ),
+          Magnification.x3
+        ),
+        (Batch(Layer.Content.empty), Magnification.x3),
+        (Batch(Layer.Content.empty), Magnification.x2),
+        (Batch(Layer.Content.empty), Magnification.x2),
+        (Batch(Layer.Content(shape)), Magnification.x2)
+      )
+
+    // This process does not remove layers, just flattens the groups down when they share the same magnification.
+    val actual =
+      CompactLayers.compactByMagnification(unstacked)
+
+    val expected =
+      Batch(
+        (Batch(Layer.Content.empty), Magnification.x2),
+        (
+          Batch(
+            Layer.Content.empty,
+            Layer.Content.empty,
+            Layer.Content.empty,
+            Layer.Content(shape, shape)
+          ),
+          Magnification.x1
+        ),
+        (
+          Batch(
+            Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
+            Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
+            Layer.Content(shape),
+            Layer.Content.empty
+          ),
+          Magnification.x3
+        ),
+        (Batch(Layer.Content.empty, Layer.Content.empty, Layer.Content(shape)), Magnification.x2)
+      )
+
+    assertEquals(actual, expected)
+  }
+
   lazy val shape: Shape.Box =
     Shape.Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Red))
 
@@ -58,46 +159,13 @@ class CompactLayersTests extends munit.FunSuite:
   lazy val compacted: Batch[(Batch[Layer.Content], Magnification)] =
     Batch(
       (Batch(Layer.Content.empty), Magnification.x2),
-      (Batch(Layer.Content.empty), Magnification.default),
       (
         Batch(
-          Layer.Content(shape, shape)
-        ),
-        Magnification.default
-      ),
-      (
-        Batch(
+          Layer.Content(shape, shape),
           Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
           Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
           Layer.Content(shape)
         ),
-        Magnification.default
+        Magnification.x1
       )
     )
-
-  test("magnification is applied once per LayerEntry, not compounded by nesting") {
-    val entry: LayerEntry =
-      LayerEntry(
-        LayerKey("deeply-nested"),
-        Layer.Stack(
-          Layer.Content(shape),
-          Layer.Stack(
-            Layer.Content(shape),
-            Layer.Stack(
-              Layer.Content(shape)
-            )
-          )
-        )
-      ).withMagnification(Magnification.x2)
-
-    val actual =
-      CompactLayers.compactLayers(Batch(entry))
-
-    // One group, carrying the entry's single x2 magnification - not x2 * x2 * x2.
-    assertEquals(actual.length, 1)
-
-    val (contents, magnification) = actual.head
-    assertEquals(magnification, Magnification.x2)
-    // All nested content layers share the same camera/blend/lights, so they compact to one.
-    assertEquals(contents, Batch(Layer.Content(shape, shape, shape)))
-  }
