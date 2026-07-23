@@ -4,13 +4,13 @@ import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.Rectangle
 import indigo.core.dice.Dice
 import indigo.core.events.InputState
+import indigo.core.locale.Locale as CoreLocale
 import indigo.core.time.GameTime
+import indigo.platform.locale.LocaleService
 import indigo.scenegraph.SceneNode
 import indigo.scenegraph.TextLine
 import indigo.scenegraph.registers.BoundaryLocator
 import indigoengine.shared.collections.Batch
-import indigo.core.locale.Locale as CoreLocale
-import indigo.platform.locale.LocaleService
 
 /** The Context is the context in which the current frame will be processed.
   *

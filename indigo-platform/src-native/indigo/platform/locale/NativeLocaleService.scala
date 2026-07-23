@@ -9,6 +9,7 @@ final case class NativeLocaleService() extends LocaleService:
   lazy val preferred: Batch[Locale] = readTags
   lazy val current: Option[Locale]  = preferred.headOption
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def readTags: Batch[Locale] =
     val countPtr = stackalloc[CInt]()
     val locales  = SDL_GetPreferredLocales(countPtr)
