@@ -87,7 +87,7 @@ object ConfettiScene extends Scene[SandboxGameModel]:
           )
         )
       ).addCloneBlanks(cloneBlanks)
-        .withMagnification(Magnification(2))
+        .withMagnification(Magnification(1))
     )
 
 final case class ConfettiModel(color: Int, particles: Batch[Batch[Particle]]):
