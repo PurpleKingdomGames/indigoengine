@@ -5,6 +5,7 @@ import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.render.Magnification
+import indigo.scenegraph.Blending
 import indigo.scenegraph.Camera
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
@@ -73,6 +74,46 @@ class CompactLayersTests extends munit.FunSuite:
     assertEquals(clue(actual), clue(expected))
   }
 
+  test("no-op empty layers are removed, allowing groups to merge across them") {
+    val entries: Batch[LayerEntry] =
+      Batch(
+        LayerEntry(LayerKey("a"), Layer.Content(shape)).withMagnification(Magnification.x2),
+        LayerEntry(LayerKey("b"), Layer.empty),
+        LayerEntry(LayerKey("c"), Layer.Content(shape)).withMagnification(Magnification.x2)
+      )
+
+    val actual =
+      CompactLayers.compactLayers(entries)
+
+    val expected =
+      Batch(
+        (Batch(Layer.Content(shape, shape)), Magnification.x2)
+      )
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
+  test("empty layers with blending are kept, they can still affect the output") {
+    val lighting: Layer.Content =
+      Layer.Content.empty.withBlending(Blending.Lighting(RGBA.Black))
+
+    val entries: Batch[LayerEntry] =
+      Batch(
+        LayerEntry(LayerKey("game"), Layer.Content(shape)),
+        LayerEntry(LayerKey("lighting"), lighting)
+      )
+
+    val actual =
+      CompactLayers.compactLayers(entries)
+
+    val expected =
+      Batch(
+        (Batch(Layer.Content(shape), lighting), Magnification.x1)
+      )
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
   test("compactByMagnification") {
 
     // This would be the results of 'unstacking'
@@ -133,6 +174,7 @@ class CompactLayersTests extends munit.FunSuite:
 
   lazy val uncompacted: Batch[LayerEntry] =
     Batch(
+      LayerEntry(LayerKey("z"), Layer.Content(shape)).withMagnification(Magnification.x3),
       LayerEntry(LayerKey("a"), Layer.empty).withMagnification(Magnification.x2),
       LayerEntry(LayerKey("b"), Layer.empty),
       LayerEntry(
@@ -158,7 +200,7 @@ class CompactLayersTests extends munit.FunSuite:
 
   lazy val compacted: Batch[(Batch[Layer.Content], Magnification)] =
     Batch(
-      (Batch(Layer.Content.empty), Magnification.x2),
+      (Batch(Layer.Content(shape)), Magnification.x3),
       (
         Batch(
           Layer.Content(shape, shape),
