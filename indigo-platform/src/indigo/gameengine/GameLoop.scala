@@ -10,6 +10,7 @@ import indigo.core.events.InputState
 import indigo.core.time.GameTime
 import indigo.core.utils.IndigoLogger
 import indigo.platform.assets.AssetCollection
+import indigo.platform.locale.LocaleService
 import indigo.render.pipeline.sceneprocessing.SceneProcessor
 import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.registers.BoundaryLocator
@@ -19,7 +20,6 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
 
 import scala.collection.mutable
-import indigo.platform.locale.LocaleService
 
 final class GameLoop[StartUpData, GameModel](
     updateAssetCollection: AssetCollection => Unit,
