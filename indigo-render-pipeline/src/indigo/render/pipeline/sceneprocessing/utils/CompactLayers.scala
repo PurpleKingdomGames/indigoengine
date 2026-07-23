@@ -29,15 +29,27 @@ object CompactLayers:
           else Batch((ls, cfg.giveMagnification))
       }
 
-    // Step 2: Squash the outer batch, where the magnification is the same.
+    // Step 2: Remove no-op content layers, i.e. layers with no scene nodes to
+    // render and no blending set. Node-less layers with explicit blending are
+    // kept because they can still affect the output, e.g. via a clear color or
+    // an ambient lighting blend. Removing no-ops early gives the later steps
+    // more merging opportunities.
     val step2 =
-      compactByMagnification(step1)
+      step1.flatMap { case (layers, magnification) =>
+        val filtered = layers.filter(l => l.nodes.nonEmpty || l.blending.nonEmpty)
+        if filtered.isEmpty then Batch.empty
+        else Batch(filtered -> magnification)
+      }
 
-    // Step 3: Compact Content layers within each sub-group.
+    // Step 3: Squash the outer batch, where the magnification is the same.
     val step3 =
-      step2.map { case (layers, mag) => (compactContentLayers(layers), mag) }
+      compactByMagnification(step2)
 
-    step3
+    // Step 4: Compact Content layers within each sub-group.
+    val step4 =
+      step3.map { case (layers, mag) => (compactContentLayers(layers), mag) }
+
+    step4
 
   def compactByMagnification(
       entries: Batch[(Batch[Layer.Content], Magnification)]
