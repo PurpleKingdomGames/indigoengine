@@ -9,9 +9,13 @@ import scala.annotation.tailrec
 
 object CompactLayers:
 
-  /** Compact layers by squashing layers that have the same properties.
+  /** Optimise the number of full screen render composites we need to perform by collapsing the layer tree structure
+    * into a minimal number of 'layers', broadly in two phases:
     *
-    * Note: Layer Entries are already compacted because they get merged by key in an earlier step.
+    *   1. Layer Entries were previously merged togther by key during scene composition, that is the purpose of layer
+    *      keys. Here we discard layer keys as we no longer need them, and flatten layer entry groups where the rules
+    *      allow, i.e. magnification levels are the same
+    *   2. Unwraps layer stacks and compacts content layers by squashing those that have the same properties.
     */
   def compactLayers(layerEntries: Batch[LayerEntry]): Batch[(Batch[Layer.Content], Magnification)] =
     // Step 1: Unwrap the stacks, no compacting
