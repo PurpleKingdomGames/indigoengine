@@ -67,9 +67,11 @@ object SpriteConversion:
     val uniformData: Batch[DisplayObjectUniformData] =
       ConversionHelpers.toDisplayObjectUniformData(shaderData)
 
+    val frameOffset = anim.currentFrame.offset
+
     DisplayObject(
-      x = leaf.position.x.toFloat,
-      y = leaf.position.y.toFloat,
+      x = (leaf.position.x + frameOffset.x).toFloat,
+      y = (leaf.position.y + frameOffset.y).toFloat,
       scaleX = leaf.scale.x.toFloat,
       scaleY = leaf.scale.y.toFloat,
       refX = leaf.ref.x.toFloat,
