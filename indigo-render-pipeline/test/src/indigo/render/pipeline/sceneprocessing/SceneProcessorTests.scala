@@ -17,6 +17,7 @@ import indigo.scenegraph.Graphic
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
 import indigo.scenegraph.SceneUpdateFragment
+import indigo.scenegraph.materials.BlendMaterial
 import indigo.scenegraph.materials.Material
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -111,6 +112,46 @@ class SceneProcessorTests extends munit.FunSuite {
     assertEquals(layers.length, 2)
     assertEquals(layers(0).entities.length, 1)
     assertEquals(layers(1).entities.length, 1)
+  }
+
+  test("makeDisplayLayers - a Standard blend material layer reads the destination") {
+    val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
+    val scene =
+      SceneUpdateFragment(
+        LayerKey("a") -> Layer(graphic).withBlendMaterial(BlendMaterial.Lighting(RGBA.White))
+      )
+
+    val result = SceneProcessor.makeDisplayLayers(
+      scene,
+      Batch.empty[GlobalEvent],
+      (_: GlobalEvent) => (),
+      doc
+    )
+
+    val (layers, _) = result
+
+    assertEquals(layers.length, 1)
+    assertEquals(layers(0).blendReadsDestination, true)
+  }
+
+  test("makeDisplayLayers - a Fast blend material layer does not read the destination") {
+    val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
+    val scene =
+      SceneUpdateFragment(
+        LayerKey("a") -> Layer(graphic).withBlendMaterial(BlendMaterial.Normal)
+      )
+
+    val result = SceneProcessor.makeDisplayLayers(
+      scene,
+      Batch.empty[GlobalEvent],
+      (_: GlobalEvent) => (),
+      doc
+    )
+
+    val (layers, _) = result
+
+    assertEquals(layers.length, 1)
+    assertEquals(layers(0).blendReadsDestination, false)
   }
 
   test("makeDisplayLayers - empty scene") {

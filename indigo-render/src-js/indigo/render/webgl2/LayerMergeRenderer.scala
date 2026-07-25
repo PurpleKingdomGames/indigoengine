@@ -72,6 +72,39 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     draw()
   }
 
+  // As `mergeToBackBuffer`, but for blend materials that never sample the destination. We bind the accumulation
+  // buffer as the target *without clearing* and blend the layer straight onto it via the hardware blend mode, so
+  // no destination copy (and no ping-pong blit) is needed. Only SRC_CHANNEL is attached.
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def mergeToBackBufferInPlace(
+      projection: scalajs.js.Array[Float],
+      srcFrameBuffer: FrameBufferComponents.SingleOutput,
+      targetFrameBuffer: FrameBufferComponents.SingleOutput,
+      width: Int,
+      height: Int,
+      customShaders: scalajs.js.Dictionary[WebGLProgram],
+      shaderId: ShaderId,
+      shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
+  ): Unit = {
+
+    FrameBufferFunctions.switchToFramebuffer(gl2, targetFrameBuffer.frameBuffer, RGBA.Zero, false)
+
+    // Switch and reference shader
+    val activeShader: WebGLProgram =
+      setupActiveShader(projection, width, height, customShaders, shaderId)
+
+    // UBO data
+    setupMergeUBOData(activeShader, shaderUniformData)
+
+    // Assign src channel. To avoid GL Feedback loop errors, we also explicitly unset
+    // the DST_CHANNEL.
+    WebGLHelper.attach(gl2, activeShader, 0, "SRC_CHANNEL", srcFrameBuffer.diffuse)
+    WebGLHelper.attach(gl2, activeShader, 1, "DST_CHANNEL", null)
+
+    // Draw to framebuffer
+    draw()
+  }
+
   def mergeToDefaultFramebuffer(
       projection: scalajs.js.Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,

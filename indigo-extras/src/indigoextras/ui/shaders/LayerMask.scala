@@ -9,7 +9,7 @@ import ultraviolet.syntax.*
 
 import scala.annotation.nowarn
 
-final case class LayerMask(mask: Rectangle) extends BlendMaterial:
+final case class LayerMask(mask: Rectangle) extends BlendMaterial.SrcOnly:
   lazy val toShaderData: ShaderData =
     ShaderData(
       LayerMask.shader.id,

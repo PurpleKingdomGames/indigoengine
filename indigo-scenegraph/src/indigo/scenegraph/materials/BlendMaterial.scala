@@ -12,17 +12,49 @@ import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGB
 import indigoengine.shared.datatypes.RGBA
 
-trait BlendMaterial:
+/** BlendMaterials describe how Indigo should blend or composite the current layer onto the accumulated scene so far.
+  */
+sealed trait BlendMaterial:
+
+  /** The ShaderData that tells the rendering pipeline what you need to render using this BlendMaterial.
+    */
   def toShaderData: ShaderData
 
 object BlendMaterial {
 
-  case object Normal extends BlendMaterial derives CanEqual {
+  extension (bm: BlendMaterial)
+    /** Signals if this BlendMaterial can read from the destination, or not.
+      */
+    def supportsDestinationRead: Boolean =
+      bm match
+        case _: SrcAndDst => true
+        case _: SrcOnly   => false
+
+  /** When in doubt, extend `SrcAndDst`, this blend material uses the default render pipeline.
+    *
+    * A `SrcAndDst` blend material's shader samples the destination (the result composited so far, via `DST_CHANNEL`).
+    * Compositing it requires the full render path, including a copy of the accumulated scene for the shader to read.
+    */
+  trait SrcAndDst extends BlendMaterial
+
+  /** When in doubt, extend `SrcAndDst`. `SrcOnly` allows for faster rendering at the expense of not being able to read
+    * from the destination / target texture buffer.
+    *
+    * A `SrcOnly` blend material's shader does **not** sample the destination - its output depends only on the source
+    * layer. This lets the renderer blend it straight onto the scene in place, skipping the destination copy that
+    * `SrcAndDst` materials need. Only extend `SrcOnly` if the shader never reads `DST_CHANNEL`.
+    *
+    * Note: The `DST_CHANNEL` and `DST` variables are still available to the shader via the environment, but they are
+    * not set in a SrcOnly shader and may error if you attempt to reference them.
+    */
+  trait SrcOnly extends BlendMaterial
+
+  case object Normal extends BlendMaterial.SrcOnly derives CanEqual {
     lazy val toShaderData: ShaderData =
       ShaderData(StandardShaders.NormalBlend.id)
   }
 
-  final case class Lighting(ambient: RGBA) extends BlendMaterial derives CanEqual {
+  final case class Lighting(ambient: RGBA) extends BlendMaterial.SrcAndDst derives CanEqual {
     lazy val toShaderData: ShaderData =
       ShaderData(
         StandardShaders.LightingBlend.id,
@@ -48,7 +80,7 @@ object BlendMaterial {
       overlay: Fill,
       saturation: Double,
       affectsBackground: Boolean
-  ) extends BlendMaterial derives CanEqual {
+  ) extends BlendMaterial.SrcAndDst derives CanEqual {
 
     def withAlpha(newAlpha: Double): BlendEffects =
       this.copy(alpha = newAlpha)

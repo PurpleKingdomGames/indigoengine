@@ -121,7 +121,7 @@ object RefractionEntity:
   def apply(diffuse: AssetName): RefractionEntity =
     RefractionEntity(diffuse, FillType.Normal)
 
-final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual:
+final case class RefractionBlend(multiplier: Double) extends BlendMaterial.SrcAndDst derives CanEqual:
   lazy val toShaderData: ShaderData =
     ShaderData(
       Refraction.blendShader.id,
