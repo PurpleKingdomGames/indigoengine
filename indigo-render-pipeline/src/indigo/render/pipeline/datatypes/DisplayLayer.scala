@@ -13,6 +13,7 @@ final case class DisplayLayer(
     magnification: Option[Int],
     entityBlend: Blend,
     layerBlend: Blend,
+    blendReadsDestination: Boolean,
     shaderId: ShaderId,
     shaderUniformData: Batch[DisplayObjectUniformData],
     camera: Option[Camera]

@@ -137,7 +137,9 @@ object SceneProcessor:
       while j < contentLayers.length do
         val content    = contentLayers(j)
         val blending   = content.blending.getOrElse(Blending.Normal)
-        val shaderData = blending.blendMaterial.toShaderData
+        val blendMat   = blending.blendMaterial
+        val shaderData = blendMat.toShaderData
+        val readsDest  = blendMat.supportsDestinationRead
 
         val conversionResults: DisplayConversionResults =
           displayObjectConverter
@@ -155,6 +157,7 @@ object SceneProcessor:
             magnificationOpt,
             blending.entity,
             blending.layer,
+            readsDest,
             shaderData.shaderId,
             MergeUniformData.mergeShaderToUniformData(shaderData),
             content.camera

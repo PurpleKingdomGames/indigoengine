@@ -463,6 +463,6 @@ object Game:
         }
 
       val material: BlendMaterial =
-        new BlendMaterial:
+        new BlendMaterial.SrcOnly:
           def toShaderData: ShaderData =
             ShaderData(shader.id)

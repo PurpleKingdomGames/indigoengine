@@ -86,9 +86,6 @@ final class RendererWebGL2(
   private var emptyFrameBuffer: FrameBufferComponents.SingleOutput = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var greenIsTarget: Boolean = true
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendEq: String = "add"
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
@@ -143,7 +140,7 @@ final class RendererWebGL2(
     initialiseFrameBuffers(ctx)
 
     shaders.foreach { shader =>
-      if (!customShaders.contains(shader.id.toString))
+      if !customShaders.contains(shader.id.toString) then
         customShaders.update(
           shader.id.toString,
           WebGLHelper.shaderProgramSetup(gl2, shader.id.toString, shader)
@@ -182,7 +179,7 @@ final class RendererWebGL2(
   }
 
   def setBlendMode(gl2: WebGL2RenderingContext, blend: Blend): Unit = {
-    if (blend.op != currentBlendEq) {
+    if blend.op != currentBlendEq then {
       currentBlendEq = blend.op
 
       blend match {
@@ -210,7 +207,8 @@ final class RendererWebGL2(
     }
 
     val nextBlendPair = (blend.src, blend.dst)
-    if (currentBlendFactors != nextBlendPair) {
+
+    if currentBlendFactors != nextBlendPair then {
       currentBlendFactors = nextBlendPair
       WebGLHelper.setBlendFunc(gl2, blend.src, blend.dst)
     }
@@ -226,6 +224,13 @@ final class RendererWebGL2(
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var currentBlend: Blend = Blend.Normal
+
+    // The buffer holding the scene composited so far. Both accumulators are cleared at the end of the previous
+    // frame, so starting on either is valid; blue matches the original first-iteration behaviour.
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var currentAccumulator: FrameBufferComponents.SingleOutput = blueDstFrameBuffer
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var otherAccumulator: FrameBufferComponents.SingleOutput = greenDstFrameBuffer
 
     sceneData.layers.foreach { layer =>
       WebGLHelper.attachUBOData(gl2, layer.lightsData.toJSArray, lightDataUBOBuffer)
@@ -254,7 +259,7 @@ final class RendererWebGL2(
       WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
       // Set the entity blend mode
-      if (currentBlend != layer.entityBlend) {
+      if currentBlend != layer.entityBlend then {
         currentBlend = layer.entityBlend
         setBlendMode(gl2, currentBlend)
       }
@@ -292,7 +297,7 @@ final class RendererWebGL2(
             }
 
       // Clear the blend mode
-      if (currentBlend != Blend.Normal) {
+      if currentBlend != Blend.Normal then {
         currentBlend = Blend.Normal
         setBlendMode(gl2, currentBlend)
       }
@@ -308,32 +313,44 @@ final class RendererWebGL2(
       )
 
       // Set the layer blend mode
-      if (currentBlend != layer.layerBlend) {
+      if currentBlend != layer.layerBlend then {
         currentBlend = layer.layerBlend
         setBlendMode(gl2, currentBlend)
       }
 
-      // Flip which buffer is the target.
-      if (greenIsTarget) {
-        greenIsTarget = false
-        blitBuffers(gl2, blueDstFrameBuffer.frameBuffer, greenDstFrameBuffer.frameBuffer)
-      } else {
-        greenIsTarget = true
-        blitBuffers(gl2, greenDstFrameBuffer.frameBuffer, blueDstFrameBuffer.frameBuffer)
-      }
+      // Merge the layer buffer onto the back buffer.
+      if layer.blendReadsDestination then {
+        // A blend material that samples the destination needs a separate, sampleable
+        // copy of the accumulated scene, so we ping-pong to the other buffer first.
+        blitBuffers(gl2, currentAccumulator.frameBuffer, otherAccumulator.frameBuffer)
 
-      // Merge the layer buffer onto the back buffer
-      layerMergeRenderInstance.mergeToBackBuffer(
-        orthographicProjectionMatrixNoMag,
-        scalingFrameBuffer,
-        if (!greenIsTarget) blueDstFrameBuffer
-        else greenDstFrameBuffer, // Inverted condition, because by now it's flipped.
-        lastWidth,
-        lastHeight,
-        customShaders,
-        layer.shaderId,
-        layer.shaderUniformData.toJSArray
-      )
+        layerMergeRenderInstance.mergeToBackBuffer(
+          orthographicProjectionMatrixNoMag,
+          scalingFrameBuffer,
+          currentAccumulator,
+          lastWidth,
+          lastHeight,
+          customShaders,
+          layer.shaderId,
+          layer.shaderUniformData.toJSArray
+        )
+
+        val previous = currentAccumulator
+        currentAccumulator = otherAccumulator
+        otherAccumulator = previous
+      } else
+        // A blend material that never samples the destination can be blended
+        // straight onto the accumulator in place.
+        layerMergeRenderInstance.mergeToBackBufferInPlace(
+          orthographicProjectionMatrixNoMag,
+          scalingFrameBuffer,
+          currentAccumulator,
+          lastWidth,
+          lastHeight,
+          customShaders,
+          layer.shaderId,
+          layer.shaderUniformData.toJSArray
+        )
     }
 
     // transfer the back buffer to the default framebuffer
@@ -341,7 +358,7 @@ final class RendererWebGL2(
 
     layerMergeRenderInstance.mergeToDefaultFramebuffer(
       orthographicProjectionMatrixNoMagFlipped,
-      if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
+      currentAccumulator,
       lastWidth,
       lastHeight,
       clearColor,
@@ -372,7 +389,7 @@ final class RendererWebGL2(
     val width  = ctx.width
     val height = ctx.height
 
-    if (!resizeRun || (lastWidth != width) || (lastHeight != height)) {
+    if !resizeRun || (lastWidth != width) || (lastHeight != height) then {
       resizeRun = true
       lastWidth = width
       lastHeight = height

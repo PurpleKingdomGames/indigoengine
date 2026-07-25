@@ -47,7 +47,7 @@ object UltravioletScene extends Scene[SandboxGameModel] {
 
 }
 
-case object MakeRedBlend extends BlendMaterial derives CanEqual {
+case object MakeRedBlend extends BlendMaterial.SrcOnly derives CanEqual {
   lazy val toShaderData: ShaderData =
     ShaderData(UVShaders.redBlendId)
 }
