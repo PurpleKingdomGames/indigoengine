@@ -66,7 +66,7 @@ class DateTimeTests extends munit.FunSuite {
   }
 
   test("DateTime should calculate the day of the week") {
-    assertEquals(DateTime(0L, 0).dayOfWeek, 4)          // Thursday 1970-01-01
+    assertEquals(DateTime(0L, 0).dayOfWeek, 4)             // Thursday 1970-01-01
     assertEquals(DateTime(86400000L, 0).dayOfWeek, 5)      // Friday
     assertEquals(DateTime(-1L, 0).dayOfWeek, 3)            // Wednesday 1969-12-31
     assertEquals(DateTime(951782400000L, 0).dayOfWeek, 2)  // Tuesday 2000-02-29
@@ -98,14 +98,14 @@ class DateTimeTests extends munit.FunSuite {
   }
 
   test("asUtc should be idempotent") {
-    val once  = DateTime(1709214330000L,3600).asUtc
+    val once  = DateTime(1709214330000L, 3600).asUtc
     val twice = once.asUtc
 
     assertEquals(once, twice)
   }
 
   test("asUtc should be a no-op when the offset is already zero") {
-    val dt = DateTime(1709214330000L,0)
+    val dt = DateTime(1709214330000L, 0)
 
     assertEquals(dt.asUtc, dt)
   }

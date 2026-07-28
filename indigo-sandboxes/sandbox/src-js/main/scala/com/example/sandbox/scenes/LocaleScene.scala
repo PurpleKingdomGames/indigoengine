@@ -6,11 +6,11 @@ import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import example.TestFont
 import indigo.*
+import indigo.core.time.DateFormat
+import indigo.core.time.TimeFormat
 import indigo.scenes.*
 import indigoextras.ui.*
 import indigoextras.ui.syntax.*
-import indigo.core.time.DateFormat
-import indigo.core.time.TimeFormat
 
 object LocaleScene extends Scene[SandboxGameModel]:
 

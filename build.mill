@@ -84,8 +84,7 @@ trait SharedNative extends Shared, ScalaNativeModule:
     if os.contains("win") then
       val home = System.getProperty("user.home").replace('\\', '/')
       Seq(s"-L$home/scoop/apps/sdl3/current/lib", "-lSDL3", "-lopengl32")
-    else if (os.contains("mac"))
-      Seq("-L/opt/homebrew/lib", "-lSDL3", "-framework", "OpenGL")
+    else if (os.contains("mac")) Seq("-L/opt/homebrew/lib", "-lSDL3", "-framework", "OpenGL")
     else
       val libDir = Option(System.getenv("SDL_LIBDIR")).filter(_.nonEmpty).map(dir => s"-L$dir").toSeq
       libDir ++ Seq("-lSDL3", "-lGL")

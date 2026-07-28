@@ -1,7 +1,7 @@
 package indigo.platform.time
 
-import indigo.core.time.DateTime
 import indigo.core.time.DateFormat
+import indigo.core.time.DateTime
 import indigo.core.time.TimeFormat
 
 /** Provides access to the system's current date/time and preferred date/time display formats

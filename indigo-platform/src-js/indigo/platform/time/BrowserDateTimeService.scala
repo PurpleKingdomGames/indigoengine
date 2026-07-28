@@ -1,28 +1,51 @@
 package indigo.platform.time
 
-import indigo.core.time.DateTime
-import scalajs.js
 import indigo.core.time.DateFormat
+import indigo.core.time.DateTime
 import indigo.core.time.TimeFormat
+import indigoengine.shared.collections.Batch
+import org.scalajs.dom
+
+import scalajs.js
 
 final case class BrowserDateTimeService() extends DateTimeService:
   private lazy val formats: (DateFormat, TimeFormat) =
-    val frmt = new js.Date(2000, 11, 31, 13, 0, 0).toLocaleString()
-    val dateFormat =
-      if frmt.indexOf("2000") < frmt.indexOf("12") then DateFormat.YearMonthDay
-      else if frmt.indexOf("12") < frmt.indexOf("31") then DateFormat.MonthDayYear
-      else DateFormat.DayMonthYear
+    val options =
+      new DateTimeFormatOptions:
+        val year  = "numeric"
+        val month = "numeric"
+        val day   = "numeric"
+        val hour  = "numeric"
 
-    val timeFormat = if (frmt.indexOf("13") > -1) TimeFormat.TwentyFourHour else TimeFormat.TwelveHour
+    val formatter = BrowserDateTimeFormat(dom.window.navigator.languages, options)
+    val parts = Batch.fromJSArray(
+      formatter
+        .formatToParts(new js.Date(2000, 11, 31, 13, 0, 0))
+        .map(_.`type`)
+        .filter {
+          case "year" | "month" | "day" => true
+          case _                        => false
+        }
+    )
+
+    val dateFormat = parts match
+      case Batch("year", "month", "day") => DateFormat.YearMonthDay
+      case Batch("day", "month", "year") => DateFormat.DayMonthYear
+      case Batch("month", "day", "year") => DateFormat.MonthDayYear
+      case _                             => DateFormat.YearMonthDay
+
+    val timeFormat = formatter.resolvedOptions().hourCycle.toOption.getOrElse("h24") match
+      case "h11" | "h12" => TimeFormat.TwelveHour
+      case "h23" | "h24" => TimeFormat.TwentyFourHour
+      case _             => TimeFormat.TwentyFourHour
 
     (dateFormat, timeFormat)
 
   def current: DateTime =
-    // TODO: We should replace this with the new Temporal.Now when Scala.JS supports itM
-    val dt               = new js.Date()
-    val secondsEastOfUtc = -(dt.getTimezoneOffset() * 60).toInt
+    val zdt              = TemporalNow.zonedDateTimeISO()
+    val secondsEastOfUtc = (zdt.offsetNanoseconds * 0.000000001).toInt
 
-    DateTime(dt.getTime().toLong + secondsEastOfUtc * 1000L, secondsEastOfUtc)
+    DateTime(zdt.epochMilliseconds.toLong + secondsEastOfUtc * 1000L, secondsEastOfUtc)
 
   def dateformat: DateFormat = formats._1
   def timeformat: TimeFormat = formats._2
