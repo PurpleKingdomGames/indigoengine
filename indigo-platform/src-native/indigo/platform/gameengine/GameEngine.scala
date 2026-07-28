@@ -34,10 +34,10 @@ import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
-import scala.scalanative.libc.locale.*
-import scala.scalanative.unsafe.*
 
 import scala.compiletime.uninitialized
+import scala.scalanative.libc.locale.*
+import scala.scalanative.unsafe.*
 
 final class GameEngine[StartUpData, GameModel](
     services: IndigoCoreServices[TempImageData, Array[Byte]], // Fake types.
