@@ -54,4 +54,5 @@ final case class DateTime(
 
     (year, month, day, hour, minute, second, millisecond, dayOfWeek)
 
+object DateTime:
   given Ordering[DateTime] = Ordering.by(_.epochMillis)

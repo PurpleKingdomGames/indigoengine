@@ -4,10 +4,10 @@ import indigo.core.time.DateTime
 import indigo.core.time.DateFormat
 import indigo.core.time.TimeFormat
 
-/** Deals with retrieving locales that a user has on their system
+/** Provides access to the system's current date/time and preferred date/time display formats
   */
 trait DateTimeService:
-  /** The current active system locale. None if no locale has been specified
+  /** The current system date/time (local time) including the current UTC offset
     *
     * @return
     */
