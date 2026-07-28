@@ -37,6 +37,7 @@ object LocaleScene extends Scene[SandboxGameModel]:
 
       IndigoLogger.info("Current locale: " + current)
       IndigoLogger.info("Preferred locales: " + preferred)
+      IndigoLogger.info("Current Date + Time: " + currentDateTimeString(context))
 
       Outcome(model.copy(loggedLocales = true))
 
@@ -48,3 +49,29 @@ object LocaleScene extends Scene[SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
+
+  def currentDateTimeString(ctx: SceneContext): String =
+    val date = ctx.services.datetime.current
+
+    val year  = f"${date.year}%04d"
+    val month = f"${date.month}%02d"
+    val day   = f"${date.day}%02d"
+
+    val dateStr = ctx.services.datetime.dateformat match
+      case DateFormat.YearMonthDay => s"$year-$month-$day"
+      case DateFormat.DayMonthYear => s"$day-$month-$year"
+      case DateFormat.MonthDayYear => s"$month-$day-$year"
+
+    val minute = f"${date.minute}%02d"
+    val second = f"${date.second}%02d"
+    val millis = f"${date.millisecond}%03d"
+
+    val timeStr = ctx.services.datetime.timeformat match
+      case TimeFormat.TwentyFourHour =>
+        s"${f"${date.hour}%02d"}:$minute:$second.$millis"
+      case TimeFormat.TwelveHour =>
+        val hour12   = { val h = date.hour % 12; if h == 0 then 12 else h }
+        val meridiem = if date.hour < 12 then "AM" else "PM"
+        s"${f"$hour12%02d"}:$minute:$second.$millis $meridiem"
+
+    s"$dateStr $timeStr"

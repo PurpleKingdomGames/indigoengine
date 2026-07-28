@@ -18,6 +18,8 @@ import indigo.platform.events.GlobalEventStream
 import indigo.platform.gameengine.GameLoop
 import indigo.platform.locale.BrowserLocaleService
 import indigo.platform.locale.LocaleService
+import indigo.platform.time.BrowserDateTimeService
+import indigo.platform.time.DateTimeService
 import indigo.render.Renderer
 import indigo.render.pipeline.assets.AssetMapping
 import indigo.render.pipeline.datatypes.ProcessedSceneData
@@ -39,8 +41,6 @@ import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 
 import scala.compiletime.uninitialized
-import indigo.platform.time.DateTimeService
-import indigo.platform.time.BrowserDateTimeService
 
 final class GameEngine[StartUpData, GameModel](
     services: IndigoCoreServices[html.Image, ImageData],
