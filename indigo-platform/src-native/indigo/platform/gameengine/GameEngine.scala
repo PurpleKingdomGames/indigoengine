@@ -16,6 +16,7 @@ import indigo.platform.assets.*
 import indigo.platform.audio.AudioService
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.locale.NativeLocaleService
+import indigo.platform.time.NativeDateTimeService
 import indigo.render.Renderer
 import indigo.render.opengl.ContextAndSize
 import indigo.render.pipeline.assets.AssetMapping
@@ -33,6 +34,8 @@ import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
+import scala.scalanative.libc.locale.*
+import scala.scalanative.unsafe.*
 
 import scala.compiletime.uninitialized
 
@@ -120,6 +123,10 @@ final class GameEngine[StartUpData, GameModel](
       globalEventStream,
       services.imageService
     )
+
+    IndigoLogger.info("Setting up system locale")
+    val _ = setlocale(LC_ALL, c"")      // Make sure C knows the current system locale
+    val _ = setlocale(LC_NUMERIC, c"C") // Don't change the way C handles numbers
 
     tryBuildGameLoop()
 
@@ -362,7 +369,8 @@ object GameEngine {
         frameProccessor,
         startFrameLocked,
         () => Rectangle(renderer.screenWidth, renderer.screenHeight),
-        NativeLocaleService()
+        NativeLocaleService(),
+        NativeDateTimeService()
       )
     )
 }

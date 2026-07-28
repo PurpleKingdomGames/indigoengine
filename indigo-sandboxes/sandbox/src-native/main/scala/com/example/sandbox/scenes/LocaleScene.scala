@@ -3,6 +3,8 @@ package com.example.sandbox.scenes
 import com.example.sandbox.SandboxGameModel
 import indigo.*
 import indigo.scenes.*
+import indigo.core.time.DateFormat
+import indigo.core.time.TimeFormat
 
 /** The native platform has no renderer, asset loading or pointer / keyboard input yet, so the locale strings cannot be
   * drawn, nor a window opened by clicking them. Until those land, this scene logs the locales the service reports. See
