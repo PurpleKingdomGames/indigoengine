@@ -7,16 +7,19 @@ class NativeDateTimeServiceTests extends munit.FunSuite:
   test("reads the host's clock") {
     val service = NativeDateTimeService()
     val before  = System.currentTimeMillis()
-    val now     = service.current
+    val now     = service.current.asUtc.localMillisSinceUnixEpoch
     val after   = System.currentTimeMillis()
 
-    assert(now.epochMillis >= before && now.epochMillis <= after, now.epochMillis)
+    assert(now >= before && now <= after, now)
   }
 
   test("the local time is the instant shifted by the offset") {
     val now = NativeDateTimeService().current
 
-    assertEquals(now.localMillisSinceUnixEpoch - now.secondsEastOfUtc.toLong * 1000L, now.epochMillis)
+    assertEquals(
+      now.localMillisSinceUnixEpoch - now.secondsEastOfUtc.toLong * 1000L,
+      now.asUtc.localMillisSinceUnixEpoch
+    )
   }
 
   test("the offset is a real world one") {
