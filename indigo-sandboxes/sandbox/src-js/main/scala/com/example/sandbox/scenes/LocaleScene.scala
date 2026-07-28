@@ -51,9 +51,10 @@ object LocaleScene extends Scene[SandboxGameModel]:
       context: SceneContext,
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
+    val ctx = LocaleUI.uiContext(context.toContext)
     model.localeButton
-      .present(LocaleUI.uiContext(context.toContext))
-      .combine(LocaleUI.dateTimeLabel.present(LocaleUI.uiContext(context.toContext)))
+      .present(ctx)
+      .combine(LocaleUI.dateTimeLabel.present(ctx))
       .map { buttonLayer =>
         SceneUpdateFragment(
           Constants.LayerKeys.game -> Layer.Stack(Batch(buttonLayer._1, buttonLayer._2))
@@ -111,11 +112,11 @@ object LocaleUI:
       .onClick(WindowEvent.OpenAt(windowId, Coords(20, 20)))
 
   def dateTimeLabel: Label[Unit] =
-    Label[Unit](currentDateTimeString, (ctx, s) => textBounds(ctx, s))((ctx, _) =>
+    Label[Unit](currentDateTimeString, (ctx, s) => textBounds(ctx, s))((ctx, lbl) =>
       Outcome(
         Layer(
           textInstance
-            .withText(currentDateTimeString(ctx))
+            .withText(lbl.text(ctx))
             .withMaterial(SandboxAssets.testFontMaterial.withTint(RGBA.White))
             .moveTo(ctx.parent.coords.unsafeToPoint)
             .moveBy(Point(0, 50))
