@@ -44,3 +44,15 @@ object SDL:
 
   def SDL_GetPreferredLocales(count: Ptr[CInt]): Ptr[Ptr[SDL_Locale]] = extern
   def SDL_free(mem: Ptr[Byte]): Unit                                  = extern
+
+  // Nanoseconds since the Unix epoch.
+  type SDL_Time = CLongLong
+
+  // SDL_DateTime { int year, month, day, hour, minute, second, nanosecond, day_of_week, utc_offset; }
+  type SDL_DateTime = CStruct9[CInt, CInt, CInt, CInt, CInt, CInt, CInt, CInt, CInt]
+
+  def SDL_GetCurrentTime(ticks: Ptr[SDL_Time]): Boolean                                       = extern
+  def SDL_TimeToDateTime(ticks: SDL_Time, dt: Ptr[SDL_DateTime], localTime: Boolean): Boolean = extern
+
+  // SDL_DateFormat and SDL_TimeFormat are C enums, so CInt sized.
+  def SDL_GetDateTimeLocalePreferences(dateFormat: Ptr[CInt], timeFormat: Ptr[CInt]): Boolean = extern
