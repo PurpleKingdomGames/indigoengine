@@ -31,5 +31,3 @@ class NativeDateTimeServiceTests extends munit.FunSuite:
     assertEquals(service.dateformat, NativeDateTimeService().dateformat)
     assertEquals(service.timeformat, NativeDateTimeService().timeformat)
   }
-
-
