@@ -1,5 +1,6 @@
 package indigo.render.webgl2
 
+import indigo.core.render.Magnification
 import indigoengine.shared.datatypes.RGBA
 import indigoengine.webgl2.facades.ColorAttachments
 import org.scalajs.dom.WebGLFramebuffer
@@ -7,7 +8,7 @@ import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.WebGLTexture
 
-object FrameBufferFunctions {
+object FrameBufferFunctions:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def createAndSetupTexture(gl: WebGLRenderingContext, width: Int, height: Int): WebGLTexture = {
@@ -44,7 +45,9 @@ object FrameBufferFunctions {
 
     FrameBufferComponents.SingleOutput(
       frameBuffer,
-      diffuse
+      diffuse,
+      width,
+      height
     )
   }
 
@@ -72,17 +75,61 @@ object FrameBufferFunctions {
       albedo,
       emissive,
       normal,
-      specular
+      specular,
+      width,
+      height
     )
   }
 
+  private def ceilDiv(value: Int, divisor: Int): Int =
+    (value + divisor - 1) / divisor
+
+  /** The framebuffer size needed to hold a layer at each magnification, indexed from magnification 1. A layer at
+    * magnification `m` only ever covers `width / m` x `height / m` game pixels, so that is all the space it needs.
+    * Rounded up so that a magnification that does not divide the screen evenly is never cropped.
+    */
+  private[webgl2] def decideBufferSizes(fullWidth: Int, fullHeight: Int): List[(Int, Int)] =
+    (1 to Magnification.Max.toInt).toList.map { m =>
+      (Math.max(1, ceilDiv(fullWidth, m)), Math.max(1, ceilDiv(fullHeight, m)))
+    }
+
+  /** Creates an array of framebuffers, one per magnification, starting at 1 (not 0), magnification cannot be < 1 or >
+    * [[Magnification.Max]], so:
+    *   - 800x600 @ mag 1 = 800x600
+    *   - 800x600 @ mag 2 = 400x300
+    *   - 800x600 @ mag 3 = 267x200
+    *   - 800x600 @ mag 4 = 200x150
+    */
+  def createFrameBufferArray(
+      gl: WebGLRenderingContext,
+      fullWidth: Int,
+      fullHeight: Int
+  ): Array[FrameBufferComponents.SingleOutput] =
+    decideBufferSizes(fullWidth, fullHeight).map { case (w, h) =>
+      FrameBufferFunctions.createFrameBufferSingle(gl, w, h)
+    }.toArray
+
+  private def clampToRange(value: Int, max: Int): Int =
+    Math.min(max, Math.max(0, value))
+
+  private[webgl2] def clampMagnification(magnification: Option[Int], max: Int): Int =
+    // -1 to make it zero indexed...
+    clampToRange(magnification.getOrElse(1) - 1, max)
+
+  def selectBufferByMagnification(
+      magnification: Option[Int],
+      buffers: Array[FrameBufferComponents.SingleOutput]
+  ): FrameBufferComponents.SingleOutput =
+    buffers(clampMagnification(magnification, buffers.length - 1))
+
   def switchToFramebuffer(
       gl: WebGLRenderingContext,
-      frameBuffer: WebGLFramebuffer,
+      frameBuffer: FrameBufferComponents,
       clearColor: RGBA,
       clear: Boolean
   ): Unit = {
-    gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
+    gl.bindFramebuffer(FRAMEBUFFER, frameBuffer.frameBuffer)
+    gl.viewport(0, 0, frameBuffer.width.toDouble, frameBuffer.height.toDouble)
 
     if (clear) {
       gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
@@ -91,8 +138,9 @@ object FrameBufferFunctions {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def switchToDefaultFramebuffer(gl: WebGLRenderingContext, clearColor: RGBA): Unit = {
+  def switchToDefaultFramebuffer(gl: WebGLRenderingContext, width: Int, height: Int, clearColor: RGBA): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, null)
+    gl.viewport(0, 0, width.toDouble, height.toDouble)
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
   }
@@ -101,21 +149,24 @@ object FrameBufferFunctions {
     gl.deleteTexture(fb.diffuse)
     gl.deleteFramebuffer(fb.frameBuffer)
   }
-}
 
 sealed trait FrameBufferComponents {
   val frameBuffer: WebGLFramebuffer
   val colorAttachments: scalajs.js.Array[Int]
+  val width: Int
+  val height: Int
 }
 
-object FrameBufferComponents {
+object FrameBufferComponents:
 
   final class MultiOutput(
       val frameBuffer: WebGLFramebuffer,
       val albedo: WebGLTexture,
       val emissive: WebGLTexture,
       val normal: WebGLTexture,
-      val specular: WebGLTexture
+      val specular: WebGLTexture,
+      val width: Int,
+      val height: Int
   ) extends FrameBufferComponents {
     val colorAttachments: scalajs.js.Array[Int] =
       scalajs.js.Array[Int](
@@ -131,18 +182,23 @@ object FrameBufferComponents {
         albedo: WebGLTexture,
         emissive: WebGLTexture,
         normal: WebGLTexture,
-        specular: WebGLTexture
+        specular: WebGLTexture,
+        width: Int,
+        height: Int
     ): MultiOutput =
-      new MultiOutput(frameBuffer, albedo, emissive, normal, specular)
+      new MultiOutput(frameBuffer, albedo, emissive, normal, specular, width, height)
   }
 
-  final class SingleOutput(val frameBuffer: WebGLFramebuffer, val diffuse: WebGLTexture) extends FrameBufferComponents {
+  final class SingleOutput(
+      val frameBuffer: WebGLFramebuffer,
+      val diffuse: WebGLTexture,
+      val width: Int,
+      val height: Int
+  ) extends FrameBufferComponents {
     val colorAttachments: scalajs.js.Array[Int] =
       scalajs.js.Array[Int](ColorAttachments.COLOR_ATTACHMENT0)
   }
   object SingleOutput {
-    def apply(frameBuffer: WebGLFramebuffer, diffuse: WebGLTexture): SingleOutput =
-      new SingleOutput(frameBuffer, diffuse)
+    def apply(frameBuffer: WebGLFramebuffer, diffuse: WebGLTexture, width: Int, height: Int): SingleOutput =
+      new SingleOutput(frameBuffer, diffuse, width, height)
   }
-
-}

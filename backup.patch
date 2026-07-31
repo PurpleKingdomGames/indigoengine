@@ -1,0 +1,174 @@
+diff --git a/indigo-render/src-js/indigo/render/webgl2/FrameBufferFunctions.scala b/indigo-render/src-js/indigo/render/webgl2/FrameBufferFunctions.scala
+index b8d9009ef..e5f4537c9 100644
+--- a/indigo-render/src-js/indigo/render/webgl2/FrameBufferFunctions.scala
++++ b/indigo-render/src-js/indigo/render/webgl2/FrameBufferFunctions.scala
+@@ -6,8 +6,9 @@ import org.scalajs.dom.WebGLFramebuffer
+ import org.scalajs.dom.WebGLRenderingContext
+ import org.scalajs.dom.WebGLRenderingContext.*
+ import org.scalajs.dom.WebGLTexture
++import scala.annotation.tailrec
+ 
+-object FrameBufferFunctions {
++object FrameBufferFunctions:
+ 
+   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+   private def createAndSetupTexture(gl: WebGLRenderingContext, width: Int, height: Int): WebGLTexture = {
+@@ -75,6 +76,44 @@ object FrameBufferFunctions {
+       specular
+     )
+   }
++  
++  private[webgl2] def decideBufferSizes(fullWidth: Int, fullHeight: Int): List[(Int, Int)] =
++    @tailrec
++    def rec(w: Int, h: Int, acc: List[(Int, Int)]): List[(Int, Int)] =
++      if w <= 100 || h <= 100 then acc :+ (w, h)
++      else rec(w / 2, h / 2, acc :+ (w, h))
++    
++    rec(fullWidth / 2, fullHeight / 2, List((fullWidth, fullHeight)))
++
++  /** Creates an array of framebuffers based on magnification, starts at 1 (not 0), magnification cannot be < 1, and
++    * each subsequent buffer is halfed in size until one dimension or the other is < 100, so:
++    *   - 800x600 @ mag 1 = 800x600
++    *   - 800x600 @ mag 2 = 400x300
++    *   - 800x600 @ mag 3 = 200x150
++    *   - 800x600 @ mag 4 = 100x75
++    */
++  def createFrameBufferArray(
++      gl: WebGLRenderingContext,
++      fullWidth: Int,
++      fullHeight: Int
++  ): Array[FrameBufferComponents.SingleOutput] =
++    decideBufferSizes(fullWidth, fullHeight)
++      .map { case (w, h) => FrameBufferFunctions.createFrameBufferSingle(gl, w, h) }
++      .toArray
++    
++  private def clampToRange(value: Int, max: Int): Int =
++    Math.min(max, Math.max(0, value))
++    
++  private[webgl2] def clampMagnification(magnification: Option[Int], max: Int): Int =
++    // -1 to make it zero indexed...
++    clampToRange(magnification.getOrElse(1) - 1, max) 
++    
++  def selectBufferByMagnification(
++      magnification: Option[Int],
++      buffers: => Array[FrameBufferComponents.SingleOutput]
++  ): FrameBufferComponents.SingleOutput =
++    val m = clampMagnification(magnification, buffers.length - 1)
++    buffers(m)
+ 
+   def switchToFramebuffer(
+       gl: WebGLRenderingContext,
+@@ -101,14 +140,13 @@ object FrameBufferFunctions {
+     gl.deleteTexture(fb.diffuse)
+     gl.deleteFramebuffer(fb.frameBuffer)
+   }
+-}
+ 
+ sealed trait FrameBufferComponents {
+   val frameBuffer: WebGLFramebuffer
+   val colorAttachments: scalajs.js.Array[Int]
+ }
+ 
+-object FrameBufferComponents {
++object FrameBufferComponents:
+ 
+   final class MultiOutput(
+       val frameBuffer: WebGLFramebuffer,
+@@ -144,5 +182,3 @@ object FrameBufferComponents {
+     def apply(frameBuffer: WebGLFramebuffer, diffuse: WebGLTexture): SingleOutput =
+       new SingleOutput(frameBuffer, diffuse)
+   }
+-
+-}
+diff --git a/indigo-render/src-js/indigo/render/webgl2/RendererWebGL2.scala b/indigo-render/src-js/indigo/render/webgl2/RendererWebGL2.scala
+index 0cbf32bbd..208efff76 100644
+--- a/indigo-render/src-js/indigo/render/webgl2/RendererWebGL2.scala
++++ b/indigo-render/src-js/indigo/render/webgl2/RendererWebGL2.scala
+@@ -79,9 +79,9 @@ final class RendererWebGL2(
+   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+   private var scalingFrameBuffer: FrameBufferComponents.SingleOutput = null
+   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+-  private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput = null
++  private var greenDstFrameBuffer: Array[FrameBufferComponents.SingleOutput] = null
+   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+-  private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput = null
++  private var blueDstFrameBuffer: Array[FrameBufferComponents.SingleOutput] = null
+   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+   private var emptyFrameBuffer: FrameBufferComponents.SingleOutput = null
+ 
+@@ -126,9 +126,10 @@ final class RendererWebGL2(
+   def initialiseFrameBuffers(ctx: ContextAndSize): Unit =
+     layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+     scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+-    greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+-    blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
++    greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferArray(ctx.context, ctx.width, ctx.height)
++    blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferArray(ctx.context, ctx.width, ctx.height)
+     emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
++    
+ 
+   def init(ctx: ContextAndSize, shaders: Set[RawShaderCode]): Unit = {
+     val gl2 = ctx.context
+@@ -227,14 +228,17 @@ final class RendererWebGL2(
+ 
+     // The buffer holding the scene composited so far. Both accumulators are cleared at the end of the previous
+     // frame, so starting on either is valid; blue matches the original first-iteration behaviour.
+-    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+-    var currentAccumulator: FrameBufferComponents.SingleOutput = blueDstFrameBuffer
+-    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+-    var otherAccumulator: FrameBufferComponents.SingleOutput = greenDstFrameBuffer
++    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
++    var currentAccumulator: FrameBufferComponents.SingleOutput = null
++    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
++    var otherAccumulator: FrameBufferComponents.SingleOutput = null
+ 
+     sceneData.layers.foreach { layer =>
+       WebGLHelper.attachUBOData(gl2, layer.lightsData.toJSArray, lightDataUBOBuffer)
+ 
++      currentAccumulator = FrameBufferFunctions.selectBufferByMagnification(layer.magnification, blueDstFrameBuffer)
++      otherAccumulator = FrameBufferFunctions.selectBufferByMagnification(layer.magnification, greenDstFrameBuffer)
++
+       val layerProjection: scalajs.js.Array[Float] =
+         layer.camera.orElse(sceneData.camera) match
+           case None =>
+@@ -367,8 +371,8 @@ final class RendererWebGL2(
+       sceneData.shaderUniformData.toJSArray
+     )
+ 
+-    clearBuffer(gl2, blueDstFrameBuffer.frameBuffer)
+-    clearBuffer(gl2, greenDstFrameBuffer.frameBuffer)
++    clearBuffer(gl2, currentAccumulator.frameBuffer)
++    clearBuffer(gl2, otherAccumulator.frameBuffer)
+     clearBuffer(gl2, emptyFrameBuffer.frameBuffer)
+   }
+ 
+@@ -402,14 +406,14 @@ final class RendererWebGL2(
+ 
+       FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
+       FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+-      FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
+-      FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
++      greenDstFrameBuffer.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
++      blueDstFrameBuffer.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
+       FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
+ 
+       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+-      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+-      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
++      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferArray(gl2, width, height)
++      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferArray(gl2, width, height)
+       emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+ 
+       gl2.viewport(0, 0, width.toDouble, height.toDouble)
+@@ -441,8 +445,8 @@ final class RendererWebGL2(
+     // Delete the GPU resources owned by this renderer.
+     FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
+     FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+-    FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
+-    FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
++    greenDstFrameBuffer.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
++    blueDstFrameBuffer.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
+     FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
+ 
+     gl2.deleteBuffer(vertexAndTextureCoordsBuffer)
