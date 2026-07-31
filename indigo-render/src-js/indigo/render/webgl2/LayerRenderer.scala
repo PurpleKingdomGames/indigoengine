@@ -409,7 +409,7 @@ class LayerRenderer(
       customShaders: => js.Dictionary[WebGLProgram]
   ): Unit = {
 
-    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
+    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
     gl2.activeTexture(TEXTURE0);

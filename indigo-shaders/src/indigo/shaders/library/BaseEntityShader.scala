@@ -215,8 +215,9 @@ trait BaseEntityShader:
 
         env.gl_Position = env.u_projection * u_baseTransform * transform * VERTEX
 
+        // The layer projection flips Y, so clip space already runs top-down and needs no further inversion here.
         val screenCoords: vec2 = env.gl_Position.xy * 0.5f + 0.5f
-        v_screenCoordsRotation = vec3(vec2(screenCoords.x, 1.0f - screenCoords.y) * env.VIEWPORT_SIZE, ROTATION)
+        v_screenCoordsRotation = vec3(screenCoords * env.VIEWPORT_SIZE, ROTATION)
 
         v_uv_size = vec4(UV, SIZE)
         v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS)

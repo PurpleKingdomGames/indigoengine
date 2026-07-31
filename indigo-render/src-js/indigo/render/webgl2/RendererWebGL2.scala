@@ -9,7 +9,6 @@ import indigo.scenegraph.Blend
 import indigo.scenegraph.BlendFactor
 import indigo.shaders.RawShaderCode
 import indigoengine.shared.datatypes.RGBA
-import indigoengine.shared.datatypes.Radians
 import indigoengine.shared.datatypes.Seconds
 import indigoengine.webgl2.facades.WebGL2RenderingContext
 import indigoengine.webgl2.facades.WebGLVertexArrayObject
@@ -60,8 +59,6 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var defaultLayerProjectionMatrix: scalajs.js.Array[Float] = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMag: scalajs.js.Array[Float] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMagFlipped: scalajs.js.Array[Float] = null
@@ -74,10 +71,10 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerMergeRenderInstance: LayerMergeRenderer = null
 
+  // One buffer per magnification. A layer at magnification `m` only covers width/m x height/m game pixels, so it is
+  // drawn into a buffer of that size and magnified by the sampler when it is merged onto the accumulator.
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var scalingFrameBuffer: FrameBufferComponents.SingleOutput = null
+  private var layerEntityFrameBuffers: Array[FrameBufferComponents.SingleOutput] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -124,8 +121,7 @@ final class RendererWebGL2(
     layerMergeRenderInstance = new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
   def initialiseFrameBuffers(ctx: ContextAndSize): Unit =
-    layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
-    scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    layerEntityFrameBuffers = FrameBufferFunctions.createFrameBufferArray(ctx.context, ctx.width, ctx.height)
     greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
     blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
     emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
@@ -219,8 +215,25 @@ final class RendererWebGL2(
 
     gl2.bindVertexArray(vao)
 
-    val frameData = scalajs.js.Array[Float](runningTime.toFloat, 0.0f, lastWidth.toFloat, lastHeight.toFloat)
-    WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
+    // VIEWPORT_SIZE is the size of whatever is currently being drawn into. For a magnified layer that is the layer's
+    // own buffer, which keeps SCREEN_COORDS in game units and so in step with light positions. Merges are always
+    // full screen. Only re-uploaded when the size actually changes, so unmagnified scenes still upload once a frame.
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var frameDataWidth: Int = 0
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var frameDataHeight: Int = 0
+
+    def attachFrameData(width: Int, height: Int): Unit =
+      if frameDataWidth != width || frameDataHeight != height then
+        frameDataWidth = width
+        frameDataHeight = height
+        WebGLHelper.attachUBOData(
+          gl2,
+          scalajs.js.Array[Float](runningTime.toFloat, 0.0f, width.toFloat, height.toFloat),
+          frameDataUBOBuffer
+        )
+
+    attachFrameData(lastWidth, lastHeight)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var currentBlend: Blend = Blend.Normal
@@ -235,22 +248,33 @@ final class RendererWebGL2(
     sceneData.layers.foreach { layer =>
       WebGLHelper.attachUBOData(gl2, layer.lightsData.toJSArray, lightDataUBOBuffer)
 
+      val entityFrameBuffer =
+        FrameBufferFunctions.selectBufferByMagnification(layer.magnification, layerEntityFrameBuffers)
+
+      // Entities are drawn into a buffer sized to the layer's magnification, so the projection covers the layer's
+      // own game space rather than the whole screen, and one game pixel is one texel. The Y flip lives here because
+      // the merge onto the accumulator is a straight copy.
       val layerProjection: scalajs.js.Array[Float] =
         layer.camera.orElse(sceneData.camera) match
           case None =>
-            orthographicProjectionMatrixNoMag
+            QuickCache("layer" + entityFrameBuffer.width.toString + "x" + entityFrameBuffer.height.toString) {
+              CheapMatrix4
+                .orthographic(entityFrameBuffer.width.toFloat, entityFrameBuffer.height.toFloat)
+                .scale(1.0, -1.0, 1.0)
+                .toJSArray
+            }
 
           case Some(c) =>
             CameraHelper
               .calculateCameraMatrix(
-                lastWidth.toDouble,
-                lastHeight.toDouble,
-                1.0d, // Layers aren't magnified during rendering.
-                layer.magnification.map(_.toDouble).getOrElse(1),
+                entityFrameBuffer.width.toDouble,
+                entityFrameBuffer.height.toDouble,
+                1.0d, // The buffer is already sized to the magnification.
+                1.0d,
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
-                false, // layers aren't flipped
+                true,
                 c.rotation,
                 c.isLookAt
               )
@@ -265,52 +289,17 @@ final class RendererWebGL2(
       }
 
       // Draw the entities onto the layer buffer
+      attachFrameData(entityFrameBuffer.width, entityFrameBuffer.height)
+
       layerRenderInstance.drawLayer(
         sceneData.cloneBlankDisplayObjects.toDictionary,
         layer.entities.toJSArray,
-        layerEntityFrameBuffer,
+        entityFrameBuffer,
         layer.bgColor,
         customShaders
       )
 
-      val projection =
-        layer.magnification match
-          case None =>
-            defaultLayerProjectionMatrix
-
-          case Some(m) =>
-            QuickCache(m.toString + lastWidth.toString + lastHeight.toString) {
-              CameraHelper
-                .calculateCameraMatrix(
-                  lastWidth.toDouble,
-                  lastHeight.toDouble,
-                  m.toDouble,
-                  1.0d, // During merge, we always used a fixed camera, so irrelevant.
-                  0,
-                  0,
-                  1,
-                  true,
-                  Radians.zero,
-                  false
-                )
-                .toJSArray
-            }
-
-      // Clear the blend mode
-      if currentBlend != Blend.Normal then {
-        currentBlend = Blend.Normal
-        setBlendMode(gl2, currentBlend)
-      }
-
-      // Merge the layer buffer onto the staging buffer, this clears the magnification
-      layerMergeRenderInstance.mergeToStagingBuffer(
-        projection,
-        layerEntityFrameBuffer,
-        scalingFrameBuffer,
-        lastWidth,
-        lastHeight,
-        customShaders
-      )
+      attachFrameData(lastWidth, lastHeight)
 
       // Set the layer blend mode
       if currentBlend != layer.layerBlend then {
@@ -318,7 +307,8 @@ final class RendererWebGL2(
         setBlendMode(gl2, currentBlend)
       }
 
-      // Merge the layer buffer onto the back buffer.
+      // Merge the layer buffer onto the back buffer. The layer buffer is smaller than the back buffer by exactly the
+      // layer's magnification, so drawing it over the full screen is what applies the magnification.
       if layer.blendReadsDestination then {
         // A blend material that samples the destination needs a separate, sampleable
         // copy of the accumulated scene, so we ping-pong to the other buffer first.
@@ -326,8 +316,9 @@ final class RendererWebGL2(
 
         layerMergeRenderInstance.mergeToBackBuffer(
           orthographicProjectionMatrixNoMag,
-          scalingFrameBuffer,
+          entityFrameBuffer,
           currentAccumulator,
+          otherAccumulator,
           lastWidth,
           lastHeight,
           customShaders,
@@ -343,7 +334,7 @@ final class RendererWebGL2(
         // straight onto the accumulator in place.
         layerMergeRenderInstance.mergeToBackBufferInPlace(
           orthographicProjectionMatrixNoMag,
-          scalingFrameBuffer,
+          entityFrameBuffer,
           currentAccumulator,
           lastWidth,
           lastHeight,
@@ -395,19 +386,16 @@ final class RendererWebGL2(
       lastHeight = height
 
       orthographicProjectionMatrix = CheapMatrix4.orthographic(width.toFloat, height.toFloat)
-      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toJSArray
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(width.toFloat, height.toFloat).toJSArray
       orthographicProjectionMatrixNoMagFlipped =
         CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
 
-      FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+      layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
 
-      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
-      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      layerEntityFrameBuffers = FrameBufferFunctions.createFrameBufferArray(gl2, width, height)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
       blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
       emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
@@ -439,8 +427,7 @@ final class RendererWebGL2(
     gl2.useProgram(null)
 
     // Delete the GPU resources owned by this renderer.
-    FrameBufferFunctions.deleteFrameBufferSingle(gl2, layerEntityFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl2, scalingFrameBuffer)
+    layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
     FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
     FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
     FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
