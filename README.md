@@ -52,6 +52,8 @@ This is a predominately [Mill](https://mill-build.org/) based monorepo.
 
 Aside from your usual Scala set up, the tools you may need are JS tools: Node.js, Yarn, and potentially Electron. There is a Nix flake provided, if you like that sort of thing.
 
+> **Note (macOS & Electron Keychain Prompt)**: When launching Electron during local development on macOS, a system Keychain access dialog may pop up (see [Electron issue #43233](https://github.com/electron/electron/issues/43233)). This is a known Electron dev-mode behavior. You can safely dismiss it by pressing `Esc`, or pass `--disable-encryption` / `--password-store=basic` to your Electron launch flags.
+
 You are highly encouraged to look at the very simple `build.sh` script, which you can run with `bash build.sh`.
 
 ***The important thing to note*** is that running Scala.js linking on all of the modules at once is a _very_ heavy operation that may grind your build to a halt.

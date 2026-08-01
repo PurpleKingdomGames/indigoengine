@@ -273,6 +273,7 @@ For game development with Indigo, use these entry points:
 ## Additional Tools and Dependencies
 
 **Optional JS Tools**: Node.js, Yarn, Electron (for demo/sandbox projects)  
+> *Note for macOS Electron Dev*: If Electron prompts for Keychain access on startup (see Electron #43233), hit `Esc` or use `--disable-encryption` / `--password-store=basic`.  
 **Nix Support**: `flake.nix` provides a reproducible dev environment with JDK 17, Mill, Node.js, Yarn, Electron
 
 ## Quick Reference
