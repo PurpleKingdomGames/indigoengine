@@ -42,7 +42,6 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
           .placeAt { (context, bounds) =>
             Point(0, context.frame.viewport.height - bounds.height)
           }
-          .withTargetFPS(FPS.`60`)
           .addThreshold(0, RGBA.Blue)
           .addThreshold(30, RGBA.Purple)
           .addThreshold(48, RGBA.Cyan)
