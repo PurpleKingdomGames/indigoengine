@@ -142,4 +142,24 @@ class LayerTests extends munit.FunSuite {
         fail("match failed")
   }
 
+  test("Layer isEmpty / nonEmpty (content, empty)") {
+    assert(Layer.Content.empty.isEmpty)
+    assert(!Layer.Content.empty.nonEmpty)
+  }
+
+  test("Layer isEmpty / nonEmpty (content, not empty)") {
+    assert(Layer.Content.empty.withCamera(Camera.Fixed(Point.zero)).nonEmpty)
+    assert(!Layer.Content.empty.withLights(AmbientLight(RGBA.Indigo)).isEmpty)
+  }
+
+  test("Layer isEmpty / nonEmpty (stack, empty)") {
+    assert(Layer.Stack(Layer.Content.empty).isEmpty)
+    assert(!Layer.Stack(Layer.Content.empty).nonEmpty)
+  }
+
+  test("Layer isEmpty / nonEmpty (stack, not empty)") {
+    assert(Layer.Stack(Layer.Content.empty.withCamera(Camera.Fixed(Point.zero))).nonEmpty)
+    assert(!Layer.Stack(Layer.Content.empty.withLights(AmbientLight(RGBA.Indigo))).isEmpty)
+  }
+
 }

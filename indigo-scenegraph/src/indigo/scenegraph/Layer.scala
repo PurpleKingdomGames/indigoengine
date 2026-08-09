@@ -135,7 +135,7 @@ object Layer:
 
   extension (ls: Layer.Stack)
     def isEmpty: Boolean  = ls.layers.forall(_.isEmpty)
-    def nonEmpty: Boolean = !ls.layers.isEmpty
+    def nonEmpty: Boolean = !ls.isEmpty
 
     def combine(other: Layer.Stack): Layer.Stack =
       ls.copy(layers = ls.layers ++ other.layers)
