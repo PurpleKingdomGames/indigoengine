@@ -145,7 +145,13 @@ final case class FPSCounter[Model](
     )
 
   private def formatText(fps: String): String =
-    val v = fps.reverse.padTo(3, ' ').mkString.reverse
+    val v =
+      fps.length match
+        case 0 => "   "
+        case 1 => s"  $fps"
+        case 2 => s" $fps"
+        case _ => s"$fps"
+
     s"""FPS $v"""
 
   private def pickTint(fps: Int): RGBA =
