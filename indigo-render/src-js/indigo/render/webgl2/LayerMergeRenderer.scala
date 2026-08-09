@@ -9,6 +9,7 @@ import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*
 
 import scala.scalajs.js.JSConverters.*
+import scala.scalajs.js.typedarray.Float32Array
 
 class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer):
 
@@ -29,7 +30,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     * the material reads the destination. It must never be `targetFrameBuffer`, or the draw forms a feedback loop.
     */
   def mergeToBackBuffer(
-      projection: scalajs.js.Array[Float],
+      projection: Float32Array,
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       dstFrameBuffer: FrameBufferComponents.SingleOutput,
       targetFrameBuffer: FrameBufferComponents.SingleOutput,
@@ -51,7 +52,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     * as the quad, which is right because the source is always full screen.
     */
   def mergeToDefaultFramebuffer(
-      projection: scalajs.js.Array[Float],
+      projection: Float32Array,
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       dstFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
@@ -69,7 +70,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   // Draws the merge quad, at `width` x `height`, into whatever framebuffer is currently bound.
   private def drawMerge(
-      projection: scalajs.js.Array[Float],
+      projection: Float32Array,
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       dstFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
@@ -112,7 +113,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def setupActiveShader(
-      projection: scalajs.js.Array[Float],
+      projection: Float32Array,
       width: Int,
       height: Int,
       customShaders: scalajs.js.Dictionary[WebGLProgram],
@@ -136,7 +137,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
       if (ud.uniformHash.nonEmpty) {
         val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
-        WebGLHelper.attachUBOData(gl2, ud.data.toJSArray, buff)
+        WebGLHelper.attachUBOData(gl2, new Float32Array(ud.data.toJSArray), buff)
         WebGLHelper.bindUBO(
           gl2,
           activeShader,
@@ -147,14 +148,20 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       }
     }
 
-  private def setupShader(program: WebGLProgram, projection: scalajs.js.Array[Float], width: Int, height: Int): Unit = {
+  private val projectionAndUBOData: Float32Array =
+    new Float32Array(16 + displayObjectUBODataSize)
+
+  private def setupShader(program: WebGLProgram, projection: Float32Array, width: Int, height: Int): Unit = {
 
     gl2.useProgram(program)
 
     uboData(0) = width.toFloat
     uboData(1) = height.toFloat
 
-    WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
+    projectionAndUBOData.set(projection, 0)
+    projectionAndUBOData.set(uboData, projection.length)
+
+    WebGLHelper.attachUBOData(gl2, projectionAndUBOData, displayObjectUBOBuffer)
     WebGLHelper.bindUBO(
       gl2,
       program,
