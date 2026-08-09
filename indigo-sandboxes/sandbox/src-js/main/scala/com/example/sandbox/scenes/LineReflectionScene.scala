@@ -152,7 +152,7 @@ object LineReflectionScene extends Scene[SandboxGameModel]:
               .Content(text)
               .withCamera(
                 Camera
-                  .Fixed(SandboxGame.screenCenter * 2)
+                  .Fixed(SandboxGame.screenCenter)
                   .withZoom(Zoom.x05)
               )
           )
