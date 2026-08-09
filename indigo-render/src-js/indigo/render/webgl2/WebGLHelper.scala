@@ -60,14 +60,14 @@ object WebGLHelper {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def attachUBOData(gl2: WebGL2RenderingContext, data: scalajs.js.Array[Float], buffer: WebGLBuffer): Unit = {
+  def attachUBOData(gl2: WebGL2RenderingContext, data: Float32Array, buffer: WebGLBuffer): Unit = {
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
     gl2.bufferData(
       gl2.UNIFORM_BUFFER,
       (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT,
       DYNAMIC_DRAW
     )
-    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data))
+    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, data)
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
   }
 

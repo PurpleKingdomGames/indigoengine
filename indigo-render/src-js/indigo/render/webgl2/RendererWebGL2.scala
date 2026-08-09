@@ -26,7 +26,7 @@ final class RendererWebGL2(
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset]
 ) extends Renderer[ContextAndSize] {
 
-  implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
+  implicit private val projectionsCache: QuickCache[Float32Array] = QuickCache.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var textureLocations: scalajs.js.Array[TextureLookupResult] = null
@@ -58,10 +58,9 @@ final class RendererWebGL2(
   // This is the default project, using global magnification
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Float] = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixNoMagFlipped: scalajs.js.Array[Float] = null
+
+  val orthographicProjectionMatrixNoMag: Float32Array        = new Float32Array(16)
+  val orthographicProjectionMatrixNoMagFlipped: Float32Array = new Float32Array(16)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
@@ -156,13 +155,13 @@ final class RendererWebGL2(
         )
     }
 
-    val verticesAndTextureCoords: scalajs.js.Array[Float] = {
+    val verticesAndTextureCoords: Float32Array = {
       val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
       val vert1 = scalajs.js.Array[Float](-0.5f, 0.5f, 0.0f, 0.0f)
       val vert2 = scalajs.js.Array[Float](0.5f, -0.5f, 1.0f, 1.0f)
       val vert3 = scalajs.js.Array[Float](0.5f, 0.5f, 1.0f, 0.0f)
 
-      vert0 ++ vert1 ++ vert2 ++ vert3
+      new Float32Array(vert0 ++ vert1 ++ vert2 ++ vert3)
     }
 
     gl2.disable(DEPTH_TEST)
@@ -223,6 +222,8 @@ final class RendererWebGL2(
     }
   }
 
+  private val frameData: Float32Array = new Float32Array(4)
+
   def drawScene(ctx: ContextAndSize, sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     val gl2 = ctx.context
 
@@ -240,9 +241,15 @@ final class RendererWebGL2(
       if frameDataWidth != width || frameDataHeight != height then
         frameDataWidth = width
         frameDataHeight = height
+
+        frameData(0) = runningTime.toFloat
+        frameData(1) = 0.0
+        frameData(2) = width.toFloat
+        frameData(3) = height.toFloat
+
         WebGLHelper.attachUBOData(
           gl2,
-          scalajs.js.Array[Float](runningTime.toFloat, 0.0f, width.toFloat, height.toFloat),
+          frameData,
           frameDataUBOBuffer
         )
 
@@ -259,7 +266,7 @@ final class RendererWebGL2(
     var otherAccumulator: FrameBufferComponents.SingleOutput = greenDstFrameBuffer
 
     sceneData.layers.foreach { layer =>
-      WebGLHelper.attachUBOData(gl2, layer.lightsData.toJSArray, lightDataUBOBuffer)
+      WebGLHelper.attachUBOData(gl2, new Float32Array(layer.lightsData.toJSArray), lightDataUBOBuffer)
 
       val entityFrameBuffer =
         FrameBufferFunctions.selectBufferByMagnification(layer.magnification, layerEntityFrameBuffers)
@@ -276,31 +283,35 @@ final class RendererWebGL2(
       // Entities are drawn into a buffer sized to the layer's magnification, so the projection covers the layer's
       // own game space rather than the whole screen, and one game pixel is one texel. The Y flip lives here because
       // the merge onto the accumulator is a straight copy.
-      val layerProjection: scalajs.js.Array[Float] =
+      val layerProjection: Float32Array =
         layer.camera.orElse(sceneData.camera) match
           case None =>
             QuickCache("layer" + entityFrameBuffer.width.toString + "x" + entityFrameBuffer.height.toString) {
-              CheapMatrix4
-                .orthographic(entityFrameBuffer.width.toFloat, entityFrameBuffer.height.toFloat)
-                .scale(1.0, -1.0, 1.0)
-                .toJSArray
+              new Float32Array(
+                CheapMatrix4
+                  .orthographic(entityFrameBuffer.width.toFloat, entityFrameBuffer.height.toFloat)
+                  .scale(1.0, -1.0, 1.0)
+                  .toJSArray
+              )
             }
 
           case Some(c) =>
-            CameraHelper
-              .calculateCameraMatrix(
-                entityFrameBuffer.width.toDouble,
-                entityFrameBuffer.height.toDouble,
-                1.0d, // The buffer is already sized to the magnification.
-                1.0d,
-                c.position.x.toDouble,
-                c.position.y.toDouble,
-                c.zoom.toDouble,
-                true,
-                c.rotation,
-                c.isLookAt
-              )
-              .toJSArray
+            new Float32Array(
+              CameraHelper
+                .calculateCameraMatrix(
+                  entityFrameBuffer.width.toDouble,
+                  entityFrameBuffer.height.toDouble,
+                  1.0d, // The buffer is already sized to the magnification.
+                  1.0d,
+                  c.position.x.toDouble,
+                  c.position.y.toDouble,
+                  c.zoom.toDouble,
+                  true,
+                  c.rotation,
+                  c.isLookAt
+                )
+                .toJSArray
+            )
 
       WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
@@ -410,9 +421,12 @@ final class RendererWebGL2(
       lastHeight = height
 
       orthographicProjectionMatrix = CheapMatrix4.orthographic(width.toFloat, height.toFloat)
-      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(width.toFloat, height.toFloat).toJSArray
-      orthographicProjectionMatrixNoMagFlipped =
+
+      // The unmagnified projection is the same matrix, but `scale` mutates in place, so the flipped one needs its own.
+      orthographicProjectionMatrixNoMag.set(orthographicProjectionMatrix.toJSArray)
+      orthographicProjectionMatrixNoMagFlipped.set(
         CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
+      )
 
       layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
