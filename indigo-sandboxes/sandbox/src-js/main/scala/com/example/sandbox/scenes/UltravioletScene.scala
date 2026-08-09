@@ -35,13 +35,12 @@ object UltravioletScene extends Scene[SandboxGameModel] {
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(Constants.LayerKeys.game)(
-          Layer(
-            BlankEntity(10, 10, 150, 150, ShaderData(UVShaders.voronoiId)),
-            BlankEntity(140, 50, 32, 32, ShaderData(UVShaders.circleId))
-          )
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          BlankEntity(10, 10, 150, 150, ShaderData(UVShaders.voronoiId)),
+          BlankEntity(140, 50, 32, 32, ShaderData(UVShaders.circleId))
         )
+      )
         .withBlendMaterial(MakeRedBlend)
     )
 

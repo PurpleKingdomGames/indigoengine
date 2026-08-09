@@ -78,7 +78,7 @@ class CompactLayersTests extends munit.FunSuite:
     val entries: Batch[LayerEntry] =
       Batch(
         LayerEntry(LayerKey("a"), Layer.Content(shape)).withMagnification(Magnification.x2),
-        LayerEntry(LayerKey("b"), Layer.empty),
+        LayerEntry(LayerKey("b"), Layer.Content.empty),
         LayerEntry(LayerKey("c"), Layer.Content(shape)).withMagnification(Magnification.x2)
       )
 
@@ -175,8 +175,8 @@ class CompactLayersTests extends munit.FunSuite:
   lazy val uncompacted: Batch[LayerEntry] =
     Batch(
       LayerEntry(LayerKey("z"), Layer.Content(shape)).withMagnification(Magnification.x3),
-      LayerEntry(LayerKey("a"), Layer.empty).withMagnification(Magnification.x2),
-      LayerEntry(LayerKey("b"), Layer.empty),
+      LayerEntry(LayerKey("a"), Layer.Content.empty).withMagnification(Magnification.x2),
+      LayerEntry(LayerKey("b"), Layer.Content.empty),
       LayerEntry(
         LayerKey("c"),
         Layer.Stack(
@@ -187,12 +187,12 @@ class CompactLayersTests extends munit.FunSuite:
       LayerEntry(
         LayerKey("d"),
         Layer.Stack(
-          Layer.empty.withCamera(Camera.Fixed(Point.zero)),
+          Layer.Content.empty.withCamera(Camera.Fixed(Point.zero)),
           Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
           Layer.Content(shape).withCamera(Camera.Fixed(Point(10))),
           Layer.Stack(
-            Layer(shape).withCamera(Camera.Fixed(Point(10))),
-            Layer(shape)
+            Layer.Content(shape).withCamera(Camera.Fixed(Point(10))),
+            Layer.Content(shape)
           )
         )
       )

@@ -9,7 +9,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can add a blend material with no Blending instance in place") {
     val layer =
-      Layer.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red))
+      Layer.Content.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red))
 
     layer.blending match
       case Some(Blending(entity, layer, BlendMaterial.Lighting(color), clearColor)) =>
@@ -21,7 +21,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can modify blending with no Blending instance in place") {
     val layer =
-      Layer.empty.modifyBlending(_.withClearColor(RGBA.Green))
+      Layer.Content.empty.modifyBlending(_.withClearColor(RGBA.Green))
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, Some(clearColor))) =>
@@ -33,7 +33,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can add an entity blend mode with no Blending instance in place") {
     val layer =
-      Layer.empty.withEntityBlend(Blend.LightingEntity)
+      Layer.Content.empty.withEntityBlend(Blend.LightingEntity)
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, clearColor)) =>
@@ -45,7 +45,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can add a layer blend mode with no Blending instance in place") {
     val layer =
-      Layer.empty.withLayerBlend(Blend.LightingEntity)
+      Layer.Content.empty.withLayerBlend(Blend.LightingEntity)
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, clearColor)) =>

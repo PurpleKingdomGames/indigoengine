@@ -67,7 +67,7 @@ object NineSliceScene extends Scene[SandboxGameModel] {
       SceneUpdateFragment.empty
         .addLayers(
           Constants.LayerKeys.game ->
-            Layer(
+            Layer.Content(
               Batch(
                 Graphic(
                   boxSizeValue,

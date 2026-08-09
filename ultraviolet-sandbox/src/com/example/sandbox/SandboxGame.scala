@@ -111,8 +111,8 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        SandboxView.bgLayerKey   -> Layer.empty,
-        SandboxView.gameLayerKey -> Layer.empty
+        SandboxView.bgLayerKey   -> Layer.Content.empty,
+        SandboxView.gameLayerKey -> Layer.Content.empty
       )
     )
 

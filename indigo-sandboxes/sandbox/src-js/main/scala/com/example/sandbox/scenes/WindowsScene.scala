@@ -82,7 +82,7 @@ object WindowsScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        LayerKey("windows") -> Layer.empty
+        LayerKey("windows") -> Layer.Content.empty
       )
     )
 
@@ -195,7 +195,7 @@ object CustomUI:
         (ctx, label) => Bounds(ctx.services.bounds.get(textInstance.withText(label)))
       ) { case (ctx, label) =>
         Outcome(
-          Layer(
+          Layer.Content(
             textInstance
               .withText(label.text(ctx))
               .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -210,7 +210,7 @@ object CustomUI:
         (ctx, label) => Bounds(ctx.services.bounds.get(textInstance.withText(label)))
       ) { case (ctx, label) =>
         Outcome(
-          Layer(
+          Layer.Content(
             textInstance
               .withText(label.text(ctx))
               .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -234,7 +234,7 @@ object CustomUI:
   def titleBar(title: String): Button[Int] =
     Button[Int](Bounds(Dimensions(0))) { (ctx, btn) =>
       Outcome(
-        Layer(
+        Layer.Content(
           Shape
             .Box(
               btn.bounds.unsafeToRectangle,
@@ -282,41 +282,47 @@ object CustomUI:
   def makeButton(size: Size)(extraNodes: Point => Batch[SceneNode]): Button[Int] =
     Button[Int](Bounds(Dimensions(size))) { (ctx, btn) =>
       Outcome(
-        Layer(
-          Shape
-            .Box(
-              btn.bounds.unsafeToRectangle,
-              Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
-              Stroke(1, RGBA.Magenta)
-            )
-            .moveTo(ctx.parent.coords.unsafeToPoint)
-        ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+        Layer
+          .Content(
+            Shape
+              .Box(
+                btn.bounds.unsafeToRectangle,
+                Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
+                Stroke(1, RGBA.Magenta)
+              )
+              .moveTo(ctx.parent.coords.unsafeToPoint)
+          )
+          .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
       )
     }
       .presentDown { (ctx, btn) =>
         Outcome(
-          Layer(
-            Shape
-              .Box(
-                btn.bounds.unsafeToRectangle,
-                Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
-                Stroke(1, RGBA.Cyan)
-              )
-              .moveTo(ctx.parent.coords.unsafeToPoint)
-          ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+          Layer
+            .Content(
+              Shape
+                .Box(
+                  btn.bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Cyan)
+                )
+                .moveTo(ctx.parent.coords.unsafeToPoint)
+            )
+            .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       }
       .presentOver((ctx, btn) =>
         Outcome(
-          Layer(
-            Shape
-              .Box(
-                btn.bounds.unsafeToRectangle,
-                Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
-                Stroke(1, RGBA.Yellow)
-              )
-              .moveTo(ctx.parent.coords.unsafeToPoint)
-          ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+          Layer
+            .Content(
+              Shape
+                .Box(
+                  btn.bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Yellow)
+                )
+                .moveTo(ctx.parent.coords.unsafeToPoint)
+            )
+            .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       )
 

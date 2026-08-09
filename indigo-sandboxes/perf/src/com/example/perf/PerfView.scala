@@ -12,9 +12,9 @@ object PerfView {
   def updateView(model: DudeModel): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addLayers(
-        LayerKey("game") -> Layer(gameLayer(model)),
-        LayerKey("ui")   -> Layer(uiLayer),
-        LayerKey("fps")  -> Layer.empty
+        LayerKey("game") -> Layer.Content(gameLayer(model)),
+        LayerKey("ui")   -> Layer.Content(uiLayer),
+        LayerKey("fps")  -> Layer.Content.empty
       )
       .addCloneBlanks(
         CloneBlank(cloneId, model.dude.sprite)

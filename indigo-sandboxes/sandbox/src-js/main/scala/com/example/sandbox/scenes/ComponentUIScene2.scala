@@ -74,7 +74,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
       .addLayers(
         Constants.LayerKeys.game -> b,
         Constants.LayerKeys.game -> s,
-        Constants.LayerKeys.game -> Layer(scrollPaneBorder)
+        Constants.LayerKeys.game -> Layer.Content(scrollPaneBorder)
       )
       .withMagnification(Magnification.x2)
 
@@ -98,7 +98,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
               .add(
                 Button[Int](Bounds(16, 16)) { (ctx, btn) =>
                   Outcome(
-                    Layer(
+                    Layer.Content(
                       Shape
                         .Box(
                           Rectangle(
@@ -113,7 +113,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
                 }
                   .presentDown { (ctx, btn) =>
                     Outcome(
-                      Layer(
+                      Layer.Content(
                         Shape
                           .Box(
                             Rectangle(
@@ -128,7 +128,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
                   }
                   .presentOver { (ctx, btn) =>
                     Outcome(
-                      Layer(
+                      Layer.Content(
                         Shape
                           .Box(
                             Rectangle(
@@ -151,7 +151,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
                   (_, _) => Bounds(0, 0, 250, 20)
                 ) { case (ctx, label) =>
                   Outcome(
-                    Layer(
+                    Layer.Content(
                       text
                         .withText(label.text(ctx))
                         .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -166,7 +166,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
     val scrollButton: Button[Unit] =
       Button[Unit](Bounds(16, 16)) { (ctx, btn) =>
         Outcome(
-          Layer(
+          Layer.Content(
             Shape
               .Box(
                 Rectangle(
@@ -181,7 +181,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
       }
         .presentDown { (ctx, btn) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape
                 .Box(
                   Rectangle(
@@ -196,7 +196,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
         }
         .presentOver { (ctx, btn) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape
                 .Box(
                   Rectangle(
@@ -218,7 +218,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
         scrollButton
       )
         .withBackground { bounds =>
-          Layer(
+          Layer.Content(
             Shape.Box(
               bounds.unsafeToRectangle,
               Fill.Color(RGBA.Black.withAlpha(0.5)),
@@ -227,7 +227,7 @@ object ComponentUIScene2 extends Scene[SandboxGameModel]:
           )
         }
         .withScrollBackground { bounds =>
-          Layer(
+          Layer.Content(
             Shape.Box(
               bounds.unsafeToRectangle,
               Fill.Color(RGBA.Yellow.mix(RGBA.Black)),

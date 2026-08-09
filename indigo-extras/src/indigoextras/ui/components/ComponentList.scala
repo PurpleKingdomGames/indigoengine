@@ -93,7 +93,7 @@ object ComponentList:
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
       dimensions,
-      _ => Layer.empty
+      _ => Layer.Content.empty
     )
 
   def apply[ReferenceData, A](
@@ -109,7 +109,7 @@ object ComponentList:
       Map.empty,
       ComponentLayout.Vertical(Padding.zero),
       dimensions,
-      _ => Layer.empty
+      _ => Layer.Content.empty
     )
 
   given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with

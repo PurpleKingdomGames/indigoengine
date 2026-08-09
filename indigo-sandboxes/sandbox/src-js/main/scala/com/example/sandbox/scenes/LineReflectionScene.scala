@@ -123,36 +123,39 @@ object LineReflectionScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(Constants.LayerKeys.game)(
-          Batch(
-            // Surface
-            Shape.Line(
-              surface.start.toPoint,
-              surface.end.toPoint,
-              Stroke(1, RGBA.White)
+        .withLayers(
+          Constants.LayerKeys.game -> Layer.Stack(
+            Layer.Content(
+              Batch(
+                // Surface
+                Shape.Line(
+                  surface.start.toPoint,
+                  surface.end.toPoint,
+                  Stroke(1, RGBA.White)
+                ),
+                // Normal
+                Shape.Line(
+                  nrml.start.toPoint,
+                  nrml.end.toPoint,
+                  Stroke(1, RGBA.Green)
+                ),
+                // Incident
+                Shape.Line(
+                  incident.start.toPoint,
+                  incident.end.toPoint,
+                  Stroke(1, RGBA.Cyan)
+                )
+              ) ++
+                reflection
             ),
-            // Normal
-            Shape.Line(
-              nrml.start.toPoint,
-              nrml.end.toPoint,
-              Stroke(1, RGBA.Green)
-            ),
-            // Incident
-            Shape.Line(
-              incident.start.toPoint,
-              incident.end.toPoint,
-              Stroke(1, RGBA.Cyan)
-            )
-          ) ++
-            reflection
-        )
-        .addLayer(Constants.LayerKeys.game)(
-          Layer(text)
-            .withCamera(
-              Camera
-                .Fixed(SandboxGame.screenCenter * 2)
-                .withZoom(Zoom.x05)
-            )
+            Layer
+              .Content(text)
+              .withCamera(
+                Camera
+                  .Fixed(SandboxGame.screenCenter * 2)
+                  .withZoom(Zoom.x05)
+              )
+          )
         )
         .withMagnification(Magnification(2))
     )

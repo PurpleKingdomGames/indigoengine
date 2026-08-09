@@ -79,10 +79,10 @@ object ConfettiScene extends Scene[SandboxGameModel]:
     Outcome(
       SceneUpdateFragment(
         Constants.LayerKeys.game -> Layer.Stack(
-          Layer(
+          Layer.Content(
             model.particles.map(particlesToCloneTiles)
           ),
-          Layer(
+          Layer.Content(
             count.withText(s"count: ${model.particles.length * spawnCount}")
           )
         )

@@ -27,6 +27,6 @@ object View:
                 )
             }
           ),
-        LayerKey("fps") -> Layer.empty
+        LayerKey("fps") -> Layer.Content.empty
       )
     )

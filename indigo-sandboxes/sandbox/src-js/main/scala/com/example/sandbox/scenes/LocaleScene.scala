@@ -91,7 +91,7 @@ object LocaleUI:
   val currentLocaleButton: Button[Unit] =
     Button[Unit](ctx => textBounds(ctx, currentLocaleText(ctx))) { (ctx, _) =>
       Outcome(
-        Layer(
+        Layer.Content(
           textInstance
             .withText(currentLocaleText(ctx))
             .withMaterial(SandboxAssets.testFontMaterial.withTint(RGBA.White))
@@ -101,7 +101,7 @@ object LocaleUI:
     }
       .presentOver { (ctx, _) =>
         Outcome(
-          Layer(
+          Layer.Content(
             textInstance
               .withText(currentLocaleText(ctx))
               .withMaterial(SandboxAssets.testFontMaterial.withTint(RGBA.Yellow))
@@ -114,7 +114,7 @@ object LocaleUI:
   def dateTimeLabel: Label[Unit] =
     Label[Unit](currentDateTimeString, (ctx, s) => textBounds(ctx, s))((ctx, lbl) =>
       Outcome(
-        Layer(
+        Layer.Content(
           textInstance
             .withText(lbl.text(ctx))
             .withMaterial(SandboxAssets.testFontMaterial.withTint(RGBA.White))
@@ -180,7 +180,7 @@ object LocaleUI:
       scrollButton
     )
       .withBackground { bounds =>
-        Layer(
+        Layer.Content(
           Shape.Box(
             bounds.unsafeToRectangle,
             Fill.Color(RGBA.Black.withAlpha(0.5)),
@@ -189,7 +189,7 @@ object LocaleUI:
         )
       }
       .withScrollBackground { bounds =>
-        Layer(
+        Layer.Content(
           Shape.Box(
             bounds.unsafeToRectangle,
             Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
@@ -207,7 +207,7 @@ object LocaleUI:
             (ctx, text) => textBounds(ctx, text)
           ) { case (ctx, label) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 textInstance
                   .withText(label.text(ctx))
                   .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -221,7 +221,7 @@ object LocaleUI:
   def titleBar(title: String): Button[Unit] =
     Button[Unit](Bounds(Dimensions(0))) { (ctx, btn) =>
       Outcome(
-        Layer(
+        Layer.Content(
           Shape
             .Box(
               btn.bounds.unsafeToRectangle,
@@ -254,41 +254,47 @@ object LocaleUI:
   def makeButton(size: Size)(extraNodes: Point => Batch[SceneNode]): Button[Unit] =
     Button[Unit](Bounds(Dimensions(size))) { (ctx, btn) =>
       Outcome(
-        Layer(
-          Shape
-            .Box(
-              btn.bounds.unsafeToRectangle,
-              Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
-              Stroke(1, RGBA.Magenta)
-            )
-            .moveTo(ctx.parent.coords.unsafeToPoint)
-        ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+        Layer
+          .Content(
+            Shape
+              .Box(
+                btn.bounds.unsafeToRectangle,
+                Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
+                Stroke(1, RGBA.Magenta)
+              )
+              .moveTo(ctx.parent.coords.unsafeToPoint)
+          )
+          .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
       )
     }
       .presentDown { (ctx, btn) =>
         Outcome(
-          Layer(
-            Shape
-              .Box(
-                btn.bounds.unsafeToRectangle,
-                Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
-                Stroke(1, RGBA.Cyan)
-              )
-              .moveTo(ctx.parent.coords.unsafeToPoint)
-          ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+          Layer
+            .Content(
+              Shape
+                .Box(
+                  btn.bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Cyan)
+                )
+                .moveTo(ctx.parent.coords.unsafeToPoint)
+            )
+            .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       }
       .presentOver { (ctx, btn) =>
         Outcome(
-          Layer(
-            Shape
-              .Box(
-                btn.bounds.unsafeToRectangle,
-                Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
-                Stroke(1, RGBA.Yellow)
-              )
-              .moveTo(ctx.parent.coords.unsafeToPoint)
-          ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
+          Layer
+            .Content(
+              Shape
+                .Box(
+                  btn.bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Yellow)
+                )
+                .moveTo(ctx.parent.coords.unsafeToPoint)
+            )
+            .addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       }
 

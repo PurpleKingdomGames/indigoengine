@@ -84,7 +84,7 @@ object ColourWindowScene extends Scene[GameModel]:
     Outcome(
       SceneUpdateFragment(
         LayerKey("info") ->
-          Layer(
+          Layer.Content(
             text
               .withText(
                 "Pointer over: " +

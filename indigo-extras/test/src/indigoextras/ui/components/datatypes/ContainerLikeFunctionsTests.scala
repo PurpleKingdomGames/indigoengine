@@ -9,7 +9,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
   import indigoextras.ui.Helper.*
 
   val present: (UIContext[Unit], Label[Unit]) => Outcome[Layer] =
-    (_, _) => Outcome(Layer.empty)
+    (_, _) => Outcome(Layer.Content.empty)
 
   val ctx =
     UIContext(Context.initial, Magnification.x1)

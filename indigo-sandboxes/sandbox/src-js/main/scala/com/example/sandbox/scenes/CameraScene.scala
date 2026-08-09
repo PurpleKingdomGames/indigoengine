@@ -44,17 +44,19 @@ object CameraScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment(
         Constants.LayerKeys.game -> Layer.Stack(
-          Layer(
+          Layer.Content(
             Graphic(
               (SandboxGame.screenCenter * 4).toSize,
               SandboxAssets.foliageMaterial
             ),
             Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-16, -16)
           ),
-          Layer(
-            Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots).withAlpha(0.4))
-              .moveTo(SandboxGame.screenCenter - Point(16))
-          ).withCamera(Camera.default) // Override scene camera, so this layer doesn't move.
+          Layer
+            .Content(
+              Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots).withAlpha(0.4))
+                .moveTo(SandboxGame.screenCenter - Point(16))
+            )
+            .withCamera(Camera.default) // Override scene camera, so this layer doesn't move.
         )
       ).modifyCamera {
         case c: Camera.Fixed =>

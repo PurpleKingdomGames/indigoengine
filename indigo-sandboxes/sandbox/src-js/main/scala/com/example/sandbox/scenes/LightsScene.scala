@@ -63,7 +63,13 @@ object LightsScene extends Scene[SandboxGameModel] {
       Point(550, 400) / 2 / 2
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(graphic, graphic2, shape)
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          graphic,
+          graphic2,
+          shape
+        )
+      )
         .withMagnification(Magnification(3))
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.1)),

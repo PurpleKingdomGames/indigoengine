@@ -34,7 +34,7 @@ object ShadersScene extends Scene[SandboxGameModel] {
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        SandboxView.gameLayerKey -> Layer(
+        SandboxView.gameLayerKey -> Layer.Content(
           BlankEntity(100, 100, ShaderData(BoxShader.shader.id))
             .moveTo(0, 0),
           BlankEntity(100, 100, ShaderData(CircleShader.shader.id))

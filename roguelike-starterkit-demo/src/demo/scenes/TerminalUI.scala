@@ -54,7 +54,7 @@ object TerminalUI extends Scene[GameModel]:
     model.button
       .present(ctx)
       .map { l =>
-        SceneUpdateFragment(Constants.LayerKeys.ui)(l)
+        SceneUpdateFragment(Constants.LayerKeys.ui -> l)
           .withMagnification(Magnification.x3)
       }
 

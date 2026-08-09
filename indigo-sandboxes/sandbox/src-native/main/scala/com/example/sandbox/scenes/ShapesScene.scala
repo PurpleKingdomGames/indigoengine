@@ -77,8 +77,8 @@ object ShapesScene extends Scene[SandboxGameModel]:
         .moveTo(100, 100)
 
     Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(LayerKey("game"))(
+      SceneUpdateFragment(
+        LayerKey("game") -> Layer.Content(
           Shape.Circle(
             circlePosition,
             20,
@@ -127,6 +127,7 @@ object ShapesScene extends Scene[SandboxGameModel]:
           testPolygon,
           testPolygon2
         )
+      )
         .addCloneBlanks(
           CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White)))
         )

@@ -77,7 +77,7 @@ object ComponentsWindow:
       .add(
         Button[Int](Bounds(0, 0, 5, 2)) { case (ctx, btn) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape.Box(
                 btn
                   .bounds(ctx)

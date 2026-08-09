@@ -74,7 +74,7 @@ object PerformerPhysicsScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.background -> Layer.empty,
+        Constants.LayerKeys.background -> Layer.Content.empty,
         Constants.LayerKeys.game       -> Layer.Stack.empty
       )
     )

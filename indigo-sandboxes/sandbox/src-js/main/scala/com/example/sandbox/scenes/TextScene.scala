@@ -38,7 +38,7 @@ object TextScene extends Scene[SandboxGameModel] {
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           Batch(
             Text("The quick brown fox\njumps over the\nlazy dog.", Fonts.fontKey, textMaterial)
               .moveTo(10, 10),

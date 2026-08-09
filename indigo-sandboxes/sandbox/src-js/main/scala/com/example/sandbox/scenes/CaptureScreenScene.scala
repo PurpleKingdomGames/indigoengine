@@ -100,7 +100,7 @@ object CaptureScreenScene extends Scene[SandboxGameModel]:
     )
     Outcome(
       SceneUpdateFragment(
-        uiKey -> Layer(
+        uiKey -> Layer.Content(
           Batch(
             Graphic(16, 16, Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
             Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
@@ -131,7 +131,7 @@ object CaptureScreenScene extends Scene[SandboxGameModel]:
             case _ => Batch.empty
           })
         ),
-        defaultKey -> Layer(gameLayer(model, model.captureScreenScene))
+        defaultKey -> Layer.Content(gameLayer(model, model.captureScreenScene))
       )
     )
 

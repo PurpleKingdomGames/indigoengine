@@ -41,7 +41,7 @@ object BgAudioScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           Batch(
             Text("Music should be playing", Fonts.fontKey, textMaterial)
               .moveTo(10, 10)

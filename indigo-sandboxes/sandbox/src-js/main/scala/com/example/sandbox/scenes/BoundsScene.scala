@@ -96,7 +96,7 @@ object BoundsScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           Batch(
             graphic,
             Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),

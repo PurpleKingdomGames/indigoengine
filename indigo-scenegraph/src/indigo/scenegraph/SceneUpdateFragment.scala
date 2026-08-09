@@ -41,16 +41,6 @@ final case class SceneUpdateFragment(
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
 
-  def addLayer(newLayer: LayerEntry): SceneUpdateFragment =
-    SceneUpdateFragment.insertLayer(this, newLayer)
-  def addLayer(key: LayerKey)(newLayer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment.insertLayer(this, LayerEntry(key, newLayer))
-
-  def addLayer(key: LayerKey)(nodes: SceneNode*): SceneUpdateFragment =
-    addLayer(key)(nodes.toBatch)
-  def addLayer(key: LayerKey)(nodes: Batch[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment.insertLayer(this, LayerEntry(key, Layer(nodes)))
-
   def addLayers(newLayers: Batch[LayerEntry]): SceneUpdateFragment =
     this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(acc, l)))
   def addLayers(newLayers: LayerEntry*): SceneUpdateFragment =
@@ -124,28 +114,6 @@ final case class SceneUpdateFragment(
 object SceneUpdateFragment:
   import Batch.*
 
-  /* Constructors where you specify a layer key */
-
-  def apply(key: LayerKey)(nodes: SceneNode*): SceneUpdateFragment =
-    SceneUpdateFragment(key)(nodes.toBatch)
-  def apply(key: LayerKey)(nodes: Batch[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(Batch(LayerEntry(key, Layer(nodes))), Batch.empty, None, None, Batch.empty, None)
-  def apply(key: LayerKey)(maybeNode: Option[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(
-      Batch(LayerEntry(key, Layer(Batch.fromOption(maybeNode)))),
-      Batch.empty,
-      None,
-      None,
-      Batch.empty,
-      None
-    )
-  def apply(key: LayerKey)(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(Batch(LayerEntry(key, layer)), Batch.empty, None, None, Batch.empty, None)
-  @targetName("suf-maybe-layer")
-  def apply(key: LayerKey)(maybeLayer: Option[Layer]): SceneUpdateFragment =
-    val layers = maybeLayer.map(l => Batch(LayerEntry(key, l))).getOrElse(Batch.empty)
-    SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
-
   @targetName("suf-maybe-layer-entry")
   def apply(maybeLayerEntry: Option[LayerEntry]): SceneUpdateFragment =
     val layers = maybeLayerEntry.map(l => Batch(l)).getOrElse(Batch.empty)
@@ -212,6 +180,3 @@ object SceneUpdateFragment:
 
       case LayerEntry(_, _, _) =>
         existingLayers :+ layerToMerge
-
-  def insertLayer(suf: SceneUpdateFragment, layer: LayerEntry): SceneUpdateFragment =
-    suf.copy(layers = mergeLayers(suf.layers, layer))

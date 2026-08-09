@@ -94,13 +94,15 @@ object TimelineScene extends Scene[SandboxGameModel]:
     val dude = model.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        tl(2.seconds).atOrLast(context.frame.time.running)(crate).toBatch ++
-          spriteTimeline
-            .at(context.frame.time.running)(dude)
-            .toBatch ++
-          clipTimeline
-            .at(context.frame.time.running)(trafficLights)
-            .toBatch
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          tl(2.seconds).atOrLast(context.frame.time.running)(crate).toBatch ++
+            spriteTimeline
+              .at(context.frame.time.running)(dude)
+              .toBatch ++
+            clipTimeline
+              .at(context.frame.time.running)(trafficLights)
+              .toBatch
+        )
       )
     )

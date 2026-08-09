@@ -244,21 +244,23 @@ object WaypointScene extends Scene[SandboxGameModel]:
       )
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        pentagramPathGraphics ++
-          decagonPathGraphics ++
-          waypointGraphics ++
-          directPathGraphics ++
-          mediumRadiusPathGraphics ++
-          largeRadiusPathGraphics ++
-          simplePathWaypointGraphics ++
-          tl1(8.0).atOrLast(context.frame.time.running)(dude(RGB.Coral)).toBatch ++
-          tl2(8.0).atOrLast(context.frame.time.running)(dude(RGB.Plum)).toBatch ++
-          tl3(8.0).atOrLast(context.frame.time.running)(dude(RGB.SeaGreen)).toBatch ++
-          tl4(8.0).atOrLast(context.frame.time.running)(dude(RGB.Crimson)).toBatch ++
-          tl4(-8.0).atOrLast(context.frame.time.running)(dude(RGB.Thistle)).toBatch ++
-          Batch(tl5.atOrElse(context.frame.time.running)(smallCircle)) ++
-          Batch(tl6.atOrElse(context.frame.time.running)(mediumCircle)) ++
-          Batch(tl7.atOrElse(context.frame.time.running)(largeCircle))
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          pentagramPathGraphics ++
+            decagonPathGraphics ++
+            waypointGraphics ++
+            directPathGraphics ++
+            mediumRadiusPathGraphics ++
+            largeRadiusPathGraphics ++
+            simplePathWaypointGraphics ++
+            tl1(8.0).atOrLast(context.frame.time.running)(dude(RGB.Coral)).toBatch ++
+            tl2(8.0).atOrLast(context.frame.time.running)(dude(RGB.Plum)).toBatch ++
+            tl3(8.0).atOrLast(context.frame.time.running)(dude(RGB.SeaGreen)).toBatch ++
+            tl4(8.0).atOrLast(context.frame.time.running)(dude(RGB.Crimson)).toBatch ++
+            tl4(-8.0).atOrLast(context.frame.time.running)(dude(RGB.Thistle)).toBatch ++
+            Batch(tl5.atOrElse(context.frame.time.running)(smallCircle)) ++
+            Batch(tl6.atOrElse(context.frame.time.running)(mediumCircle)) ++
+            Batch(tl7.atOrElse(context.frame.time.running)(largeCircle))
+        )
       )
     )

@@ -149,7 +149,7 @@ object TerminalScrollPane:
           )
         ),
       bounds =>
-        Layer(
+        Layer.Content(
           Shape.Box(
             bounds.toLocalSpace(charSheet.size),
             defaultBgColor

@@ -51,7 +51,7 @@ class SceneProcessorTests extends munit.FunSuite {
 
   test("makeDisplayLayers - single layer with one graphic") {
     val graphic = Graphic(Size(200, 100), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(10, 20, 200, 100))
-    val scene   = SceneUpdateFragment(LayerKey("test"))(graphic)
+    val scene   = SceneUpdateFragment(LayerKey("test") -> Layer.Content(graphic))
 
     val result = SceneProcessor.makeDisplayLayers(
       scene,
@@ -74,8 +74,8 @@ class SceneProcessorTests extends munit.FunSuite {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
     val scene = SceneUpdateFragment(
-      LayerKey("a") -> Layer(graphic1),
-      LayerKey("b") -> Layer(graphic2)
+      LayerKey("a") -> Layer.Content(graphic1),
+      LayerKey("b") -> Layer.Content(graphic2)
     )
 
     val result = SceneProcessor.makeDisplayLayers(
@@ -95,9 +95,9 @@ class SceneProcessorTests extends munit.FunSuite {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
     val scene = SceneUpdateFragment(
-      LayerKey("a") -> Layer(graphic1)
-    ).addLayer(
-      LayerEntry(LayerKey("b"), Layer(graphic2)).withMagnification(Magnification.x2)
+      LayerKey("a") -> Layer.Content(graphic1)
+    ).addLayers(
+      LayerEntry(LayerKey("b"), Layer.Content(graphic2)).withMagnification(Magnification.x2)
     )
 
     val result = SceneProcessor.makeDisplayLayers(
@@ -118,7 +118,7 @@ class SceneProcessorTests extends munit.FunSuite {
     val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val scene =
       SceneUpdateFragment(
-        LayerKey("a") -> Layer(graphic).withBlendMaterial(BlendMaterial.Lighting(RGBA.White))
+        LayerKey("a") -> Layer.Content(graphic).withBlendMaterial(BlendMaterial.Lighting(RGBA.White))
       )
 
     val result = SceneProcessor.makeDisplayLayers(
@@ -138,7 +138,7 @@ class SceneProcessorTests extends munit.FunSuite {
     val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val scene =
       SceneUpdateFragment(
-        LayerKey("a") -> Layer(graphic).withBlendMaterial(BlendMaterial.Normal)
+        LayerKey("a") -> Layer.Content(graphic).withBlendMaterial(BlendMaterial.Normal)
       )
 
     val result = SceneProcessor.makeDisplayLayers(

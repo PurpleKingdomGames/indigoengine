@@ -104,9 +104,9 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
     )
 
@@ -125,9 +125,9 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
     )
 
@@ -146,9 +146,9 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       setupScrollButton(bindingKey, scrollBar),
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
     )
 
