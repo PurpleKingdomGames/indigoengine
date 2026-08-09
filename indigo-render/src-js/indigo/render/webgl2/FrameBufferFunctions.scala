@@ -116,6 +116,17 @@ object FrameBufferFunctions:
     // -1 to make it zero indexed...
     clampToRange(magnification.getOrElse(1) - 1, max)
 
+  /** The magnification actually used for a layer, after clamping, i.e. the one that selected its buffer. */
+  private[webgl2] def effectiveMagnification(magnification: Option[Int], max: Int): Int =
+    clampMagnification(magnification, max) + 1
+
+  /** The size the merge quad must be drawn at for one texel of the layer buffer to cover exactly `magnification` screen
+    * pixels. Buffer sizes are rounded up, so this can exceed the screen by up to `magnification - 1` pixels, and the
+    * overhang is clipped by the viewport.
+    */
+  private[webgl2] def mergeQuadSize(bufferWidth: Int, bufferHeight: Int, magnification: Int): (Int, Int) =
+    (bufferWidth * magnification, bufferHeight * magnification)
+
   def selectBufferByMagnification(
       magnification: Option[Int],
       buffers: Array[FrameBufferComponents.SingleOutput]
