@@ -34,14 +34,16 @@ final case class GameScene(clockwise: Boolean) extends Scene[Unit]:
       else Radians(-Radians.fromSeconds(context.frame.time.running * 0.25).toDouble)
 
     Outcome(
-      SceneUpdateFragment(LayerKey("game"))(
-        Shape
-          .Box(
-            Rectangle(0, 0, 60, 60),
-            Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan)
-          )
-          .withRef(30, 30)
-          .moveTo(100, 100)
-          .rotateTo(rotateAmount)
+      SceneUpdateFragment(
+        LayerKey("game") -> Layer.Content(
+          Shape
+            .Box(
+              Rectangle(0, 0, 60, 60),
+              Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan)
+            )
+            .withRef(30, 30)
+            .moveTo(100, 100)
+            .rotateTo(rotateAmount)
+        )
       )
     )

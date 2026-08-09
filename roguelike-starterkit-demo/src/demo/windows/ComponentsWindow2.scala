@@ -71,7 +71,7 @@ object ComponentsWindow2:
             }
         }
           .withBackground { bounds =>
-            Layer(
+            Layer.Content(
               Shape.Box(
                 Rectangle(
                   bounds.coords.toLocalSpace(charSheet.size),

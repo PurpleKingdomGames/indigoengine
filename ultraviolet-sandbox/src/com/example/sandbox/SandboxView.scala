@@ -17,21 +17,21 @@ object SandboxView:
     mouse.isClickedAt.foreach: pt =>
       println("Mouse clicked at: " + pt.toString())
 
-    SceneUpdateFragment.empty
-      .addLayer(gameLayerKey)(
-        Layer(
+    SceneUpdateFragment(
+      gameLayerKey -> Layer.Stack(
+        Layer.Content(
           gameLayer(model, model.viewModel) ++ uiLayer(bl)
-        )
-        // .withBlend(Blend.Alpha)
-      )
-      .addLayer(gameLayerKey)(
+        ),
         if (model.viewModel.useLightingLayer)
-          Layer(lightingLayer(mouse))
+          Layer
+            .Content(lightingLayer(mouse))
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else
-          Layer.empty
+          Layer.Content.empty
       )
-      // .addLayer(Layer(uiLayer(mouse)))
+      // .withBlend(Blend.Alpha)
+    )
+      // .addLayers(Layer.Content(uiLayer(mouse)))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
     // .withTint(RGBA.Cyan.withAmount(0.25))

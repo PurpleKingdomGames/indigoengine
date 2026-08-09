@@ -41,7 +41,7 @@ object TextureTileScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Constants.LayerKeys.game -> Layer(
+          Constants.LayerKeys.game -> Layer.Content(
             Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots))
               .withRef(16, 16)
               .moveTo(SandboxGame.screenCenter)

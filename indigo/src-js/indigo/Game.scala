@@ -412,19 +412,21 @@ object Game:
     ): Outcome[SceneUpdateFragment] =
       Outcome(
         SceneUpdateFragment(
-          LayerKey("shaderplayground") -> Layer(
-            BlankEntity(
-              model.viewport,
-              ShaderData(
-                shader.id,
-                uniformBlocks,
-                model.channels.channel0,
-                model.channels.channel1,
-                model.channels.channel2,
-                model.channels.channel3
+          LayerKey("shaderplayground") -> Layer
+            .Content(
+              BlankEntity(
+                model.viewport,
+                ShaderData(
+                  shader.id,
+                  uniformBlocks,
+                  model.channels.channel0,
+                  model.channels.channel1,
+                  model.channels.channel2,
+                  model.channels.channel3
+                )
               )
             )
-          ).withBlendMaterial(ShaderPlayground.SceneBlendShader.material)
+            .withBlendMaterial(ShaderPlayground.SceneBlendShader.material)
         )
       )
 

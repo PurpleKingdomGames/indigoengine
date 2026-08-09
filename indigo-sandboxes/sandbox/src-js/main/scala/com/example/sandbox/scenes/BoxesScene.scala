@@ -62,6 +62,6 @@ object BoxesScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(shapes)
+        Constants.LayerKeys.game -> Layer.Content(shapes)
       )
     )

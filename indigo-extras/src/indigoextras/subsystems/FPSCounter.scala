@@ -151,7 +151,7 @@ final case class FPSCounter[Model](
 
     Outcome(
       SceneUpdateFragment(
-        layerKey -> Layer(bg, text)
+        layerKey -> Layer.Content(bg, text)
       )
     )
 

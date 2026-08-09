@@ -124,7 +124,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         Constants.LayerKeys.background -> Layer.Stack.empty,
         Constants.LayerKeys.game       -> Layer.Stack.empty,
         Constants.LayerKeys.windows    -> Layer.Stack.empty,
-        Constants.LayerKeys.fps        -> Layer.empty.withCamera(Camera.default)
+        Constants.LayerKeys.fps        -> Layer.Content.empty.withCamera(Camera.default)
       )
     )
 

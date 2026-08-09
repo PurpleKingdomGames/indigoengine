@@ -55,16 +55,18 @@ object BoundingCircleScene extends Scene[SandboxGameModel]:
 
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(Constants.LayerKeys.game)(
-          // Our bounding circle
-          Shape.Circle(
-            circle.position.toPoint,
-            circle.radius.toInt,
-            Fill.None,
-            Stroke(1, RGBA.White)
-          ),
-          vertexCirce.moveTo(vtxA.toPoint),
-          vertexCirce.moveTo(vtxB.toPoint),
-          vertexCirce.moveTo(vtxC.toPoint)
+        .addLayers(
+          Constants.LayerKeys.game -> Layer.Content(
+            // Our bounding circle
+            Shape.Circle(
+              circle.position.toPoint,
+              circle.radius.toInt,
+              Fill.None,
+              Stroke(1, RGBA.White)
+            ),
+            vertexCirce.moveTo(vtxA.toPoint),
+            vertexCirce.moveTo(vtxB.toPoint),
+            vertexCirce.moveTo(vtxC.toPoint)
+          )
         )
     )

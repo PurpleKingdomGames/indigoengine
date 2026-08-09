@@ -61,27 +61,33 @@ object RefractionScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          Constants.LayerKeys.game -> Layer(
-            background,
-            graphic.moveTo(viewCenter),
-            graphic.moveTo(viewCenter).moveBy(-60, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
-            graphic.moveTo(viewCenter).moveBy(-30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
-            graphic.moveTo(viewCenter).moveBy(30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
-            graphic.moveTo(viewCenter).moveBy(60, 0).withMaterial(SandboxAssets.junctionBoxMaterial)
-          ),
-          Constants.LayerKeys.game -> Layer(imageLight)
-            .withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5))),
-          Constants.LayerKeys.game -> Layer(
-            distortion.moveTo(viewCenter + Point(50, 0)),
-            sliding.affectTime(0.3).at(context.frame.time.running)
-          ).withBlending(
-            Refraction.blending(
-              Signal.SmoothPulse
-                .map(d => 0.25 * d)
-                .affectTime(0.25)
-                .at(context.frame.time.running)
+          Constants.LayerKeys.game ->
+            Layer.Stack(
+              Layer.Content(
+                background,
+                graphic.moveTo(viewCenter),
+                graphic.moveTo(viewCenter).moveBy(-60, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
+                graphic.moveTo(viewCenter).moveBy(-30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
+                graphic.moveTo(viewCenter).moveBy(30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
+                graphic.moveTo(viewCenter).moveBy(60, 0).withMaterial(SandboxAssets.junctionBoxMaterial)
+              ),
+              Layer
+                .Content(imageLight)
+                .withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5))),
+              Layer
+                .Content(
+                  distortion.moveTo(viewCenter + Point(50, 0)),
+                  sliding.affectTime(0.3).at(context.frame.time.running)
+                )
+                .withBlending(
+                  Refraction.blending(
+                    Signal.SmoothPulse
+                      .map(d => 0.25 * d)
+                      .affectTime(0.25)
+                      .at(context.frame.time.running)
+                  )
+                )
             )
-          )
         )
         .withMagnification(Magnification.x2)
     )

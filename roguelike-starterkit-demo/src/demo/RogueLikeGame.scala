@@ -80,12 +80,12 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.background -> Layer.empty,
-        Constants.LayerKeys.game       -> Layer.empty,
-        Constants.LayerKeys.ui         -> Layer.empty
+        Constants.LayerKeys.background -> Layer.Content.empty,
+        Constants.LayerKeys.game       -> Layer.Content.empty,
+        Constants.LayerKeys.ui         -> Layer.Content.empty
       )
         .addLayers(
-          LayerEntry(Constants.LayerKeys.fps, Layer.empty, Magnification.x2)
+          LayerEntry(Constants.LayerKeys.fps, Layer.Content.empty, Magnification.x2)
         )
     )
 

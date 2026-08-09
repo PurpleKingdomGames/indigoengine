@@ -88,18 +88,6 @@ enum Layer derives CanEqual:
 
 object Layer:
 
-  val empty: Layer.Content =
-    Layer.Content.empty
-
-  def apply(nodes: SceneNode*): Layer.Content =
-    Layer.Content(Batch.fromSeq(nodes))
-
-  def apply(nodes: Batch[SceneNode]): Layer.Content =
-    Layer.Content(nodes)
-
-  def apply(maybeNode: Option[SceneNode]): Layer.Content =
-    Layer.Content(maybeNode)
-
   object Stack:
 
     val empty: Layer.Stack =

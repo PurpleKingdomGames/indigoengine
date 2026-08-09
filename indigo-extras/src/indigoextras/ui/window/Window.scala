@@ -162,7 +162,7 @@ object Window:
       minSize,
       None,
       WindowState.Closed,
-      _ => Outcome(Layer.empty),
+      _ => Outcome(Layer.Content.empty),
       WindowMode.Standard,
       _ => WindowActive.Active
     )

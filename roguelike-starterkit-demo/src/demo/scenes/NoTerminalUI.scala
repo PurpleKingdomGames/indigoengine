@@ -70,7 +70,7 @@ object NoTerminalUIComponents:
               (_, _) => Bounds(0, 0, 150, 10)
             ) { case (ctx, label) =>
               Outcome(
-                Layer(
+                Layer.Content(
                   text
                     .withText(label.text(ctx))
                     // .modifyMaterial(_.withTint(RGBA.Red))
@@ -87,7 +87,7 @@ object NoTerminalUIComponents:
           (_, _) => Bounds(0, 0, 150, 10)
         ) { case (ctx, label) =>
           Outcome(
-            Layer(
+            Layer.Content(
               text
                 .withText(label.text(ctx))
                 .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -99,7 +99,7 @@ object NoTerminalUIComponents:
         Switch[Int](Bounds(40, 40))(
           (ctx, switch) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     switch.bounds(ctx).unsafeToRectangle,
@@ -111,7 +111,7 @@ object NoTerminalUIComponents:
             ),
           (ctx, switch) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     switch.bounds(ctx).unsafeToRectangle,
@@ -128,7 +128,7 @@ object NoTerminalUIComponents:
       .add(
         Button[Int](Bounds(32, 32)) { (ctx, btn) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape
                 .Box(
                   btn.bounds(ctx).unsafeToRectangle,
@@ -141,7 +141,7 @@ object NoTerminalUIComponents:
         }
           .presentDown { (ctx, btn) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     btn.bounds(ctx).unsafeToRectangle,
@@ -154,7 +154,7 @@ object NoTerminalUIComponents:
           }
           .presentOver((ctx, btn) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     btn.bounds(ctx).unsafeToRectangle,
@@ -179,7 +179,7 @@ object NoTerminalUIComponents:
                   Switch[Int](Bounds(20, 20))(
                     (ctx, switch) =>
                       Outcome(
-                        Layer(
+                        Layer.Content(
                           Shape
                             .Circle(
                               switch.bounds(ctx).unsafeToRectangle.toIncircle,
@@ -191,7 +191,7 @@ object NoTerminalUIComponents:
                       ),
                     (ctx, switch) =>
                       Outcome(
-                        Layer(
+                        Layer.Content(
                           Shape
                             .Circle(
                               switch.bounds(ctx).unsafeToRectangle.toIncircle,
@@ -219,7 +219,7 @@ object NoTerminalUIComponents:
                     (_, _) => Bounds(0, 0, 150, 10)
                   ) { case (ctx, label) =>
                     Outcome(
-                      Layer(
+                      Layer.Content(
                         text
                           .modifyMaterial(_.withForeground(RGBA.Red))
                           .withText(label.text(ctx))

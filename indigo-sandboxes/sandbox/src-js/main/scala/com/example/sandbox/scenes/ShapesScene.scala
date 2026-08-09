@@ -78,58 +78,63 @@ object ShapesScene extends Scene[SandboxGameModel]:
         .moveTo(100, 100)
 
     Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(Constants.LayerKeys.game)(
-          Shape.Circle(
-            circlePosition,
-            20,
-            Fill.RadialGradient(Point(20), RGBA.Red.withAlpha(0.25), Point.zero - circleGradient, RGBA.Red),
-            Stroke(1, RGBA.Red)
-          ),
-          Shape.Line(Point(30, 80), Point(100, 20), Stroke(lineThickness, RGBA.Cyan)),
-          Shape
-            .Box(
-              Rectangle(Point(100, 100), squareSize),
-              Fill.Color(RGBA.White),
-              Stroke(11, RGBA.Black.withAlpha(0.75))
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer
+          .Content(
+            Shape.Circle(
+              circlePosition,
+              20,
+              Fill.RadialGradient(Point(20), RGBA.Red.withAlpha(0.25), Point.zero - circleGradient, RGBA.Red),
+              Stroke(1, RGBA.Red)
+            ),
+            Shape.Line(Point(30, 80), Point(100, 20), Stroke(lineThickness, RGBA.Cyan)),
+            Shape
+              .Box(
+                Rectangle(Point(100, 100), squareSize),
+                Fill.Color(RGBA.White),
+                Stroke(11, RGBA.Black.withAlpha(0.75))
+              )
+              .withRef(squareSize.toPoint / 2),
+            CloneBatch(CloneId("shape clone"), CloneBatchData(10, 10)),
+            CloneBatch(CloneId("shape clone"), CloneBatchData(20, 10)),
+            CloneBatch(CloneId("shape clone"), CloneBatchData(30, 10)),
+            Shape
+              .Polygon(
+                Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
+                Stroke(4, RGBA.Black.withAlpha(0.75))
+              )(
+                Point(10, 10) - (Math.cos(Radians.fromSeconds(context.frame.time.running).toDouble) * 5).toInt,
+                Point(20, 70) + (Math
+                  .sin(Radians.fromSeconds(context.frame.time.running * Seconds(1.2)).toDouble) * 10).toInt,
+                Point(90, 90) + (Math
+                  .sin(Radians.fromSeconds(context.frame.time.running * Seconds(0.8)).toDouble) * 6).toInt,
+                Point(70, 20) - (Math
+                  .cos(Radians.fromSeconds(context.frame.time.running * Seconds(1.5)).toDouble) * 8).toInt
+              )
+              .moveTo(175, 10),
+            blue,
+            Shape.Box(
+              context.services.bounds.get(blue),
+              Fill.None,
+              Stroke(1, RGBA.Blue)
+            ), // outline blue
+            red,
+            Shape.Box(
+              context.services.bounds.get(red),
+              Fill.None,
+              Stroke(1, RGBA.Red)
+            ), // outline red
+            Shape
+              .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None),
+            testPolygon,
+            testPolygon2
+          )
+          .addCloneBlanks(
+            CloneBlank(
+              CloneId("shape clone"),
+              Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White))
             )
-            .withRef(squareSize.toPoint / 2),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(10, 10)),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(20, 10)),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(30, 10)),
-          Shape
-            .Polygon(
-              Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
-              Stroke(4, RGBA.Black.withAlpha(0.75))
-            )(
-              Point(10, 10) - (Math.cos(Radians.fromSeconds(context.frame.time.running).toDouble) * 5).toInt,
-              Point(20, 70) + (Math
-                .sin(Radians.fromSeconds(context.frame.time.running * Seconds(1.2)).toDouble) * 10).toInt,
-              Point(90, 90) + (Math
-                .sin(Radians.fromSeconds(context.frame.time.running * Seconds(0.8)).toDouble) * 6).toInt,
-              Point(70, 20) - (Math
-                .cos(Radians.fromSeconds(context.frame.time.running * Seconds(1.5)).toDouble) * 8).toInt
-            )
-            .moveTo(175, 10),
-          blue,
-          Shape.Box(
-            context.services.bounds.get(blue),
-            Fill.None,
-            Stroke(1, RGBA.Blue)
-          ), // outline blue
-          red,
-          Shape.Box(
-            context.services.bounds.get(red),
-            Fill.None,
-            Stroke(1, RGBA.Red)
-          ), // outline red
-          Shape
-            .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None),
-          testPolygon,
-          testPolygon2
-        )
-        .addCloneBlanks(
-          CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White)))
-        )
+          )
+      )
     )
   }

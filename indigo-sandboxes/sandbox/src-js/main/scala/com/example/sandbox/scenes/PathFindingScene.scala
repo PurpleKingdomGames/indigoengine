@@ -76,14 +76,14 @@ object PathFindingScene extends Scene[SandboxGameModel]:
     val path = PathFinder.findPath(start, end, pathBuilder).getOrElse(Batch.empty) // if no path found, return empty
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        Batch.combineAll(
-          (for {
-            y <- 0 until gridSize
-            x <- 0 until gridSize
-            c = model.data(y * gridSize + x)
-          } yield Batch(
-            Shape.Box(
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          Batch.fromIndexedSeq(
+            for {
+              y <- 0 until gridSize
+              x <- 0 until gridSize
+              c = model.data(y * gridSize + x)
+            } yield Shape.Box(
               Rectangle(Point(x * gridDisplaySize, y * gridDisplaySize), Size(gridDisplaySize, gridDisplaySize)),
               Fill.Color(
                 // if the point is in the path, color it red, otherwise color it with the value of the grid as a shade of grey
@@ -91,7 +91,7 @@ object PathFindingScene extends Scene[SandboxGameModel]:
                 else RGBA.fromColorInts(c, c, c)
               )
             )
-          ))*
+          )
         )
       )
     )

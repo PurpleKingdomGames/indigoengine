@@ -120,7 +120,7 @@ final case class Automata[Model](
 
     Outcome(
       SceneUpdateFragment(
-        layerKey -> Layer(updated.nodes)
+        layerKey -> Layer.Content(updated.nodes)
       ),
       updated.events
     )

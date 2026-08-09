@@ -42,28 +42,30 @@ object TerminalTextScene extends Scene[GameModel]:
       model: GameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        Text(
-          message,
-          RoguelikeTiles.Size10x10.Fonts.fontKey,
-          TerminalText(Assets.assets.AnikkiSquare10x10, RGBA.Cyan, RGBA.Blue)
-        ),
-        Text(
-          message,
-          RoguelikeTiles.Size10x10.Fonts.fontKey,
-          TerminalText(Assets.assets.AnikkiSquare10x10, RGBA.Yellow, RGBA.Red)
-            .withShaderId(ShaderId("my shader"))
-        ).moveBy(0, 40),
-        Text(
-          message,
-          RoguelikeTiles.Size10x10.Fonts.fontKey,
-          TerminalText(
-            Assets.assets.AnikkiSquare10x10,
-            RGBA.White,
-            RGBA.Zero,
-            RGBA.Magenta.withAlpha(0.75)
-          )
-        ).moveBy(0, 80)
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          Text(
+            message,
+            RoguelikeTiles.Size10x10.Fonts.fontKey,
+            TerminalText(Assets.assets.AnikkiSquare10x10, RGBA.Cyan, RGBA.Blue)
+          ),
+          Text(
+            message,
+            RoguelikeTiles.Size10x10.Fonts.fontKey,
+            TerminalText(Assets.assets.AnikkiSquare10x10, RGBA.Yellow, RGBA.Red)
+              .withShaderId(ShaderId("my shader"))
+          ).moveBy(0, 40),
+          Text(
+            message,
+            RoguelikeTiles.Size10x10.Fonts.fontKey,
+            TerminalText(
+              Assets.assets.AnikkiSquare10x10,
+              RGBA.White,
+              RGBA.Zero,
+              RGBA.Magenta.withAlpha(0.75)
+            )
+          ).moveBy(0, 80)
+        )
       ).withMagnification(Magnification.x2)
     )
 

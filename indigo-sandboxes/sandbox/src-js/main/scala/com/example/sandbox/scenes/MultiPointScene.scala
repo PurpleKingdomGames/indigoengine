@@ -105,7 +105,7 @@ object MultiPointScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           // Pen data
           Text("Pen", Fonts.fontKey, textMaterial).moveTo(10, 10),
           Text(s"${model.pen.pos.x},${model.pen.pos.y}", Fonts.fontKey, textMaterial).moveTo(10, 30),

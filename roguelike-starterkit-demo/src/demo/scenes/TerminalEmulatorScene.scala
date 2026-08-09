@@ -55,7 +55,11 @@ object TerminalEmulatorScene extends Scene[GameModel]:
       }
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(tiles.clones)
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          tiles.clones
+        )
+      )
         .addCloneBlanks(tiles.blanks)
         .withMagnification(Magnification.x2)
     )

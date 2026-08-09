@@ -51,7 +51,7 @@ object CratesScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           graphic.moveTo(16, 16),
           CloneTiles(
             cloneId,

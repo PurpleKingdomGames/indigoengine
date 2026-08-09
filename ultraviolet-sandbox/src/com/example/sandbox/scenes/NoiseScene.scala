@@ -34,7 +34,7 @@ object NoiseScene extends Scene[SandboxGameModel] {
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        SandboxView.gameLayerKey -> Layer(
+        SandboxView.gameLayerKey -> Layer.Content(
           BlankEntity(100, 100, ShaderData(CellularNoiseShader.shader.id))
             .moveTo(0, 0),
           BlankEntity(100, 100, ShaderData(PerlinNoiseShader.shader.id))

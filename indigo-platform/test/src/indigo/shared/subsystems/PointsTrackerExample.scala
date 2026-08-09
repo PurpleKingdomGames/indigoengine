@@ -40,7 +40,9 @@ final case class PointsTrackerExample(num: Int, startingPoints: Int) extends Sub
   def present(context: SubSystemContext[Int], points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        LayerKey("test") -> Layer(Text(points.toString, 0, 0, FontKey(""), Material.Bitmap(AssetName("Testing"))))
+        LayerKey("test") -> Layer.Content(
+          Text(points.toString, 0, 0, FontKey(""), Material.Bitmap(AssetName("Testing")))
+        )
       )
     )
 }

@@ -100,7 +100,7 @@ object ComponentGroup:
       BoundsMode.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -111,7 +111,7 @@ object ComponentGroup:
       boundsMode,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       Dimensions.zero,
       Bounds.zero,
       dirty = true
@@ -122,7 +122,7 @@ object ComponentGroup:
       BoundsMode.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
-      _ => Layer.empty,
+      _ => Layer.Content.empty,
       dimensions,
       Bounds.zero,
       dirty = true

@@ -41,13 +41,13 @@ object OriginalScene extends Scene[SandboxGameModel] {
       scene
         .addLayers(
           Constants.LayerKeys.background ->
-            Layer(
+            Layer.Content(
               BlankEntity(0, 0, 228 * 3, 140 * 3, ShaderData(Shaders.seaId))
             )
         )
         .addLayers(
           Constants.LayerKeys.game ->
-            Layer(
+            Layer.Content(
               Batch(
                 Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),
                 BlankEntity(140, 50, 32, 32, ShaderData(Shaders.circleId)),

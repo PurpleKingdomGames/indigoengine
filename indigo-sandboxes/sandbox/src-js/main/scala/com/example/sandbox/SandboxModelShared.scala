@@ -15,7 +15,7 @@ object SandboxModelShared:
   val customButton: Button[Int] =
     Button[Int](Bounds(32, 32)) { (ctx, btn) =>
       Outcome(
-        Layer(
+        Layer.Content(
           Shape
             .Box(
               btn.bounds.unsafeToRectangle,
@@ -28,7 +28,7 @@ object SandboxModelShared:
     }
       .presentDown { (ctx, btn) =>
         Outcome(
-          Layer(
+          Layer.Content(
             Shape
               .Box(
                 btn.bounds.unsafeToRectangle,
@@ -41,7 +41,7 @@ object SandboxModelShared:
       }
       .presentOver((ctx, btn) =>
         Outcome(
-          Layer(
+          Layer.Content(
             Shape
               .Box(
                 btn.bounds.unsafeToRectangle,
@@ -72,7 +72,7 @@ object SandboxModelShared:
               (ctx, label) => Bounds(ctx.services.bounds.get(textRed.withText(label)))
             ) { case (ctx, label) =>
               Outcome(
-                Layer(
+                Layer.Content(
                   textRed
                     .withText(label.text(ctx))
                     .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -88,7 +88,7 @@ object SandboxModelShared:
           (ctx, label) => Bounds(ctx.services.bounds.get(text.withText(label)))
         ) { case (ctx, label) =>
           Outcome(
-            Layer(
+            Layer.Content(
               text
                 .withText(label.text(ctx))
                 .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -100,7 +100,7 @@ object SandboxModelShared:
         Switch[Int](BoundsType.fixed[Int](40, 40))(
           (context, switch) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     switch.bounds.unsafeToRectangle,
@@ -112,7 +112,7 @@ object SandboxModelShared:
             ),
           (context, switch) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     switch.bounds.unsafeToRectangle,
@@ -129,7 +129,7 @@ object SandboxModelShared:
       .add(
         Button[Int](Bounds(32, 32)) { (context, button) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape
                 .Box(
                   button.bounds.unsafeToRectangle,
@@ -142,7 +142,7 @@ object SandboxModelShared:
         }
           .presentDown { (context, button) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     button.bounds.unsafeToRectangle,
@@ -155,7 +155,7 @@ object SandboxModelShared:
           }
           .presentOver((context, button) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     button.bounds.unsafeToRectangle,
@@ -180,7 +180,7 @@ object SandboxModelShared:
                   Switch[Int](BoundsType.fixed[Int](20, 20))(
                     (context, switch) =>
                       Outcome(
-                        Layer(
+                        Layer.Content(
                           Shape
                             .Circle(
                               switch.bounds.unsafeToRectangle.toIncircle,
@@ -192,7 +192,7 @@ object SandboxModelShared:
                       ),
                     (context, switch) =>
                       Outcome(
-                        Layer(
+                        Layer.Content(
                           Shape
                             .Circle(
                               switch.bounds.unsafeToRectangle.toIncircle,
@@ -219,7 +219,7 @@ object SandboxModelShared:
                     (ctx, label) => Bounds(ctx.services.bounds.get(textRed.withText(label)))
                   ) { case (ctx, label) =>
                     Outcome(
-                      Layer(
+                      Layer.Content(
                         textRed
                           .withText(label.text(ctx))
                           .moveTo(ctx.parent.bounds.coords.unsafeToPoint)
@@ -233,7 +233,7 @@ object SandboxModelShared:
       .add(
         Button[Int](Bounds(16, 16)) { (context, button) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape
                 .Box(
                   button.bounds.unsafeToRectangle,
@@ -246,7 +246,7 @@ object SandboxModelShared:
         }
           .presentDown { (context, button) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     button.bounds.unsafeToRectangle,
@@ -259,7 +259,7 @@ object SandboxModelShared:
           }
           .presentOver((context, button) =>
             Outcome(
-              Layer(
+              Layer.Content(
                 Shape
                   .Box(
                     button.bounds.unsafeToRectangle,

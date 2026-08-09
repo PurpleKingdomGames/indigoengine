@@ -45,10 +45,10 @@ object OriginalScene extends Scene[SandboxGameModel] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
-          SandboxView.bgLayerKey -> Layer.empty
+          SandboxView.bgLayerKey -> Layer.Content.empty
         ) |+| scene
         .addLayers(
-          SandboxView.bgLayerKey -> Layer(
+          SandboxView.bgLayerKey -> Layer.Content(
             CustomShape(
               0,
               0,
@@ -59,7 +59,7 @@ object OriginalScene extends Scene[SandboxGameModel] {
           )
         )
         .addLayers(
-          SandboxView.gameLayerKey -> Layer(
+          SandboxView.gameLayerKey -> Layer.Content(
             Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),
             CustomShape(
               140,

@@ -25,11 +25,12 @@ object SandboxView:
               gameLayer(model, viewModel)
             ),
             if (viewModel.useLightingLayer)
-              Layer(lightingLayer(mouse))
+              Layer
+                .Content(lightingLayer(mouse))
                 .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
             else
-              Layer.empty,
-            Layer(uiLayer(bl))
+              Layer.Content.empty,
+            Layer.Content(uiLayer(bl))
           )
       )
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))

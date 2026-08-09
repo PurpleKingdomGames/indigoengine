@@ -38,7 +38,7 @@ object ClipScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           (0 to 7).toBatch.flatMap { i =>
             model.dude.dude.clips
               .get(CycleLabel("walk right"))

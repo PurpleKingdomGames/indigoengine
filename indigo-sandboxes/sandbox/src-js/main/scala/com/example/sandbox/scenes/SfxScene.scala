@@ -126,7 +126,7 @@ object SfxComponents:
       (ctx, label) => Bounds(ctx.services.bounds.get(text.withText(label)))
     ) { case (ctx, label) =>
       Outcome(
-        Layer(
+        Layer.Content(
           text
             .withText(label.text(ctx))
             .moveTo(ctx.parent.coords.unsafeToPoint)
@@ -137,7 +137,7 @@ object SfxComponents:
   def makeButton: Button[Unit] =
     Button[Unit](Bounds(32, 32)) { (context, button) =>
       Outcome(
-        Layer(
+        Layer.Content(
           Shape
             .Box(
               button.bounds.unsafeToRectangle,
@@ -150,7 +150,7 @@ object SfxComponents:
     }
       .presentDown { (context, button) =>
         Outcome(
-          Layer(
+          Layer.Content(
             Shape
               .Box(
                 button.bounds.unsafeToRectangle,
@@ -163,7 +163,7 @@ object SfxComponents:
       }
       .presentOver((context, button) =>
         Outcome(
-          Layer(
+          Layer.Content(
             Shape
               .Box(
                 button.bounds.unsafeToRectangle,

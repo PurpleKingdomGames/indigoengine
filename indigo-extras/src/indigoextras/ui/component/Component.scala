@@ -68,7 +68,7 @@ object Component:
           context: UIContext[ReferenceData],
           model: Unit
       ): Outcome[Layer] =
-        Outcome(Layer.empty)
+        Outcome(Layer.Content.empty)
 
       def refresh(context: UIContext[ReferenceData], model: Unit): Unit =
         ()

@@ -76,10 +76,12 @@ object MutantsScene extends Scene[SandboxGameModel]:
       model: SandboxGameModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        Mutants(cloneId, data)
-        // Mutants(cloneId, dataMax)
-        // gfx
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          Mutants(cloneId, data)
+          // Mutants(cloneId, dataMax)
+          // gfx
+        )
       ).addCloneBlanks(cloneBlank)
     )
 

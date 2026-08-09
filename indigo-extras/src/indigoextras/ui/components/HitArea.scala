@@ -130,7 +130,7 @@ final case class HitArea[ReferenceData](
     Button(
       bounds,
       state,
-      (_, _) => Outcome(Layer.empty),
+      (_, _) => Outcome(Layer.Content.empty),
       None,
       None,
       click,
@@ -223,7 +223,7 @@ object HitArea:
       (model.fill, model.stroke) match
         case (Some(fill), Some(stroke)) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape.Box(
                 model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.Color(fill),
@@ -234,7 +234,7 @@ object HitArea:
 
         case (Some(fill), None) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape.Box(
                 model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.Color(fill)
@@ -244,7 +244,7 @@ object HitArea:
 
         case (None, Some(stroke)) =>
           Outcome(
-            Layer(
+            Layer.Content(
               Shape.Box(
                 model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.None,
@@ -254,7 +254,7 @@ object HitArea:
           )
 
         case (None, None) =>
-          Outcome(Layer.empty)
+          Outcome(Layer.Content.empty)
 
     def refresh(
         context: UIContext[ReferenceData],

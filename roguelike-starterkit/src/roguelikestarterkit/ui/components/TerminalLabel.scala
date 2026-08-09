@@ -24,7 +24,7 @@ object TerminalLabel:
   ): (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer] = { case (context, label) =>
     val size = label.bounds(context).dimensions.unsafeToSize
 
-    if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+    if size.width <= 0 || size.height <= 0 then Outcome(Layer.Content.empty)
     else
       val terminal =
         RogueTerminalEmulator(size)

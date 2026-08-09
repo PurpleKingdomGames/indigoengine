@@ -34,11 +34,13 @@ object MeshScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
 
     Outcome(
-      SceneUpdateFragment(Constants.LayerKeys.game)(
-        drawMesh(
-          model.meshData.points,
-          model.meshData.superTriangle,
-          model.meshData.mesh.toLineSegments
+      SceneUpdateFragment(
+        Constants.LayerKeys.game -> Layer.Content(
+          drawMesh(
+            model.meshData.points,
+            model.meshData.superTriangle,
+            model.meshData.mesh.toLineSegments
+          )
         )
       )
     )

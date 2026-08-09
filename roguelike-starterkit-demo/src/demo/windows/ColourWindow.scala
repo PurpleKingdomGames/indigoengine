@@ -82,7 +82,7 @@ object ColourWindow:
         )
       )
       .withBackground { bounds =>
-        Layer(
+        Layer.Content(
           Shape.Box(
             bounds.toLocalSpace(charSheet.size),
             Fill.Color(RGBA.Cyan.withAlpha(0.5))
@@ -97,7 +97,7 @@ object ColourWindow:
   ): (UIContext[Unit], Button[Unit]) => Outcome[Layer] =
     (ctx, btn) =>
       Outcome(
-        Layer(
+        Layer.Content(
           stroke match
             case None =>
               Shape.Box(

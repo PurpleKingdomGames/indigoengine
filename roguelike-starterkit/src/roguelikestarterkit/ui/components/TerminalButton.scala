@@ -34,7 +34,7 @@ object TerminalButton:
     (context, button) =>
       val size = button.bounds.dimensions.unsafeToSize
 
-      if size.width <= 0 || size.height <= 0 then Outcome(Layer.empty)
+      if size.width <= 0 || size.height <= 0 then Outcome(Layer.Content.empty)
       else
         val terminal =
           RogueTerminalEmulator(size)
@@ -63,7 +63,7 @@ object TerminalButton:
       val bounds = button.bounds(context)
       val size   = bounds.dimensions.unsafeToSize
 
-      if size.width <= 2 || size.height <= 2 then Outcome(Layer.empty)
+      if size.width <= 2 || size.height <= 2 then Outcome(Layer.Content.empty)
       else
         val txt  = label(context).take(bounds.width - 2)
         val hBar = Batch.fill(bounds.width - 2)(borderTiles.horizontal)

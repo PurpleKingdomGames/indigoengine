@@ -61,7 +61,7 @@ object ManyEventHandlers extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer(
+        Constants.LayerKeys.game -> Layer.Content(
           sprites(model.dude.dude.sprite.withRef(Point.zero).moveTo(Point.zero))
         )
       )
