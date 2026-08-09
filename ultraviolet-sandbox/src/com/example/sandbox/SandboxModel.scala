@@ -120,11 +120,11 @@ object SandboxModel {
 
     case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
       Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.Next)
+        .addGlobalEvents(SceneEvent.LoopNext)
 
     case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
       Outcome(viewModel)
-        .addGlobalEvents(SceneEvent.Previous)
+        .addGlobalEvents(SceneEvent.LoopPrevious)
 
     case _ =>
       Outcome(viewModel)
