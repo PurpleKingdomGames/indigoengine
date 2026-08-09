@@ -13,7 +13,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(MagnificationScene.name)
+    Some(LineReflectionScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxGameModel]] =
     ScenesList.scenes
@@ -130,6 +130,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
 object SandboxGame:
 
+  // This is all wrong and one day, I should fix it.
   val gameWidth: Int      = 228
   val gameHeight: Int     = 128
   val viewportWidth: Int  = gameWidth * 2  // 456
