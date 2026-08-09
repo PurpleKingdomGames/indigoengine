@@ -44,8 +44,9 @@ object BlendMaterial {
     * layer. This lets the renderer blend it straight onto the scene in place, skipping the destination copy that
     * `SrcAndDst` materials need. Only extend `SrcOnly` if the shader never reads `DST_CHANNEL`.
     *
-    * Note: The `DST_CHANNEL` and `DST` variables are still available to the shader via the environment, but they are
-    * not set in a SrcOnly shader and may error if you attempt to reference them.
+    * Note: In the WebGL2 renderer, `DST_CHANNEL` is still provided for `SrcOnly` materials, but it will be bound to a
+    * background / clear-colour buffer (not the accumulated scene). If your shader needs the accumulated scene, use
+    * `SrcAndDst`.
     */
   trait SrcOnly extends BlendMaterial
 
