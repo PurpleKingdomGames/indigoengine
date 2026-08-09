@@ -123,6 +123,14 @@ object Layer:
       Layer.Content(Batch.fromOption(maybeNode), Batch.empty, Batch.empty, None, None)
 
   extension (l: Layer)
+    def isEmpty: Boolean =
+      l match
+        case ll: Layer.Content => ll.isEmpty
+        case ll: Layer.Stack   => ll.isEmpty
+
+    def nonEmpty: Boolean =
+      !l.isEmpty
+
     /** Modifies this layer, and then in the case of Layer.Stack subsequently modifies all child layers using the
       * partial function defined. Any layer that is not modified by the partial function is returned unchanged.
       */
@@ -132,6 +140,9 @@ object Layer:
         case l             => l
 
   extension (ls: Layer.Stack)
+    def isEmpty: Boolean  = ls.layers.forall(_.isEmpty)
+    def nonEmpty: Boolean = !ls.layers.isEmpty
+
     def combine(other: Layer.Stack): Layer.Stack =
       ls.copy(layers = ls.layers ++ other.layers)
     def ++(other: Layer.Stack): Layer.Stack =
@@ -163,6 +174,11 @@ object Layer:
     )
 
   extension (lc: Layer.Content)
+    def isEmpty: Boolean =
+      lc.nodes.isEmpty && lc.cloneBlanks.isEmpty && lc.lights.isEmpty && lc.blending.isEmpty && lc.camera.isEmpty
+    def nonEmpty: Boolean =
+      !lc.isEmpty
+
     def combine(other: Layer.Content): Layer.Content =
       mergeContentLayers(lc, other)
     def |+|(other: Layer.Content): Layer.Content =
