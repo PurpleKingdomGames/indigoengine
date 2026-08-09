@@ -5,10 +5,12 @@ import indigo.core.datatypes.LayerKey
 import indigo.core.datatypes.Point
 import indigo.core.datatypes.Rectangle
 import indigo.core.render.Magnification
+import indigo.scenegraph.AmbientLight
 import indigo.scenegraph.Blending
 import indigo.scenegraph.Camera
 import indigo.scenegraph.Layer
 import indigo.scenegraph.LayerEntry
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.scenegraph.Shape
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
@@ -167,6 +169,99 @@ class CompactLayersTests extends munit.FunSuite:
       )
 
     assertEquals(actual, expected)
+  }
+
+  test("the empty-placeholder-with-camera pattern survives through to the render pipeline") {
+    val key    = LayerKey("game")
+    val camera = Camera.LookAt(Point(100, 200))
+
+    val scene =
+      SceneUpdateFragment.empty.addLayers(key -> Layer.Content.empty.withCamera(camera)) |+|
+        SceneUpdateFragment.empty
+          .addLayers(key -> Layer.Content(shape))
+          .withMagnification(Magnification.x2)
+
+    val actualLayers =
+      scene.layers
+
+    val expectedLayers =
+      Batch(
+        LayerEntry(
+          key,
+          Layer.Content(shape).withCamera(camera)
+        ).withMagnification(Magnification.x2)
+      )
+
+    assertEquals(clue(actualLayers), clue(expectedLayers))
+
+    val actual =
+      CompactLayers.compactLayers(scene.layers)
+
+    val expected =
+      Batch((Batch(Layer.Content(shape).withCamera(camera)), Magnification.x2))
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
+  test("the empty-placeholder-with-camera pattern survives through to the render pipeline (inverse)") {
+    val key    = LayerKey("game")
+    val camera = Camera.LookAt(Point(100, 200))
+
+    val scene =
+      SceneUpdateFragment.empty
+        .addLayers(key -> Layer.Content(shape))
+        .withMagnification(Magnification.x2) |+|
+        SceneUpdateFragment.empty.addLayers(key -> Layer.Content.empty.withCamera(camera))
+
+    val actualLayers =
+      scene.layers
+
+    val expectedLayers =
+      Batch(
+        LayerEntry(
+          key,
+          Layer.Content(shape).withCamera(camera)
+        ).withMagnification(Magnification.x2)
+      )
+
+    assertEquals(clue(actualLayers), clue(expectedLayers))
+
+    val actual =
+      CompactLayers.compactLayers(scene.layers)
+
+    val expected =
+      Batch((Batch(Layer.Content(shape).withCamera(camera)), Magnification.x2))
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
+  test("layers that cannot affect the output can be dropped") {
+    assert(CompactLayers.canBeDropped(Layer.Content.empty))
+    assert(CompactLayers.canBeDropped(Layer.Content.empty.withCamera(Camera.Fixed(Point.zero))))
+    assert(CompactLayers.canBeDropped(Layer.Content.empty.withLights(AmbientLight(RGBA.White))))
+    assert(!CompactLayers.canBeDropped(Layer.Content(shape)))
+    assert(!CompactLayers.canBeDropped(Layer.Content.empty.withBlending(Blending.Lighting(RGBA.Black))))
+  }
+
+  test("a camera-only layer does not survive as an empty composite") {
+    val entries: Batch[LayerEntry] =
+      Batch(
+        LayerEntry(
+          LayerKey("a"),
+          Layer.Stack(
+            Layer.Content.empty.withCamera(Camera.Fixed(Point.zero)),
+            Layer.Content(shape).withCamera(Camera.Fixed(Point(10)))
+          )
+        )
+      )
+
+    val actual =
+      CompactLayers.compactLayers(entries)
+
+    val expected =
+      Batch((Batch(Layer.Content(shape).withCamera(Camera.Fixed(Point(10)))), Magnification.x1))
+
+    assertEquals(clue(actual), clue(expected))
   }
 
   lazy val shape: Shape.Box =

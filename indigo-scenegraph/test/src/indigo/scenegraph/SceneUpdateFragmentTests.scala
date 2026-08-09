@@ -1,6 +1,9 @@
 package indigo.scenegraph
 
+import indigo.core.datatypes.Fill
 import indigo.core.datatypes.LayerKey
+import indigo.core.datatypes.Point
+import indigo.core.datatypes.Rectangle
 import indigo.core.render.Magnification
 import indigo.scenegraph.materials.BlendMaterial
 import indigoengine.shared.collections.Batch
@@ -231,10 +234,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val expected =
       SceneUpdateFragment.empty
         .addLayers(
-          LayerKey("a") -> Layer.Stack(
-            Layer.Content.empty,
-            Layer.Content.empty
-          ),
+          LayerKey("a") -> Layer.Content.empty,
           LayerKey("b") -> Layer.Stack(
             Layer.Content.empty,
             Layer.Stack(
@@ -249,6 +249,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
           )
         )
 
+    assertEquals(clue(actual.layers.toList), clue(expected.layers.toList))
     assertEquals(actual, expected)
 
     val actualBatch =
@@ -262,13 +263,45 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
         Layer.Content.empty,
         Layer.Content.empty,
         Layer.Content.empty,
-        Layer.Content.empty,
         Layer.Content.empty
       )
 
     assertEquals(actualBatch.length, expectedBatch.length)
     assertEquals(actualBatch, expectedBatch)
 
+  }
+
+  test("An empty placeholder layer may pass its camera on to content merged under the same key") {
+    val key    = LayerKey("game")
+    val camera = Camera.LookAt(Point(100, 200))
+    val shape  = Shape.Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Red))
+
+    val sceneA = SceneUpdateFragment.empty.addLayers(key -> Layer.Content.empty.withCamera(camera))
+    val sceneB = SceneUpdateFragment.empty.addLayers(key -> Layer.Content(shape))
+
+    val actual =
+      (sceneA |+| sceneB).layers
+
+    val expected =
+      Batch(LayerEntry(key, Layer.Content(shape).withCamera(camera)))
+
+    assertEquals(clue(actual.toList), clue(expected.toList))
+  }
+
+  test("Layers merged under the same key with conflicting cameras are merged, left-bias") {
+    val key   = LayerKey("game")
+    val shape = Shape.Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Red))
+    val a     = Layer.Content(shape).withCamera(Camera.Fixed(Point.zero))
+    val b     = Layer.Content(shape).withCamera(Camera.Fixed(Point(10)))
+
+    val actual =
+      (SceneUpdateFragment.empty.addLayers(key -> a) |+|
+        SceneUpdateFragment.empty.addLayers(key -> b)).layers
+
+    val expected =
+      Batch(LayerEntry(key, Layer.Content(shape, shape).withCamera(Camera.Fixed(Point.zero))))
+
+    assertEquals(clue(actual.toList), clue(expected.toList))
   }
 
 }

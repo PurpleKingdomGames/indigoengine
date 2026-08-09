@@ -24,14 +24,20 @@ enum Layer derives CanEqual:
 
   /** Content layers are used to stack collections of screen elements on top of one another.
     *
-    * During the scene render, each layer in order is _blended_ into the one below it, a bit like doing a foldLeft
-    * over a list. You can control how the blend is performed to create effects.
+    * During the scene render, each layer in order is _blended_ into the one below it, a bit like doing a foldLeft over
+    * a list. You can control how the blend is performed to create effects.
     *
-    * Layer fields are all either Batchs or options to denote that you _can_ have them but that it isn't necessary.
-    * Layers are "monoids" which just means that they can be empty and they can be combined. It is important to note
-    * that when they combine they are left bias in the case of all optional fields, which means, that if you do: a.show
-    * |+| b.hide, the layer will be visible. This may look odd, and maybe it is (time will tell!), but the idea is that
-    * you can set empty placeholder layers early in your scene and then add things to them, confident of the outcome.
+    * Layer fields are all either Batches or Options, to denote that you can have them but that it isn't necessary.
+    * Content layers are "monoids", which just means they can be empty and they can be combined. When two content layers
+    * combine — explicitly with |+|, or implicitly because they were added to a scene under the same layer key — the
+    * batches are concatenated and the optional fields are left bias, i.e. the earlier layer wins. This is what makes
+    * the placeholder idiom work: Declare an empty content layer early carrying the camera and blending you want, then
+    * fill it with nodes later under the same key.
+    *
+    * This only holds between content layers. A Layer.Stack added under the same key as a content layer is nested, not
+    * merged, so a placeholder's camera and blending will not reach the stack's children. Stacks are an organisational
+    * device and each of their content layers carries its own properties; if you want one camera across several layers,
+    * set it on each of them.
     *
     * @param nodes
     *   Nodes to render in this layer.
