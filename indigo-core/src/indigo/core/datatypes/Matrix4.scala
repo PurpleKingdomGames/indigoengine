@@ -194,7 +194,7 @@ object Matrix4:
       if (m.length == other.toArray.length) {
         var count = m.length - 1
         var same  = true
-        while (count > 0) {
+        while (count >= 0) {
           breakable {
             if (Math.abs(m(count) - other.toArray(count)) > 0.001)
               same = false

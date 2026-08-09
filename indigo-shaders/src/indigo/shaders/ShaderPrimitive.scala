@@ -7,7 +7,6 @@ import indigo.core.datatypes.Size
 import indigo.core.datatypes.Vector2
 import indigo.core.datatypes.Vector3
 import indigo.core.datatypes.Vector4
-import indigo.core.datatypes.mutable.CheapMatrix4
 import indigo.core.geometry.Vertex
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Millis
@@ -141,9 +140,6 @@ object ShaderPrimitive:
 
   object mat4:
     val length: Int = 16
-
-    def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
-      mat4(matrix.toBatch)
 
     def fromMatrix4(matrix: Matrix4): mat4 =
       mat4(matrix.toBatch.map(_.toFloat))

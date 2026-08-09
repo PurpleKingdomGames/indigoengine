@@ -287,31 +287,27 @@ final class RendererWebGL2(
         layer.camera.orElse(sceneData.camera) match
           case None =>
             QuickCache("layer" + entityFrameBuffer.width.toString + "x" + entityFrameBuffer.height.toString) {
-              new Float32Array(
-                CheapMatrix4
-                  .orthographic(entityFrameBuffer.width.toFloat, entityFrameBuffer.height.toFloat)
-                  .scale(1.0, -1.0, 1.0)
-                  .toJSArray
-              )
+              CheapMatrix4
+                .orthographic(entityFrameBuffer.width.toFloat, entityFrameBuffer.height.toFloat)
+                .scale(1.0, -1.0, 1.0)
+                .toFloat32Array
             }
 
           case Some(c) =>
-            new Float32Array(
-              CameraHelper
-                .calculateCameraMatrix(
-                  entityFrameBuffer.width.toDouble,
-                  entityFrameBuffer.height.toDouble,
-                  1.0d, // The buffer is already sized to the magnification.
-                  1.0d,
-                  c.position.x.toDouble,
-                  c.position.y.toDouble,
-                  c.zoom.toDouble,
-                  true,
-                  c.rotation,
-                  c.isLookAt
-                )
-                .toJSArray
-            )
+            CameraHelper
+              .calculateCameraMatrix(
+                entityFrameBuffer.width.toDouble,
+                entityFrameBuffer.height.toDouble,
+                1.0d, // The buffer is already sized to the magnification.
+                1.0d,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                true,
+                c.rotation,
+                c.isLookAt
+              )
+              .toFloat32Array
 
       WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
@@ -423,9 +419,9 @@ final class RendererWebGL2(
       orthographicProjectionMatrix = CheapMatrix4.orthographic(width.toFloat, height.toFloat)
 
       // The unmagnified projection is the same matrix, but `scale` mutates in place, so the flipped one needs its own.
-      orthographicProjectionMatrixNoMag.set(orthographicProjectionMatrix.toJSArray)
+      orthographicProjectionMatrixNoMag.set(orthographicProjectionMatrix.toFloat32Array)
       orthographicProjectionMatrixNoMagFlipped.set(
-        CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toJSArray
+        CheapMatrix4.orthographic(width.toFloat, height.toFloat).scale(1.0, -1.0, 1.0).toFloat32Array
       )
 
       layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))

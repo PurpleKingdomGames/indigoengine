@@ -2,7 +2,6 @@ package indigo.core.datatypes.mutable
 
 import indigo.core.datatypes.Matrix4
 import indigo.core.datatypes.Vector3
-import indigoengine.shared.collections.Batch
 
 /** `CheapMatrix4` is intended for use internally within Indigo, but remains available for general use. You are advised
   * to use `Matrix4` generally. `CheapMatrix4` carries over much of the functionality of `Matrix4` but is based on
@@ -145,9 +144,6 @@ object CheapMatrix4:
 
       m
     }
-
-    def toBatch: Batch[Float] =
-      Batch.fromVector(m.toVector)
 
     def toMatrix4: Matrix4 =
       Matrix4(m.map(_.toDouble))

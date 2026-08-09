@@ -204,7 +204,7 @@ class LayerRenderer(
       gl2.uniformMatrix4fv(
         location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
         transpose = false,
-        value = Float32Array(baseTransform.toJSArray)
+        value = baseTransform.toFloat32Array
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
