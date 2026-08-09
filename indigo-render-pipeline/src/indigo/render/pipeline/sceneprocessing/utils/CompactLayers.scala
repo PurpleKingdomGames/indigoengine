@@ -12,14 +12,14 @@ object CompactLayers:
   /** Optimise the number of full screen render composites we need to perform by collapsing the layer tree structure
     * into a minimal number of 'layers', broadly in two phases:
     *
-    *   1. Layer Entries were previously merged togther by key during scene composition, that is the purpose of layer
-    *      keys. Here we discard layer keys as we no longer need them, and flatten layer entry groups where the rules
-    *      allow, i.e. magnification levels are the same
+    *   1. Layer Entries were merged togther by key during scene composition, that is the purpose of layer keys. Here we
+    *      discard layer keys as we no longer need them, and flatten layer entry groups where the rules allow, i.e.
+    *      magnification levels are the same.
     *   2. Unwraps layer stacks and compacts content layers by squashing those that have the same properties.
     */
   def compactLayers(layerEntries: Batch[LayerEntry]): Batch[(Batch[Layer.Content], Magnification)] =
-    // Step 1: Unwrap the stacks, no compacting
-    val step1 =
+    // Step 1: Unwrap the stacks, no compacting, remove hidden layers.
+    val step1: Batch[(Batch[Layer.Content], Magnification)] =
       layerEntries.flatMap {
         case LayerEntry(_, _, cfg) if cfg.isHidden =>
           Batch.empty
@@ -38,19 +38,19 @@ object CompactLayers:
     // kept because they can still affect the output, e.g. via a clear color or
     // an ambient lighting blend. Removing no-ops early gives the later steps
     // more merging opportunities.
-    val step2 =
+    val step2: Batch[(Batch[Layer.Content], Magnification)] =
       step1.flatMap { case (layers, magnification) =>
-        val filtered = layers.filter(l => l.nodes.nonEmpty || l.blending.nonEmpty)
+        val filtered = layers.filterNot(l => canBeDropped(l))
         if filtered.isEmpty then Batch.empty
         else Batch(filtered -> magnification)
       }
 
     // Step 3: Squash the outer batch, where the magnification is the same.
-    val step3 =
+    val step3: Batch[(Batch[Layer.Content], Magnification)] =
       compactByMagnification(step2)
 
     // Step 4: Compact Content layers within each sub-group.
-    val step4 =
+    val step4: Batch[(Batch[Layer.Content], Magnification)] =
       step3.map { case (layers, mag) => (compactContentLayers(layers), mag) }
 
     step4
@@ -108,3 +108,14 @@ object CompactLayers:
     */
   def canCompactLayers(a: Layer.Content, b: Layer.Content): Boolean =
     a.lights == b.lights && a.blending == b.blending && a.camera == b.camera
+
+  /** A content layer can only affect the final image if it has nodes to draw, or a blending that acts on the image
+    * composited so far - a clear color or an ambient lighting blend, say. Anything else it carries is inert without
+    * nodes: `lights` only illuminate the entities of their own layer, `camera` only positions nodes, and `cloneBlanks`
+    * are gathered from the whole scene before compaction and so survive their layer being dropped.
+    *
+    * Note that this deliberately is not `Layer.Content.isEmpty`, which asks the simpler structural question of whether
+    * anything at all has been set on the layer.
+    */
+  def canBeDropped(layer: Layer.Content): Boolean =
+    layer.nodes.isEmpty && layer.blending.isEmpty

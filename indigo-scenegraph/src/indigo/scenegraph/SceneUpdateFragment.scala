@@ -164,10 +164,7 @@ object SceneUpdateFragment:
                   a ++ b
 
                 case (a: Layer.Content, b: Layer.Content) =>
-                  // For now, we add them both to a stack and move on, so as to preserve
-                  // possible differences in the layer properties, like blending.
-                  // Later in the pipeline they will be compacted, if they can be.
-                  Layer.Stack(a, b)
+                  a |+| b
 
                 case (a: Layer.Content, b: Layer.Stack) =>
                   a :: b
