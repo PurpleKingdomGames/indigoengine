@@ -2,18 +2,16 @@ package indigo.core.datatypes.mutable
 
 import indigo.core.datatypes.Matrix4
 import indigo.core.datatypes.Vector3
-import indigoengine.shared.collections.Batch
 
 import scala.scalajs.js
-
-// import annotation.targetName
+import scala.scalajs.js.typedarray.Float32Array
 
 /** `CheapMatrix4` is intended for use internally within Indigo, but remains available for general use. You are advised
   * to use `Matrix4` generally. `CheapMatrix4` carries over much of the functionality of `Matrix4` but is based on
   * mutable data for performance reasons, and takes some shortcuts during multiplication to reduce work based on how the
   * engine itself behaves.
   */
-opaque type CheapMatrix4 = js.Array[Float]
+opaque type CheapMatrix4 = Float32Array
 
 object CheapMatrix4:
 
@@ -21,68 +19,67 @@ object CheapMatrix4:
     def x: Float = m(12)
     def y: Float = m(13)
 
+    // Multiplying by a translation matrix, which is the identity apart from row 3. Every term of the general
+    // multiply is against a 1 or a 0 except the w column, so each cell reduces to itself plus its row's w.
     def translate(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
-      m * js.Array(
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        byX,
-        byY,
-        byZ,
-        1
-      )
+      val a03 = m(3)
+      val a13 = m(7)
+      val a33 = m(15)
 
+      m(0) = m(0) + a03 * byX
+      m(1) = m(1) + a03 * byY
+      m(2) = m(2) + a03 * byZ
+
+      m(4) = m(4) + a13 * byX
+      m(5) = m(5) + a13 * byY
+      m(6) = m(6) + a13 * byZ
+
+      m(12) = m(12) + a33 * byX
+      m(13) = m(13) + a33 * byY
+      m(14) = m(14) + a33 * byZ
+
+      m
+
+    // Multiplying by a rotation matrix, which only has non-identity values in the top left 2x2. Column 2 is left
+    // untouched on purpose - the general multiply would write it back unchanged. Rows are read up front because
+    // each output pair depends on both of its inputs.
     def rotate(angle: Float): CheapMatrix4 =
       val c = Math.cos(angle).toFloat
       val s = Math.sin(angle).toFloat
 
-      m * js.Array(
-        c,
-        s,
-        0,
-        0,
-        -s,
-        c,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      val a00 = m(0)
+      val a01 = m(1)
+      val a10 = m(4)
+      val a11 = m(5)
+      val a30 = m(12)
+      val a31 = m(13)
 
+      m(0) = a00 * c - a01 * s
+      m(1) = a00 * s + a01 * c
+
+      m(4) = a10 * c - a11 * s
+      m(5) = a10 * s + a11 * c
+
+      m(12) = a30 * c - a31 * s
+      m(13) = a30 * s + a31 * c
+
+      m
+
+    // Multiplying by a scale matrix, which is diagonal, so every cell is just scaled by its own column's factor.
     def scale(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
-      m * js.Array(
-        byX,
-        0,
-        0,
-        0,
-        0,
-        byY,
-        0,
-        0,
-        0,
-        0,
-        byZ,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      m(0) = m(0) * byX
+      m(1) = m(1) * byY
+      m(2) = m(2) * byZ
+
+      m(4) = m(4) * byX
+      m(5) = m(5) * byY
+      m(6) = m(6) * byZ
+
+      m(12) = m(12) * byX
+      m(13) = m(13) * byY
+      m(14) = m(14) * byZ
+
+      m
 
     def *(other: CheapMatrix4): CheapMatrix4 = {
 
@@ -150,17 +147,14 @@ object CheapMatrix4:
       m
     }
 
-    def toBatch: Batch[Float] =
-      Batch.fromJSArray(m)
-
-    def toJSArray: scalajs.js.Array[Float] =
+    inline def toFloat32Array: Float32Array =
       m
 
     def toMatrix4: Matrix4 =
       Matrix4(m.toArray.map(_.toDouble))
 
     def deepClone: CheapMatrix4 =
-      CheapMatrix4(js.Array[Float]().concat(m))
+      new Float32Array(m)
 
     def transform(vector: Vector3): Vector3 =
       val col1: Array[Float] = Array(m(0), m(4), m(8), m(12))
@@ -174,29 +168,45 @@ object CheapMatrix4:
       )
 
   def identity: CheapMatrix4 =
-    CheapMatrix4(js.Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1))
+    // Allocates zero's by default.
+    val m = new Float32Array(16)
+    m(0) = 1
+    // m(1) = 0
+    // m(2) = 0
+    // m(3) = 0
+    // m(4) = 0
+    m(5) = 1
+    // m(6) = 0
+    // m(7) = 0
+    // m(8) = 0
+    // m(9) = 0
+    m(10) = 1
+    // m(11) = 0
+    // m(12) = 0
+    // m(13) = 0
+    // m(14) = 0
+    m(15) = 1
+    m
 
   def orthographic(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float): CheapMatrix4 =
-    CheapMatrix4(
-      js.Array(
-        2 / (right - left),
-        0,
-        0,
-        0,
-        0,
-        2 / (top - bottom),
-        0,
-        0,
-        0,
-        0,
-        2 / (near - far),
-        0,
-        (left + right) / (left - right),
-        (bottom + top) / (bottom - top),
-        (near + far) / (near - far),
-        1
-      )
-    )
+    val m = new Float32Array(16)
+    m(0) = 2 / (right - left)
+    // m(1) = 0
+    // m(2) = 0
+    // m(3) = 0
+    // m(4) = 0
+    m(5) = 2 / (top - bottom)
+    // m(6) = 0
+    // m(7) = 0
+    // m(8) = 0
+    // m(9) = 0
+    m(10) = 2 / (near - far)
+    // m(11) = 0
+    m(12) = (left + right) / (left - right)
+    m(13) = (bottom + top) / (bottom - top)
+    m(14) = (near + far) / (near - far)
+    m(15) = 1
+    m
 
   def orthographic(width: Float, height: Float): CheapMatrix4 =
     orthographic(0, width, height, 0, -1, Int.MaxValue.toFloat)
@@ -204,7 +214,7 @@ object CheapMatrix4:
   def orthographic(x: Float, y: Float, width: Float, height: Float): CheapMatrix4 =
     orthographic(x, x + width, y + height, y, -1, Int.MaxValue.toFloat)
 
-  inline def apply(matrix: js.Array[Float]): CheapMatrix4 =
+  inline def apply(matrix: Float32Array): CheapMatrix4 =
     matrix
 
   /** SHOULD ONLY BE USED BY TESTS
@@ -215,11 +225,9 @@ object CheapMatrix4:
       row2: (Float, Float, Float, Float),
       row3: (Float, Float, Float, Float)
   ): CheapMatrix4 =
-    CheapMatrix4(
+    new Float32Array(
       js.Array(row0._1, row0._2, row0._3, row0._4) ++
         js.Array(row1._1, row1._2, row1._3, row1._4) ++
         js.Array(row2._1, row2._2, row2._3, row2._4) ++
         js.Array(row3._1, row3._2, row3._3, row3._4)
     )
-
-end CheapMatrix4

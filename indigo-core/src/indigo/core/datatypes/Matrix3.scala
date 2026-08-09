@@ -55,7 +55,7 @@ final case class Matrix3(private val mat: Array[Double]) derives CanEqual:
     if (mat.length == other.mat.length) {
       var count = mat.length - 1
       var same  = true
-      while (count > 0) {
+      while (count >= 0) {
         breakable {
           if (Math.abs(mat(count) - other.mat(count)) > 0.001)
             same = false
