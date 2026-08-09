@@ -130,7 +130,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
 
 object SandboxGame:
 
-  // This is all wrong and one day, I should fix it.
+  // These values should really be stored in the model so that they can be updated on viewport resize.
   val gameWidth: Int      = 228
   val gameHeight: Int     = 128
   val viewportWidth: Int  = gameWidth * 2  // 456
