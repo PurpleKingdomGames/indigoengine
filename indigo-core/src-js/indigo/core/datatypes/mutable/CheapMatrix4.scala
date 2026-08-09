@@ -90,8 +90,8 @@ object CheapMatrix4:
       // ... that those fields aren't used by the engine...
       // ... and by knowing things we can avoid work.
 
-      val listA = m.toArray
-      val listB = other.toArray
+      val listA = m
+      val listB = other
 
       val a00 = listA(0 * 4 + 0)
       val a01 = listA(0 * 4 + 1)
