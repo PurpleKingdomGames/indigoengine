@@ -23,8 +23,11 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
   private val uboData: scalajs.js.Array[Float] =
     Array.fill(displayObjectUBODataSize)(0.0f).toJSArray
 
-  // Blends `srcFrameBuffer` onto `targetFrameBuffer` for blend materials that sample the destination. The accumulated
-  // scene has already been copied into `targetFrameBuffer`, and `dstFrameBuffer` is the sampleable copy of it.
+  /** Blends `srcFrameBuffer` onto `targetFrameBuffer`, which is bound without clearing so that whatever has been
+    * composited so far survives. `dstFrameBuffer` is what the blend shader samples as its destination - the caller
+    * decides whether that is a sampleable copy of the accumulated scene or the background buffer, depending on whether
+    * the material reads the destination. It must never be `targetFrameBuffer`, or the draw forms a feedback loop.
+    */
   def mergeToBackBuffer(
       projection: scalajs.js.Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
@@ -39,57 +42,18 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     FrameBufferFunctions.switchToFramebuffer(gl2, targetFrameBuffer, RGBA.Zero, false)
 
-    // Switch and reference shader
-    val activeShader: WebGLProgram =
-      setupActiveShader(projection, width, height, customShaders, shaderId)
-
-    // UBO data
-    setupMergeUBOData(activeShader, shaderUniformData)
-
-    // Assign src and dst channels
-    WebGLHelper.attach(gl2, activeShader, 0, "SRC_CHANNEL", srcFrameBuffer.diffuse)
-    WebGLHelper.attach(gl2, activeShader, 1, "DST_CHANNEL", dstFrameBuffer.diffuse)
-
-    // Draw to framebuffer
-    draw()
+    drawMerge(projection, srcFrameBuffer, dstFrameBuffer, width, height, customShaders, shaderId, shaderUniformData)
   }
 
-  // As `mergeToBackBuffer`, but for blend materials that never sample the destination. We bind the accumulation
-  // buffer as the target *without clearing* and blend the layer straight onto it via the hardware blend mode, so
-  // no destination copy (and no ping-pong blit) is needed. Only SRC_CHANNEL is attached.
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def mergeToBackBufferInPlace(
-      projection: scalajs.js.Array[Float],
-      srcFrameBuffer: FrameBufferComponents.SingleOutput,
-      targetFrameBuffer: FrameBufferComponents.SingleOutput,
-      width: Int,
-      height: Int,
-      customShaders: scalajs.js.Dictionary[WebGLProgram],
-      shaderId: ShaderId,
-      shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
-  ): Unit = {
-
-    FrameBufferFunctions.switchToFramebuffer(gl2, targetFrameBuffer, RGBA.Zero, false)
-
-    // Switch and reference shader
-    val activeShader: WebGLProgram =
-      setupActiveShader(projection, width, height, customShaders, shaderId)
-
-    // UBO data
-    setupMergeUBOData(activeShader, shaderUniformData)
-
-    // Assign src channel. To avoid GL Feedback loop errors, we also explicitly unset
-    // the DST_CHANNEL.
-    WebGLHelper.attach(gl2, activeShader, 0, "SRC_CHANNEL", srcFrameBuffer.diffuse)
-    WebGLHelper.attach(gl2, activeShader, 1, "DST_CHANNEL", null)
-
-    // Draw to framebuffer
-    draw()
-  }
-
+  /** As `mergeToBackBuffer`, but onto the default framebuffer, which is cleared to `clearColor` first. That makes
+    * `clearColor` what the scene is genuinely composited onto, so a buffer holding it is the correct `dstFrameBuffer`
+    * for a scene level blend material that samples the destination. Here `width` and `height` set the viewport as well
+    * as the quad, which is right because the source is always full screen.
+    */
   def mergeToDefaultFramebuffer(
       projection: scalajs.js.Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
+      dstFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
       clearColor: RGBA,
@@ -100,6 +64,21 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     FrameBufferFunctions.switchToDefaultFramebuffer(gl2, width, height, clearColor)
 
+    drawMerge(projection, srcFrameBuffer, dstFrameBuffer, width, height, customShaders, shaderId, shaderUniformData)
+  }
+
+  // Draws the merge quad, at `width` x `height`, into whatever framebuffer is currently bound.
+  private def drawMerge(
+      projection: scalajs.js.Array[Float],
+      srcFrameBuffer: FrameBufferComponents.SingleOutput,
+      dstFrameBuffer: FrameBufferComponents.SingleOutput,
+      width: Int,
+      height: Int,
+      customShaders: scalajs.js.Dictionary[WebGLProgram],
+      shaderId: ShaderId,
+      shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
+  ): Unit = {
+
     // Switch and reference shader
     val activeShader: WebGLProgram =
       setupActiveShader(projection, width, height, customShaders, shaderId)
@@ -109,6 +88,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     // Assign src and dst channels
     WebGLHelper.attach(gl2, activeShader, 0, "SRC_CHANNEL", srcFrameBuffer.diffuse)
+    WebGLHelper.attach(gl2, activeShader, 1, "DST_CHANNEL", dstFrameBuffer.diffuse)
 
     draw()
   }

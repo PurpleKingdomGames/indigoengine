@@ -1,5 +1,7 @@
 package indigo.render.webgl2
 
+import indigo.core.render.Magnification
+
 class FrameBufferFunctionsTests extends munit.FunSuite {
 
   test("decideBufferSizes - one entry per magnification, sized to the layer's game space") {
@@ -45,6 +47,37 @@ class FrameBufferFunctionsTests extends munit.FunSuite {
     assertEquals(FrameBufferFunctions.clampMagnification(Some(3), 15), 2)
     assertEquals(FrameBufferFunctions.clampMagnification(Some(16), 15), 15)
     assertEquals(FrameBufferFunctions.clampMagnification(Some(17), 15), 15)
+  }
+
+  test("effectiveMagnification") {
+    assertEquals(FrameBufferFunctions.effectiveMagnification(None, 15), 1)
+    assertEquals(FrameBufferFunctions.effectiveMagnification(Some(0), 15), 1)
+    assertEquals(FrameBufferFunctions.effectiveMagnification(Some(1), 15), 1)
+    assertEquals(FrameBufferFunctions.effectiveMagnification(Some(3), 15), 3)
+    assertEquals(FrameBufferFunctions.effectiveMagnification(Some(16), 15), 16)
+    assertEquals(FrameBufferFunctions.effectiveMagnification(Some(17), 15), 16)
+  }
+
+  test("mergeQuadSize - one texel covers exactly `magnification` screen pixels") {
+    // The quad has to cover the whole screen, and can only overhang it by less than one magnified pixel, or the
+    // scale is not the whole number the rest of the engine assumes it is.
+    List((800, 600), (1920, 1080), (1366, 768)).foreach { case (screenWidth, screenHeight) =>
+      val sizes = FrameBufferFunctions.decideBufferSizes(screenWidth, screenHeight)
+
+      (1 to Magnification.Max.toInt).foreach { m =>
+        val (bufferWidth, bufferHeight) = sizes(m - 1)
+        val (quadWidth, quadHeight)     = FrameBufferFunctions.mergeQuadSize(bufferWidth, bufferHeight, m)
+
+        assert(
+          quadWidth >= screenWidth && quadWidth < screenWidth + m,
+          s"width was $quadWidth at ${screenWidth}x$screenHeight magnification $m"
+        )
+        assert(
+          quadHeight >= screenHeight && quadHeight < screenHeight + m,
+          s"height was $quadHeight at ${screenWidth}x$screenHeight magnification $m"
+        )
+      }
+    }
   }
 
 }

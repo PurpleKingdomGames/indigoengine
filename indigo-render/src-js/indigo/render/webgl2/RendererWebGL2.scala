@@ -79,8 +79,10 @@ final class RendererWebGL2(
   private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput = null
+  // Holds the clear colour, which is what the finished scene is composited onto. Blend shaders sample DST_CHANNEL
+  // unconditionally, so this is the destination bound for the merges that have no other one to offer.
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var emptyFrameBuffer: FrameBufferComponents.SingleOutput = null
+  private var backgroundFrameBuffer: FrameBufferComponents.SingleOutput = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendEq: String = "add"
@@ -120,11 +122,22 @@ final class RendererWebGL2(
 
     layerMergeRenderInstance = new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
+  // Nothing is ever drawn into the background buffer, so clearing it as it is made is enough. The caller is
+  // responsible for restoring the viewport, which both call sites do anyway.
+  private def createBackgroundFrameBuffer(
+      gl: WebGLRenderingContext,
+      width: Int,
+      height: Int
+  ): FrameBufferComponents.SingleOutput =
+    val fb = FrameBufferFunctions.createFrameBufferSingle(gl, width, height)
+    FrameBufferFunctions.switchToFramebuffer(gl, fb, clearColor, true)
+    fb
+
   def initialiseFrameBuffers(ctx: ContextAndSize): Unit =
     layerEntityFrameBuffers = FrameBufferFunctions.createFrameBufferArray(ctx.context, ctx.width, ctx.height)
     greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
     blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
-    emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(ctx.context, ctx.width, ctx.height)
+    backgroundFrameBuffer = createBackgroundFrameBuffer(ctx.context, ctx.width, ctx.height)
 
   def init(ctx: ContextAndSize, shaders: Set[RawShaderCode]): Unit = {
     val gl2 = ctx.context
@@ -251,6 +264,15 @@ final class RendererWebGL2(
       val entityFrameBuffer =
         FrameBufferFunctions.selectBufferByMagnification(layer.magnification, layerEntityFrameBuffers)
 
+      val magnification =
+        FrameBufferFunctions.effectiveMagnification(layer.magnification, layerEntityFrameBuffers.length - 1)
+
+      // The layer buffer holds ceil(screen / magnification) texels, so the quad it is drawn onto has to be a whole
+      // multiple of the magnification if one texel is to cover exactly `magnification` screen pixels. Stretching it
+      // over the screen instead would give a fractional scale whenever the magnification does not divide evenly.
+      val (mergeWidth, mergeHeight) =
+        FrameBufferFunctions.mergeQuadSize(entityFrameBuffer.width, entityFrameBuffer.height, magnification)
+
       // Entities are drawn into a buffer sized to the layer's magnification, so the projection covers the layer's
       // own game space rather than the whole screen, and one game pixel is one texel. The Y flip lives here because
       // the merge onto the accumulator is a straight copy.
@@ -307,8 +329,8 @@ final class RendererWebGL2(
         setBlendMode(gl2, currentBlend)
       }
 
-      // Merge the layer buffer onto the back buffer. The layer buffer is smaller than the back buffer by exactly the
-      // layer's magnification, so drawing it over the full screen is what applies the magnification.
+      // Merge the layer buffer onto the back buffer. Drawing it at `magnification` times its own size is what
+      // applies the magnification; any overhang past the edge of the screen is clipped by the viewport.
       if layer.blendReadsDestination then {
         // A blend material that samples the destination needs a separate, sampleable
         // copy of the accumulated scene, so we ping-pong to the other buffer first.
@@ -319,8 +341,8 @@ final class RendererWebGL2(
           entityFrameBuffer,
           currentAccumulator,
           otherAccumulator,
-          lastWidth,
-          lastHeight,
+          mergeWidth,
+          mergeHeight,
           customShaders,
           layer.shaderId,
           layer.shaderUniformData.toJSArray
@@ -330,14 +352,16 @@ final class RendererWebGL2(
         currentAccumulator = otherAccumulator
         otherAccumulator = previous
       } else
-        // A blend material that never samples the destination can be blended
-        // straight onto the accumulator in place.
-        layerMergeRenderInstance.mergeToBackBufferInPlace(
+        // A blend material that never samples the destination can be blended straight onto the accumulator in
+        // place, with no copy and no ping-pong. It still samples DST_CHANNEL, so it is given the background buffer
+        // to read - anything it reads there it ignores, and unlike the accumulator it cannot feed back.
+        layerMergeRenderInstance.mergeToBackBuffer(
           orthographicProjectionMatrixNoMag,
           entityFrameBuffer,
+          backgroundFrameBuffer,
           currentAccumulator,
-          lastWidth,
-          lastHeight,
+          mergeWidth,
+          mergeHeight,
           customShaders,
           layer.shaderId,
           layer.shaderUniformData.toJSArray
@@ -350,6 +374,7 @@ final class RendererWebGL2(
     layerMergeRenderInstance.mergeToDefaultFramebuffer(
       orthographicProjectionMatrixNoMagFlipped,
       currentAccumulator,
+      backgroundFrameBuffer,
       lastWidth,
       lastHeight,
       clearColor,
@@ -360,7 +385,6 @@ final class RendererWebGL2(
 
     clearBuffer(gl2, blueDstFrameBuffer.frameBuffer)
     clearBuffer(gl2, greenDstFrameBuffer.frameBuffer)
-    clearBuffer(gl2, emptyFrameBuffer.frameBuffer)
   }
 
   def blitBuffers(gl2: WebGL2RenderingContext, from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
@@ -393,12 +417,12 @@ final class RendererWebGL2(
       layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
       FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
-      FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
+      FrameBufferFunctions.deleteFrameBufferSingle(gl2, backgroundFrameBuffer)
 
       layerEntityFrameBuffers = FrameBufferFunctions.createFrameBufferArray(gl2, width, height)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
       blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
-      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl2, width, height)
+      backgroundFrameBuffer = createBackgroundFrameBuffer(gl2, width, height)
 
       gl2.viewport(0, 0, width.toDouble, height.toDouble)
 
@@ -430,7 +454,7 @@ final class RendererWebGL2(
     layerEntityFrameBuffers.foreach(b => FrameBufferFunctions.deleteFrameBufferSingle(gl2, b))
     FrameBufferFunctions.deleteFrameBufferSingle(gl2, greenDstFrameBuffer)
     FrameBufferFunctions.deleteFrameBufferSingle(gl2, blueDstFrameBuffer)
-    FrameBufferFunctions.deleteFrameBufferSingle(gl2, emptyFrameBuffer)
+    FrameBufferFunctions.deleteFrameBufferSingle(gl2, backgroundFrameBuffer)
 
     gl2.deleteBuffer(vertexAndTextureCoordsBuffer)
     gl2.deleteBuffer(projectionUBOBuffer)
