@@ -65,15 +65,6 @@ object ShapePolygon:
 
         s * sqrt(d)
 
-      def toUvSpace(count: Int, v: array[16, vec2]): array[16, vec2] =
-        val polygon: array[16, vec2] = null
-
-        _for(0, _ < count, _ + 1) { i =>
-          polygon(i) = v(i) / env.SIZE
-        }
-
-        polygon
-
       def fragment(color: vec4): vec4 =
         val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
 
@@ -103,7 +94,14 @@ object ShapePolygon:
 
         val iCount = env.COUNT.toInt
 
-        val polygon = toUvSpace(iCount, env.VERTICES)
+        // Convert the vertices to UV space
+        // Do not factor out as a separate function. Some GPUs and/or drivers
+        // do not like returning arrays of vec2 from functions. This was noticed
+        // at least on an NVIDIA GeForce RTX 5060, driver version 595.84.
+        val polygon: array[16, vec2] = null
+        _for(0, _ < iCount, _ + 1) { i =>
+          polygon(i) = env.VERTICES(i) / env.SIZE
+        }
 
         val sdf        = sdfCalc(env.UV, iCount, polygon)
         val annularSdf = abs(sdf) - strokeWidthHalf
