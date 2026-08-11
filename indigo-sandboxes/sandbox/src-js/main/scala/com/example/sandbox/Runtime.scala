@@ -14,8 +14,7 @@ object Runtime extends BasicGameRuntime[Unit]:
     SandboxGame()
 
   def settings: Settings =
-    Settings.default
-      .unlimitedFrameRate
+    Settings.default.unlimitedFrameRate
 
   def eventMapping: PartialIso[GlobalMsg, GlobalEvent] =
     val to: GlobalMsg => Option[GlobalEvent] =
