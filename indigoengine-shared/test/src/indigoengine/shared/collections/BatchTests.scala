@@ -454,4 +454,9 @@ class BatchTests extends munit.FunSuite {
     assertEquals(Batch(1, 2, 3).padTo(5, 0), Batch(1, 2, 3, 0, 0))
   }
 
+  test("compact") {
+    assertEquals(Batch(1, 2, 3).compact, Batch(1, 2, 3))
+    assertEquals(Batch.Combine(Batch(1, 2, 3), Batch(4, 5, 6)).compact, Batch(1, 2, 3, 4, 5, 6))
+  }
+
 }
