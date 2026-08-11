@@ -15,7 +15,7 @@ object Runtime extends BasicGameRuntime[Unit]:
 
   def settings: Settings =
     Settings.default
-      .withFrameRatePolicy(FrameRatePolicy.Skip(FPS.`60`))
+      .unlimitedFrameRate
 
   def eventMapping: PartialIso[GlobalMsg, GlobalEvent] =
     val to: GlobalMsg => Option[GlobalEvent] =
