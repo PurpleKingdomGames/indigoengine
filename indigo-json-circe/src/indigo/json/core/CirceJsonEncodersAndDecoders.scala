@@ -4,30 +4,38 @@ import indigo.shared.formats.Aseprite
 import indigo.shared.formats.AsepriteFrame
 import indigo.shared.formats.AsepriteFrameTag
 import indigo.shared.formats.AsepriteMeta
+import indigo.shared.formats.AsepritePoint
 import indigo.shared.formats.AsepriteRectangle
 import indigo.shared.formats.AsepriteSize
+import indigo.shared.formats.AsepriteSlice
+import indigo.shared.formats.AsepriteSliceKey
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
 import indigo.shared.formats.TiledMap
 import indigo.shared.formats.TiledTerrain
 import indigo.shared.formats.TiledTerrainCorner
+import io.circe.ACursor
 import io.circe.Decoder
 import io.circe.HCursor
+import io.circe.Json
 
 object CirceJsonEncodersAndDecoders {
+
+  private def decodeAsepriteFrameAt(c: ACursor, filenameDefault: String): Decoder.Result[AsepriteFrame] =
+    for {
+      filename         <- c.downField("filename").as[Option[String]].map(_.getOrElse(filenameDefault))
+      frame            <- c.downField("frame").as[AsepriteRectangle]
+      rotated          <- c.downField("rotated").as[Boolean]
+      trimmed          <- c.downField("trimmed").as[Boolean]
+      spriteSourceSize <- c.downField("spriteSourceSize").as[AsepriteRectangle]
+      sourceSize       <- c.downField("sourceSize").as[AsepriteSize]
+      duration         <- c.downField("duration").as[Int]
+    } yield AsepriteFrame(filename, frame, rotated, trimmed, spriteSourceSize, sourceSize, duration)
 
   implicit val decodeAsepriteFrame: Decoder[AsepriteFrame] =
     new Decoder[AsepriteFrame] {
       final def apply(c: HCursor): Decoder.Result[AsepriteFrame] =
-        for {
-          filename         <- c.downField("filename").as[String]
-          frame            <- c.downField("frame").as[AsepriteRectangle]
-          rotated          <- c.downField("rotated").as[Boolean]
-          trimmed          <- c.downField("trimmed").as[Boolean]
-          spriteSourceSize <- c.downField("spriteSourceSize").as[AsepriteRectangle]
-          sourceSize       <- c.downField("sourceSize").as[AsepriteSize]
-          duration         <- c.downField("duration").as[Int]
-        } yield AsepriteFrame(filename, frame, rotated, trimmed, spriteSourceSize, sourceSize, duration)
+        decodeAsepriteFrameAt(c, "")
     }
 
   implicit val decodeAsepriteRectangle: Decoder[AsepriteRectangle] =
@@ -41,17 +49,50 @@ object CirceJsonEncodersAndDecoders {
         } yield AsepriteRectangle(x, y, w, h)
     }
 
+  implicit val decodeAsepritePoint: Decoder[AsepritePoint] =
+    new Decoder[AsepritePoint] {
+      final def apply(c: HCursor): Decoder.Result[AsepritePoint] =
+        for {
+          x <- c.downField("x").as[Int]
+          y <- c.downField("y").as[Int]
+        } yield AsepritePoint(x, y)
+    }
+
+  implicit val decodeAsepriteSliceKey: Decoder[AsepriteSliceKey] =
+    new Decoder[AsepriteSliceKey] {
+      final def apply(c: HCursor): Decoder.Result[AsepriteSliceKey] =
+        for {
+          frame  <- c.downField("frame").as[Int]
+          bounds <- c.downField("bounds").as[AsepriteRectangle]
+          center <- c.downField("center").as[Option[AsepriteRectangle]]
+          pivot  <- c.downField("pivot").as[Option[AsepritePoint]]
+        } yield AsepriteSliceKey(frame, bounds, center, pivot)
+    }
+
+  implicit val decodeAsepriteSlice: Decoder[AsepriteSlice] =
+    new Decoder[AsepriteSlice] {
+      final def apply(c: HCursor): Decoder.Result[AsepriteSlice] =
+        for {
+          name  <- c.downField("name").as[String]
+          color <- c.downField("color").as[Option[String]]
+          data  <- c.downField("data").as[Option[String]]
+          keys  <- c.downField("keys").as[Option[List[AsepriteSliceKey]]].map(_.getOrElse(Nil))
+        } yield AsepriteSlice(name, color, data, keys)
+    }
+
   implicit val decodeAsepriteMeta: Decoder[AsepriteMeta] =
     new Decoder[AsepriteMeta] {
       final def apply(c: HCursor): Decoder.Result[AsepriteMeta] =
         for {
           app       <- c.downField("app").as[String]
           version   <- c.downField("version").as[String]
+          image     <- c.downField("image").as[Option[String]]
           format    <- c.downField("format").as[String]
           size      <- c.downField("size").as[AsepriteSize]
           scale     <- c.downField("scale").as[String]
-          frameTags <- c.downField("frameTags").as[List[AsepriteFrameTag]]
-        } yield AsepriteMeta(app, version, format, size, scale, frameTags)
+          frameTags <- c.downField("frameTags").as[Option[List[AsepriteFrameTag]]].map(_.getOrElse(Nil))
+          slices    <- c.downField("slices").as[Option[List[AsepriteSlice]]]
+        } yield AsepriteMeta(app, version, image, format, size, scale, frameTags, slices)
     }
 
   implicit val decodeAsepriteSize: Decoder[AsepriteSize] =
@@ -70,17 +111,41 @@ object CirceJsonEncodersAndDecoders {
           name      <- c.downField("name").as[String]
           from      <- c.downField("from").as[Int]
           to        <- c.downField("to").as[Int]
-          direction <- c.downField("direction").as[String]
-        } yield AsepriteFrameTag(name, from, to, direction)
+          direction <- c.downField("direction").as[Option[String]].map(_.getOrElse("forward"))
+          color     <- c.downField("color").as[Option[String]]
+          data      <- c.downField("data").as[Option[String]]
+          repeat    <- c.downField("repeat").as[Option[String]]
+        } yield AsepriteFrameTag(name, from, to, direction, color, data, repeat)
     }
 
   implicit val decodeAseprite: Decoder[Aseprite] =
     new Decoder[Aseprite] {
-      final def apply(c: HCursor): Decoder.Result[Aseprite] =
+      final def apply(c: HCursor): Decoder.Result[Aseprite] = {
+        val framesCursor = c.downField("frames")
+        val arrayResult: Decoder.Result[List[AsepriteFrame]] =
+          framesCursor.as[List[AsepriteFrame]]
+        val frames: Decoder.Result[List[AsepriteFrame]] =
+          arrayResult match
+            case Right(fs) =>
+              Right(fs)
+            case Left(_) =>
+              framesCursor.focus match
+                case Some(json) if json.isObject =>
+                  val pairs = json.asObject.fold(List.empty[(String, Json)])(_.toList)
+                  pairs.foldLeft[Decoder.Result[List[AsepriteFrame]]](Right(Nil)) { (acc, kv) =>
+                    val (key, value) = kv
+                    for {
+                      soFar <- acc
+                      next  <- decodeAsepriteFrameAt(value.hcursor, key)
+                    } yield soFar :+ next
+                  }
+                case _ =>
+                  arrayResult
         for {
-          frames <- c.downField("frames").as[List[AsepriteFrame]]
-          meta   <- c.downField("meta").as[AsepriteMeta]
-        } yield Aseprite(frames, meta)
+          fs   <- frames
+          meta <- c.downField("meta").as[AsepriteMeta]
+        } yield Aseprite(fs, meta)
+      }
     }
 
   implicit val decodeTiledTerrain: Decoder[TiledTerrain] =
