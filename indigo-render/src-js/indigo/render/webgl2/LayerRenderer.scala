@@ -34,14 +34,22 @@ class LayerRenderer(
   private val customDataUBOBuffers: js.Dictionary[WebGLBuffer] =
     js.Dictionary.empty[WebGLBuffer]
 
+  // The store is allocated once at full capacity so that `bindData` only ever has to
+  // overwrite the region it needs, rather than reallocating on every draw.
+  private def createInstanceBuffer(size: Int): WebGLBuffer =
+    val buffer = gl2.createBuffer()
+    gl2.bindBuffer(ARRAY_BUFFER, buffer)
+    gl2.bufferData(ARRAY_BUFFER, size * maxBatchSize * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
+    buffer
+
   // Instance Array Buffers
-  private val translateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
-  private val refFlipInstanceArray: WebGLBuffer              = gl2.createBuffer()
-  private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
-  private val channelOffsets01InstanceArray: WebGLBuffer     = gl2.createBuffer()
-  private val channelOffsets23InstanceArray: WebGLBuffer     = gl2.createBuffer()
-  private val textureSizeAtlasSizeInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val rotationInstanceArray: WebGLBuffer             = gl2.createBuffer()
+  private val translateScaleInstanceArray: WebGLBuffer       = createInstanceBuffer(4)
+  private val refFlipInstanceArray: WebGLBuffer              = createInstanceBuffer(4)
+  private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = createInstanceBuffer(4)
+  private val channelOffsets01InstanceArray: WebGLBuffer     = createInstanceBuffer(4)
+  private val channelOffsets23InstanceArray: WebGLBuffer     = createInstanceBuffer(4)
+  private val textureSizeAtlasSizeInstanceArray: WebGLBuffer = createInstanceBuffer(4)
+  private val rotationInstanceArray: WebGLBuffer             = createInstanceBuffer(1)
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -64,7 +72,7 @@ class LayerRenderer(
 
   inline private def bindData(buffer: WebGLBuffer, data: Float32Array, instanceCount: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
-    gl2.bufferData(ARRAY_BUFFER, data.subarray(0, instanceCount * size), STATIC_DRAW)
+    gl2.bufferSubData(ARRAY_BUFFER, 0, data, 0, instanceCount * size)
   }
 
   private def updateData(d: DisplayObject, i: Int): Unit = {

@@ -7,6 +7,7 @@ import org.scalajs.dom.WebGLRenderingContext
 import scala.annotation.nowarn
 import scala.scalajs.js
 import scala.scalajs.js.annotation.*
+import scala.scalajs.js.typedarray.Float32Array
 
 @nowarn
 @js.native
@@ -82,6 +83,16 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
     js.native
 
   def drawArraysInstanced(mode: Int, first: Int, count: Int, instanceCount: Int): Unit =
+    js.native
+
+  // `dstByteOffset` is in bytes, while `srcOffset` and `length` are in elements of `srcData`.
+  def bufferSubData(
+      target: Int,
+      dstByteOffset: Int,
+      srcData: Float32Array,
+      srcOffset: Int,
+      length: Int
+  ): Unit =
     js.native
 
   def vertexAttribDivisor(index: Int, divisor: Int): Unit =
