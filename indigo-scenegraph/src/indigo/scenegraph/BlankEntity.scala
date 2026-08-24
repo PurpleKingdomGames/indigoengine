@@ -107,19 +107,6 @@ final case class BlankEntity(
 
 object BlankEntity:
 
-  def apply(shaderData: ShaderData): BlankEntity =
-    BlankEntity(
-      size = Size.zero,
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      shaderData = shaderData,
-      position = Point.zero,
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      ref = Point.zero,
-      flip = Flip.default
-    )
-
   def apply(x: Int, y: Int, width: Int, height: Int, shaderData: ShaderData): BlankEntity =
     BlankEntity(
       size = Size(width, height),
