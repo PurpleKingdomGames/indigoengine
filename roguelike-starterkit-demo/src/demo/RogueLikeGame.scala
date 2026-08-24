@@ -45,9 +45,9 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
         )
         .withSubSystems(
           FPSCounter(
+            Constants.LayerKeys.fps,
             RoguelikeTiles.Size10x10.Fonts.fontKey,
-            Assets.assets.AnikkiSquare10x10,
-            Constants.LayerKeys.fps
+            colour => TerminalMaterial(Assets.assets.AnikkiSquare10x10).withColors(colour, RGBA.Black)
           ) // .moveTo(Point(10, 10))
         )
     )

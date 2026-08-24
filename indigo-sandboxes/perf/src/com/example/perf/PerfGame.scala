@@ -36,7 +36,11 @@ final class PerfGame extends Game[Unit, Dude, DudeModel]:
         .withAssets(PerfAssets.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(
-          FPSCounter(Fonts.fontKey, PerfAssets.smallFontName, LayerKey("fps"))
+          FPSCounter(
+            LayerKey("fps"),
+            Fonts.fontKey,
+            colour => Material.ImageEffects.tint(PerfAssets.smallFontName, colour)
+          )
             .moveTo(10, 565)
         )
         .withShaders(

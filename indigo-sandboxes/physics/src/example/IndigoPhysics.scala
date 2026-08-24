@@ -22,7 +22,11 @@ final class IndigoPhysics extends Game[Unit, Unit, Model]:
       BootResult
         .noData(Config.config)
         .withSubSystems(
-          FPSCounter(PixelatedFont.fontKey, Assets.assets.generated.PixelatedFont, LayerKey("fps"))
+          FPSCounter(
+            LayerKey("fps"),
+            PixelatedFont.fontKey,
+            colour => Material.ImageEffects.tint(Assets.assets.generated.PixelatedFont, colour)
+          )
             .moveTo(Point(10))
         )
         .withAssets(Assets.assets.generated.assetSetRelative)
