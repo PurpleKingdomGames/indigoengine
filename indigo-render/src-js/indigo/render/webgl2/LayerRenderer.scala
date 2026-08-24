@@ -17,6 +17,7 @@ import indigoengine.webgl2.facades.WebGL2RenderingContext
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*
+import org.scalajs.dom.WebGLUniformLocation
 
 import scala.scalajs.js
 import scala.scalajs.js.typedarray.Float32Array
@@ -25,10 +26,7 @@ class LayerRenderer(
     gl2: WebGL2RenderingContext,
     textureLocations: js.Array[TextureLookupResult],
     maxBatchSize: Int,
-    projectionUBOBuffer: => WebGLBuffer,
-    frameDataUBOBuffer: => WebGLBuffer,
-    cloneReferenceUBOBuffer: => WebGLBuffer,
-    lightDataUBOBuffer: => WebGLBuffer
+    cloneReferenceUBOBuffer: => WebGLBuffer
 ) {
 
   private val customDataUBOBuffers: js.Dictionary[WebGLBuffer] =
@@ -252,7 +250,7 @@ class LayerRenderer(
       if shaderHasChanged then
         try {
           currentProgram = customShaders(d.shaderId.show)
-          setupShader(currentProgram)
+          setupShader(d.shaderId, currentProgram)
           currentProgram
         } catch {
           case _: Throwable =>
@@ -263,10 +261,10 @@ class LayerRenderer(
       else currentProgram
 
     // Base transform
-    if shaderHasChanged then setBaseTransform(baseTransform)
+    if shaderHasChanged then setBaseTransform(d.shaderId, baseTransform)
     if shaderHasChanged || lastRenderMode != renderMode then
       lastRenderMode = renderMode
-      setMode(renderMode)
+      setMode(d.shaderId, renderMode)
 
     // UBO data
     if d.shaderUniformData.nonEmpty then
@@ -280,6 +278,7 @@ class LayerRenderer(
             val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
 
             WebGLHelper.attachUBOData(gl2, new Float32Array(ud.data.toJSArray), buff)
+
             WebGLHelper.bindUBO(
               gl2,
               activeShader,
@@ -303,38 +302,34 @@ class LayerRenderer(
     ()
   }
 
-  def setupShader(program: WebGLProgram): Unit = {
+  private val _shaderAlreadySetup: js.Array[ShaderId] = js.Array()
 
+  def setupShader(shaderId: ShaderId, program: WebGLProgram): Unit = {
     gl2.useProgram(program)
 
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.projectionBlockPointer,
-      projectionUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoProjectionData")
-    )
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.frameDataBlockPointer,
-      frameDataUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoFrameData")
-    )
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.cloneReferenceDataBlockPointer,
-      cloneReferenceUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoCloneReferenceData")
-    )
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.lightDataBlockPointer,
-      lightDataUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoDynamicLightingData")
-    )
+    if !_shaderAlreadySetup.exists(_ == shaderId) then
+      val _ = _shaderAlreadySetup.push(shaderId)
+
+      gl2.uniformBlockBinding(
+        program,
+        gl2.getUniformBlockIndex(program, "IndigoProjectionData"),
+        RendererWebGL2Constants.projectionBlockPointer
+      )
+      gl2.uniformBlockBinding(
+        program,
+        gl2.getUniformBlockIndex(program, "IndigoFrameData"),
+        RendererWebGL2Constants.frameDataBlockPointer
+      )
+      gl2.uniformBlockBinding(
+        program,
+        gl2.getUniformBlockIndex(program, "IndigoCloneReferenceData"),
+        RendererWebGL2Constants.cloneReferenceDataBlockPointer
+      )
+      gl2.uniformBlockBinding(
+        program,
+        gl2.getUniformBlockIndex(program, "IndigoDynamicLightingData"),
+        RendererWebGL2Constants.lightDataBlockPointer
+      )
   }
 
   def setupInstanceAttributes(): Unit = {
@@ -467,7 +462,7 @@ class LayerRenderer(
             currentShader = ShaderId("")
             currentShaderHash = new js.Array()
             renderEntities(cloneBlankDisplayObjects, d.entities.toJSArray, customShaders, d.transform * baseTransform)
-            setBaseTransform(baseTransform)
+            setBaseTransform(currentShader, baseTransform)
             i += 1
 
           case d: DisplayObject if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
@@ -765,6 +760,7 @@ class LayerRenderer(
                       idx
 
                 WebGLHelper.attachUBOData(gl2, new Float32Array(ud.data.toJSArray), buff)
+
                 WebGLHelper.bindUBO(
                   gl2,
                   activeShader,

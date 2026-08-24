@@ -98,12 +98,21 @@ final class RendererWebGL2(
         new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl2, li.data))
       }
 
-  def initialiseBuffers(gl2: WebGLRenderingContext): Unit =
+  def initialiseBuffers(gl2: WebGL2RenderingContext): Unit =
     vertexAndTextureCoordsBuffer = gl2.createBuffer()
     projectionUBOBuffer = gl2.createBuffer()
     frameDataUBOBuffer = gl2.createBuffer()
     cloneReferenceUBOBuffer = gl2.createBuffer()
     lightDataUBOBuffer = gl2.createBuffer()
+
+    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
+    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+    gl2.bindBufferBase(
+      gl2.UNIFORM_BUFFER,
+      RendererWebGL2Constants.cloneReferenceDataBlockPointer,
+      cloneReferenceUBOBuffer
+    )
+    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, RendererWebGL2Constants.lightDataBlockPointer, lightDataUBOBuffer)
 
   def initialiseVAO(gl2: WebGL2RenderingContext): Unit =
     vao = gl2.createVertexArray()
@@ -113,10 +122,7 @@ final class RendererWebGL2(
       gl2,
       textureLocations,
       config.batchSize,
-      projectionUBOBuffer,
-      frameDataUBOBuffer,
-      cloneReferenceUBOBuffer,
-      lightDataUBOBuffer
+      cloneReferenceUBOBuffer
     ).init()
 
     layerMergeRenderInstance = new LayerMergeRenderer(gl2, frameDataUBOBuffer)

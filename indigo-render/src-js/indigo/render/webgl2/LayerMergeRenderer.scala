@@ -8,6 +8,7 @@ import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext.*
 
+import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -85,7 +86,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       setupActiveShader(projection, width, height, customShaders, shaderId)
 
     // UBO data
-    setupMergeUBOData(activeShader, shaderUniformData)
+    setupMergeUBOData(shaderId, activeShader, shaderUniformData)
 
     // Assign src and dst channels
     WebGLHelper.attach(gl2, activeShader, 0, "SRC_CHANNEL", srcFrameBuffer.diffuse)
@@ -121,7 +122,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
   ): WebGLProgram =
     customShaders.get(shaderId.show) match {
       case Some(s) =>
-        setupShader(s, projection, width, height)
+        setupShader(shaderId, s, projection, width, height)
         s
 
       case None =>
@@ -130,7 +131,10 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
         )
     }
 
+  private val _shaderAlreadySetup: js.Array[ShaderId] = js.Array()
+
   private def setupMergeUBOData(
+      shaderId: ShaderId,
       activeShader: WebGLProgram,
       shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
   ): Unit =
@@ -138,20 +142,29 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       if (ud.uniformHash.nonEmpty) {
         val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
         WebGLHelper.attachUBOData(gl2, new Float32Array(ud.data.toJSArray), buff)
-        WebGLHelper.bindUBO(
-          gl2,
-          activeShader,
-          RendererWebGL2Constants.customDataBlockOffsetPointer + i,
-          buff,
-          gl2.getUniformBlockIndex(activeShader, ud.blockName)
-        )
+
+        if !_shaderAlreadySetup.exists(_ == shaderId) then
+          val _ = _shaderAlreadySetup.push(shaderId)
+          WebGLHelper.bindUBO(
+            gl2,
+            activeShader,
+            RendererWebGL2Constants.customDataBlockOffsetPointer + i,
+            buff,
+            gl2.getUniformBlockIndex(activeShader, ud.blockName)
+          )
       }
     }
 
   private val projectionAndUBOData: Float32Array =
     new Float32Array(16 + displayObjectUBODataSize)
 
-  private def setupShader(program: WebGLProgram, projection: Float32Array, width: Int, height: Int): Unit = {
+  private def setupShader(
+      shaderId: ShaderId,
+      program: WebGLProgram,
+      projection: Float32Array,
+      width: Int,
+      height: Int
+  ): Unit = {
 
     gl2.useProgram(program)
 
@@ -162,18 +175,21 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     projectionAndUBOData.set(uboData, projection.length)
 
     WebGLHelper.attachUBOData(gl2, projectionAndUBOData, displayObjectUBOBuffer)
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.mergeObjectBlockPointer,
-      displayObjectUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoMergeData")
-    )
-    WebGLHelper.bindUBO(
-      gl2,
-      program,
-      RendererWebGL2Constants.frameDataBlockPointer,
-      frameDataUBOBuffer,
-      gl2.getUniformBlockIndex(program, "IndigoFrameData")
-    )
+
+    if !_shaderAlreadySetup.exists(_ == shaderId) then
+      val _ = _shaderAlreadySetup.push(shaderId)
+      WebGLHelper.bindUBO(
+        gl2,
+        program,
+        RendererWebGL2Constants.mergeObjectBlockPointer,
+        displayObjectUBOBuffer,
+        gl2.getUniformBlockIndex(program, "IndigoMergeData")
+      )
+      WebGLHelper.bindUBO(
+        gl2,
+        program,
+        RendererWebGL2Constants.frameDataBlockPointer,
+        frameDataUBOBuffer,
+        gl2.getUniformBlockIndex(program, "IndigoFrameData")
+      )
   }
