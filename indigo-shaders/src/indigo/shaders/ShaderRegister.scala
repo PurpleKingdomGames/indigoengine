@@ -35,21 +35,21 @@ final class ShaderRegister:
 
   @nowarn("msg=unused")
   def registerEntityShader(shader: EntityShader.Source): Unit =
-    QuickCache(shader.id.toString) {
+    QuickCache(shader.id.show) {
       RawShaderCode.fromEntityShader(shader)
     }
     ()
 
   @nowarn("msg=unused")
   def registerBlendShader(shader: BlendShader.Source): Unit =
-    QuickCache(shader.id.toString) {
+    QuickCache(shader.id.show) {
       RawShaderCode.fromBlendShader(shader)
     }
     ()
 
   @nowarn("msg=unused")
   def registerUVShader(shader: UltravioletShader): Unit =
-    QuickCache(shader.id.toString) {
+    QuickCache(shader.id.show) {
       RawShaderCode.fromUltravioletShader(shader)
     }
     ()
