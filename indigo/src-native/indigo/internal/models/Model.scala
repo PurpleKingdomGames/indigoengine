@@ -2,14 +2,14 @@ package indigo.internal.models
 
 import indigo.Game
 import indigo.Indigo
+import indigo.internal.FrameScheduler
 import indigo.internal.WorldEventWatchers
 import indigo.internal.services.AudioPlayer
-import tyrian.*
 
 final case class Model(
     game: Game[?, ?, ?],
     attempts: Int,
-    lastUpdatedAt: Seconds,
+    frameScheduler: FrameScheduler,
     running: Boolean,
     _eventWatchers: Option[WorldEventWatchers],
     _audioPlayer: AudioPlayer
@@ -19,7 +19,7 @@ object Model:
     Model(
       game,
       Indigo.MaxStartupAttempts,
-      Seconds.zero,
+      FrameScheduler.Uninitialised,
       running = true,
       None,
       new AudioPlayer()

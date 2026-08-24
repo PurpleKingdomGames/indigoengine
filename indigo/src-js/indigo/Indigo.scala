@@ -2,6 +2,7 @@ package indigo
 
 import indigo.core.events.ScreenCaptureEvent
 import indigo.internal.CanvasAndContext
+import indigo.internal.FrameScheduler
 import indigo.internal.IndigoActions
 import indigo.internal.IndigoWatchers
 import indigo.internal.LogDrainWatcher
@@ -269,16 +270,16 @@ final case class Indigo(
         context.height
       )
 
-    val timeDelta = runningTime - model.lastUpdatedAt
-
-    Utils.processFrameTick(runningTime, timeDelta, settings.frameRatePolicy) match
-      case TickUpdateResult.Wait =>
-        model
-
-      case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-        game.system.tick(ctx, updatedAt, timeDelta)
+    FrameScheduler.processFrameTick(model.frameScheduler, runningTime, settings.frameRatePolicy) match
+      case TickUpdateResult.Wait(scheduler) =>
         model.copy(
-          lastUpdatedAt = updatedAt
+          frameScheduler = scheduler
+        )
+
+      case TickUpdateResult.RunNow(timeDelta, time, scheduler) =>
+        game.system.tick(ctx, time, timeDelta)
+        model.copy(
+          frameScheduler = scheduler
         )
 
   def provideContext(model: Model): Option[WebGL2Context] =
