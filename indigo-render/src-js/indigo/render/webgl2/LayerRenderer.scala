@@ -459,10 +459,10 @@ class LayerRenderer(
             drawBuffer(batchCount)
             batchCount = 0
             atlasName = None
-            currentShader = ShaderId("")
             currentShaderHash = new js.Array()
             renderEntities(cloneBlankDisplayObjects, d.entities.toJSArray, customShaders, d.transform * baseTransform)
             setBaseTransform(currentShader, baseTransform)
+            currentShader = ShaderId("")
             i += 1
 
           case d: DisplayObject if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
