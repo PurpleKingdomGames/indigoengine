@@ -251,7 +251,7 @@ class LayerRenderer(
     val activeShader: WebGLProgram =
       if shaderHasChanged then
         try {
-          currentProgram = customShaders(d.shaderId.toString)
+          currentProgram = customShaders(d.shaderId.show)
           setupShader(currentProgram)
           currentProgram
         } catch {

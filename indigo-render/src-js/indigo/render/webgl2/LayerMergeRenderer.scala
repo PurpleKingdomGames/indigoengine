@@ -119,7 +119,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       customShaders: scalajs.js.Dictionary[WebGLProgram],
       shaderId: ShaderId
   ): WebGLProgram =
-    customShaders.get(shaderId.toString) match {
+    customShaders.get(shaderId.show) match {
       case Some(s) =>
         setupShader(s, projection, width, height)
         s
