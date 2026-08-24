@@ -342,31 +342,8 @@ class LayerRenderer(
     setupInstanceArray(rotationInstanceArray, 7, 1) //
   }
 
-  def enableCloneBatchMode(): Unit =
-    gl2.disableVertexAttribArray(2)
-    gl2.disableVertexAttribArray(3)
-    gl2.disableVertexAttribArray(4)
-    gl2.disableVertexAttribArray(5)
-    gl2.disableVertexAttribArray(6)
-
-  def enableCloneTileMode(): Unit =
-    gl2.disableVertexAttribArray(2)
-    gl2.enableVertexAttribArray(3)
-    gl2.enableVertexAttribArray(4)
-    gl2.enableVertexAttribArray(5)
-    gl2.disableVertexAttribArray(6)
-
-  def disableCloneMode(): Unit =
-    gl2.enableVertexAttribArray(2)
-    gl2.enableVertexAttribArray(3)
-    gl2.enableVertexAttribArray(4)
-    gl2.enableVertexAttribArray(5)
-    gl2.enableVertexAttribArray(6)
-
   def drawBuffer(instanceCount: Int): Unit =
     if instanceCount > 0 then
-      disableCloneMode()
-
       bindData(translateScaleInstanceArray, translateScaleData, instanceCount, 4)
       bindData(refFlipInstanceArray, refFlipData, instanceCount, 4)
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData, instanceCount, 4)
@@ -379,8 +356,6 @@ class LayerRenderer(
 
   def drawCloneBuffer(instanceCount: Int): Unit =
     if instanceCount > 0 then
-      enableCloneBatchMode()
-
       bindData(translateScaleInstanceArray, translateScaleData, instanceCount, 4)
       bindData(rotationInstanceArray, rotationData, instanceCount, 1)
 
@@ -388,8 +363,6 @@ class LayerRenderer(
 
   def drawCloneTileBuffer(instanceCount: Int): Unit =
     if instanceCount > 0 then
-      enableCloneTileMode()
-
       bindData(translateScaleInstanceArray, translateScaleData, instanceCount, 4)
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData, instanceCount, 4)
       bindData(channelOffsets01InstanceArray, channelOffsets01Data, instanceCount, 4)
@@ -399,7 +372,6 @@ class LayerRenderer(
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
 
   def prepareCloneProgramBuffer(instanceCount: Int): Unit =
-    disableCloneMode()
     bindData(translateScaleInstanceArray, translateScaleData, instanceCount, 4)
     bindData(refFlipInstanceArray, refFlipData, instanceCount, 4)
     bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData, instanceCount, 4)
