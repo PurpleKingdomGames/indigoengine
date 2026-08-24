@@ -174,6 +174,8 @@ class LayerRenderer(
     // pre-populate array
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
+    setupInstanceAttributes()
+
     this
 
   def dispose(): Unit =
@@ -324,22 +326,23 @@ class LayerRenderer(
       lightDataUBOBuffer,
       gl2.getUniformBlockIndex(program, "IndigoDynamicLightingData")
     )
+  }
 
-    // Instance attributes
+  def setupInstanceAttributes(): Unit = {
     // vec4 a_matRotateScale
-    setupInstanceArray(translateScaleInstanceArray, 1, 4) //
+    setupInstanceArray(translateScaleInstanceArray, 1, 4)
     // vec4 a_matTranslateAlpha
-    setupInstanceArray(refFlipInstanceArray, 2, 4) //
+    setupInstanceArray(refFlipInstanceArray, 2, 4)
     // vec4 a_sizeAndFrameScale
-    setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4) //
+    setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4)
     // vec4 a_channelOffsets01
-    setupInstanceArray(channelOffsets01InstanceArray, 4, 4) //
+    setupInstanceArray(channelOffsets01InstanceArray, 4, 4)
     // vec4 a_channelOffsets23
-    setupInstanceArray(channelOffsets23InstanceArray, 5, 4) //
+    setupInstanceArray(channelOffsets23InstanceArray, 5, 4)
     // vec4 a_textureSize + atlasSize
-    setupInstanceArray(textureSizeAtlasSizeInstanceArray, 6, 4) //
+    setupInstanceArray(textureSizeAtlasSizeInstanceArray, 6, 4)
     // float a_rotation
-    setupInstanceArray(rotationInstanceArray, 7, 1) //
+    setupInstanceArray(rotationInstanceArray, 7, 1)
   }
 
   def drawBuffer(instanceCount: Int): Unit =
