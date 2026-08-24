@@ -11,21 +11,21 @@ class BlankEntityTests extends munit.FunSuite:
 
   test("resizeTo(Size) sets the size") {
     val actual =
-      BlankEntity(shaderData).resizeTo(Size(64, 64)).size
+      BlankEntity(0, 0, shaderData).resizeTo(Size(64, 64)).size
 
     assertEquals(actual, Size(64, 64))
   }
 
   test("resizeTo(Int, Int) sets the size") {
     val actual =
-      BlankEntity(shaderData).resizeTo(64, 64).size
+      BlankEntity(0, 0, shaderData).resizeTo(64, 64).size
 
     assertEquals(actual, Size(64, 64))
   }
 
   test("withSize sets the size") {
     val actual =
-      BlankEntity(shaderData).withSize(Size(64, 64)).size
+      BlankEntity(0, 0, shaderData).withSize(Size(64, 64)).size
 
     assertEquals(actual, Size(64, 64))
   }
@@ -35,7 +35,7 @@ class BlankEntityTests extends munit.FunSuite:
       BlankEntity(Size(64, 64), shaderData).size
 
     val viaResizeTo =
-      BlankEntity(shaderData).resizeTo(Size(64, 64)).size
+      BlankEntity(0, 0, shaderData).resizeTo(Size(64, 64)).size
 
     assertEquals(viaResizeTo, viaConstructor)
   }
@@ -45,7 +45,7 @@ class BlankEntityTests extends munit.FunSuite:
       BlankEntity(Size(64, 64), shaderData).size
 
     val viaResizeTo =
-      BlankEntity(shaderData).resizeTo(64, 64).size
+      BlankEntity(0, 0, shaderData).resizeTo(64, 64).size
 
     assertEquals(viaResizeTo, viaConstructor)
   }
