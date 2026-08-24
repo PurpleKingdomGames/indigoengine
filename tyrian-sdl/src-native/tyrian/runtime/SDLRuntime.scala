@@ -1,7 +1,6 @@
 package tyrian.runtime
 
 import indigoengine.sdl.facades.sdl.SDL.*
-import indigoengine.shared.datatypes.Millis
 import indigoengine.shared.datatypes.Seconds
 import tyrian.SDLContext
 import tyrian.SDLMsg
@@ -32,7 +31,7 @@ final class SDLRuntime private (
 
     while running do
       val runningTime =
-        Millis.fromNanos(System.nanoTime() - startNanos).toSeconds
+        Seconds((System.nanoTime() - startNanos).toDouble / 1_000_000_000.0)
 
       while SDL_PollEvent(event) != 0 do
         val rawEventType = event.asInstanceOf[Ptr[CStruct1[UInt]]]._1

@@ -140,7 +140,7 @@ trait App[GraphicsContext, Model]:
     new ExtensionRegister()
 
   def graphicsTick(runningTime: Double): Unit =
-    extensionsRegister.draw(None, Millis(runningTime.toLong).toSeconds)
+    extensionsRegister.draw(None, Seconds(runningTime / 1000.0))
 
     dom.window.requestAnimationFrame { time =>
       graphicsTick(time)
