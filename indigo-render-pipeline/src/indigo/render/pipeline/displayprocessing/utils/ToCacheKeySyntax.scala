@@ -5,7 +5,7 @@ import indigo.shaders.ShaderData
 object ToCacheKeySyntax:
 
   def toCacheKey(sd: ShaderData): String =
-    val sb = new StringBuilder(sd.shaderId.toString)
+    val sb = new StringBuilder(sd.shaderId.show)
     sd.channel0.foreach(v => sb.append(v.toString))
     sd.channel1.foreach(v => sb.append(v.toString))
     sd.channel2.foreach(v => sb.append(v.toString))
