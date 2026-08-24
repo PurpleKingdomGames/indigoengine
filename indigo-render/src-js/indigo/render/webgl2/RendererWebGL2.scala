@@ -143,7 +143,11 @@ final class RendererWebGL2(
 
     initialiseTextureLocations(gl2)
     initialiseBuffers(gl2)
+
+    // VAO set up, Indigo only uses a single VAO.
     initialiseVAO(gl2)
+    gl2.bindVertexArray(vao)
+
     initialiseLayerRenderers(gl2)
     initialiseFrameBuffers(ctx)
 
@@ -167,8 +171,6 @@ final class RendererWebGL2(
     gl2.disable(DEPTH_TEST)
     gl2.viewport(0, 0, gl2.drawingBufferWidth.toDouble, gl2.drawingBufferHeight.toDouble)
     gl2.enable(BLEND)
-
-    gl2.bindVertexArray(vao)
 
     // Vertex
     gl2.bindBuffer(ARRAY_BUFFER, vertexAndTextureCoordsBuffer)
