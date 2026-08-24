@@ -35,9 +35,9 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         TestFont.fontInfo
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
+          Constants.LayerKeys.fps,
           Fonts.fontKey,
-          SandboxAssets.smallFontName,
-          Constants.LayerKeys.fps
+          colour => Material.ImageEffects.tint(SandboxAssets.smallFontName, colour)
         )
           .placeAt { (context, bounds) =>
             Point(0, context.frame.viewport.height - bounds.height)
