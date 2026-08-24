@@ -1,8 +1,8 @@
 package indigo
 
+import indigo.internal.FrameScheduler
 import indigo.internal.IndigoActions
 import indigo.internal.LogDrainWatcher
-import indigo.internal.Utils
 import indigo.internal.models.LaunchStatus
 import indigo.internal.models.Model
 import indigo.internal.models.Msg
@@ -174,16 +174,16 @@ final case class Indigo(
     Batch(LogDrainWatcher(game))
 
   def draw(ctx: SDLContext, runningTime: Seconds, model: Model): Model =
-    val timeDelta = runningTime - model.lastUpdatedAt
-
-    Utils.processFrameTick(runningTime, timeDelta, settings.frameRatePolicy) match
-      case TickUpdateResult.Wait =>
-        model
-
-      case TickUpdateResult.RunNow(timeDelta, updatedAt) =>
-        model.game.system.tick(ctx, updatedAt, timeDelta)
+    FrameScheduler.processFrameTick(model.frameScheduler, runningTime, settings.frameRatePolicy) match
+      case TickUpdateResult.Wait(scheduler) =>
         model.copy(
-          lastUpdatedAt = updatedAt
+          frameScheduler = scheduler
+        )
+
+      case TickUpdateResult.RunNow(timeDelta, time, scheduler) =>
+        model.game.system.tick(ctx, time, timeDelta)
+        model.copy(
+          frameScheduler = scheduler
         )
 
   def provideContext(model: Model): Option[SDLContext] =

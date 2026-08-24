@@ -1,6 +1,5 @@
 package indigo.internal
 
-import indigo.FrameRatePolicy
 import indigo.FullScreenEvent
 import indigo.Game
 import indigo.core.assets.AssetName
@@ -12,37 +11,18 @@ import indigo.core.datatypes.Vector2
 import indigo.core.events.AssetEvent
 import indigo.core.events.ScreenCaptureEvent
 import indigo.core.render.ScreenCaptureConfig
-import indigo.core.time.FPS
 import indigo.internal.assets.AssetLoader
 import indigo.internal.models.FullScreenRequest
-import indigo.internal.models.TickUpdateResult
 import indigo.shared.IndigoSystemEvent
 import org.scalajs.dom.CanvasRenderingContext2D
 import org.scalajs.dom.document
 import org.scalajs.dom.html
-import tyrian.*
 
 import scala.annotation.nowarn
 import scala.util.Failure
 import scala.util.Success
 
 object Utils:
-
-  // TODO: Do we need to backport to the native version?
-  private[indigo] def processFrameTick(
-      runningTime: Seconds,
-      timeDelta: Seconds,
-      frameRatePolicy: FrameRatePolicy
-  ): TickUpdateResult =
-    frameRatePolicy match
-      case FrameRatePolicy.Unlimited =>
-        TickUpdateResult.RunNow(timeDelta, runningTime)
-
-      case FrameRatePolicy.Skip(target) =>
-        val targetFrameDuration = target.asFrameDuration // E.g. 16.7ms or 0.016s for 60fps
-
-        if timeDelta >= targetFrameDuration then TickUpdateResult.RunNow(timeDelta, runningTime)
-        else TickUpdateResult.Wait
 
   // Running as a cheeky Future, might be worth revisiting sometime...
   def runFullScreen(canvas: html.Canvas, game: Game[?, ?, ?], request: FullScreenRequest): Unit =
