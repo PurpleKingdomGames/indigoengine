@@ -158,10 +158,10 @@ final class RendererWebGL2(
     initialiseFrameBuffers(ctx)
 
     shaders.foreach { shader =>
-      if !customShaders.contains(shader.id.toString) then
+      if !customShaders.contains(shader.id.show) then
         customShaders.update(
-          shader.id.toString,
-          WebGLHelper.shaderProgramSetup(gl2, shader.id.toString, shader)
+          shader.id.show,
+          WebGLHelper.shaderProgramSetup(gl2, shader.id.show, shader)
         )
     }
 
