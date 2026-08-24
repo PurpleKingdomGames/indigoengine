@@ -98,20 +98,27 @@ object ActorPoolScene extends Scene[SandboxGameModel]:
         Constants.LayerKeys.background ->
           Layer.Content(
             Shape.Circle(Circle(model.target, 8), Fill.Color(RGBA.Cyan))
-          ),
-        Constants.LayerKeys.game -> Layer.Content(
-          followers
-        )
-      )
+          )
+      ) |+| followers
     }
 
-final case class ActorSceneModel(spawned: Boolean, target: Point, actorSystem: ActorPool[Point, FollowingActor])
+final case class ActorSceneModel(
+    spawned: Boolean,
+    target: Point,
+    actorSystem: ActorPool[Point, FollowingActor, SceneNode]
+)
 object ActorSceneModel:
   val initial: ActorSceneModel =
     ActorSceneModel(
       false,
       Point.zero,
-      ActorPool.empty
+      ActorPool(nodes =>
+        SceneUpdateFragment(
+          Constants.LayerKeys.game -> Layer.Content(
+            nodes
+          )
+        )
+      )
     )
 
 enum FollowingActor(
@@ -148,7 +155,7 @@ object FollowingActor:
   given Ordering[FollowingActor] =
     Ordering.by(_.depthIndex)
 
-  given Actor[Point, FollowingActor] with
+  given Actor[Point, FollowingActor, SceneNode] with
 
     def update(
         context: ActorContext[Point, FollowingActor],
@@ -173,9 +180,7 @@ object FollowingActor:
     def present(
         context: ActorContext[Point, FollowingActor],
         actor: FollowingActor
-    ): Outcome[Batch[SceneNode]] =
+    ): Outcome[SceneNode] =
       Outcome(
-        Batch(
-          Shape.Circle(Circle(actor.location.toPoint, actor.radius), Fill.Color(actor.colour), Stroke(2, RGBA.Black))
-        )
+        Shape.Circle(Circle(actor.location.toPoint, actor.radius), Fill.Color(actor.colour), Stroke(2, RGBA.Black))
       )

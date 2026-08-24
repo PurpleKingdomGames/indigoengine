@@ -5,13 +5,15 @@ import indigo.*
 class ActorPoolTests extends munit.FunSuite {
 
   test("ActorPool should be created with an empty list of actors") {
-    val actorPool = ActorPool.empty[Unit, String]
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty)
 
     assertEquals(actorPool.toBatch.length, 0)
   }
 
   test("spawn") {
-    val actorPool = ActorPool.empty[Unit, String]
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty)
     val newActors = Batch("Actor1", "Actor2", "Actor3")
 
     val updatedPool = actorPool.spawn(newActors)
@@ -20,14 +22,18 @@ class ActorPoolTests extends munit.FunSuite {
   }
 
   test("find") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty)
+        .spawn("Actor1", "Actor2", "Actor3")
 
     val foundActor = actorPool.find(_ == "Actor2")
 
     assertEquals(foundActor, Some("Actor2"))
   }
+
   test("filter") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty).spawn("Actor1", "Actor2", "Actor3")
 
     val filteredActors = actorPool.filter(_ == "Actor2")
 
@@ -35,7 +41,8 @@ class ActorPoolTests extends munit.FunSuite {
   }
 
   test("filterNot") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty).spawn("Actor1", "Actor2", "Actor3")
 
     val filteredActors = actorPool.filterNot(_ == "Actor2")
 
@@ -43,7 +50,8 @@ class ActorPoolTests extends munit.FunSuite {
   }
 
   test("kill") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty).spawn("Actor1", "Actor2", "Actor3")
 
     val updatedPool = actorPool.kill(_ == "Actor2")
 
@@ -51,7 +59,8 @@ class ActorPoolTests extends munit.FunSuite {
   }
 
   test("update") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](_ => SceneUpdateFragment.empty).spawn("Actor1", "Actor2", "Actor3")
 
     val ctx: Context =
       Context.initial
@@ -62,20 +71,30 @@ class ActorPoolTests extends munit.FunSuite {
   }
 
   test("present") {
-    val actorPool = ActorPool.empty[Unit, String].spawn("Actor1", "Actor2", "Actor3")
+    val actorPool =
+      ActorPool[Unit, String, SceneNode](nodes =>
+        SceneUpdateFragment(
+          LayerKey("test") -> Layer.Content(nodes)
+        )
+      ).spawn("Actor1", "Actor2", "Actor3")
 
     val ctx: Context =
       Context.initial
 
     val presented = actorPool.present(ctx, ())
 
-    assertEquals(presented.unsafeGet.length, 3)
+    presented.unsafeGet.layers.head.layer match
+      case Layer.Stack(_) =>
+        fail("Uh oh.")
+
+      case Layer.Content(nodes, _, _, _, _) =>
+        assertEquals(nodes.length, 3)
   }
 
-  given Actor[Unit, String] with
+  given Actor[Unit, String, SceneNode] with
     def update(context: ActorContext[Unit, String], actor: String): GlobalEvent => Outcome[String] =
       _ => Outcome(actor + "!")
 
-    def present(context: ActorContext[Unit, String], actor: String): Outcome[Batch[SceneNode]] =
-      Outcome(Batch(Text(actor, FontKey("test"), Material.Bitmap(AssetName("test")))))
+    def present(context: ActorContext[Unit, String], actor: String): Outcome[SceneNode] =
+      Outcome(Text(actor, FontKey("test"), Material.Bitmap(AssetName("test"))))
 }

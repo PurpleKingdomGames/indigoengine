@@ -34,7 +34,7 @@ object ActorPoolPhysicsScene extends Scene[SandboxGameModel]:
   ): GlobalEvent => Outcome[ActorPhysicsSceneModel] =
     case FrameTick if !model.spawned =>
       val zombies: Batch[(ZombieActor, Collider[ZombieSimTag])] =
-        (0 to 30).toBatch.map { i =>
+        (0 to 100).toBatch.map { i =>
           val dice = Dice.fromSeed(i.toLong)
 
           val x =
@@ -133,25 +133,35 @@ object ActorPoolPhysicsScene extends Scene[SandboxGameModel]:
         Constants.LayerKeys.background ->
           Layer.Content(
             Shape.Circle(Circle(model.target, 16), Fill.Color(RGBA.Red), Stroke(2, RGBA.White))
-          ),
-        Constants.LayerKeys.game -> Layer.Content(
-          zombies
-        )
-      )
+          )
+      ) |+| zombies
     }
 
 final case class ActorPhysicsSceneModel(
     spawned: Boolean,
     target: Point,
-    actorPool: ActorPool[Map[Int, Point], ZombieActor],
+    actorPool: ActorPool[Map[Int, Point], ZombieActor, CloneBatchData],
     world: World[ZombieSimTag]
 )
 object ActorPhysicsSceneModel:
+
+  private val blank =
+    CloneBlank(
+      CloneId("zombie-clone"),
+      Shape.Circle(Circle(Point.zero, 5), Fill.Color(RGBA.SlateGray), Stroke(1, RGBA.White))
+    )
+
   val initial: ActorPhysicsSceneModel =
     ActorPhysicsSceneModel(
       false,
       Point.zero,
-      ActorPool.empty,
+      ActorPool(cloneData =>
+        SceneUpdateFragment(
+          Constants.LayerKeys.game -> Layer.Content(
+            CloneBatch(blank.id, cloneData)
+          )
+        ).addCloneBlanks(blank)
+      ),
       World.empty.withResistance(Resistance(0.25))
     )
 
@@ -166,7 +176,7 @@ object ZombieActor:
   given Ordering[ZombieActor] =
     Ordering.by(_.depth)
 
-  given Actor[Map[Int, Point], ZombieActor] with
+  given Actor[Map[Int, Point], ZombieActor, CloneBatchData] with
 
     def update(
         context: ActorContext[Map[Int, Point], ZombieActor],
@@ -185,17 +195,9 @@ object ZombieActor:
       case _ =>
         Outcome(actor)
 
-    def present(context: ActorContext[Map[Int, Point], ZombieActor], actor: ZombieActor): Outcome[Batch[SceneNode]] =
-      val color =
-        actor.index % 3 match
-          case 0 => RGBA.Cyan
-          case 1 => RGBA.Yellow
-          case _ => RGBA.SlateGray
-
+    def present(context: ActorContext[Map[Int, Point], ZombieActor], actor: ZombieActor): Outcome[CloneBatchData] =
       Outcome(
-        Batch(
-          Shape.Circle(Circle(actor.position, 5), Fill.Color(color), Stroke(1, RGBA.White))
-        )
+        CloneBatchData(actor.position.x, actor.position.y)
       )
 
 enum ZombieSimTag derives CanEqual:
