@@ -1,5 +1,7 @@
 package indigo.core.render
 
+import scala.annotation.targetName
+
 /** Represents the amount to magnify / scale the pixels by. Automatically clamped to a range of 1 to 16, typical usage
   * is <= x4.
   */
@@ -36,5 +38,31 @@ object Magnification:
     def increase: Magnification = clampToRange(m.toInt + 1)
     def decrease: Magnification = clampToRange(m.toInt - 1)
     def toInt: Int              = m
+
+    def +(other: Magnification): Magnification =
+      Magnification(clampToRange(m + other))
+    @targetName("+_Int")
+    def +(other: Int): Magnification =
+      Magnification(clampToRange(m + other))
+
+    def -(other: Magnification): Magnification =
+      Magnification(clampToRange(m - other))
+    @targetName("-_Int")
+    def -(other: Int): Magnification =
+      Magnification(clampToRange(m - other))
+
+    def *(other: Magnification): Magnification =
+      Magnification(clampToRange(m * other))
+    @targetName("*_Int")
+    def *(other: Int): Magnification =
+      Magnification(clampToRange(m * other))
+
+    def /(other: Magnification): Magnification =
+      Magnification(clampToRange(m / other))
+    @targetName("/_Int")
+    def /(other: Int): Magnification =
+      // Guard against divide by zero
+      val value = clampToRange(other)
+      Magnification(clampToRange(m / value))
 
   given CanEqual[Magnification, Magnification] = CanEqual.derived
