@@ -205,24 +205,33 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  private var currentProgram: WebGLProgram = null
+  private var currentProgram: WebGLProgram                        = null
+  private val _locationCache: js.Dictionary[WebGLUniformLocation] = js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  private def setBaseTransform(baseTransform: CheapMatrix4): Unit =
+  private def setBaseTransform(shaderId: ShaderId, baseTransform: CheapMatrix4): Unit =
     if currentProgram == null then ()
     else
+      val loc = _locationCache.getOrElseUpdate(
+        s"${shaderId.show}-u_baseTransform",
+        gl2.getUniformLocation(currentProgram, "u_baseTransform")
+      )
       gl2.uniformMatrix4fv(
-        location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
+        location = loc,
         transpose = false,
         value = baseTransform.toFloat32Array
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  private def setMode(mode: Int): Unit =
+  private def setMode(shaderId: ShaderId, mode: Int): Unit =
     if currentProgram == null then ()
     else
+      val loc = _locationCache.getOrElseUpdate(
+        s"${shaderId.show}-u_mode",
+        gl2.getUniformLocation(currentProgram, "u_mode")
+      )
       gl2.uniform1i(
-        gl2.getUniformLocation(currentProgram, "u_mode"),
+        loc,
         mode
       )
 
