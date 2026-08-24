@@ -250,8 +250,14 @@ object Material:
     def apply(diffuse: AssetName): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
 
-    def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+    def alpha(diffuse: AssetName, value: Double): ImageEffects =
+      ImageEffects(diffuse, value, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+    def tint(diffuse: AssetName, value: RGBA): ImageEffects =
+      ImageEffects(diffuse, 1.0, value, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+    def overlay(diffuse: AssetName, value: Fill): ImageEffects =
+      ImageEffects(diffuse, 1.0, RGBA.None, value, 1.0, LightingModel.Unlit, None, FillType.Normal)
+    def saturation(diffuse: AssetName, value: Double): ImageEffects =
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, value, LightingModel.Unlit, None, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None, FillType.Normal)
