@@ -14,7 +14,6 @@ import indigo.scenegraph.materials.LightingModel.Lit
 import indigo.scenegraph.materials.LightingModel.Unlit
 import indigo.scenegraph.registers.BoundaryLocator
 import indigo.shaders.ShaderData
-import indigo.shaders.ShaderId
 import indigo.shaders.ShaderPrimitive.*
 import indigo.shaders.StandardShaders
 import indigo.shaders.Uniform
@@ -69,8 +68,7 @@ object Shape:
       rotation: Radians,
       scale: Vector2,
       ref: Point,
-      flip: Flip,
-      shaderId: Option[ShaderId]
+      flip: Flip
   ) extends Shape[Box] {
 
     override def accept[A](visitor: SceneNodeVisitor[A]): A =
@@ -152,9 +150,6 @@ object Shape:
     def withFlip(newFlip: Flip): Box =
       this.copy(flip = newFlip)
 
-    def withShaderId(newShaderId: ShaderId): Box =
-      this.copy(shaderId = Option(newShaderId))
-
     def withEventHandler(f: ((Box, GlobalEvent)) => Option[GlobalEvent]): Box =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
     def onEvent(f: PartialFunction[(Box, GlobalEvent), GlobalEvent]): Box =
@@ -177,8 +172,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(dimensions: Rectangle, fill: Fill, stroke: Stroke): Box =
@@ -192,8 +186,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
   }
@@ -210,8 +203,7 @@ object Shape:
       rotation: Radians,
       scale: Vector2,
       ref: Point,
-      flip: Flip,
-      shaderId: Option[ShaderId]
+      flip: Flip
   ) extends Shape[Circle] {
 
     override def accept[A](visitor: SceneNodeVisitor[A]): A =
@@ -294,9 +286,6 @@ object Shape:
     def withFlip(newFlip: Flip): Circle =
       this.copy(flip = newFlip)
 
-    def withShaderId(newShaderId: ShaderId): Circle =
-      this.copy(shaderId = Option(newShaderId))
-
     def withEventHandler(f: ((Circle, GlobalEvent)) => Option[GlobalEvent]): Circle =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
     def onEvent(f: PartialFunction[(Circle, GlobalEvent), GlobalEvent]): Circle =
@@ -320,8 +309,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(circle: C, fill: Fill): Circle =
@@ -335,8 +323,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(center: Point, radius: Int, fill: Fill, stroke: Stroke): Circle =
@@ -350,8 +337,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(circle: C, fill: Fill, stroke: Stroke): Circle =
@@ -365,8 +351,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
   }
@@ -383,8 +368,7 @@ object Shape:
       rotation: Radians,
       scale: Vector2,
       ref: Point,
-      flip: Flip,
-      shaderId: Option[ShaderId]
+      flip: Flip
   ) extends Shape[Line] {
 
     override def accept[A](visitor: SceneNodeVisitor[A]): A =
@@ -480,9 +464,6 @@ object Shape:
     def withFlip(newFlip: Flip): Line =
       this.copy(flip = newFlip)
 
-    def withShaderId(newShaderId: ShaderId): Line =
-      this.copy(shaderId = Option(newShaderId))
-
     def withEventHandler(f: ((Line, GlobalEvent)) => Option[GlobalEvent]): Line =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
     def onEvent(f: PartialFunction[(Line, GlobalEvent), GlobalEvent]): Line =
@@ -505,8 +486,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
   }
@@ -523,8 +503,7 @@ object Shape:
       rotation: Radians,
       scale: Vector2,
       ref: Point,
-      flip: Flip,
-      shaderId: Option[ShaderId]
+      flip: Flip
   ) extends Shape[Polygon] {
 
     override def accept[A](visitor: SceneNodeVisitor[A]): A =
@@ -607,9 +586,6 @@ object Shape:
     def withFlip(newFlip: Flip): Polygon =
       this.copy(flip = newFlip)
 
-    def withShaderId(newShaderId: ShaderId): Polygon =
-      this.copy(shaderId = Option(newShaderId))
-
     def withEventHandler(f: ((Polygon, GlobalEvent)) => Option[GlobalEvent]): Polygon =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
     def onEvent(f: PartialFunction[(Polygon, GlobalEvent), GlobalEvent]): Polygon =
@@ -633,8 +609,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(vertices: Batch[Point], fill: Fill, stroke: Stroke): Polygon =
@@ -648,8 +623,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
     def apply(fill: Fill, stroke: Stroke)(vertices: Point*): Polygon =
@@ -663,8 +637,7 @@ object Shape:
         Radians.zero,
         Vector2.one,
         Point.zero,
-        Flip.default,
-        None
+        Flip.default
       )
 
   }
@@ -714,12 +687,12 @@ object Shape:
         s.lighting match {
           case Unlit =>
             ShaderData(
-              s.shaderId.getOrElse(StandardShaders.ShapeBox.id),
+              StandardShaders.ShapeBox.id,
               Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id), None, Batch(shapeUniformBlock))
+            l.toShaderData(StandardShaders.LitShapeBox.id, None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Circle =>
@@ -746,12 +719,12 @@ object Shape:
         s.lighting match {
           case Unlit =>
             ShaderData(
-              s.shaderId.getOrElse(StandardShaders.ShapeCircle.id),
+              StandardShaders.ShapeCircle.id,
               Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id), None, Batch(shapeUniformBlock))
+            l.toShaderData(StandardShaders.LitShapeCircle.id, None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Line =>
@@ -792,12 +765,12 @@ object Shape:
         s.lighting match {
           case Unlit =>
             ShaderData(
-              s.shaderId.getOrElse(StandardShaders.ShapeLine.id),
+              StandardShaders.ShapeLine.id,
               Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id), None, Batch(shapeUniformBlock))
+            l.toShaderData(StandardShaders.LitShapeLine.id, None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Polygon =>
@@ -840,12 +813,12 @@ object Shape:
         s.lighting match {
           case Unlit =>
             ShaderData(
-              s.shaderId.getOrElse(StandardShaders.ShapePolygon.id),
+              StandardShaders.ShapePolygon.id,
               Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id), None, Batch(shapeUniformBlock))
+            l.toShaderData(StandardShaders.LitShapePolygon.id, None, Batch(shapeUniformBlock))
         }
 
 end Shape
