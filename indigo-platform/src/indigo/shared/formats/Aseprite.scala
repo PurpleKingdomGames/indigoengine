@@ -31,7 +31,7 @@ object AsepriteError:
   def apply(message: String): AsepriteError = message
 
   extension (e: AsepriteError)
-    def message: String  = e
+    def message: String   = e
     def toMessage: String = e
 
   given CanEqual[AsepriteError, AsepriteError] = CanEqual.derived

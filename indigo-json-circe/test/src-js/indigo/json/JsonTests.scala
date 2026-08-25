@@ -34,12 +34,15 @@ class JsonTests extends munit.FunSuite {
     val parsed = Json.asepriteFromJson(AsepriteFormatSampleData.hashJson).get
 
     assertEquals(parsed.frames.length, 4)
-    assertEquals(parsed.frames.map(_.filename), List(
-      "pirate-character-base 0.aseprite",
-      "pirate-character-base 1.aseprite",
-      "pirate-character-base 2.aseprite",
-      "pirate-character-base 3.aseprite"
-    ))
+    assertEquals(
+      parsed.frames.map(_.filename),
+      List(
+        "pirate-character-base 0.aseprite",
+        "pirate-character-base 1.aseprite",
+        "pirate-character-base 2.aseprite",
+        "pirate-character-base 3.aseprite"
+      )
+    )
     assertEquals(parsed.frames.head.frame, AsepriteRectangle(0, 0, 32, 32))
     assertEquals(parsed.frames(1).frame, AsepriteRectangle(32, 0, 32, 32))
     assertEquals(parsed.meta.size, AsepriteSize(128, 32))
