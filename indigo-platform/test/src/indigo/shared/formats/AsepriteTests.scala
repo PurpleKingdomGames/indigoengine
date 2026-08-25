@@ -134,9 +134,33 @@ class AsepriteTests extends munit.FunSuite {
     val packed =
       Aseprite(
         frames = List(
-          AsepriteFrame("f0", AsepriteRectangle(0, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f1", AsepriteRectangle(32, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f2", AsepriteRectangle(0, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100)
+          AsepriteFrame(
+            "f0",
+            AsepriteRectangle(0, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f1",
+            AsepriteRectangle(32, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f2",
+            AsepriteRectangle(0, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          )
         ),
         meta = AsepriteMeta(
           app = "aseprite",
@@ -152,7 +176,10 @@ class AsepriteTests extends munit.FunSuite {
 
     packed.toClips(AssetName("x")) match
       case Left(err) =>
-        assert(clue(err.message).toLowerCase.contains("packed") || clue(err.message).toLowerCase.contains("duplicate") || clue(err.message).toLowerCase.contains("share"))
+        assert(
+          clue(err.message).toLowerCase.contains("packed") || clue(err.message).toLowerCase
+            .contains("duplicate") || clue(err.message).toLowerCase.contains("share")
+        )
       case Right(_) =>
         fail("Expected Left for packed aseprite")
   }
@@ -161,12 +188,60 @@ class AsepriteTests extends munit.FunSuite {
     val padded =
       Aseprite(
         frames = List(
-          AsepriteFrame("f0", AsepriteRectangle(0, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f1", AsepriteRectangle(32, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f2", AsepriteRectangle(64, 0, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f3", AsepriteRectangle(0, 32, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f4", AsepriteRectangle(32, 32, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100),
-          AsepriteFrame("f5", AsepriteRectangle(64, 32, 32, 32), false, false, AsepriteRectangle(0, 0, 32, 32), AsepriteSize(32, 32), 100)
+          AsepriteFrame(
+            "f0",
+            AsepriteRectangle(0, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f1",
+            AsepriteRectangle(32, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f2",
+            AsepriteRectangle(64, 0, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f3",
+            AsepriteRectangle(0, 32, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f4",
+            AsepriteRectangle(32, 32, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          ),
+          AsepriteFrame(
+            "f5",
+            AsepriteRectangle(64, 32, 32, 32),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 32, 32),
+            AsepriteSize(32, 32),
+            100
+          )
         ),
         meta = AsepriteMeta(
           app = "aseprite",
@@ -189,9 +264,33 @@ class AsepriteTests extends munit.FunSuite {
     val src =
       Aseprite(
         frames = List(
-          AsepriteFrame("f0", AsepriteRectangle(0, 0, 10, 10), false, false, AsepriteRectangle(0, 0, 10, 10), AsepriteSize(10, 10), 100),
-          AsepriteFrame("f1", AsepriteRectangle(10, 0, 10, 10), false, false, AsepriteRectangle(0, 0, 10, 10), AsepriteSize(10, 10), 100),
-          AsepriteFrame("f2", AsepriteRectangle(20, 0, 10, 10), false, false, AsepriteRectangle(0, 0, 10, 10), AsepriteSize(10, 10), 100)
+          AsepriteFrame(
+            "f0",
+            AsepriteRectangle(0, 0, 10, 10),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 10, 10),
+            AsepriteSize(10, 10),
+            100
+          ),
+          AsepriteFrame(
+            "f1",
+            AsepriteRectangle(10, 0, 10, 10),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 10, 10),
+            AsepriteSize(10, 10),
+            100
+          ),
+          AsepriteFrame(
+            "f2",
+            AsepriteRectangle(20, 0, 10, 10),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 10, 10),
+            AsepriteSize(10, 10),
+            100
+          )
         ),
         meta = AsepriteMeta(
           app = "aseprite",
@@ -218,7 +317,15 @@ class AsepriteTests extends munit.FunSuite {
     val bad =
       Aseprite(
         frames = List(
-          AsepriteFrame("f0", AsepriteRectangle(0, 0, 10, 10), false, false, AsepriteRectangle(0, 0, 10, 10), AsepriteSize(10, 10), 100)
+          AsepriteFrame(
+            "f0",
+            AsepriteRectangle(0, 0, 10, 10),
+            false,
+            false,
+            AsepriteRectangle(0, 0, 10, 10),
+            AsepriteSize(10, 10),
+            100
+          )
         ),
         meta = AsepriteMeta(
           app = "aseprite",
