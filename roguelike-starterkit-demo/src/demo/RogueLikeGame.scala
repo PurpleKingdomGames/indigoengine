@@ -39,9 +39,7 @@ final class RogueLikeGame() extends Game[Unit, Unit, GameModel]:
         .withAssets(Assets.assets.assetSetRelative)
         .withShaders(
           indigoextras.ui.shaders.all ++
-            roguelikestarterkit.shaders.all ++ Set(
-              TerminalTextScene.customShader(ShaderId("my shader"))
-            )
+            roguelikestarterkit.shaders.all
         )
         .withSubSystems(
           FPSCounter(

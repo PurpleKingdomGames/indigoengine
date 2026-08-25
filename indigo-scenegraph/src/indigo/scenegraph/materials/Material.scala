@@ -6,7 +6,6 @@ import indigo.core.datatypes.Rectangle
 import indigo.scenegraph.materials.LightingModel.Lit
 import indigo.scenegraph.materials.LightingModel.Unlit
 import indigo.shaders.ShaderData
-import indigo.shaders.ShaderId
 import indigo.shaders.ShaderPrimitive.rawBatch
 import indigo.shaders.StandardShaders
 import indigo.shaders.Uniform
@@ -22,8 +21,8 @@ trait Material:
 
 object Material:
 
-  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId], fillType: FillType)
-      extends Material derives CanEqual:
+  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, fillType: FillType) extends Material
+      derives CanEqual:
 
     def withDiffuse(newDiffuse: AssetName): Bitmap =
       this.copy(diffuse = newDiffuse)
@@ -37,9 +36,6 @@ object Material:
       withLighting(lighting.enableLighting)
     def disableLighting: Bitmap =
       withLighting(lighting.disableLighting)
-
-    def withShaderId(newShaderId: ShaderId): Bitmap =
-      this.copy(shaderId = Option(newShaderId))
 
     def withFillType(newFillType: FillType): Bitmap =
       this.copy(fillType = newFillType)
@@ -62,7 +58,6 @@ object Material:
         Fill.Color.default,
         1.0,
         lighting,
-        shaderId,
         fillType
       )
 
@@ -102,7 +97,7 @@ object Material:
       lighting match
         case Unlit =>
           ShaderData(
-            shaderId.getOrElse(StandardShaders.Bitmap.id),
+            StandardShaders.Bitmap.id,
             Batch(uniformBlock),
             Some(diffuse),
             None,
@@ -111,14 +106,14 @@ object Material:
           )
 
         case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id), Some(diffuse), Batch(uniformBlock))
+          l.toShaderData(StandardShaders.LitBitmap.id, Some(diffuse), Batch(uniformBlock))
 
   object Bitmap:
     def apply(diffuse: AssetName): Bitmap =
-      Bitmap(diffuse, LightingModel.Unlit, None, FillType.Normal)
+      Bitmap(diffuse, LightingModel.Unlit, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): Bitmap =
-      Bitmap(diffuse, lighting, None, FillType.Normal)
+      Bitmap(diffuse, lighting, FillType.Normal)
 
   final case class ImageEffects(
       diffuse: AssetName,
@@ -127,7 +122,6 @@ object Material:
       overlay: Fill,
       saturation: Double,
       lighting: LightingModel,
-      shaderId: Option[ShaderId],
       fillType: FillType
   ) extends Material derives CanEqual:
 
@@ -158,9 +152,6 @@ object Material:
     def disableLighting: ImageEffects =
       withLighting(lighting.disableLighting)
 
-    def withShaderId(newShaderId: ShaderId): ImageEffects =
-      this.copy(shaderId = Option(newShaderId))
-
     def withFillType(newFillType: FillType): ImageEffects =
       this.copy(fillType = newFillType)
     def normal: ImageEffects =
@@ -175,7 +166,7 @@ object Material:
       withFillType(FillType.NineSlice(top, right, bottom, left))
 
     def toBitmap: Material.Bitmap =
-      Material.Bitmap(diffuse, lighting, shaderId, fillType)
+      Material.Bitmap(diffuse, lighting, fillType)
 
     lazy val toShaderData: ShaderData =
       val overlayType: Float =
@@ -231,7 +222,7 @@ object Material:
       lighting match
         case Unlit =>
           ShaderData(
-            shaderId.getOrElse(StandardShaders.ImageEffects.id),
+            StandardShaders.ImageEffects.id,
             Batch(effectsUniformBlock),
             Some(diffuse),
             None,
@@ -241,26 +232,23 @@ object Material:
 
         case l: Lit =>
           l.toShaderData(
-            shaderId.getOrElse(StandardShaders.LitImageEffects.id),
+            StandardShaders.LitImageEffects.id,
             Some(diffuse),
             Batch(effectsUniformBlock)
           )
 
   object ImageEffects:
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, FillType.Normal)
 
     def alpha(diffuse: AssetName, value: Double): ImageEffects =
-      ImageEffects(diffuse, value, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+      ImageEffects(diffuse, value, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, FillType.Normal)
     def tint(diffuse: AssetName, value: RGBA): ImageEffects =
-      ImageEffects(diffuse, 1.0, value, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
+      ImageEffects(diffuse, 1.0, value, Fill.Color.default, 1.0, LightingModel.Unlit, FillType.Normal)
     def overlay(diffuse: AssetName, value: Fill): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, value, 1.0, LightingModel.Unlit, None, FillType.Normal)
+      ImageEffects(diffuse, 1.0, RGBA.None, value, 1.0, LightingModel.Unlit, FillType.Normal)
     def saturation(diffuse: AssetName, value: Double): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, value, LightingModel.Unlit, None, FillType.Normal)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, value, LightingModel.Unlit, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None, FillType.Normal)
-
-    def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId, FillType.Normal)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, FillType.Normal)

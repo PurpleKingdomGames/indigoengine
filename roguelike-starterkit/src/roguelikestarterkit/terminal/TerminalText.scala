@@ -12,8 +12,7 @@ final case class TerminalText(
     foreground: RGBA,
     background: RGBA,
     shadow: RGBA,
-    mask: RGBA,
-    shaderId: Option[ShaderId]
+    mask: RGBA
 ) extends Material:
 
   def withColors(newForeground: RGBA, newBackground: RGBA): TerminalText =
@@ -41,12 +40,9 @@ final case class TerminalText(
   def withMask(newColor: RGB): TerminalText =
     withMask(newColor.toRGBA)
 
-  def withShaderId(newShaderId: ShaderId): TerminalText =
-    this.copy(shaderId = Option(newShaderId))
-
   def toShaderData: ShaderData =
     ShaderData(
-      shaderId.getOrElse(TerminalText.shaderId),
+      TerminalText.shaderId,
       Batch(
         UniformBlock(
           UniformBlockName("RogueLikeTextData"),
@@ -86,25 +82,16 @@ object TerminalText:
     )
 
   def apply(tileMap: AssetName): TerminalText =
-    TerminalText(tileMap, RGBA.White, RGBA.Zero, RGBA.Zero, defaultMask, None)
+    TerminalText(tileMap, RGBA.White, RGBA.Zero, RGBA.Zero, defaultMask)
 
   def apply(tileMap: AssetName, color: RGBA): TerminalText =
-    TerminalText(tileMap, color, RGBA.Zero, RGBA.Zero, defaultMask, None)
+    TerminalText(tileMap, color, RGBA.Zero, RGBA.Zero, defaultMask)
 
   def apply(tileMap: AssetName, foreground: RGBA, background: RGBA): TerminalText =
-    TerminalText(tileMap, foreground, background, background, defaultMask, None)
+    TerminalText(tileMap, foreground, background, background, defaultMask)
 
   def apply(tileMap: AssetName, foreground: RGBA, background: RGBA, shadow: RGBA): TerminalText =
-    TerminalText(tileMap, foreground, background, shadow, defaultMask, None)
-
-  def apply(
-      tileMap: AssetName,
-      foreground: RGBA,
-      background: RGBA,
-      shadow: RGBA,
-      mask: RGBA
-  ): TerminalText =
-    TerminalText(tileMap, foreground, background, shadow, mask, None)
+    TerminalText(tileMap, foreground, background, shadow, defaultMask)
 
   object ShaderImpl:
 

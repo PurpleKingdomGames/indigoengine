@@ -14,8 +14,7 @@ final case class TerminalMaterial(
     foreground: RGBA,
     background: RGBA,
     mask: RGBA,
-    lighting: LightingModel,
-    shaderId: Option[ShaderId]
+    lighting: LightingModel
 ) extends Material:
 
   def withColors(newForeground: RGBA, newBackground: RGBA): TerminalMaterial =
@@ -48,9 +47,6 @@ final case class TerminalMaterial(
   def disableLighting: TerminalMaterial =
     withLighting(lighting.disableLighting)
 
-  def withShaderId(newShaderId: ShaderId): TerminalMaterial =
-    this.copy(shaderId = Option(newShaderId))
-
   def toShaderData: ShaderData =
     val uniformBlock =
       UniformBlock(
@@ -65,7 +61,7 @@ final case class TerminalMaterial(
     lighting match
       case LightingModel.Unlit =>
         ShaderData(
-          shaderId.getOrElse(TerminalMaterial.shaderId),
+          TerminalMaterial.shaderId,
           Batch(uniformBlock),
           Some(tileMap),
           None,
@@ -75,7 +71,7 @@ final case class TerminalMaterial(
 
       case l: LightingModel.Lit =>
         l.toShaderData(
-          shaderId.getOrElse(TerminalMaterial.litShaderId),
+          TerminalMaterial.litShaderId,
           Some(tileMap),
           Batch(uniformBlock)
         )
@@ -116,13 +112,13 @@ object TerminalMaterial:
     Set(standardShader, standardShaderLit)
 
   def apply(tileMap: AssetName): TerminalMaterial =
-    TerminalMaterial(tileMap, RGBA.White, RGBA.Zero, defaultMask, LightingModel.Unlit, None)
+    TerminalMaterial(tileMap, RGBA.White, RGBA.Zero, defaultMask, LightingModel.Unlit)
 
   def apply(tileMap: AssetName, color: RGBA): TerminalMaterial =
-    TerminalMaterial(tileMap, color, RGBA.Zero, defaultMask, LightingModel.Unlit, None)
+    TerminalMaterial(tileMap, color, RGBA.Zero, defaultMask, LightingModel.Unlit)
 
   def apply(tileMap: AssetName, foreground: RGBA, background: RGBA): TerminalMaterial =
-    TerminalMaterial(tileMap, foreground, background, defaultMask, LightingModel.Unlit, None)
+    TerminalMaterial(tileMap, foreground, background, defaultMask, LightingModel.Unlit)
 
   def apply(
       tileMap: AssetName,
@@ -130,16 +126,7 @@ object TerminalMaterial:
       background: RGBA,
       mask: RGBA
   ): TerminalMaterial =
-    TerminalMaterial(tileMap, foreground, background, mask, LightingModel.Unlit, None)
-
-  def apply(
-      tileMap: AssetName,
-      foreground: RGBA,
-      background: RGBA,
-      mask: RGBA,
-      lightingModel: LightingModel
-  ): TerminalMaterial =
-    TerminalMaterial(tileMap, foreground, background, mask, lightingModel, None)
+    TerminalMaterial(tileMap, foreground, background, mask, LightingModel.Unlit)
 
   object ShaderImpl:
 
