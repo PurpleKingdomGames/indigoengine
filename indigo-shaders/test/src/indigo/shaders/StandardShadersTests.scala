@@ -46,6 +46,16 @@ class StandardShadersTests extends munit.FunSuite {
     assert(StandardShaders.LitImageEffectsClip.fragment.code.nonEmpty)
   }
 
+  test("Quad is valid") {
+    assert(StandardShaders.Quad.vertex.code.nonEmpty)
+    assert(StandardShaders.Quad.fragment.code.nonEmpty)
+  }
+
+  test("QuadLit is valid") {
+    assert(StandardShaders.LitQuad.vertex.code.nonEmpty)
+    assert(StandardShaders.LitQuad.fragment.code.nonEmpty)
+  }
+
   test("ShapeBox is valid") {
     assert(StandardShaders.ShapeBox.vertex.code.nonEmpty)
     assert(StandardShaders.ShapeBox.fragment.code.nonEmpty)

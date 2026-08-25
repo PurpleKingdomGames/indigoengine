@@ -27,4 +27,18 @@ class SizeTests extends munit.FunSuite {
     assertEquals(Size(11, 12).max(12), Size(12, 12))
   }
 
+  test("short side") {
+    assertEquals(Size(5, 2).shortestSide, 2)
+    assertEquals(Size(2, 5).shortestSide, 2)
+  }
+
+  test("long side") {
+    assertEquals(Size(5, 2).longestSide, 5)
+    assertEquals(Size(2, 5).longestSide, 5)
+  }
+
+  test("half size") {
+    assertEquals(Size(5, 2).halfSize, Size(2, 1))
+  }
+
 }
