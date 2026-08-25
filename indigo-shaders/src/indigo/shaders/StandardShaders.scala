@@ -12,6 +12,8 @@ object StandardShaders {
       LitBitmapClip,
       ImageEffectsClip,
       LitImageEffectsClip,
+      Quad,
+      LitQuad,
       ShapeBox,
       LitShapeBox,
       ShapeCircle,
@@ -97,6 +99,34 @@ object StandardShaders {
   lazy val LitBitmapClip: UltravioletShader       = makeClipShader(LitBitmap)
   lazy val ImageEffectsClip: UltravioletShader    = makeClipShader(ImageEffects)
   lazy val LitImageEffectsClip: UltravioletShader = makeClipShader(LitImageEffects)
+
+  // Quad
+
+  lazy val Quad: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_quad]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.Quad.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.Quad.Env.reference
+      )
+    )
+
+  lazy val LitQuad: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_quad]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.Quad.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.Quad.Env.reference
+      )
+    )
 
   // Shapes
 

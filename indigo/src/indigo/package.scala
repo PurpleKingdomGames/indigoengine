@@ -490,6 +490,12 @@ object aliases:
   type ClipPlayMode = indigo.scenegraph.ClipPlayMode
   val ClipPlayMode: indigo.scenegraph.ClipPlayMode.type = indigo.scenegraph.ClipPlayMode
 
+  type Quad = indigo.scenegraph.Quad
+  val Quad: indigo.scenegraph.Quad.type = indigo.scenegraph.Quad
+
+  type Corners = indigo.scenegraph.Corners
+  val Corners: indigo.scenegraph.Corners.type = indigo.scenegraph.Corners
+
   // Clones
   type Cloneable = indigo.scenegraph.Cloneable
 

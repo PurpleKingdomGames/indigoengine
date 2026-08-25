@@ -45,5 +45,6 @@ object ScenesList:
       MultiPointScene,
       BgAudioScene,
       MagnificationScene,
-      LocaleScene
+      LocaleScene,
+      QuadScene
     )

@@ -23,6 +23,14 @@ final case class Size(width: Int, height: Int) derives CanEqual:
   def withWidth(newX: Int): Size  = this.copy(width = newX)
   def withHeight(newY: Int): Size = this.copy(height = newY)
 
+  def shortestSide: Int =
+    if width < height then width else height
+  def longestSide: Int =
+    if width > height then width else height
+
+  def halfSize: Size =
+    this / 2
+
   def abs: Size =
     Size(Math.abs(width), Math.abs(height))
 
