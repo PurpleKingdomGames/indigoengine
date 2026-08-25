@@ -40,29 +40,29 @@ object Magnification:
     def toInt: Int              = m
 
     def +(other: Magnification): Magnification =
-      Magnification(clampToRange(m + other))
+      clampToRange(m + other)
     @targetName("+_Int")
     def +(other: Int): Magnification =
-      Magnification(clampToRange(m + other))
+      clampToRange(m + other)
 
     def -(other: Magnification): Magnification =
-      Magnification(clampToRange(m - other))
+      clampToRange(m - other)
     @targetName("-_Int")
     def -(other: Int): Magnification =
-      Magnification(clampToRange(m - other))
+      clampToRange(m - other)
 
     def *(other: Magnification): Magnification =
-      Magnification(clampToRange(m * other))
+      clampToRange(m * other)
     @targetName("*_Int")
     def *(other: Int): Magnification =
-      Magnification(clampToRange(m * other))
+      clampToRange(m * other)
 
     def /(other: Magnification): Magnification =
-      Magnification(clampToRange(m / other))
+      clampToRange(m / other)
     @targetName("/_Int")
     def /(other: Int): Magnification =
       // Guard against divide by zero
-      val value = clampToRange(other)
-      Magnification(clampToRange(m / value))
+      if other == 0 then m
+      else clampToRange(m / other)
 
   given CanEqual[Magnification, Magnification] = CanEqual.derived

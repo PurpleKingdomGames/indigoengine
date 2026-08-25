@@ -68,6 +68,8 @@ class MagnificationTests extends munit.FunSuite {
     assertEquals((Magnification.x2 / Magnification.x4).toInt, 1)
     assertEquals((Magnification.x2 / 4).toInt, 1)
 
+    assertEquals((Magnification(8) / -2).toInt, 1)
+
     // Divide by zero guard
     assertEquals((Magnification(8) / 0).toInt, 8)
   }
