@@ -33,7 +33,7 @@ object QuadScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] = {
 
     val squareSize: Size =
-      val signal = Signal.SmoothPulse.map(d => (100 * d).toInt).affectTime(0.25).at(context.frame.time.running)
+      val signal = Signal.SmoothPulse.map(d => (99 * d).toInt).affectTime(0.25).at(context.frame.time.running)
       Size(
         signal,
         99 - signal

@@ -2,7 +2,7 @@ package indigo.scenegraph
 
 import indigo.core.datatypes.Size
 
-/** Represents the radiuses of each corner of a Quad, so that they can be set independently.
+/** Represents the radii of each corner of a Quad, so that they can be set independently.
   */
 final case class Corners(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int) derives CanEqual:
 

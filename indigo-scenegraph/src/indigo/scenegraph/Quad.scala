@@ -20,11 +20,11 @@ import indigoengine.shared.datatypes.Radians
 
 /** `Quad`s are used when you want to draw a pixel accurate box, with or without individual rounded corners. Unlike
   * `Shape.Box`, `Quad` does NOT support a `Stroke` (..though you can simulate it with another `Quad`), but it is pixel
-  * accurate* (as long as it is not rotated), allows you to define individual corner radii, and use either solid colors
-  * or gradient fills. An expected use-case would be drawing progress bars.
+  * accurate[^1] (as long as it is not rotated), allows you to define individual corner radii, and use either solid
+  * colors or gradient fills. An expected use-case would be drawing progress bars.
   *
-  * (*`Shape.Box` can suffer from floating point errors due to the SDF based drawing method common to all `Shape`
-  * types.)
+  * [^1]: `Shape.Box` can suffer from floating point errors due to the SDF based drawing method common to all `Shape`
+  * types.
   */
 final case class Quad(
     dimensions: Rectangle,

@@ -51,7 +51,7 @@ class StandardShadersTests extends munit.FunSuite {
     assert(StandardShaders.Quad.fragment.code.nonEmpty)
   }
 
-  test("QuadLit is valid") {
+  test("LitQuad is valid") {
     assert(StandardShaders.LitQuad.vertex.code.nonEmpty)
     assert(StandardShaders.LitQuad.fragment.code.nonEmpty)
   }

@@ -24,12 +24,12 @@ final case class Size(width: Int, height: Int) derives CanEqual:
   def withHeight(newY: Int): Size = this.copy(height = newY)
 
   def shortestSide: Int =
-    if width < height then width else height
+    Math.min(Math.abs(width), Math.abs(height))
   def longestSide: Int =
-    if width > height then width else height
+    Math.max(Math.abs(width), Math.abs(height))
 
   def halfSize: Size =
-    this / 2
+    (this / 2).abs
 
   def abs: Size =
     Size(Math.abs(width), Math.abs(height))
