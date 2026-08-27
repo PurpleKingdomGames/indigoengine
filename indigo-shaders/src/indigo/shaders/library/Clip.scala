@@ -31,22 +31,44 @@ object Clip:
       CLIP_PLAYMODE_TIMES: highp[Float]
   )
 
+  /** Maps a frame index onto a cell in a sprite sheet.
+    *
+    * Deliberately uses integer arithmetic, and derives the column from the row so the two can never disagree. Float
+    * `mod` / `floor` division is inexact on some drivers, and lands one column past the edge of the sheet when the
+    * frame index is an exact multiple of the wrap width.
+    */
+  inline def frameToSheetCell: (Int, Int, Int) => vec2 =
+    (currentFrame: Int, wrapAt: Int, arrangement: Int) =>
+      val w   = max(wrapAt, 1)
+      val f   = max(currentFrame, 0)
+      val row = f / w
+      val col = f - (row * w)
+
+      // 0 = horizontal, 1 = vertical
+      if arrangement == 1 then vec2(row.toFloat, col.toFloat) else vec2(col.toFloat, row.toFloat)
+
   @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   inline def vertex =
     Shader[Env] { env =>
+      // Proxy
+      val _frameToSheetCell: (Int, Int, Int) => vec2 =
+        frameToSheetCell
+
       ubo[IndigoClipData]
 
-      def calcCurrentFrame(clipTotalTime: Float): Float = {
+      def calcCurrentFrame(clipTotalTime: Float): Int = {
         val t: Float =
           val tt = max(env.TIME - env.CLIP_PLAYMODE_START_TIME, 0.0f)
           if env.CLIP_PLAYMODE_TIMES.toInt > 0 then
             min(tt, (clipTotalTime * env.CLIP_PLAYMODE_TIMES) - (env.CLIP_SHEET_FRAME_DURATION * 0.5f))
           else tt
 
-        floor(
-          mod(t / env.CLIP_SHEET_FRAME_DURATION, clipTotalTime / env.CLIP_SHEET_FRAME_DURATION)
-        ) + env.CLIP_SHEET_START_OFFSET
+        val frameDuration: Float = max(env.CLIP_SHEET_FRAME_DURATION, 0.0001f)
+        val totalFrames: Int     = max(round(clipTotalTime / frameDuration).toInt, 1)
+        val tick: Int            = max(floor(t / frameDuration).toInt, 0)
+
+        tick - ((tick / totalFrames) * totalFrames)
       }
 
       def vertex(v: vec4): vec4 = {
@@ -55,8 +77,10 @@ object Clip:
           // Can't ping pong if there aren't enough frames.
           if d >= 2 && env.CLIP_SHEET_FRAME_COUNT.toInt <= 2 then 1 else d
 
+        val frameCount: Int = max(round(env.CLIP_SHEET_FRAME_COUNT).toInt, 1)
+
         var clipTotalTime: Float = 0.0f
-        var currentFrame: Float  = 0.0f
+        var currentFrame: Int    = 0
 
         // 0 = forward, 1 = backward, 2 = ping pong, 3 = smooth ping pong
         direction match
@@ -66,48 +90,32 @@ object Clip:
 
           case 1 =>
             clipTotalTime = env.CLIP_SHEET_FRAME_COUNT * env.CLIP_SHEET_FRAME_DURATION
-            currentFrame = calcCurrentFrame(clipTotalTime)
-            currentFrame = env.CLIP_SHEET_FRAME_COUNT - 1.0f - currentFrame
+            currentFrame = frameCount - 1 - calcCurrentFrame(clipTotalTime)
 
           case 2 =>
             clipTotalTime = (env.CLIP_SHEET_FRAME_COUNT + env.CLIP_SHEET_FRAME_COUNT) * env.CLIP_SHEET_FRAME_DURATION
             currentFrame = calcCurrentFrame(clipTotalTime)
 
-            if currentFrame >= env.CLIP_SHEET_FRAME_COUNT then
-              currentFrame = (env.CLIP_SHEET_FRAME_COUNT * 2.0f) - 1.0f - currentFrame
+            if currentFrame >= frameCount then currentFrame = (frameCount * 2) - 1 - currentFrame
 
           case 3 =>
             clipTotalTime =
               (env.CLIP_SHEET_FRAME_COUNT + (env.CLIP_SHEET_FRAME_COUNT - 2.0f)) * env.CLIP_SHEET_FRAME_DURATION
             currentFrame = calcCurrentFrame(clipTotalTime)
 
-            if currentFrame >= env.CLIP_SHEET_FRAME_COUNT then
-              currentFrame = (env.CLIP_SHEET_FRAME_COUNT * 2.0f) - 1.0f - (currentFrame + 1.0f)
+            if currentFrame >= frameCount then currentFrame = (frameCount * 2) - 2 - currentFrame
 
           case _ =>
             clipTotalTime = 0.0f
-            currentFrame = 0.0f
+            currentFrame = 0
 
-        var x: Float = 0.0f
-        var y: Float = 0.0f
+        val frame: Int = currentFrame + round(env.CLIP_SHEET_START_OFFSET).toInt
 
-        val arrangement: Int = round(env.CLIP_SHEET_ARRANGEMENT).toInt
-
-        // 0 = horizontal, 1 = vertical
-        arrangement match
-          case 0 =>
-            x = mod(currentFrame, env.CLIP_SHEET_WRAP_AT)
-            y = floor(currentFrame / env.CLIP_SHEET_WRAP_AT)
-
-          case 1 =>
-            x = floor(currentFrame / env.CLIP_SHEET_WRAP_AT)
-            y = mod(currentFrame, env.CLIP_SHEET_WRAP_AT)
-
-          case _ =>
-            x = 0.0
-            y = 0.0
-
-        env.UV = env.UV + vec2(x, y);
+        env.UV = env.UV + _frameToSheetCell(
+          frame,
+          round(env.CLIP_SHEET_WRAP_AT).toInt,
+          round(env.CLIP_SHEET_ARRANGEMENT).toInt
+        )
         v
       }
     }
