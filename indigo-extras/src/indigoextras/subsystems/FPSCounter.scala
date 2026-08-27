@@ -1,6 +1,7 @@
 package indigoextras.subsystems
 
 import indigo.core.Outcome
+import indigo.core.assets.AssetName
 import indigo.core.datatypes.Fill
 import indigo.core.datatypes.FontKey
 import indigo.core.datatypes.LayerKey
@@ -190,6 +191,30 @@ object FPSCounter:
       material: RGBA => Material
   ): FPSCounter[Model] =
     FPSCounter(id, defaultPlaceFunction, defaultThresholds, layerKey, fontKey, material)
+
+  /** Build an `FPSCounter` that uses a `Material.ImageEffects` to tint any provided font asset with the appropriate
+    * threshold colour.
+    */
+  def tint[Model](
+      layerKey: LayerKey,
+      fontKey: FontKey,
+      fontAsset: AssetName
+  ): FPSCounter[Model] =
+    FPSCounter(
+      layerKey,
+      fontKey,
+      colour => Material.ImageEffects.tint(fontAsset, colour)
+    )
+
+  /** Alias for the `FPSCounter.tint` constructor. Replicates the classic FPSCounter behaviour where you need only
+    * supply a font asset name, not a way to construct the material.
+    */
+  def classic[Model](
+      layerKey: LayerKey,
+      fontKey: FontKey,
+      fontAsset: AssetName
+  ): FPSCounter[Model] =
+    tint(layerKey, fontKey, fontAsset)
 
   final case class Move(to: Point) extends GlobalEvent
 
