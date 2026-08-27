@@ -50,6 +50,11 @@ final case class ProceduralShader(
             ShaderAST.CallFunction(to, args, returnType)
         }
 
+        // Every `%` in the AST is an integer modulus - float modulus is emitted as a call to `mod`.
+        case ProgramTransformer.ExpandIntegerModulus => { case ShaderAST.Infix("%", l, r, rt) =>
+          ShaderAST.Infix("-", l, ShaderAST.Infix("*", r, ShaderAST.Infix("/", l, r, rt), rt), rt)
+        }
+
         case ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation) => {
           case fn @ ShaderAST.Function(
                 fnName,

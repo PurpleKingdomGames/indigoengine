@@ -9,6 +9,20 @@ trait ShaderMacroUtils:
   val isSwizzleable                             = "^(vec2|vec3|vec4|bvec2|bvec3|bvec4|ivec2|ivec3|ivec4)$".r
   def isGLSLReservedWord(word: String): Boolean = allReservedWords.contains(word)
 
+  val intTypes: Set[String]   = Set("int", "ivec2", "ivec3", "ivec4")
+  val floatTypes: Set[String] = Set("float", "vec2", "vec3", "vec4", "mat2", "mat3", "mat4")
+
+  /** GLSL has no implicit conversion between integer and floating point types, so an operator with one of each can
+    * never be translated. Types we do not model - anything that isn't in the two sets above - are left alone.
+    */
+  def isMixedNumericOperands(lhsType: String, rhsType: String): Boolean =
+    (intTypes.contains(lhsType) && floatTypes.contains(rhsType)) ||
+      (floatTypes.contains(lhsType) && intTypes.contains(rhsType))
+
+  def mixedNumericOperandsMsg(op: String, lhsType: String, rhsType: String): String =
+    s"Shaders do not support mixing integer and floating point types, found '$lhsType $op $rhsType'. " +
+      "GLSL requires both operands to share a base type, so please cast one of them, e.g. 'a.toFloat * b'."
+
   def findReturnType: ShaderAST => ShaderAST =
     case v: ShaderAST.Empty  => ShaderAST.void
     case v: ShaderAST.Block  => v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.void)

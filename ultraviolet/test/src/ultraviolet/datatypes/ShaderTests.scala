@@ -208,7 +208,7 @@ class ShaderTests extends munit.FunSuite {
     case class UBO1(UV: vec2)
 
     inline def f: vec4 => Float  = _.x
-    inline def g: Float => Float = _ * 20
+    inline def g: Float => Float = _ * 20.0f
 
     inline def shader: Shader[UBO1, Float] =
       Shader[UBO1, vec4] { env =>
@@ -237,7 +237,7 @@ class ShaderTests extends munit.FunSuite {
       actualCode,
       s"""
       |float def1(in float val0){
-      |  return val0*20;
+      |  return val0*20.0;
       |}
       |float def2(in vec4 val1){
       |  return val1.x;
