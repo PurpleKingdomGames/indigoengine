@@ -115,7 +115,16 @@ object ClipScene extends Scene[SandboxGameModel]:
               label("Start after 5 seconds").moveTo(224 + 96 + 2, 0),
               label("Play 9 times and stop").moveTo(224 + 96 + 2, 10),
               label("Half speed").moveTo(224 + 96 + 2, 20),
-              label("First frame is white").moveTo(224 + 96 + 2, 30)
+              label("First frame is white").moveTo(224 + 96 + 2, 30),
+              // A 7 column sheet is the width that exposes inexact float division on some drivers.
+              Clip(
+                Point(128, 96),
+                Size(96, 96),
+                ClipSheet(21, FPS(8), 7),
+                SandboxAssets.captainMaterial
+              ),
+              Shape.Box(Rectangle(Point.zero, Size(96)), Fill.None, Stroke(1, RGBA.Magenta)).moveTo(Point(128, 96)),
+              label("7 wide, must not skip").moveTo(128, 96 + 96)
             ) ++
             makeDudeAnim(CycleLabel("walk right"), Point(200, 200), model.dude.dude.clips) ++
             makeDudeAnim(CycleLabel("walk left"), Point(232, 200), model.dude.dude.clips) ++
