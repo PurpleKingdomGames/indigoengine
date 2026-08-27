@@ -72,12 +72,11 @@ object Clip:
       }
 
       def vertex(v: vec4): vec4 = {
+        val frameCount: Int = max(round(env.CLIP_SHEET_FRAME_COUNT).toInt, 1)
         val direction: Int =
           val d = round(env.CLIP_PLAY_DIRECTION).toInt
           // Can't ping pong if there aren't enough frames.
-          if d >= 2 && env.CLIP_SHEET_FRAME_COUNT.toInt <= 2 then 1 else d
-
-        val frameCount: Int = max(round(env.CLIP_SHEET_FRAME_COUNT).toInt, 1)
+          if d >= 2 && frameCount <= 2 then 1 else d
 
         var clipTotalTime: Float = 0.0f
         var currentFrame: Int    = 0
