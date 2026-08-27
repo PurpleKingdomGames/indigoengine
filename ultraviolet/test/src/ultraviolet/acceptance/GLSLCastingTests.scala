@@ -17,7 +17,7 @@ class GLSLCastingTests extends munit.FunSuite {
         val zz = y.toInt
         val w1 = 2
         val w2 = (1 + w1).toFloat
-        x + y
+        x.toFloat + y
       }
 
     val actual =
@@ -34,7 +34,7 @@ class GLSLCastingTests extends munit.FunSuite {
       |int zz=int(y);
       |int w1=2;
       |float w2=float(1+w1);
-      |x+y;
+      |float(x)+y;
       |""".stripMargin.trim
     )
   }

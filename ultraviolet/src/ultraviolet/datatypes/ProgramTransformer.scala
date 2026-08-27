@@ -35,6 +35,12 @@ enum ProgramTransformer derives CanEqual:
     */
   case StripUBOPrecisionQualifiers
 
+  /** Rewrite integer modulus `a % b` as `a - b * (a / b)`. GLSL ES 1.00 reserves the `%` operator but does not
+    * implement it, and `mod` is float only. Integer division truncates towards zero in GLSL, just as it does in Scala,
+    * so the two forms agree.
+    */
+  case ExpandIntegerModulus
+
 object ProgramTransformer:
 
   given ToExpr[ProgramTransformer] with {
@@ -68,6 +74,9 @@ object ProgramTransformer:
 
         case ProgramTransformer.StripUBOPrecisionQualifiers =>
           '{ ProgramTransformer.StripUBOPrecisionQualifiers }
+
+        case ProgramTransformer.ExpandIntegerModulus =>
+          '{ ProgramTransformer.ExpandIntegerModulus }
   }
 
   given FromExpr[ProgramTransformer] with
@@ -127,6 +136,12 @@ object ProgramTransformer:
         case Ident("StripUBOPrecisionQualifiers") =>
           Some(ProgramTransformer.StripUBOPrecisionQualifiers)
 
+        case Select(Ident("ProgramTransformer"), "ExpandIntegerModulus") =>
+          Some(ProgramTransformer.ExpandIntegerModulus)
+
+        case Ident("ExpandIntegerModulus") =>
+          Some(ProgramTransformer.ExpandIntegerModulus)
+
         case e =>
           report.errorAndAbort(s"[Ultraviolet macro error, please report.] ProgramTransformer after unwrap expr:\n${e
               .show(using Printer.TreeStructure)}")
@@ -135,7 +150,8 @@ object ProgramTransformer:
   inline def GLSL_100: List[ProgramTransformer] =
     List(
       ProgramTransformer.RenameAnnotation("in", "varying"),
-      ProgramTransformer.RenameAnnotation("out", "varying")
+      ProgramTransformer.RenameAnnotation("out", "varying"),
+      ProgramTransformer.ExpandIntegerModulus
     )
 
   inline def GLSL_300: List[ProgramTransformer] =

@@ -28,48 +28,61 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case l =>
         throw ShaderError.Unsupported(s"Swizzle of length $l found, which is greater than the max length of 4.")
 
-  def extractInferredType(typ: TypeTree): String =
-    def mapName(name: String): String =
-      Option(name)
-        .map {
-          case "Boolean"      => "bool"
-          case "Float"        => "float"
-          case "Int"          => "int"
-          case "vec2"         => "vec2"
-          case "vec3"         => "vec3"
-          case "vec4"         => "vec4"
-          case "bvec2"        => "bvec2"
-          case "bvec3"        => "bvec3"
-          case "bvec4"        => "bvec4"
-          case "ivec2"        => "ivec2"
-          case "ivec3"        => "ivec3"
-          case "ivec4"        => "ivec4"
-          case "mat2"         => "mat2"
-          case "mat3"         => "mat3"
-          case "mat4"         => "mat4"
-          case "sampler2D$"   => "sampler2D"
-          case "samplerCube$" => "samplerCube"
-          case n              => n
-        }
-        .filterNot {
-          case "Unit" | "array" | "Any" =>
-            true
-          case n if n.startsWith("Function") =>
-            true
-          case _ =>
-            false
-        }
-        .getOrElse("void")
+  def mapTypeName(name: String): String =
+    Option(name)
+      .map {
+        case "Boolean"      => "bool"
+        case "Float"        => "float"
+        case "Int"          => "int"
+        case "vec2"         => "vec2"
+        case "vec3"         => "vec3"
+        case "vec4"         => "vec4"
+        case "bvec2"        => "bvec2"
+        case "bvec3"        => "bvec3"
+        case "bvec4"        => "bvec4"
+        case "ivec2"        => "ivec2"
+        case "ivec3"        => "ivec3"
+        case "ivec4"        => "ivec4"
+        case "mat2"         => "mat2"
+        case "mat3"         => "mat3"
+        case "mat4"         => "mat4"
+        case "sampler2D$"   => "sampler2D"
+        case "samplerCube$" => "samplerCube"
+        case n              => n
+      }
+      .filterNot {
+        case "Unit" | "array" | "Any" =>
+          true
+        case n if n.startsWith("Function") =>
+          true
+        case _ =>
+          false
+      }
+      .getOrElse("void")
 
+  /** The GLSL type name of a term, based on its Scala type. Unlike `ShaderAST.typeIdent`, this can see through a plain
+    * identifier to the type of the thing it refers to.
+    */
+  def extractInferredTypeOfTerm(term: Term): String =
+    mapTypeName(term.tpe.widen.classSymbol.map(_.name).getOrElse("void"))
+
+  def checkOperandTypes(op: String, lhsTerm: Term, rhsTerm: Option[Term]): Unit =
+    val lhsType = extractInferredTypeOfTerm(lhsTerm)
+    val rhsType = rhsTerm.map(extractInferredTypeOfTerm).getOrElse("void")
+
+    if isMixedNumericOperands(lhsType, rhsType) then
+      throw ShaderError.Unsupported(mixedNumericOperandsMsg(op, lhsType, rhsType))
+
+  def extractInferredType(typ: TypeTree): String =
     typ match
       case Applied(TypeIdent("array"), List(Singleton(Literal(IntConstant(size))), TypeIdent(typeName))) =>
-        mapName(typeName) + s"[${size.toString()}]"
+        mapTypeName(typeName) + s"[${size.toString()}]"
 
       case Applied(TypeIdent("array"), List(Singleton(Ident(varName)), TypeIdent(typeName))) =>
-        mapName(typeName) + s"[$varName]"
+        mapTypeName(typeName) + s"[$varName]"
 
       case _ =>
-        val res = mapName(typ.tpe.classSymbol.map(_.name).getOrElse("void"))
+        val res = mapTypeName(typ.tpe.classSymbol.map(_.name).getOrElse("void"))
 
         res match
           case "void" =>
@@ -78,7 +91,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             if typ.tpe.show.contains("Shader") then
               typ.tpe.typeArgs.lastOption match
                 case Some(TypeRef(_, value)) =>
-                  mapName(value)
+                  mapTypeName(value)
 
                 case _ =>
                   res
@@ -522,6 +535,35 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case x =>
         val sample = Printer.TreeStructure.show(x).take(100)
         throw ShaderError.UnexpectedConstruction("Unexpected Tree: " + sample + "(..)")
+
+  /** GLSL's `mod` is float only, integers must use the `%` operator. The ShaderAST cannot type a bare identifier - it
+    * reports the variable's name rather than its type - so the operands' Scala types are the reliable signal here, with
+    * the AST as a fallback for anything they cannot resolve.
+    */
+  def walkModulus(lhsTerm: Term, rhsTerm: Option[Term], envVarName: Option[String]): ShaderAST =
+    val lhs = walkTerm(lhsTerm, envVarName)
+    val rhs = rhsTerm.map(t => walkTerm(t, envVarName)).getOrElse(ShaderAST.Empty())
+
+    checkOperandTypes("%", lhsTerm, rhsTerm)
+
+    val inferred = extractInferredTypeOfTerm(lhsTerm)
+
+    val rt =
+      if inferred == "void" then findReturnType(lhs)
+      else ShaderAST.DataTypes.ident(inferred)
+
+    val isInt =
+      inferred == "int" ||
+        rhsTerm.exists(t => extractInferredTypeOfTerm(t) == "int") ||
+        List(lhs.typeIdent, rhs.typeIdent, rt.typeIdent).map(_.id).contains("int")
+
+    if isInt then ShaderAST.Infix("%", lhs, rhs, rt)
+    else
+      ShaderAST.CallFunction(
+        "mod",
+        List(lhs, rhs),
+        rt
+      )
 
   def walkTerm(t: Term, envVarName: Option[String]): ShaderAST =
     t match
@@ -1266,6 +1308,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             val lhs = walkTerm(term, envVarName)
             val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
             val rt  = findReturnType(lhs)
+
+            checkOperandTypes(op, term, xs.headOption)
+
             ShaderAST.Infix(op, lhs, rhs, rt)
 
           case "&&" | "||" =>
@@ -1276,19 +1321,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             ShaderAST.Infix(op, lhs, rhs, rt)
 
           case "%" =>
-            val lhs = walkTerm(term, envVarName)
-            val rhs = xs.headOption.map(tt => walkTerm(tt, envVarName)).getOrElse(ShaderAST.Empty())
-            val rt  = findReturnType(lhs)
-
-            val isInt = List(lhs.typeIdent, rhs.typeIdent, rt.typeIdent).map(_.id).contains("int")
-
-            if isInt then ShaderAST.Infix("%", lhs, rhs, rt)
-            else
-              ShaderAST.CallFunction(
-                "mod",
-                List(lhs, rhs),
-                rt
-              )
+            walkModulus(term, xs.headOption, envVarName)
 
           case "<<" | ">>" | "&" | "^" | "|" =>
             // Bitwise ops
@@ -1365,6 +1398,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             val lhs = walkTerm(l, envVarName)
             val rhs = walkTerm(r, envVarName)
             val rt  = findReturnType(lhs)
+
+            checkOperandTypes(op, l, Some(r))
+
             ShaderAST.Infix(op, lhs, rhs, rt)
 
           case "&&" | "||" =>
@@ -1375,19 +1411,7 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
             ShaderAST.Infix(op, lhs, rhs, rt)
 
           case "%" =>
-            val lhs = walkTerm(l, envVarName)
-            val rhs = walkTerm(r, envVarName)
-            val rt  = findReturnType(lhs)
-
-            val isInt = List(lhs.typeIdent, rhs.typeIdent, rt.typeIdent).map(_.id).contains("int")
-
-            if isInt then ShaderAST.Infix("%", lhs, rhs, rt)
-            else
-              ShaderAST.CallFunction(
-                "mod",
-                List(lhs, rhs),
-                rt
-              )
+            walkModulus(l, Some(r), envVarName)
 
           case "<<" | ">>" | "&" | "^" | "|" =>
             // Bitwise ops
