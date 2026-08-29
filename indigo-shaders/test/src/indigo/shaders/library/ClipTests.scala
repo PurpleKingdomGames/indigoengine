@@ -7,8 +7,16 @@ class ClipTests extends munit.FunSuite {
 
   // Mirrors the cpu-side mapping in indigo.scenegraph.Clip.toGraphic
   def expectedCell(frame: Int, wrapAt: Int, arrangement: Int): vec2 =
-    if arrangement == 1 then vec2((frame / wrapAt).toFloat, (frame % wrapAt).toFloat)
-    else vec2((frame % wrapAt).toFloat, (frame / wrapAt).toFloat)
+    if arrangement == 1 then
+      vec2(
+        (frame / wrapAt).toFloat,
+        (frame % wrapAt).toFloat
+      )
+    else
+      vec2(
+        (frame % wrapAt).toFloat,
+        (frame / wrapAt).toFloat
+      )
 
   test("frameToSheetCell agrees with the cpu-side mapping for all sheet widths") {
     for
