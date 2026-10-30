@@ -28,7 +28,7 @@ import ultraviolet.datatypes.ShaderAST.While
 
 import scala.annotation.tailrec
 
-object ShaderProgramValidation:
+object ShaderProgramValidation extends ShaderMacroUtils:
 
   val ErrorMsgNestedFunction: String =
     "It is not permitted to nest named functions, however, you can declare nested anonymous functions."
@@ -38,6 +38,22 @@ object ShaderProgramValidation:
 
   private def mustBeConstantMsg(name: String): String =
     s"${name} is a top level variable, and so must be a constant value or null."
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private def validateIdentifier(name: String): Unit =
+    if isGLSLReservedWord(name) then throw ShaderError.GLSLReservedWord(name)
+
+  def validateAnnotatedDeclaration(ast: ShaderAST): ShaderAST = {
+    @tailrec
+    def rec(value: ShaderAST): Unit =
+      value match
+        case Annotated(_, _, inner) => rec(inner)
+        case Val(id, _, _)          => validateIdentifier(id)
+        case _                      => ()
+
+    rec(ast)
+    ast
+  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def validate(level: Int, knownRefs: List[String]): ShaderAST => ShaderAST = {
@@ -56,8 +72,8 @@ object ShaderProgramValidation:
     case ast @ UBO(uboDef) =>
       ast
 
-    case ast @ Struct(name, members) =>
-      ast
+    case Struct(name, members) =>
+      Struct(name, members.map(validate(level + 1, knownRefs)))
 
     case ast @ New(name, args) =>
       ast
@@ -66,6 +82,8 @@ object ShaderProgramValidation:
       ShaderBlock(inType, outType, envVarName, validateStatementBlock(statements, level, knownRefs))
 
     case ShaderAST.Function(id, args, body, returnType) =>
+      validateIdentifier(id)
+
       // Should not contain function
       body.find {
         case ShaderAST.Function(_, _, _, _) => true
@@ -134,6 +152,8 @@ object ShaderProgramValidation:
       Switch(validate(level + 1, knownRefs)(on), cases.map(c => c._1 -> validate(level + 1, knownRefs)(c._2)))
 
     case Val(id, value, typeOf) =>
+      validateIdentifier(id)
+
       if level == 0 then
         value.find {
           case ShaderAST.Function(_, _, _, _)                         => true
@@ -154,6 +174,8 @@ object ShaderProgramValidation:
     case MultiStatements(typeOf, vals) =>
       val vs = vals.map {
         case Val(id, value, typeOf_) =>
+          validateIdentifier(id)
+
           if typeOf_ != typeOf then
             throw ShaderError.Validation(s"Type mismatch for ${id}. Expected ${typeOf}, found ${typeOf_}")
           if level == 0 then

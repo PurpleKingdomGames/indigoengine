@@ -8,6 +8,22 @@ import scala.annotation.nowarn
 @nowarn("msg=unused")
 class GLSLAnnotationTests extends munit.FunSuite {
 
+  test("GLSL reserved words cannot be used for annotated variables") {
+    val errors =
+      compileErrors(
+        """{
+  inline def fragment =
+    Shader {
+      @uniform val switch: Float = 0.0f
+    }
+
+  fragment.toGLSL300.code
+}"""
+      )
+
+    assert(errors.contains("'switch' is a reserved word in GLSL, please choose a different name."), errors)
+  }
+
   test("Annotated variables render correctly") {
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
