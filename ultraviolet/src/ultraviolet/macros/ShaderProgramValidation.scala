@@ -43,6 +43,18 @@ object ShaderProgramValidation extends ShaderMacroUtils:
   private def validateIdentifier(name: String): Unit =
     if isGLSLReservedWord(name) then throw ShaderError.GLSLReservedWord(name)
 
+  def validateAnnotatedDeclaration(ast: ShaderAST): ShaderAST = {
+    @tailrec
+    def rec(value: ShaderAST): Unit =
+      value match
+        case Annotated(_, _, inner) => rec(inner)
+        case Val(id, _, _)          => validateIdentifier(id)
+        case _                      => ()
+
+    rec(ast)
+    ast
+  }
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def validate(level: Int, knownRefs: List[String]): ShaderAST => ShaderAST = {
     case ast @ Empty() =>
@@ -60,8 +72,8 @@ object ShaderProgramValidation extends ShaderMacroUtils:
     case ast @ UBO(uboDef) =>
       ast
 
-    case ast @ Struct(name, members) =>
-      ast
+    case Struct(name, members) =>
+      Struct(name, members.map(validate(level + 1, knownRefs)))
 
     case ast @ New(name, args) =>
       ast

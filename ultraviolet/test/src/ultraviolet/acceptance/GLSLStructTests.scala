@@ -8,6 +8,22 @@ import scala.annotation.nowarn
 @nowarn("msg=unused")
 class GLSLStructTests extends munit.FunSuite {
 
+  test("GLSL reserved words cannot be used for struct members") {
+    val errors =
+      compileErrors(
+        """{
+  inline def fragment =
+    Shader[Unit, Unit] { _ =>
+      class Light(val switch: Float)
+    }
+
+  fragment.toGLSL300.code
+}"""
+      )
+
+    assert(errors.contains("'switch' is a reserved word in GLSL, please choose a different name."), errors)
+  }
+
   test("structs can be declared and used") {
 
     inline def fragment =

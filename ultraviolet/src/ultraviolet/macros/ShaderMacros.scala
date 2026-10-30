@@ -146,7 +146,7 @@ object ShaderMacros:
         ProceduralShader(
           ShaderProgramValidation.validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
           createAST.uboRegister.toList,
-          annotations,
+          annotations.map(ShaderProgramValidation.validateAnnotatedDeclaration),
           ShaderProgramValidation.validate(
             0,
             ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs
