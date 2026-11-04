@@ -25,7 +25,7 @@ final case class NamedAttribute(name: String) extends Attr[Nothing]:
 final case class Attribute(name: String, value: String) extends Attr[Nothing]:
   def map[N](f: Nothing => N): Attribute = this
 object Attribute:
-  val empty: Attribute = Attribute("", "")
+  val empty: Attribute                           = Attribute("", "")
   def fromString(str: String): Option[Attribute] =
     str.split("=").toList match
       case name :: value :: Nil  => Some(Attribute(name, value))

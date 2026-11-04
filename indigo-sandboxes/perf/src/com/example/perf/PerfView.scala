@@ -42,7 +42,7 @@ object PerfView {
             case Nil =>
               rec(r, batchSize, batchNumber + 1, acc)
 
-            case p :: ps =>
+            case ps =>
               rec(
                 r,
                 batchSize,

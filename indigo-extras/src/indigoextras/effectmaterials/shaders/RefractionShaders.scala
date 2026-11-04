@@ -95,7 +95,7 @@ object RefractionShaders:
           env.NINE_SLICE_CENTER
         )
 
-        val redGreen = vec3(env.CHANNEL_0.xy, 0.0f)
+        val redGreen     = vec3(env.CHANNEL_0.xy, 0.0f)
         val alpha: Float =
           if abs(redGreen.x - 0.5f) < 0.01f && abs(redGreen.y - 0.5f) < 0.01f then 0.0f
           else max(redGreen.x, redGreen.y)

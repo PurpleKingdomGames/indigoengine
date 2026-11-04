@@ -112,7 +112,7 @@ class LayerTests extends munit.FunSuite {
       Layer.Content.empty.withCamera(Camera.Fixed(Point(1)))
     )
 
-    val actual = l.modify { case l: Layer.Content => l.withCamera(Camera.Fixed(Point(2))) }
+    val actual   = l.modify { case l: Layer.Content => l.withCamera(Camera.Fixed(Point(2))) }
     val expected = Layer.Stack(
       Layer.Stack(
         Layer.Content.empty.withCamera(Camera.Fixed(Point(2))),

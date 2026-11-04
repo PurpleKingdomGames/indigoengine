@@ -58,10 +58,10 @@ final case class HSVA(h: Double, s: Double, v: Double, a: Double) derives CanEqu
 
   /** Convert to RGBA */
   def toRGBA: RGBA =
-    val c      = v * s
-    val hPrime = ((h % 360) + 360) % 360 / 60.0
-    val x      = c * (1.0 - Math.abs((hPrime % 2) - 1.0))
-    val m      = v - c
+    val c            = v * s
+    val hPrime       = ((h % 360) + 360) % 360 / 60.0
+    val x            = c * (1.0 - Math.abs((hPrime % 2) - 1.0))
+    val m            = v - c
     val (r1, g1, b1) =
       if hPrime < 1 then (c, x, 0.0)
       else if hPrime < 2 then (x, c, 0.0)

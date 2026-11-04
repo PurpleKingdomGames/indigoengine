@@ -154,7 +154,7 @@ object SceneUpdateFragment:
     layerToMerge match
       case LayerEntry(t, l, cfgB) if existingLayers.exists(_.hasKey(t)) =>
         existingLayers.map {
-          case x @ LayerEntry(k, ll, cfgA) if t == k =>
+          case LayerEntry(k, ll, cfgA) if t == k =>
             val newLayer =
               (ll, l) match
                 case (a: Layer.Stack, b: Layer.Content) =>

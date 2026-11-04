@@ -21,7 +21,6 @@ class sdfTests extends munit.FunSuite {
   test("Box SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, vec2) => Float = (p, b) => box(p, b)
@@ -52,7 +51,6 @@ class sdfTests extends munit.FunSuite {
   test("Circle SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, Float) => Float = (p, r) => circle(p, r)
@@ -82,7 +80,6 @@ class sdfTests extends munit.FunSuite {
   test("Hexagon SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, Float) => Float = (p, r) => hexagon(p, r)
@@ -116,7 +113,6 @@ class sdfTests extends munit.FunSuite {
   test("Segment SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, vec2, vec2) => Float = (p, a, b) => segment(p, a, b)
@@ -149,7 +145,6 @@ class sdfTests extends munit.FunSuite {
   test("Star with five points SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, Float, Float) => Float = (p, r, rf) => star(p, r, rf)
@@ -187,7 +182,6 @@ class sdfTests extends munit.FunSuite {
   test("Triangle SDF acceptance test") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.sdf.*
 
         def proxy: (vec2, Float) => Float = (p, r) => triangle(p, r)

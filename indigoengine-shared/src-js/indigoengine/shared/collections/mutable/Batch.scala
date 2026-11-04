@@ -159,7 +159,7 @@ final class Batch[A] private (private val _underlying: js.Array[A]) extends Batc
   def toArray[B >: A](using ev: scala.reflect.ClassTag[B]): Array[B] =
     _underlying.toArray
 
-  def toMap[K, V](using x$1: A <:< (K, V)): Map[K, V] =
+  def toMap[K, V](using A <:< (K, V)): Map[K, V] =
     _underlying.toMap
 
   def toSet[B >: A]: Set[B] =

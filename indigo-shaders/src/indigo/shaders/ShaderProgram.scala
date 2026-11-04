@@ -56,7 +56,7 @@ object UltravioletShader:
     )
 
 sealed trait EntityShader extends ShaderProgram
-object EntityShader extends BaseEntityShader:
+object EntityShader       extends BaseEntityShader:
 
   final case class Source(
       id: ShaderId,
@@ -135,7 +135,7 @@ object EntityShader extends BaseEntityShader:
       )
 
 sealed trait BlendShader extends ShaderProgram
-object BlendShader extends BaseBlendShader:
+object BlendShader       extends BaseBlendShader:
 
   final case class Source(
       id: ShaderId,

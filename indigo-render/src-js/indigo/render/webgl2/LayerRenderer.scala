@@ -493,7 +493,7 @@ class LayerRenderer(
 
             if c.id.toString != currentCloneId.toString then
               cloneBlankDisplayObjects.get(c.id.toString) match
-                case None => ()
+                case None    => ()
                 case Some(d) =>
                   currentCloneId = c.id
                   currentCloneRef = d
@@ -531,7 +531,7 @@ class LayerRenderer(
 
             if c.id.toString != currentCloneId.toString then
               cloneBlankDisplayObjects.get(c.id.toString) match
-                case None => ()
+                case None    => ()
                 case Some(d) =>
                   currentCloneId = c.id
                   currentCloneRef = d
@@ -568,7 +568,7 @@ class LayerRenderer(
 
             if c.id.toString != currentCloneId.toString then
               cloneBlankDisplayObjects.get(c.id.toString) match
-                case None => ()
+                case None    => ()
                 case Some(d) =>
                   currentCloneId = c.id
                   currentCloneRef = d
@@ -600,7 +600,7 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var currentRefUBOHash: Int = -1
+  private var currentRefUBOHash: Int                              = -1
   private def uploadRefUBO(refDisplayObject: DisplayObject): Unit =
     val code = refDisplayObject.hashCode
     if currentRefUBOHash == code then ()
@@ -753,7 +753,7 @@ class LayerRenderer(
                 val blockIndex: Double =
                   blockIndexLookup.get(blockName) match
                     case Some(idx) => idx
-                    case None =>
+                    case None      =>
                       val idx = gl2.getUniformBlockIndex(activeShader, blockName)
                       blockIndexLookup.update(blockName, idx)
                       idx

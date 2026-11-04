@@ -175,8 +175,8 @@ final case class Clip[M <: Material](
     toGraphic(0)
 
   def toGraphic(frameNumber: Int): Graphic[M] =
-    val num   = Math.min(sheet.frameCount - 1, Math.max(0, frameNumber))
-    val frame = num + sheet.startOffset
+    val num                 = Math.min(sheet.frameCount - 1, Math.max(0, frameNumber))
+    val frame               = num + sheet.startOffset
     def framePositon: Point =
       sheet.arrangement match
         case ClipSheetArrangement.Horizontal =>
@@ -494,13 +494,13 @@ enum ClipPlayMode derives CanEqual:
 
   def forwards: ClipPlayMode =
     this match
-      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Forward)
+      case _: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Forward)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Forward, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Forward, x.startTime, x.times)
 
   def backwards: ClipPlayMode =
     this match
-      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Backward)
+      case _: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Backward)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Backward, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Backward, x.startTime, x.times)
 
@@ -512,13 +512,13 @@ enum ClipPlayMode derives CanEqual:
 
   def pingPong: ClipPlayMode =
     this match
-      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.PingPong)
+      case _: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.PingPong)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.PingPong, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.PingPong, x.startTime, x.times)
 
   def smoothPingPong: ClipPlayMode =
     this match
-      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.SmoothPingPong)
+      case _: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.SmoothPingPong)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.SmoothPingPong, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.SmoothPingPong, x.startTime, x.times)
 

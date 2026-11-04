@@ -30,7 +30,7 @@ object FontLayout {
     def withCellSize(square: Int): FontLayout.Monospace =
       this.copy(cellWidth = square, cellHeight = square)
 
-    val fontSheetWidth: Int = maxCharactersPerLine * cellWidth
+    val fontSheetWidth: Int                  = maxCharactersPerLine * cellWidth
     def fontSheetHeight(charCount: Int): Int = {
       val lines = charCount / maxCharactersPerLine
       val extra = if (charCount % maxCharactersPerLine == 0) 0 else 1
@@ -53,7 +53,7 @@ object FontLayout {
     def withCellSize(square: Int): FontLayout.IndexedGrid =
       this.copy(cellWidth = square, cellHeight = square)
 
-    val fontSheetWidth: Int = maxCharactersPerLine * cellWidth
+    val fontSheetWidth: Int                        = maxCharactersPerLine * cellWidth
     def fontSheetHeight(charCodes: List[Int]): Int = {
       val lines = charCodes.max / maxCharactersPerLine
       val extra = if (charCodes.max % maxCharactersPerLine == 0) 0 else 1

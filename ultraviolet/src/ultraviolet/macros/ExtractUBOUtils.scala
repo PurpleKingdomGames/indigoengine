@@ -199,7 +199,7 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
       case Block(List(DefDef(_, _, _, _)), _) =>
         Nil
 
-      case Block(ss, t) =>
+      case Block(_, t) =>
         findTermsOf(ident)(t)
 
       case Ident(_) =>
@@ -214,7 +214,7 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
       case Typed(t, _) =>
         findTermsOf(ident)(t)
 
-      case TypeApply(t, ts) =>
+      case TypeApply(t, _) =>
         findTermsOf(ident)(t)
 
       case _ =>
@@ -252,7 +252,7 @@ class ExtractUBOUtils[Q <: Quotes](using val qq: Q):
       case Typed(term, _) =>
         walkUBOTerm(term)
 
-      case TypeApply(term, trees) =>
+      case TypeApply(term, _) =>
         walkUBOTerm(term)
 
       case Select(term, _) =>

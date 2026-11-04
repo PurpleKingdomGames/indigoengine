@@ -258,7 +258,7 @@ object ScrollPane:
 
           case move: PointerEvent.Move if scrollBarHit(move) =>
             for {
-              updatedContent <- updateContentWith(Batch(PointerRouting.leaveFrom(move)))
+              updatedContent   <- updateContentWith(Batch(PointerRouting.leaveFrom(move)))
               updatedScrollBar <-
                 if scrollingActive then updateScrollBarWith(Batch(PointerRouting.enterFrom(move), move))
                 else Outcome(model.scrollBar)
@@ -269,7 +269,7 @@ object ScrollPane:
 
           case move: PointerEvent.Move =>
             for {
-              updatedContent <- routeContent(move)
+              updatedContent   <- routeContent(move)
               updatedScrollBar <-
                 if scrollingActive then updateScrollBarWith(Batch(PointerRouting.leaveFrom(move), move))
                 else Outcome(model.scrollBar)
@@ -374,7 +374,7 @@ object ScrollPane:
         if scrollingActive then
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
           val unitContext: UIContext[Unit]     = scrollBarPresentContext(ctx, model)
-          val scrollbar =
+          val scrollbar                        =
             c.present(
               unitContext,
               model.scrollBar

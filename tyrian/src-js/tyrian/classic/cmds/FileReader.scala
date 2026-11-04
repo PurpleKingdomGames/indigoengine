@@ -17,22 +17,22 @@ import scala.scalajs.js.typedarray
 object FileReader:
 
   private val readImageCast: Result[js.Any] => Result[String] =
-    case Result.Error(msg)  => Result.Error(msg)
-    case Result.NoFile(msg) => Result.NoFile(msg)
+    case Result.Error(msg)    => Result.Error(msg)
+    case Result.NoFile(msg)   => Result.NoFile(msg)
     case Result.File(n, p, d) =>
       try Result.File(n, p, d.asInstanceOf[String])
       catch case _ => Result.Error("File is not a base64 string of image data")
 
   private val readTextCast: Result[js.Any] => Result[String] =
-    case Result.Error(msg)  => Result.Error(msg)
-    case Result.NoFile(msg) => Result.NoFile(msg)
+    case Result.Error(msg)    => Result.Error(msg)
+    case Result.NoFile(msg)   => Result.NoFile(msg)
     case Result.File(n, p, d) =>
       try Result.File(n, p, d.asInstanceOf[String])
       catch case _ => Result.Error("File is not text")
 
   private val readBytesCast: Result[js.Any] => Result[IArray[Byte]] =
-    case Result.Error(msg)  => Result.Error(msg)
-    case Result.NoFile(msg) => Result.NoFile(msg)
+    case Result.Error(msg)    => Result.Error(msg)
+    case Result.NoFile(msg)   => Result.NoFile(msg)
     case Result.File(n, p, d) =>
       try Result.File(n, p, IArray.from(new typedarray.Int8Array(d.asInstanceOf[typedarray.ArrayBuffer])))
       catch case _ => Result.Error("Could not cast loaded file data to byte array")
@@ -68,7 +68,7 @@ object FileReader:
       resultToMessage: Result[js.Any] => Msg
   ): Cmd[F, Msg] =
     val task: F[Result[js.Any]] = maybeGetFile.flatMap {
-      case None => Result.NoFile("No files on specified input").pure[F]
+      case None       => Result.NoFile("No files on specified input").pure[F]
       case Some(file) =>
         Async[F].async { callback =>
           Async[F].delay {
@@ -93,7 +93,7 @@ object FileReader:
             fileReader.onerror = _ => callback(Right(Result.Error(s"Error reading from file")))
 
             readAsType match
-              case ReadType.AsText => fileReader.readAsText(file)
+              case ReadType.AsText        => fileReader.readAsText(file)
               case ReadType.AsArrayBuffer =>
                 fileReader.readAsArrayBuffer(file)
               case ReadType.AsDataUrl => fileReader.readAsDataURL(file)

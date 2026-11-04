@@ -170,7 +170,7 @@ object Sub:
     def eqv(x: Sub[F, Msg], y: Sub[F, Msg]): Boolean = (x, y) match {
       case (Sub.None, Sub.None)                             => true
       case (Sub.Observe(id1, _, _), Sub.Observe(id2, _, _)) => id1 === id2
-      case (xs, ys) =>
+      case (xs, ys)                                         =>
         SubHelper.flatten(xs).zip(SubHelper.flatten(ys)).forall((x, y) => eqv(x, y))
     }
 

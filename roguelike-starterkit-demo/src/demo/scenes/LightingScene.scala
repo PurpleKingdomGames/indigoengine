@@ -32,7 +32,7 @@ object LightingScene extends Scene[GameModel]:
       .fill(MapTile(Tile.DARK_SHADE, RGBA.Yellow.mix(RGBA.Black, 0.5), RGBA.Black))
       .fillRectangle(Rectangle(1, 1, 9, 9), MapTile(Tile.MEDIUM_SHADE, RGBA.Yellow, RGBA.Black))
       .fillCircle(Circle(5, 5, 4), MapTile(Tile.LIGHT_SHADE, RGBA.Yellow, RGBA.Black))
-      .mapLine(Point(0, 10), Point(10, 0)) { case (pt, tile) =>
+      .mapLine(Point(0, 10), Point(10, 0)) { case (_, tile) =>
         tile.withForegroundColor(RGBA.Red)
       }
       .put(Point(5, 5), MapTile(Tile.`@`, RGBA.Cyan))

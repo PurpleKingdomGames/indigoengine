@@ -17,7 +17,7 @@ import com.goyeau.mill.scalafix.ScalafixModule
 trait Shared extends ScalafmtModule, ScalafixModule:
 
   // May need to be compatible with the Mill Scala version in mill-build/build.mill
-  def scalaVersion = Task("3.8.4")
+  def scalaVersion = Task("3.9.0")
 
   override def scalacOptions = Task {
     val baseOptions = ScalacOptions.tokensForVersion(
@@ -93,7 +93,7 @@ trait SharedNative extends Shared, ScalaNativeModule:
     def nativeLinkingOptions = SharedNative.this.nativeLinkingOptions
     def forkEnv              = SharedNative.this.forkEnv
 
-    def mvnDeps = Seq(
+    override def mvnDeps = super.mvnDeps() ++ Seq(
       mvn"org.scalameta::munit::${Dependencies.munit}",
       mvn"org.scalacheck::scalacheck::${Dependencies.scalacheck}",
       mvn"org.typelevel::munit-cats-effect::${Dependencies.munitCatsEffect3}",
@@ -155,22 +155,22 @@ object IndigoVersion:
 
 object Dependencies:
 
-  val catsEffect               = "3.7.0"
+  val catsEffect               = "3.7.1"
   val circe                    = millbuild.DepVersions.circeVersion
-  val fs2                      = "3.13.0"
+  val fs2                      = "3.14.0"
   val scalajsDomVersion        = "2.8.1"
-  val munitCatsEffect3         = "2.2.0"
+  val munitCatsEffect3         = "2.2.1"
   val disciplineMUnit          = "2.0.0"
   val scalajsSnabbdom          = "0.2.0-M3"
-  val zio                      = "2.1.26"
-  val zioInteropCats           = "23.1.0.13"
-  val scalaJavaTime            = "2.6.0"
+  val zio                      = "2.1.27"
+  val zioInteropCats           = "23.1.0.14"
+  val scalaJavaTime            = "2.8.0"
   val catsLaws                 = "2.13.0"
-  val http4sCirce              = "0.23.30"
-  val http4sDom                = "0.2.11"
-  val http4sServer             = "0.23.34"
-  val scalacheck               = "1.19.0"
-  val munit                    = "1.2.4"
+  val http4sCirce              = "0.23.38"
+  val http4sDom                = "0.2.12"
+  val http4sServer             = "0.23.38"
+  val scalacheck               = "1.20.0"
+  val munit                    = "1.3.6"
   val oslib                    = millbuild.DepVersions.osLibVersion
   val scalacOptions: String    = millbuild.DepVersions.scalacOptionsVersion
   val scalafixMill: String     = millbuild.DepVersions.scalafixMillVersion

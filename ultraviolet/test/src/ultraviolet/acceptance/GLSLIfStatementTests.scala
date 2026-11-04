@@ -88,7 +88,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
       Shader[FragEnv, Int] { _ =>
         val x: Int = 1
         val y      = if x <= 10 then 15 else 20
-        val z =
+        val z      =
           val amount = 15
           if x <= 10 then amount else 20
         y + z
@@ -182,7 +182,7 @@ class GLSLIfStatementTests extends munit.FunSuite {
           var foo: Int = 0
           if x <= 10 then foo = 15
         p1(5)
-        var bar: Int = 0
+        var bar: Int         = 0
         def p2(x: Int): Unit =
           if x <= 10 then bar = 15
         p2(5)

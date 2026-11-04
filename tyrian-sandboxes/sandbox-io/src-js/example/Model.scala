@@ -63,8 +63,8 @@ object Model:
     )
 
   // We're only saving/loading the input field contents as an example
-  def encode(model: Model): String = model.field
+  def encode(model: Model): String                    = model.field
   def decode: Option[String] => Either[String, Model] =
-    case None => Left("No snapshot found")
+    case None       => Left("No snapshot found")
     case Some(data) =>
       Right(Model.init.copy(field = data))

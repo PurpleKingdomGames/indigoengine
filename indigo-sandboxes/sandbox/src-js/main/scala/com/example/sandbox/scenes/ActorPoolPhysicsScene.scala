@@ -100,7 +100,6 @@ object ActorPoolPhysicsScene extends Scene[SandboxGameModel]:
           Collider.Circle(ZombieSimTag.Target, BoundingCircle(model.target.toVertex, 16)).makeStatic
         )
         .flatMap { updatedWorld =>
-
           val positionLookup: Map[Int, Point] =
             updatedWorld.collect { case c @ Collider.Circle(ZombieSimTag.Zombie(index)) =>
               index -> c.bounds.position.toPoint

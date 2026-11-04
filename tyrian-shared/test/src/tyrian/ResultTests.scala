@@ -33,7 +33,7 @@ class ResultTests extends munit.FunSuite {
         assertEquals(n, 1)
         assertEquals(s, "a")
 
-      case x =>
+      case _ =>
         fail("shouldn't have got here.")
     }
   }
@@ -336,7 +336,7 @@ class ResultTests extends munit.FunSuite {
   }
 
   test("mapping an error") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Result[Int](10).map[Int](_ => throw e).map(i => i * i)
 
@@ -378,7 +378,7 @@ class ResultTests extends munit.FunSuite {
   }
 
   test("recovering from an error") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Result(10)
         .map[Int](_ => throw e)
@@ -394,7 +394,7 @@ class ResultTests extends munit.FunSuite {
   }
 
   test("recovering from an error with orElse") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Result(10)
         .map[Int](_ => throw e)

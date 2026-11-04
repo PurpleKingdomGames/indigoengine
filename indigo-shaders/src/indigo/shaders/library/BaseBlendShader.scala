@@ -29,7 +29,6 @@ trait BaseBlendShader:
       reference: E
   ): Shader[IndigoMergeData & VertexEnv & UserDefined, Unit] =
     Shader[IndigoMergeData & VertexEnv & UserDefined] { env =>
-
       @layout(0) @in val a_verticesAndCoords: vec4 = null
 
       ubo[IndigoMergeData]

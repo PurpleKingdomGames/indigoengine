@@ -25,7 +25,7 @@ final case class ButtonTheme(
       case Theme.None =>
         Style.empty
 
-      case t: Theme.Default =>
+      case _: Theme.Default =>
         container.fold(Style.empty)(_.toStyle) |+|
           text.fold(Style.empty)(_.toStyles(theme))
 

@@ -149,7 +149,7 @@ class DiceTests extends munit.FunSuite {
   test("all dice rolls have an approximately uniform distribution") {
     val diceSides            = 63
     val expectedDistribution = 1.0 / diceSides
-    val generatedNums =
+    val generatedNums        =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
@@ -176,7 +176,7 @@ class DiceTests extends munit.FunSuite {
     val diceSides            = 63
     val halfSides            = Math.floor(diceSides / 2.0).toInt
     val expectedDistribution = 1.0 / halfSides
-    val generatedNums =
+    val generatedNums        =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
@@ -201,7 +201,7 @@ class DiceTests extends munit.FunSuite {
 
   test("all dice rolls in rollRange(1, 4) have an approximately uniform distribution") {
     val expectedDistribution = 0.25
-    val generatedNums =
+    val generatedNums        =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>

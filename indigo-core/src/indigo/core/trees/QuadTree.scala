@@ -648,7 +648,7 @@ object QuadTree:
   def removeAt[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using s: SpatialOps[S]): QuadTree[S, T] =
     def rec(quadTree: QuadTree[S, T]): QuadTree[S, T] =
       quadTree match
-        case l @ QuadTree.Leaf(bounds, values) if bounds.contains(vertex) =>
+        case QuadTree.Leaf(bounds, values) if bounds.contains(vertex) =>
           QuadTree.Empty(bounds)
 
         case QuadTree.Branch(bounds, a, b, c, d) if bounds.contains(vertex) =>

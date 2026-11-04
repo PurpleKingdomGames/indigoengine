@@ -80,7 +80,7 @@ sealed trait Result[+A] derives CanEqual:
 
 object Result:
 
-  private val defaultCrashLogging: PartialFunction[Throwable, String] = { case (e: Throwable) =>
+  private val defaultCrashLogging: PartialFunction[Throwable, String] = { case e: Throwable =>
     e.getMessage + "\n" + e.getStackTrace().take(3).mkString("\n")
   }
 

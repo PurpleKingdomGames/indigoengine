@@ -6,9 +6,9 @@ import indigoextras.effectmaterials.RefractionEntity
 
 object SandboxAssets:
 
-  val bgMusic: AssetName     = AssetName("bgmusic")
-  val bgMusicPath: AssetPath = AssetPath("assets/bgmusic.mp3")
-  val bgMusicPlay: PlaySound = PlaySound(bgMusic, Volume.Max)
+  val bgMusic: AssetName            = AssetName("bgmusic")
+  val bgMusicPath: AssetPath        = AssetPath("assets/bgmusic.mp3")
+  val bgMusicPlay: PlaySound        = PlaySound(bgMusic, Volume.Max)
   val bgMusicSceneAudio: SceneAudio = SceneAudio(
     SceneAudioSource(BindingKey("bgmusic.mp3"), PlaybackPattern.SingleTrackLoop(Track(bgMusic)))
   )

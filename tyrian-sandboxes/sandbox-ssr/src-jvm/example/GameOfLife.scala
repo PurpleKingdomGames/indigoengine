@@ -7,7 +7,7 @@ final case class GameOfLife(width: Int, height: Int, cells: Set[Point]):
     .copy(cells = (for {
       x <- 0 until width
       y <- 0 until height
-      point = Point(x, y)
+      point      = Point(x, y)
       neighbours = Set(
         Point(x + 1, y - 1),
         Point(x, y - 1),

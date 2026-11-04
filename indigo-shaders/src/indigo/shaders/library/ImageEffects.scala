@@ -100,7 +100,7 @@ object ImageEffects:
 
         // 0 = color 1 = linear gradient 2 = radial gradient
         val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
-        val overlay: vec4 =
+        val overlay: vec4    =
           overlayType match
             case 0 =>
               _calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)

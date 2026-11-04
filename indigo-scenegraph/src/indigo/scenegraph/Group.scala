@@ -77,7 +77,7 @@ final case class Group(
 
   def withEventHandler(f: ((Group, GlobalEvent)) => Option[GlobalEvent]): Group =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[((Group, GlobalEvent)), GlobalEvent]): Group =
+  def onEvent(f: PartialFunction[(Group, GlobalEvent), GlobalEvent]): Group =
     withEventHandler(f.lift)
   def enableEvents: Group =
     this.copy(eventHandlerEnabled = true)

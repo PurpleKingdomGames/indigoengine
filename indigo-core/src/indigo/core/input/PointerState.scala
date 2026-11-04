@@ -60,7 +60,7 @@ final case class PointerState(instances: Batch[Pointer]) extends ButtonInputStat
         instances.filterNot(_.pointerId == event.pointerId)
       else
         // Otherwise, find or create the instance for the pointerId and update it based on the event
-        val instance = PointerState.getOrCreate(event.pointerId, event.pointerType, instances)
+        val instance    = PointerState.getOrCreate(event.pointerId, event.pointerType, instances)
         val newInstance = event match {
           case e: PointerEvent.Move  => instance.copy(maybePosition = Some(e.position), lastUpdateTime = time)
           case e: PointerEvent.Enter => instance.copy(maybePosition = Some(e.position), lastUpdateTime = time)

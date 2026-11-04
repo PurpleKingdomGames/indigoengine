@@ -59,8 +59,8 @@ object PathFinder:
         // we remove the current node from the open list
         // we add the current node to the closed list
         // we update the lists with the neighbours of the current node
-        val tmpOpen   = open.filterNot(_ == current)
-        val tmpClosed = current :: closed
+        val tmpOpen              = open.filterNot(_ == current)
+        val tmpClosed            = current :: closed
         val (newOpen, newClosed) =
           pathBuilder
             .neighbours(current.value)
@@ -85,9 +85,9 @@ object PathFinder:
   )(using CanEqual[T, T]): (OpenList[T], ClosedList[T]) =
     if (closed.exists(_.value == neighbour)) (open, closed)
     else
-      val g = current.g + pathBuilder.distance(current.value, neighbour)
-      val h = pathBuilder.heuristic(neighbour, end)
-      val f = g + h
+      val g       = current.g + pathBuilder.distance(current.value, neighbour)
+      val h       = pathBuilder.heuristic(neighbour, end)
+      val f       = g + h
       val newOpen =
         open.find(_.value == neighbour) match {
           case Some(oldProps) => // the neighbour is already in the open list

@@ -38,7 +38,7 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
   private def initialiseExtension(
       extension: Extension[GraphicsContext, View]
   ): Result[RegisteredExtension[GraphicsContext, View]] = {
-    val key = extension.id.toString
+    val key                  = extension.id.toString
     val isGraphical: Boolean =
       extension match
         case _: Extension.Graphical[_, _] => true
@@ -100,7 +100,7 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
         val extension = rss.extension
 
         extension match
-          case ext: Extension.Standard[_] =>
+          case _: Extension.Standard[_] =>
             ()
 
           case ext: Extension.Graphical[_, _] =>

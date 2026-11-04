@@ -37,7 +37,7 @@ object ShapeConversion:
     val shaderData: ShaderData = Shape.toShaderData(leaf, boundsActual)
     val bounds                 = boundsActual.toSquare
 
-    val vec2Zero = Vector2.zero
+    val vec2Zero                                     = Vector2.zero
     val uniformData: Batch[DisplayObjectUniformData] =
       ConversionHelpers.toDisplayObjectUniformData(shaderData)
 

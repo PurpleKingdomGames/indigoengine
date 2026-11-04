@@ -318,7 +318,7 @@ class GLSLSwitchStatementTests extends munit.FunSuite {
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     inline def fragment =
       Shader {
-        var foo: Int = 0
+        var foo: Int            = 0
         def p1(flag: Int): Unit =
           flag match
             case 0 => foo = 10

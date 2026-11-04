@@ -163,7 +163,7 @@ object TerminalMaterial:
           step(0.001f, abs(((color.x + color.y + color.z) / 3.0f) - color.x))
 
         def fragment(color: vec4): vec4 =
-          val bg = vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
+          val bg   = vec4(env.BACKGROUND.rgb * env.BACKGROUND.a, env.BACKGROUND.a)
           val tint =
             mix(env.CHANNEL_0 * env.FOREGROUND, env.CHANNEL_0, distanceToGreyscale(env.CHANNEL_0))
           val fg = vec4(tint.rgb * tint.a, tint.a)

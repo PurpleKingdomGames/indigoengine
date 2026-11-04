@@ -6,7 +6,7 @@ import scala.quoted.*
 
 object DebugAST:
 
-  inline def toAST[In, Out](inline expr: Shader[In, Out]): String = ${ toASTImpl('{ expr }) }
+  inline def toAST[In, Out](inline expr: Shader[In, Out]): String = ${ toASTImpl('expr) }
 
   private def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using Quotes): Expr[String] = {
 
@@ -19,7 +19,7 @@ object DebugAST:
     Expr("Done.")
   }
 
-  inline def any[In, Out](inline expr: Any): String = ${ anyToASTImpl('{ expr }) }
+  inline def any[In, Out](inline expr: Any): String = ${ anyToASTImpl('expr) }
 
   private def anyToASTImpl[In, Out: Type](expr: Expr[Any])(using Quotes): Expr[String] = {
 

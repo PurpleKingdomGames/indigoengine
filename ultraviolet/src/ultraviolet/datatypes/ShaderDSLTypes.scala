@@ -250,8 +250,8 @@ trait ShaderDSLTypes:
 
   @nowarn("msg=unused")
   final case class array[L <: Singleton, T](private val arr: Array[T])(using convert: L => Int):
-    def length: Int          = arr.length
-    def underlying: Array[T] = arr
+    def length: Int                    = arr.length
+    def underlying: Array[T]           = arr
     def update(i: Int, value: T): Unit =
       arr(i) = value
 
@@ -286,7 +286,7 @@ trait ShaderDSLTypes:
     def *(f: Float): mat2 = mat2(mat.map(_ * f))
     def /(f: Float): mat2 = mat2(mat.map(_ / f))
 
-    def apply(index: Int): Float = mat(index)
+    def apply(index: Int): Float           = mat(index)
     def update(i: Int, value: Float): Unit =
       mat(i) = value
     def update(i: Int, value: vec2): Unit =
@@ -317,7 +317,7 @@ trait ShaderDSLTypes:
     def *(f: Float): mat3 = mat3(mat.map(_ * f))
     def /(f: Float): mat3 = mat3(mat.map(_ / f))
 
-    def apply(index: Int): Float = mat(index)
+    def apply(index: Int): Float           = mat(index)
     def update(i: Int, value: Float): Unit =
       mat(i) = value
     def update(i: Int, value: vec3): Unit =

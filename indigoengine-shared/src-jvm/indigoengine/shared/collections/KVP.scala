@@ -37,11 +37,11 @@ sealed trait KVP[A] extends KVPOps[A, KVP]:
   def toBatch: Batch[(String, A)] =
     Batch.fromList(_underlying.toList)
 
-  def map[B](f: ((String, A)) => ((String, B))): KVP[B] =
+  def map[B](f: ((String, A)) => (String, B)): KVP[B] =
     KVP.from(_underlying.map(f))
 
   def mapValues[B](f: A => B): KVP[B] =
-    val g: ((String, A)) => ((String, B)) =
+    val g: ((String, A)) => (String, B) =
       (k, v) => (k, f(v))
     map(g)
 

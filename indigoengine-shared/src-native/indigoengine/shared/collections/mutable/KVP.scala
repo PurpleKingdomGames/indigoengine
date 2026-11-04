@@ -60,11 +60,11 @@ final class KVP[A] private (private val _underlying: HashMap[String, A]) extends
   def toKVP: ImmutableKVP[A] =
     ImmutableKVP.from(HashMap.from(_underlying))
 
-  def map[B](f: ((String, A)) => ((String, B))): KVP[B] =
+  def map[B](f: ((String, A)) => (String, B)): KVP[B] =
     new KVP(_underlying.map(f))
 
   def mapValues[B](f: A => B): KVP[B] =
-    val g: ((String, A)) => ((String, B)) =
+    val g: ((String, A)) => (String, B) =
       (k, v) => (k, f(v))
     map(g)
 

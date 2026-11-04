@@ -44,7 +44,6 @@ object Lighting:
   @nowarn("msg=mutated")
   inline def prepare[Env <: LightEnv] =
     Shader[Env] { env =>
-
       @const val SCREEN_GAMMA: Float = 2.2f
 
       ubo[IndigoMaterialLightingData]

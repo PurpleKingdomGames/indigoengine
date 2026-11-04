@@ -121,7 +121,7 @@ object CirceJsonEncodersAndDecoders {
   implicit val decodeAseprite: Decoder[Aseprite] =
     new Decoder[Aseprite] {
       final def apply(c: HCursor): Decoder.Result[Aseprite] = {
-        val framesCursor = c.downField("frames")
+        val framesCursor                                     = c.downField("frames")
         val arrayResult: Decoder.Result[List[AsepriteFrame]] =
           framesCursor.as[List[AsepriteFrame]]
         val frames: Decoder.Result[List[AsepriteFrame]] =

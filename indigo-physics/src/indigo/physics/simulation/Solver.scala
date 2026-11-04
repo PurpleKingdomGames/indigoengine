@@ -27,7 +27,7 @@ object Solver:
           val displacement = collider.displacementWith(c)
           val displaceBy   = displacement.displaceBy
 
-          val maxEnergy = Math.max(c.velocity.magnitude, collider.velocity.magnitude)
+          val maxEnergy       = Math.max(c.velocity.magnitude, collider.velocity.magnitude)
           val remainingEnergy =
             Math.min(maxEnergy, (c.velocity + collider.velocity).magnitude) * collider.restitution.toDouble
           val continueDistance = displacement.displaceAmount * collider.restitution.toDouble
