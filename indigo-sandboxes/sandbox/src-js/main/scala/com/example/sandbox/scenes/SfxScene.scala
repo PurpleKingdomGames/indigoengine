@@ -62,7 +62,7 @@ object SfxScene extends Scene[SandboxGameModel]:
             )
           )
 
-        case l: Layer.Content =>
+        case _: Layer.Content =>
           SceneUpdateFragment.empty
       }
 

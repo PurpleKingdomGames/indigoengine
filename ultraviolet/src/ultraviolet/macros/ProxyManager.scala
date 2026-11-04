@@ -6,7 +6,7 @@ import scala.collection.mutable.HashMap
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 final class ProxyManager:
-  private var fnCount: Int = 0
+  private var fnCount: Int       = 0
   private def nextFnName: String =
     // using 'def' as it's a Scala keyword - hopefully will minimise user collisions
     val res = "def" + fnCount.toString
@@ -14,7 +14,7 @@ final class ProxyManager:
     res
   def makeDefName: String = nextFnName
 
-  private var varCount: Int = 0
+  private var varCount: Int       = 0
   private def nextVarName: String =
     // using 'val' as it's a Scala keyword - hopefully will minimise user collisions
     val res = "val" + varCount.toString

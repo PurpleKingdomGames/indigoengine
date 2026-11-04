@@ -126,7 +126,7 @@ final case class CustomShape(
   val scale: Vector2                = Vector2.one
   lazy val toShaderData: ShaderData = shader
 
-  val eventHandlerEnabled: Boolean = false
+  val eventHandlerEnabled: Boolean                                      = false
   def eventHandler: ((CustomShape, GlobalEvent)) => Option[GlobalEvent] =
     Function.const(None)
 

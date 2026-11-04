@@ -41,7 +41,7 @@ object Routing:
     *   A function that converts an external href (url) to a Msg, i.e. a link to a different website.
     */
   def externalOnly[Msg](ignore: Msg, externalHRef: String => Msg): Location => Msg = {
-    case loc @ Location.Internal(_) => ignore
+    case Location.Internal(_)       => ignore
     case loc @ Location.External(_) => externalHRef(loc.href)
   }
 
@@ -52,6 +52,6 @@ object Routing:
     *   A user defined 'no-op' Msg that means "ignore this link/href".
     */
   def none[Msg](ignore: Msg): Location => Msg = {
-    case loc @ Location.Internal(_) => ignore
-    case loc @ Location.External(_) => ignore
+    case Location.Internal(_) => ignore
+    case Location.External(_) => ignore
   }

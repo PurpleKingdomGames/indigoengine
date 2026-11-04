@@ -33,7 +33,7 @@ object BowyerWatson:
           val (internalEdges, boundaryEdges) = findBoundaryEdges(badTris, acc)
 
           // remove them from the data structure
-          val meshWithHole = internalEdges.foldLeft(acc) { case (a, e) => a.removeEdge(e) }
+          val meshWithHole            = internalEdges.foldLeft(acc) { case (a, e) => a.removeEdge(e) }
           val meshWithoutInvalidTries = badTris.foldLeft(meshWithHole) { case (a, t) =>
             a.removeTri(t)
           }

@@ -162,7 +162,7 @@ object Outcome:
       this.copy(crashReporter = reporter)
 
     def reportCrash: String =
-      crashReporter.orElse[Throwable, String] { case (e: Throwable) =>
+      crashReporter.orElse[Throwable, String] { case e: Throwable =>
         e.getMessage + "\n" + e.getStackTrace.mkString("\n")
       }(e)
 
@@ -184,7 +184,7 @@ object Outcome:
 
   object Error {
     def apply(e: Throwable): Error =
-      Error(e, { case (ee: Throwable) => ee.getMessage })
+      Error(e, { case ee: Throwable => ee.getMessage })
   }
 
   extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
@@ -263,7 +263,7 @@ object Outcome:
         val h = remaining.head
         val t = remaining.tail
         h match
-          case Error(e, r) => Error(e, r)
+          case Error(e, r)   => Error(e, r)
           case Result(s, es) =>
             rec(t, accA ++ Batch(s), accEvents ++ es)
 

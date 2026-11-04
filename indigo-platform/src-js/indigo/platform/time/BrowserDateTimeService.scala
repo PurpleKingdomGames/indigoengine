@@ -18,7 +18,7 @@ final case class BrowserDateTimeService() extends DateTimeService:
         val hour  = "numeric"
 
     val formatter = BrowserDateTimeFormat(dom.window.navigator.languages, options)
-    val parts = Batch.fromJSArray(
+    val parts     = Batch.fromJSArray(
       formatter
         .formatToParts(new js.Date(2000, 11, 31, 13, 0, 0))
         .map(_.`type`)

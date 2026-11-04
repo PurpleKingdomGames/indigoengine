@@ -18,7 +18,7 @@ object SandboxSSR extends IOApp:
 
     for {
       gameState <- Ref[IO].of(GameOfLife.chaotic)
-      result <- EmberServerBuilder
+      result    <- EmberServerBuilder
         .default[IO]
         .withHost(ipv4"0.0.0.0")
         .withPort(port"8080")

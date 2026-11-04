@@ -32,7 +32,7 @@ class SceneProcessorTests extends munit.FunSuite {
   val animationRegister = new AnimationsRegister
   val fontRegister      = new FontRegister
   val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister)
-  val texture =
+  val texture           =
     new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(KVP.empty.add("texture" -> texture))
 
@@ -73,7 +73,7 @@ class SceneProcessorTests extends munit.FunSuite {
   test("makeDisplayLayers - two layer entries with the same properties compact into one") {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
-    val scene = SceneUpdateFragment(
+    val scene    = SceneUpdateFragment(
       LayerKey("a") -> Layer.Content(graphic1),
       LayerKey("b") -> Layer.Content(graphic2)
     )
@@ -94,7 +94,7 @@ class SceneProcessorTests extends munit.FunSuite {
   test("makeDisplayLayers - two layer entries with different magnifications remain separate") {
     val graphic1 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
     val graphic2 = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(100, 100, 50, 50))
-    val scene = SceneUpdateFragment(
+    val scene    = SceneUpdateFragment(
       LayerKey("a") -> Layer.Content(graphic1)
     ).addLayers(
       LayerEntry(LayerKey("b"), Layer.Content(graphic2)).withMagnification(Magnification.x2)
@@ -116,7 +116,7 @@ class SceneProcessorTests extends munit.FunSuite {
 
   test("makeDisplayLayers - a Standard blend material layer reads the destination") {
     val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
-    val scene =
+    val scene   =
       SceneUpdateFragment(
         LayerKey("a") -> Layer.Content(graphic).withBlendMaterial(BlendMaterial.Lighting(RGBA.White))
       )
@@ -136,7 +136,7 @@ class SceneProcessorTests extends munit.FunSuite {
 
   test("makeDisplayLayers - a Fast blend material layer does not read the destination") {
     val graphic = Graphic(Size(50), Material.Bitmap(AssetName("texture"))).withCrop(Rectangle(0, 0, 50, 50))
-    val scene =
+    val scene   =
       SceneUpdateFragment(
         LayerKey("a") -> Layer.Content(graphic).withBlendMaterial(BlendMaterial.Normal)
       )

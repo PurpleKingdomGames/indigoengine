@@ -143,7 +143,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
   val actor: SampleActor     = SampleActor(10, likesFishing = false)
   val context: SampleContext = SampleContext(false)
-  val jobList: List[Job] = List(
+  val jobList: List[Job]     = List(
     WanderTo(10),
     Fishing(10),
     WanderTo(30)

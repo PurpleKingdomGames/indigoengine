@@ -10,7 +10,7 @@ object `package` extends MillBuildRootModule:
 
   // Must be the same Scala version as the one Mill uses,
   // for the Mill api libs to be available.
-  def scalaVersion = "3.8.2"
+  def scalaVersion = "3.9.0"
 
   def indigoPluginSources = Task.Sources(
     BuildCtx.workspaceRoot / "indigo-plugin" / "src"
@@ -24,10 +24,10 @@ object `package` extends MillBuildRootModule:
     super.sources() ++ indigoPluginSources() ++ millPluginSources()
   }
 
-  val circeVersion: String         = "0.14.15"
-  val osLibVersion: String         = "0.11.8"
-  val scalacOptionsVersion: String = "0.1.8"
-  val scalafixMillVersion: String  = "0.6.0"
+  val circeVersion: String         = "0.14.17"
+  val osLibVersion: String         = "0.11.10"
+  val scalacOptionsVersion: String = "0.1.11"
+  val scalafixMillVersion: String  = "0.6.2"
 
   def mvnDeps = Seq(
     mvn"com.lihaoyi::os-lib:$osLibVersion",

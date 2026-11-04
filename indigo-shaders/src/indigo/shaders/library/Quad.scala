@@ -45,7 +45,7 @@ object Quad:
         p.x >= tl.x && p.x <= br.x && p.y >= tl.y && p.y <= br.y
 
       def fragment(color: vec4): vec4 =
-        val fillType = round(env.FILL_TYPE).toInt
+        val fillType   = round(env.FILL_TYPE).toInt
         val fill: vec4 =
           fillType match
             case 1 =>

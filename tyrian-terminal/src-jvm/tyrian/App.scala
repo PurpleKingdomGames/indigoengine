@@ -17,7 +17,7 @@ trait App[GraphicsContext, Model] extends internal.AppBase[GraphicsContext, Mode
           // The app shut itself down cleanly via Result.exit / Action.exit
           IO(teardownAll).as(code)
 
-        case Left(e) =>
+        case Left(_) =>
           IO(teardownAll).as(ExitCode.Error)
 
         case Right(n) =>

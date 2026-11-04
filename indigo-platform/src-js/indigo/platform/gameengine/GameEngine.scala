@@ -201,8 +201,8 @@ final class GameEngine[StartUpData, GameModel](
                 shaderRegister.toSet,
                 accumulatedAssetCollection
               )
-              startUpSuccessData <- GameEngine.initialisedGame(startupData)
-              m                  <- modelToUse(startUpSuccessData)
+              startUpSuccessData  <- GameEngine.initialisedGame(startupData)
+              m                   <- modelToUse(startUpSuccessData)
               initialisedGameLoop <- GameEngine.initialiseGameLoop(
                 this,
                 boundaryLocator,

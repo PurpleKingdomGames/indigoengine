@@ -135,7 +135,7 @@ final case class MouseState(
         instances.filterNot(_.pointerId == event.pointerId)
       else
         // Otherwise, find or create the instance for the pointerId and update it based on the event
-        val instance = MouseState.getOrCreate(event.pointerId, instances)
+        val instance    = MouseState.getOrCreate(event.pointerId, instances)
         val newInstance = event match {
           case e: MouseEvent.Move  => instance.copy(maybePosition = Some(e.position))
           case e: MouseEvent.Enter => instance.copy(maybePosition = Some(e.position))

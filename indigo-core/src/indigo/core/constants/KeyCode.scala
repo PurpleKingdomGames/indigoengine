@@ -174,7 +174,7 @@ object KeyCode:
     case "VolumeUp"   => KeyCode.AudioVolumeUp
     case "VolumeDown" => KeyCode.AudioVolumeDown
     case "VolumeMute" => KeyCode.AudioVolumeMute
-    case _ =>
+    case _            =>
       KeyCode.values
         .find(_.value == value)
         .getOrElse(KeyCode.Unidentified)

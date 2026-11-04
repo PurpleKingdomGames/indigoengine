@@ -8,7 +8,6 @@ class noiseTests extends munit.FunSuite {
   test("Cellular noise") {
     inline def fragment: Shader[Unit, vec2] =
       Shader { _ =>
-
         import ultraviolet.noise.*
 
         def proxy: vec2 => vec2 = p => cellular(p)
@@ -97,7 +96,6 @@ class noiseTests extends munit.FunSuite {
   test("Classic Perlin noise") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.noise.*
 
         def proxy: vec2 => Float = p => perlin(p)
@@ -171,7 +169,6 @@ class noiseTests extends munit.FunSuite {
   test("Gradient noise") {
     inline def fragment: Shader[Unit, vec3] =
       Shader { _ =>
-
         import ultraviolet.noise.*
 
         def proxy: vec2 => vec3 = p => gradient(p)
@@ -219,7 +216,6 @@ class noiseTests extends munit.FunSuite {
   test("Simplex noise") {
     inline def fragment: Shader[Unit, Float] =
       Shader { _ =>
-
         import ultraviolet.noise.*
 
         def proxy: vec2 => Float = p => simplex(p)
@@ -281,7 +277,6 @@ class noiseTests extends munit.FunSuite {
   test("White noise") {
     inline def fragment: Shader[Unit, vec3] =
       Shader { _ =>
-
         import ultraviolet.noise.*
 
         def proxy: vec2 => vec3 = p => white(p)

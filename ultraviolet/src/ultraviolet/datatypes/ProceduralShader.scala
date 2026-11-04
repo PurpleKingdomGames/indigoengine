@@ -56,7 +56,7 @@ final case class ProceduralShader(
         }
 
         case ProgramTransformer.AnnotateFunctionArgument(functionName, argumentName, annotation) => {
-          case fn @ ShaderAST.Function(
+          case ShaderAST.Function(
                 fnName,
                 args,
                 body,
@@ -307,7 +307,7 @@ object ProceduralShader:
   def render(p: ProceduralShader, headers: List[ShaderHeader]): ShaderResult = {
     import ShaderAST.*
 
-    val renderedUBOs = p.ubos.map(u => ShaderPrinter.print(u).mkString("\n"))
+    val renderedUBOs        = p.ubos.map(u => ShaderPrinter.print(u).mkString("\n"))
     val renderedAnnotations = p.annotations
       .map(u => ShaderPrinter.print(u).mkString("\n"))
       .map(s => if s.startsWith("#") then s else s + ";")

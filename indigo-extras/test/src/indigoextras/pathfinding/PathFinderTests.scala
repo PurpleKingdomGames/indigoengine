@@ -103,7 +103,7 @@ final class PathFinderTests extends Properties("PathFinder") {
     } yield (width, height, dice, Batch.fromArray(Array.fill(height * width)(dice.roll(Int.MaxValue) - 1)))
 
   property("return Some(Batch(start)) when start and end are the same") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
       PathBuilder.fromAllowedPoints(
         context.allowedPoints.toSet,
@@ -119,7 +119,7 @@ final class PathFinderTests extends Properties("PathFinder") {
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.impassablePoints).head
     if (start != end && !context.allowedMoves.map(_ + start).contains(end))
-      val newContext = context.copy(path = Batch(start, end))
+      val newContext                      = context.copy(path = Batch(start, end))
       val pathBuilder: PathBuilder[Point] =
         PathBuilder.fromAllowedPoints(
           newContext.allowedPoints.toSet,
@@ -133,8 +133,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("return a path with a length <= to the generated one") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
       PathBuilder.fromAllowedPoints(
         context.allowedPoints.toSet,
@@ -147,8 +147,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("return a path that is a subset of the generated one") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
       PathBuilder.fromAllowedPoints(
         context.allowedPoints.toSet,
@@ -177,8 +177,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("not have duplicated entries") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
       PathBuilder.fromAllowedPoints(
         context.allowedPoints.toSet,
@@ -191,8 +191,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("return a batch of adjacent entries") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
       PathBuilder.fromAllowedPoints(
         context.allowedPoints.toSet,
@@ -207,8 +207,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("build a path from the impassable points") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] = PathBuilder.fromImpassablePoints(
       context.impassablePoints.toSet,
       context.width,
@@ -226,8 +226,8 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("build a path from a weighted 2D grid") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
+    val start: Point                    = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                      = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] = PathBuilder.fromWeighted2DGrid(
       context.weighted2DGrid,
       context.width,
@@ -245,9 +245,9 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("produce the same result with weighted 1D grid and 2D grid") = Prop.forAll(genContext) { context =>
-    val start: Point = context.dice.shuffle(context.allowedPoints).head
-    val end: Point   = context.dice.shuffle(context.allowedPoints).head
-    val a2DGrid      = context.weighted2DGrid
+    val start: Point                     = context.dice.shuffle(context.allowedPoints).head
+    val end: Point                       = context.dice.shuffle(context.allowedPoints).head
+    val a2DGrid                          = context.weighted2DGrid
     val pathBuilder1: PathBuilder[Point] =
       PathBuilder.fromWeighted2DGrid(
         a2DGrid,

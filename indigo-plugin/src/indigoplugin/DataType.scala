@@ -168,7 +168,7 @@ object DataType:
         rows
 
       case headers :: data =>
-        val l = headers.length
+        val l   = headers.length
         val res =
           headers :: data.map: r =>
             val diff = l - r.length

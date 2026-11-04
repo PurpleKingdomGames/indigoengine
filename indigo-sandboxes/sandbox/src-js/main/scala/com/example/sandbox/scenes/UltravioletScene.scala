@@ -77,7 +77,6 @@ object UVShaders:
   @nowarn("msg=unused")
   inline def orbitVertex: Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
-
       def vertex(v: vec4): vec4 =
         vec4(v.x + sin(env.TIME * 0.5f), v.y + cos(env.TIME * 0.5f), v.z, v.w)
 
@@ -86,7 +85,6 @@ object UVShaders:
   @nowarn("msg=unused")
   inline def modifyCircleColor: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
-
       def circleSdf(p: vec2, r: Float): Float =
         length(p) - r
 
@@ -137,7 +135,6 @@ object UVShaders:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   inline def modifyColor: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
-
       def N22(p: vec2): vec2 =
         var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
         a = a + dot(a, a + 34.45f)

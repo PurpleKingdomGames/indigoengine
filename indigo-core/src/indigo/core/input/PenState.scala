@@ -158,7 +158,7 @@ final case class PenState(instances: Batch[Pen]) extends ButtonInputState with P
       else
         // Otherwise, find or create the instance for the pointerId and update it based on the event
         val instance = PenState.getOrCreate(event.pointerId, instances)
-        val newPen = event match {
+        val newPen   = event match {
           case e: PenEvent.Move  => instance.copy(maybePosition = Some(e.position), pressure = e.pressure)
           case e: PenEvent.Enter => instance.copy(maybePosition = Some(e.position), pressure = e.pressure)
           // If the click contains a button, then we treat it as a button click

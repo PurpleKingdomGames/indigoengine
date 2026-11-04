@@ -44,10 +44,11 @@ object ToUniformBlock:
         case _: EmptyTuple => Nil
         case _: (t *: ts)  => summonTypeOrError[t] :: summonTypeName[ts]
 
+    @nowarn("msg=unused")
     inline private def summonTypeOrError[T]: ShaderTypeOf[T] =
       summonFrom {
         case given ShaderTypeOf[T] => summonInline[ShaderTypeOf[T]]
-        case _ =>
+        case _                     =>
           error(
             "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Radians, Millis, Seconds], and UltraViolet [vec2, vec3, vec4, mat4, array[length, values]]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
           )

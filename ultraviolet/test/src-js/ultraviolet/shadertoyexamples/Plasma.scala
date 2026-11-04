@@ -40,13 +40,13 @@ object Plasma:
       @const val vp: vec2 = vec2(320.0, 200.0)
 
       def mainImage(fragColor: vec4, fragCoord: vec2): vec4 =
-        val t: Float  = env.iTime * 10.0f + env.iMouse.x
-        val uv: vec2  = fragCoord.xy / env.iResolution.xy
-        val p0: vec2  = (uv - 0.5f) * vp
-        val hvp: vec2 = vp * 0.5f
-        val p1d: vec2 = vec2(cos(t / 98.0f), sin(t / 178.0f)) * hvp - p0
-        val p2d: vec2 = vec2(sin(-t / 124.0f), cos(-t / 104.0f)) * hvp - p0
-        val p3d: vec2 = vec2(cos(-t / 165.0f), cos(t / 45.0f)) * hvp - p0
+        val t: Float   = env.iTime * 10.0f + env.iMouse.x
+        val uv: vec2   = fragCoord.xy / env.iResolution.xy
+        val p0: vec2   = (uv - 0.5f) * vp
+        val hvp: vec2  = vp * 0.5f
+        val p1d: vec2  = vec2(cos(t / 98.0f), sin(t / 178.0f)) * hvp - p0
+        val p2d: vec2  = vec2(sin(-t / 124.0f), cos(-t / 104.0f)) * hvp - p0
+        val p3d: vec2  = vec2(cos(-t / 165.0f), cos(t / 45.0f)) * hvp - p0
         val sum: Float = 0.25f + 0.5f * (cos(length(p1d) / 30.0f) +
           cos(length(p2d) / 20.0f) +
           sin(length(p3d) / 25.0f) * sin(p3d.x / 20.0f) * sin(p3d.y / 15.0f))

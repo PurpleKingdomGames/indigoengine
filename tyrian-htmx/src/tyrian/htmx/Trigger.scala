@@ -6,8 +6,8 @@ case class Trigger(
     modifiers: List[Modifier]
 ) {
   def render: String =
-    val eventString  = event.name
-    val filterString = filter.map(f => s"[$f]").getOrElse("")
+    val eventString     = event.name
+    val filterString    = filter.map(f => s"[$f]").getOrElse("")
     val modifiersString = modifiers
       .map(_.name)
       .mkString(" ", " ", "")

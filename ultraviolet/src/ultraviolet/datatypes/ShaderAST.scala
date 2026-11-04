@@ -423,7 +423,7 @@ object ShaderAST:
       @tailrec
       def rec(remaining: List[ShaderAST], acc: List[ShaderAST]): List[ShaderAST] =
         remaining match
-          case Nil => acc.reverse
+          case Nil     => acc.reverse
           case x :: xs =>
             x match
               case v if p(v)                        => rec(xs, v :: acc)
@@ -451,13 +451,13 @@ object ShaderAST:
               case Annotated(_, _, body)            => rec(body :: xs, acc)
               case RawLiteral(_)                    => rec(xs, acc)
               case Field(t, _)                      => rec(t :: xs, acc)
-              case v: DataTypes.ident               => rec(xs, acc)
-              case v: DataTypes.external            => rec(xs, acc)
-              case v: DataTypes.index               => rec(xs, acc)
-              case v: DataTypes.externalIndex       => rec(xs, acc)
-              case v: DataTypes.bool                => rec(xs, acc)
-              case v: DataTypes.float               => rec(xs, acc)
-              case v: DataTypes.int                 => rec(xs, acc)
+              case _: DataTypes.ident               => rec(xs, acc)
+              case _: DataTypes.external            => rec(xs, acc)
+              case _: DataTypes.index               => rec(xs, acc)
+              case _: DataTypes.externalIndex       => rec(xs, acc)
+              case _: DataTypes.bool                => rec(xs, acc)
+              case _: DataTypes.float               => rec(xs, acc)
+              case _: DataTypes.int                 => rec(xs, acc)
               case v: DataTypes.vec2                => rec(v.args ++ xs, acc)
               case v: DataTypes.vec3                => rec(v.args ++ xs, acc)
               case v: DataTypes.vec4                => rec(v.args ++ xs, acc)
@@ -470,7 +470,7 @@ object ShaderAST:
               case v: DataTypes.mat2                => rec(v.args ++ xs, acc)
               case v: DataTypes.mat3                => rec(v.args ++ xs, acc)
               case v: DataTypes.mat4                => rec(v.args ++ xs, acc)
-              case v: DataTypes.array               => rec(xs, acc)
+              case _: DataTypes.array               => rec(xs, acc)
               case v: DataTypes.swizzle             => rec(v.genType :: xs, acc)
 
       rec(List(ast), Nil)
@@ -557,7 +557,7 @@ object ShaderAST:
         case MultiStatements(typeOf, _)     => typeOf.typeIdent
         case Annotated(_, _, value)         => value.typeIdent
         case RawLiteral(_)                  => void
-        case Field(t, n)                    => void
+        case Field(_, _)                    => void
         case n @ DataTypes.ident(_)         => n
         case n @ DataTypes.external(_)      => ShaderAST.DataTypes.ident(n.id)
         case DataTypes.index(_, _)          => void

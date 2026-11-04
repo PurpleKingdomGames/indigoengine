@@ -65,7 +65,7 @@ object ComponentUIScene extends Scene[SandboxGameModel]:
             ).withMagnification(magnification)
           )
 
-        case l: Layer.Content =>
+        case _: Layer.Content =>
           SceneUpdateFragment.empty
       }
 

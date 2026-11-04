@@ -151,7 +151,7 @@ object PathTree {
   final case class Root(children: List[PathTree]) extends PathTree {
     val name: String = ""
   }
-  final case class Folder(name: String, children: List[PathTree]) extends PathTree
+  final case class Folder(name: String, children: List[PathTree])          extends PathTree
   final case class File(name: String, extension: String, path: os.RelPath) extends PathTree {
     val fullName: String = name + "." + extension
   }

@@ -64,7 +64,7 @@ object ConfigGen {
 
   private val hexColorMatch: Regex = "(#[A-Za-z0-9]*)".r                        // Remember to remove whitespace first.
   private val extractRGB: Regex    = """^rgb\(([0-9]*),([0-9]*),([0-9]*)\)""".r // Remember to remove whitespace first.
-  private val extractRGBA: Regex =
+  private val extractRGBA: Regex   =
     """^rgba\(([0-9]*),([0-9]*),([0-9]*),([0-9]*)\)""".r // Remember to remove whitespace first.
 
   private val colorLookUp: Map[String, String] =

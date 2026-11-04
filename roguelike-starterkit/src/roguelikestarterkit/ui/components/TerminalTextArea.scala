@@ -11,7 +11,7 @@ import roguelikestarterkit.ui.*
 object TerminalTextArea:
 
   private def findBounds(text: String): Bounds =
-    val lines = text.split("\n").toList
+    val lines     = text.split("\n").toList
     val maxLength =
       lines.foldLeft(0) { (acc, line) =>
         if line.length > acc then line.length else acc
