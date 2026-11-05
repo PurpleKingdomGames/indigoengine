@@ -13,6 +13,9 @@ object ShaderPrinter:
       case Empty() =>
         Nil
 
+      case Discard() =>
+        List("discard")
+
       case Block(statements) =>
         renderStatements(statements)
 
@@ -350,6 +353,7 @@ object ShaderPrinter:
   private def decideType(a: ShaderAST): String =
     a match
       case Empty()                        => "void"
+      case Discard()                      => "void"
       case Block(_)                       => "void"
       case Neg(v)                         => decideType(v)
       case Not(v)                         => decideType(v)

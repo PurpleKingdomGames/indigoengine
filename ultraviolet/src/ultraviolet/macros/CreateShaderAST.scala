@@ -1,6 +1,7 @@
 package ultraviolet.macros
 
 import ultraviolet.datatypes.ShaderAST
+import ultraviolet.datatypes.ShaderDiscardException
 import ultraviolet.datatypes.ShaderError
 
 import scala.collection.mutable.ListBuffer
@@ -145,6 +146,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       }
 
   def assignToLast(lhs: ShaderAST): ShaderAST => ShaderAST = {
+    case d @ ShaderAST.Discard() =>
+      d
+
+    case ShaderAST.Block(statements :+ (d @ ShaderAST.Discard())) =>
+      ShaderAST.Block(statements :+ d)
+
     case ShaderAST.Block(statements :+ last) =>
       ShaderAST.Block(statements :+ ShaderAST.Assign(lhs, last))
 
@@ -1482,6 +1489,12 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
         )
 
       //
+
+      case Apply(Ident("throw"), List(ex)) if ex.tpe <:< TypeRepr.of[ShaderDiscardException] =>
+        ShaderAST.Discard()
+
+      case Apply(Ident("throw"), _) =>
+        throw ShaderError.Unsupported("Shaders do not support throw, except via discard().")
 
       case Apply(Ident(name), terms) =>
         ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, envVarName)), ShaderAST.void)
