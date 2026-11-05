@@ -30,4 +30,27 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(acc.toList, List("h", "i"))
   }
 
+  test("Discard - findAll and traverse reach nested discards") {
+    val ast =
+      ShaderAST.Block(
+        ShaderAST.If(
+          ShaderAST.DataTypes.bool(true),
+          ShaderAST.Block(ShaderAST.Discard()),
+          None
+        )
+      )
+
+    assertEquals(ast.findAll(_ == ShaderAST.Discard()), List(ShaderAST.Discard()))
+    assert(ast.exists(ShaderAST.Discard()))
+
+    val replaced =
+      ast.traverse { case ShaderAST.Discard() => ShaderAST.Empty() }
+
+    assert(!replaced.exists(ShaderAST.Discard()))
+  }
+
+  test("Discard - typeIdent is void") {
+    assertEquals(ShaderAST.Discard().typeIdent, ShaderAST.void)
+  }
+
 }

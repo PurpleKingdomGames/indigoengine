@@ -25,6 +25,7 @@ trait ShaderMacroUtils:
 
   def findReturnType: ShaderAST => ShaderAST =
     case _: ShaderAST.Empty       => ShaderAST.void
+    case _: ShaderAST.Discard     => ShaderAST.void
     case v: ShaderAST.Block       => v.statements.reverse.headOption.map(findReturnType).getOrElse(ShaderAST.void)
     case v: ShaderAST.Neg         => findReturnType(v.value)
     case v: ShaderAST.Not         => findReturnType(v.value)

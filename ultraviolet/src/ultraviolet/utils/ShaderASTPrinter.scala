@@ -73,6 +73,9 @@ object ShaderASTPrinter:
       case Empty() =>
         s"${pad}Empty"
 
+      case Discard() =>
+        s"${pad}Discard"
+
       case Block(stmts) =>
         withChildren("Block", stmts)
 

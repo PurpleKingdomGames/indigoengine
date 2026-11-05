@@ -10,6 +10,7 @@ object ShaderAST:
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
       x match
         case v: Empty                => Expr(v)
+        case v: Discard              => Expr(v)
         case v: Block                => Expr(v)
         case v: Neg                  => Expr(v)
         case v: Not                  => Expr(v)
@@ -41,6 +42,13 @@ object ShaderAST:
     given ToExpr[Empty] with {
       def apply(x: Empty)(using Quotes): Expr[Empty] =
         '{ Empty() }
+    }
+
+  final case class Discard() extends ShaderAST
+  object Discard:
+    given ToExpr[Discard] with {
+      def apply(x: Discard)(using Quotes): Expr[Discard] =
+        '{ Discard() }
     }
 
   final case class Block(statements: List[ShaderAST]) extends ShaderAST
@@ -428,6 +436,7 @@ object ShaderAST:
             x match
               case v if p(v)                        => rec(xs, v :: acc)
               case Empty()                          => rec(xs, acc)
+              case Discard()                        => rec(xs, acc)
               case Block(s)                         => rec(s ++ xs, acc)
               case Neg(s)                           => rec(s :: xs, acc)
               case Not(s)                           => rec(s :: xs, acc)
@@ -487,6 +496,7 @@ object ShaderAST:
       val f = modify.orElse(s => s)
       ast match
         case v @ Empty()                             => f(v)
+        case v @ Discard()                           => f(v)
         case Block(s)                                => f(Block(s.map(_.traverse(f))))
         case Neg(s)                                  => f(Neg(s.traverse(f)))
         case Not(s)                                  => f(Not(s.traverse(f)))
@@ -535,6 +545,7 @@ object ShaderAST:
     def typeIdent: ShaderAST.DataTypes.ident =
       ast match
         case Empty()                        => void
+        case Discard()                      => void
         case Block(_)                       => void
         case Neg(v)                         => v.typeIdent
         case Not(v)                         => v.typeIdent

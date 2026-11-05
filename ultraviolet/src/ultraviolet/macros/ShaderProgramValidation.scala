@@ -8,6 +8,7 @@ import ultraviolet.datatypes.ShaderAST.CallExternalFunction
 import ultraviolet.datatypes.ShaderAST.CallFunction
 import ultraviolet.datatypes.ShaderAST.Cast
 import ultraviolet.datatypes.ShaderAST.DataTypes.*
+import ultraviolet.datatypes.ShaderAST.Discard
 import ultraviolet.datatypes.ShaderAST.Empty
 import ultraviolet.datatypes.ShaderAST.Field
 import ultraviolet.datatypes.ShaderAST.For
@@ -42,6 +43,9 @@ object ShaderProgramValidation:
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def validate(level: Int, knownRefs: List[String]): ShaderAST => ShaderAST = {
     case ast @ Empty() =>
+      ast
+
+    case ast @ Discard() =>
       ast
 
     case Block(statements) =>

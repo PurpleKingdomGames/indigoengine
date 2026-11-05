@@ -23,6 +23,10 @@ class ShaderASTPrinterTests extends munit.FunSuite {
     assertEquals(ShaderASTPrinter.print(ShaderAST.Empty()), "Empty")
   }
 
+  test("renders a Discard node") {
+    assertEquals(ShaderASTPrinter.print(ShaderAST.Discard()), "Discard")
+  }
+
   test("renders a nested Block of Vals with indentation") {
     val ast =
       ShaderAST.Block(

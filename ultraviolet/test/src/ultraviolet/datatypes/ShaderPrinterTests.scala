@@ -7,6 +7,19 @@ import scala.annotation.nowarn
 @nowarn("msg=unused")
 class ShaderPrinterTests extends munit.FunSuite {
 
+  test("Printing a Discard") {
+    val ast =
+      ShaderAST.Block(
+        ShaderAST.If(
+          ShaderAST.DataTypes.bool(true),
+          ShaderAST.Block(ShaderAST.Discard()),
+          None
+        )
+      )
+
+    assertEquals(ShaderPrinter.print(ast), List("if(true){", "  discard;", "}"))
+  }
+
   test("Printing an AST") {
 
     val ast =
