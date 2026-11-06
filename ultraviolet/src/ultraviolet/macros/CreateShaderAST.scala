@@ -375,6 +375,9 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
                 case _ =>
                   findReturnType(body)
 
+            case "Nothing" =>
+              ShaderAST.void
+
             case s =>
               ShaderAST.DataTypes.ident(s)
 

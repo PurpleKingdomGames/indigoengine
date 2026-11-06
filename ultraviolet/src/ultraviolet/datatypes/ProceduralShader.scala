@@ -104,8 +104,10 @@ final case class ProceduralShader(
               ShaderAST.Block(
                 init ++
                   List(
-                    ShaderAST
-                      .Assign(ShaderAST.DataTypes.ident(outVariableName), last.headOption.getOrElse(ShaderAST.Empty()))
+                    ProceduralShader.assignUnlessDiscard(
+                      outVariableName,
+                      last.headOption.getOrElse(ShaderAST.Empty())
+                    )
                   )
               ),
               returnType
@@ -120,7 +122,7 @@ final case class ProceduralShader(
             ShaderAST.Function(
               fnName,
               args,
-              ShaderAST.Assign(ShaderAST.DataTypes.ident(outVariableName), body),
+              ProceduralShader.assignUnlessDiscard(outVariableName, body),
               returnType
             )
         }
@@ -145,8 +147,10 @@ final case class ProceduralShader(
               ShaderAST.Block(
                 init ++
                   List(
-                    ShaderAST
-                      .Assign(ShaderAST.DataTypes.ident(outVariableName), last.headOption.getOrElse(ShaderAST.Empty()))
+                    ProceduralShader.assignUnlessDiscard(
+                      outVariableName,
+                      last.headOption.getOrElse(ShaderAST.Empty())
+                    )
                   )
               ),
               ShaderAST.void
@@ -161,7 +165,7 @@ final case class ProceduralShader(
             ShaderAST.Function(
               fnName,
               args,
-              ShaderAST.Assign(ShaderAST.DataTypes.ident(outVariableName), body),
+              ProceduralShader.assignUnlessDiscard(outVariableName, body),
               ShaderAST.void
             )
         }
@@ -190,6 +194,15 @@ final case class ProceduralShader(
     )
 
 object ProceduralShader:
+
+  private[datatypes] def assignUnlessDiscard(outVariableName: String, ast: ShaderAST): ShaderAST =
+    ast match
+      case d @ ShaderAST.Discard() =>
+        d
+
+      case other =>
+        ShaderAST.Assign(ShaderAST.DataTypes.ident(outVariableName), other)
+
   given ToExpr[ProceduralShader] with {
     def apply(x: ProceduralShader)(using Quotes): Expr[ProceduralShader] =
       '{ ProceduralShader(${ Expr(x.defs) }, ${ Expr(x.ubos) }, ${ Expr(x.annotations) }, ${ Expr(x.main) }) }

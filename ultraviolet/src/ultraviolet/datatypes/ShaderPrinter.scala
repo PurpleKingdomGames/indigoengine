@@ -426,27 +426,34 @@ object ShaderPrinter:
         case None        => last.headOption.map(v => decideType(v)).getOrElse("void")
         case Some(value) => value
 
+    val endsInDiscard = last.headOption.exists {
+      case Discard() => true
+      case _         => false
+    }
+
+    val returnPrefix = if returnType != "void" && !endsInDiscard then "return " else ""
+
     val end: List[String] =
       last.headOption
         .map { ss =>
           renderStatements(List(ss)) match
             case x :: Nil =>
-              List((if returnType != "void" then "return " else "") + x)
+              List(returnPrefix + x)
 
             case x :: xs =>
               x match
                 case s if s.contains("if") =>
                   // This case covers one-line if statements
-                  ((if returnType != "void" then "return " else "") + x) :: xs
+                  (returnPrefix + x) :: xs
 
                 case _ =>
                   x :: xs match
                     case ss :+ s =>
                       // When the last line is actually more than one line...
-                      ss :+ ((if returnType != "void" then "return " else "") + s)
+                      ss :+ (returnPrefix + s)
 
                     case _ =>
-                      ((if returnType != "void" then "return " else "") + x) :: xs
+                      (returnPrefix + x) :: xs
 
             case xs =>
               xs
