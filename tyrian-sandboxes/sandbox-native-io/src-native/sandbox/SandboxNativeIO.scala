@@ -40,7 +40,7 @@ object SandboxNativeIO extends TyrianIOApp[Msg, Model]:
 
   def subscriptions(model: Model): Sub[IO, Msg] =
     val sub1 =
-      val d: FiniteDuration = 1.second
+      val d: FiniteDuration      = 1.second
       val s: fs2.Stream[IO, Msg] = fs2.Stream.awakeEvery[IO](d).map { t =>
         Msg.Tick(t)
       }

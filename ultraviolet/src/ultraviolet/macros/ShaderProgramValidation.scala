@@ -8,6 +8,7 @@ import ultraviolet.datatypes.ShaderAST.CallExternalFunction
 import ultraviolet.datatypes.ShaderAST.CallFunction
 import ultraviolet.datatypes.ShaderAST.Cast
 import ultraviolet.datatypes.ShaderAST.DataTypes.*
+import ultraviolet.datatypes.ShaderAST.Discard
 import ultraviolet.datatypes.ShaderAST.Empty
 import ultraviolet.datatypes.ShaderAST.Field
 import ultraviolet.datatypes.ShaderAST.For
@@ -60,13 +61,16 @@ object ShaderProgramValidation extends ShaderMacroUtils:
     case ast @ Empty() =>
       ast
 
+    case ast @ Discard() =>
+      ast
+
     case Block(statements) =>
       Block(validateStatementBlock(statements, level, knownRefs))
 
-    case ast @ Neg(value) =>
+    case Neg(value) =>
       Neg(validate(level, knownRefs)(value))
 
-    case ast @ Not(value) =>
+    case Not(value) =>
       Not(validate(level, knownRefs)(value))
 
     case ast @ UBO(uboDef) =>

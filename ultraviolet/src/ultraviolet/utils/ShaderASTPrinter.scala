@@ -73,6 +73,9 @@ object ShaderASTPrinter:
       case Empty() =>
         s"${pad}Empty"
 
+      case Discard() =>
+        s"${pad}Discard"
+
       case Block(stmts) =>
         withChildren("Block", stmts)
 
@@ -86,7 +89,7 @@ object ShaderASTPrinter:
         val head = s"${pad}UBO '${uboDef.name}'"
         if uboDef.fields.isEmpty then head
         else
-          val inner = "  " * (indent + 1)
+          val inner      = "  " * (indent + 1)
           val fieldLines = uboDef.fields.map { f =>
             val prec = f.precision.fold("")(p => s"$p ")
             s"$inner${prec}${f.typeOf} ${f.name}"
@@ -135,9 +138,9 @@ object ShaderASTPrinter:
         withChildren("For", List(i, c, n, b))
 
       case Switch(on, cases) =>
-        val head   = s"${pad}Switch"
-        val onLine = render(on, indent + 1)
-        val inner  = "  " * (indent + 1)
+        val head      = s"${pad}Switch"
+        val onLine    = render(on, indent + 1)
+        val inner     = "  " * (indent + 1)
         val caseLines = cases.map { case (label, body) =>
           val l = label.fold("default")(_.toString)
           s"$inner case $l:\n${render(body, indent + 2)}"

@@ -50,7 +50,6 @@ object LayerMask:
   @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
-
       ubo[MaskBounds]
 
       def fragment(color: vec4): vec4 =

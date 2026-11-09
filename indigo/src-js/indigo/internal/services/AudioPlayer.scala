@@ -211,7 +211,7 @@ final class AudioPlayer(context: AudioContextProxy) extends AudioService:
           next.playbackPattern match
             case PlaybackPattern.SingleTrackLoop(track) =>
               val volume = track.volume * next.masterVolume
-              val nodes =
+              val nodes  =
                 findAudioDataByName(track.assetName)
                   .map(asset => setupNodes(asset, volume, loop = true))
                   .getOrElse {

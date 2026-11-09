@@ -19,7 +19,7 @@ final case class Locale(
   def isRightToLeft: Boolean =
     script match
       case Some(s) => s.isRightToLeft
-      case None =>
+      case None    =>
         language match
           case Language.Arabic | Language.Divehi | Language.Hebrew | Language.Kashmiri | Language.Pashto |
               Language.Persian | Language.Sindhi | Language.Uighur | Language.Urdu | Language.Yiddish =>

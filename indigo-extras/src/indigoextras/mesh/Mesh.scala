@@ -31,12 +31,12 @@ final case class Mesh(
 
   /** Removes the vertex with the specified index, and any edges and tris attached to it. */
   def removeVertexAt(index: Int): Mesh =
-    val keep = vertices.filterNot(p => p._1 == index)
+    val keep                  = vertices.filterNot(p => p._1 == index)
     val (badEdges, goodEdges) = edges.partition { case (_, e) =>
       e.vertexA == index || e.vertexB == index
     }
     val badEdgeIndices = badEdges.map(_._1)
-    val t = tris.filterNot(t =>
+    val t              = tris.filterNot(t =>
       badEdgeIndices.contains(t._2.edgeA) ||
         badEdgeIndices.contains(t._2.edgeB) ||
         badEdgeIndices.contains(t._2.edgeC)
@@ -163,7 +163,7 @@ final case class Mesh(
               // This is the same as forgetting the vertex, and pointing the matching one.
 
               val updatedEdges =
-                edgesAcc.map { case (idx, e @ Edge(a, b)) =>
+                edgesAcc.map { case (idx, Edge(a, b)) =>
                   idx -> Edge(
                     if a == v._1 then replacementIndex else a,
                     if b == v._1 then replacementIndex else b
@@ -202,7 +202,7 @@ final case class Mesh(
               // This edge needs to be welded with one of the ones accumulated already.
               // This is the same as forgetting the edge, and pointing the matching one.
               val updatedTries =
-                trisAcc.map { case (idx, t @ Tri(a, b, c)) =>
+                trisAcc.map { case (idx, Tri(a, b, c)) =>
                   idx -> Tri(
                     if a == e._1 then replacementIndex else a,
                     if b == e._1 then replacementIndex else b,

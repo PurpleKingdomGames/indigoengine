@@ -128,7 +128,7 @@ object CustomShader:
 
       def fragment(color: vec4): vec4 =
         val magenta = env.CUSTOM_COLOR
-        val cyan = vec4(
+        val cyan    = vec4(
           env.ANOTHER_COLOR(0),
           env.ANOTHER_COLOR(1),
           env.ANOTHER_COLOR(2),

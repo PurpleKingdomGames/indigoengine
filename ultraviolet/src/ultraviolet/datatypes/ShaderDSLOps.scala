@@ -105,7 +105,7 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def degrees(radians: Float): Float = ((180.0 * radians) / Math.PI).toFloat
   def degrees(radians: vec2): vec2   = vec2(degrees(radians.x), degrees(radians.y))
   def degrees(radians: vec3): vec3   = vec3(degrees(radians.x), degrees(radians.y), degrees(radians.z))
-  def degrees(radians: vec4): vec4 =
+  def degrees(radians: vec4): vec4   =
     vec4(degrees(radians.x), degrees(radians.y), degrees(radians.z), degrees(radians.w))
 
   // STUB
@@ -212,7 +212,7 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def length(x: Float): Float = Math.sqrt(Math.pow(x, 2.0f)).toFloat
   def length(x: vec2): Float  = Math.sqrt(Math.pow(x.x, 2.0f) + Math.pow(x.y, 2.0f)).toFloat
   def length(x: vec3): Float  = Math.sqrt(Math.pow(x.x, 2.0f) + Math.pow(x.y, 2.0f) + Math.pow(x.z, 2.0f)).toFloat
-  def length(x: vec4): Float =
+  def length(x: vec4): Float  =
     Math.sqrt(Math.pow(x.x, 2.0f) + Math.pow(x.y, 2.0f) + Math.pow(x.z, 2.0f) + Math.pow(x.w, 2.0f)).toFloat
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/lessThan.xhtml
@@ -378,7 +378,7 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/mix.xhtml
   def mix(x: Float, y: Float, a: Float): Float = x * (1 - a) + y * a
-  def mix(x: vec2, y: vec2, a: vec2): vec2 =
+  def mix(x: vec2, y: vec2, a: vec2): vec2     =
     vec2(mix(x.x, y.x, a.x), mix(x.y, y.y, a.y))
   def mix(x: vec2, y: vec2, a: Float): vec2 =
     vec2(mix(x.x, y.x, a), mix(x.y, y.y, a))
@@ -437,7 +437,7 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
   def radians(degrees: Float): Float = ((Math.PI * degrees) / 180.0).toFloat
   def radians(degrees: vec2): vec2   = vec2(radians(degrees.x), radians(degrees.y))
   def radians(degrees: vec3): vec3   = vec3(radians(degrees.x), radians(degrees.y), radians(degrees.z))
-  def radians(degrees: vec4): vec4 =
+  def radians(degrees: vec4): vec4   =
     vec4(radians(degrees.x), radians(degrees.y), radians(degrees.z), radians(degrees.w))
 
   // https://registry.khronos.org/OpenGL-Refpages/gl4/html/reflect.xhtml

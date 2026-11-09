@@ -295,7 +295,7 @@ object WindowManager:
         )
 
     case e =>
-      val modalWindow = modalWindowOpen(model)
+      val modalWindow        = modalWindowOpen(model)
       val windowUnderPointer =
         model.windowAt(context.pointerCoords, context.frame.viewport, context.magnification)
 

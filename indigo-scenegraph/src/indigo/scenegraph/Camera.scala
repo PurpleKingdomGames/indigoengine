@@ -70,8 +70,8 @@ object Camera:
     * character, for example.
     */
   final case class LookAt(target: Point, zoom: Zoom, rotation: Radians) extends Camera:
-    val isLookAt: Boolean = true
-    val position: Point   = target
+    val isLookAt: Boolean              = true
+    val position: Point                = target
     def topLeft(viewport: Size): Point =
       target - (viewport.toPoint / 2) / zoom.toDouble.toInt
     def bounds(viewport: Size): Rectangle =

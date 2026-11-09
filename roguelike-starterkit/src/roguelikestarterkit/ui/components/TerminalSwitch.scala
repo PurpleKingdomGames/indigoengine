@@ -18,7 +18,7 @@ object TerminalSwitch:
       charSheet: CharSheet
   ): (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer] =
     (context, switch) =>
-      val bounds = switch.bounds(context)
+      val bounds   = switch.bounds(context)
       val terminal =
         RogueTerminalEmulator(Size(1))
           .put(Point.zero, tile.tile, tile.colors.foreground, tile.colors.background)

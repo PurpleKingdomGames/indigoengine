@@ -63,7 +63,7 @@ sealed trait Extension[GraphicsContext, View]:
 
 object Extension:
 
-  trait Standard[View] extends Extension[Unit, View]
+  trait Standard[View]                   extends Extension[Unit, View]
   trait Graphical[GraphicsContext, View] extends Extension[GraphicsContext, View]:
 
     /** Used for per-frame drawing directly to a graphics context.

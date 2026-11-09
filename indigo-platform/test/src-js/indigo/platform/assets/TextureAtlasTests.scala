@@ -21,7 +21,7 @@ class TextureAtlasTests extends munit.FunSuite {
       ImageRef(AssetName("e"), 5000, 300, None)
     )
 
-    val lookupByName: AssetName => Option[LoadedImageAsset] = _ => None
+    val lookupByName: AssetName => Option[LoadedImageAsset]                           = _ => None
     val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas =
       (_, _) => new Atlas(PowerOfTwo.Max, None)
 
@@ -94,7 +94,7 @@ class TextureAtlasTests extends munit.FunSuite {
       ImageRef(AssetName("e"), 64, 64, None)
     )
 
-    val lookupByName: AssetName => Option[LoadedImageAsset] = _ => None
+    val lookupByName: AssetName => Option[LoadedImageAsset]                           = _ => None
     val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas =
       (_, _) => new Atlas(PowerOfTwo._128, None)
 

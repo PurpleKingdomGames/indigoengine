@@ -5,7 +5,7 @@ import indigo.core.dice.Dice
 opaque type AnimationKey = String
 
 object AnimationKey:
-  inline def apply(key: String): AnimationKey = key
+  inline def apply(key: String): AnimationKey   = key
   inline def fromDice(dice: Dice): AnimationKey =
     dice.rollAlphaNumeric
 

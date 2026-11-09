@@ -59,7 +59,7 @@ object Rendering:
     */
   private def interceptHref[Msg](attrs: List[Attr[Msg]]): Boolean =
     val href = attrs.exists {
-      case Attribute("href", v) => true
+      case Attribute("href", _) => true
       case _                    => false
     }
 
@@ -85,7 +85,6 @@ object Rendering:
     }.headOption
 
     val callback: dom.Event => Unit = { (e: dom.Event) =>
-
       e.preventDefault()
 
       newLocation match
@@ -118,7 +117,7 @@ object Rendering:
           case other                            => other.toVNode
 
       case Tag("a", attrs, children, key) if interceptHref(attrs) =>
-        val data = buildNodeData(attrs, onMsg, key)
+        val data                      = buildNodeData(attrs, onMsg, key)
         val childrenElem: List[VNode] =
           children.flatMap(c => elemToVNodes(c, onMsg, router))
 
@@ -129,7 +128,7 @@ object Rendering:
         )
 
       case Tag(name, attrs, children, key) =>
-        val data = buildNodeData(attrs, onMsg, key)
+        val data                      = buildNodeData(attrs, onMsg, key)
         val childrenElem: List[VNode] =
           children.flatMap(c => elemToVNodes(c, onMsg, router))
 

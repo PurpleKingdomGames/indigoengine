@@ -24,7 +24,7 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
 
   def update(model: SandboxModel): GlobalMsg => Result[SandboxModel] =
     case Msg.Tick(t) =>
-      val nextTicks = model.ticks + 1L
+      val nextTicks               = model.ticks + 1L
       val cmd: Cmd[IO, GlobalMsg] =
         if nextTicks % 60L == 0L then Cmd.SideEffect(IO.println(s"tick $nextTicks (t=${t.toMillis} ms)"))
         else Cmd.None
@@ -37,6 +37,9 @@ object SandboxNativeSDL extends SDLApp[SandboxModel]:
         .addCmds(Cmd.SideEffect(IO.println("SDL quit received")))
 
     case Msg.NoOp =>
+      Result(model)
+
+    case _ =>
       Result(model)
 
   def view(model: SandboxModel): ConsoleFragment =

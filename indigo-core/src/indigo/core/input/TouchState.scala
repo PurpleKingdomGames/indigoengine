@@ -176,11 +176,11 @@ final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState
         fingers.filterNot(_.fingerId == event.fingerId)
       else
         // Otherwise, find or create the finger for the pointerId and fingerId and update it based on the event
-        val finger = TouchState.getOrCreate(event.pointerId, event.fingerId, fingers)
+        val finger    = TouchState.getOrCreate(event.pointerId, event.fingerId, fingers)
         val newFinger = event match {
           case e: TouchEvent.Move  => finger.copy(maybePosition = Option(e.position), pressure = e.pressure)
           case e: TouchEvent.Enter => finger.copy(maybePosition = Option(e.position), pressure = e.pressure)
-          case e: TouchEvent.Tap =>
+          case e: TouchEvent.Tap   =>
             finger.copy(isTapped = true, maybePosition = Option(e.position), pressure = e.pressure)
           case e: TouchEvent.Down =>
             finger.copy(isDown = true, maybePosition = Option(e.position), pressure = e.pressure)

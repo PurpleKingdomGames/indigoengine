@@ -14,9 +14,9 @@ object SearchPage:
       `class` := "tab-content"
     )(
       input(
-        `type` := "text",
-        name   := "q",
-        hxGet  := "/search",
+        `type`    := "text",
+        name      := "q",
+        hxGet     := "/search",
         hxTrigger := List(
           Trigger(tyrian.htmx.Event.Input)
             .withModifiers(Modifier.Changed, Modifier.Delay("300ms")),

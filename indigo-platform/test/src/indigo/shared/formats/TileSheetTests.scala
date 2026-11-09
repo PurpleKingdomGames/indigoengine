@@ -5,13 +5,13 @@ import indigo.core.datatypes.Rectangle
 import indigo.core.datatypes.Size
 
 class TileSheetTests extends munit.FunSuite:
-  private val tileWidth  = 16
-  private val tileHeight = 16
-  private val margin     = 1
-  private val rows       = 32
-  private val columns    = 32
-  private val width      = (tileWidth + margin) * rows - margin
-  private val height     = (tileHeight + margin) * columns - margin
+  private val tileWidth   = 16
+  private val tileHeight  = 16
+  private val margin      = 1
+  private val rows        = 32
+  private val columns     = 32
+  private val width       = (tileWidth + margin) * rows - margin
+  private val height      = (tileHeight + margin) * columns - margin
   private val testFixture = TileSheet(
     AssetName("ignored"),
     Size(width, height),

@@ -437,7 +437,7 @@ class ShaderTests extends munit.FunSuite {
       Shader {
         val _f: vec4 => Shader[Unit, vec4] = f
         var VERTEX: vec4                   = null
-        def vertex: Unit =
+        def vertex: Unit                   =
           VERTEX = _f(VERTEX).run(())
       }
 
@@ -650,7 +650,7 @@ object Foo {
     Shader[Env2] { env =>
       val _f: vec4 => Shader[Env, vec4] = f
       var VERTEX: vec4                  = null
-      def vertex: Unit =
+      def vertex: Unit                  =
         VERTEX = _f(VERTEX).run(Env(0, vec2(0.0f)))
     }
 

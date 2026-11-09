@@ -22,7 +22,6 @@ object WebGL2Merge:
   object vertex:
     inline def shader =
       Shader[IndigoMergeData & VertexEnv] { env =>
-
         @layout(0) @in val a_verticesAndCoords: vec4 = null
 
         ubo[IndigoMergeData]

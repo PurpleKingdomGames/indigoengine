@@ -68,7 +68,7 @@ object ShapePolygon:
       def fragment(color: vec4): vec4 =
         val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
 
-        val fillType = round(env.FILL_TYPE).toInt
+        val fillType   = round(env.FILL_TYPE).toInt
         val fill: vec4 =
           fillType match
             case 1 =>

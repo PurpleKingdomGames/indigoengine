@@ -54,11 +54,17 @@ extension (a: Attribute)
     s"""${a.name}="${a.value}""""
 
 extension (p: Property)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def render: String =
     val asStr: String =
       p.valueOf match
         case x: Boolean => x.toString
         case x: String  => x
+        case x          =>
+          // Property values are only ever String | Boolean
+          throw new Exception(
+            s"Property ${p.name} contained an unexpected value. Expected String or Boolean, got: ${x.toString}"
+          )
 
     s"""${p.name}="${asStr}""""
 

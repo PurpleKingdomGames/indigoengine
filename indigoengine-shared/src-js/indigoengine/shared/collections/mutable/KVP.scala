@@ -61,11 +61,11 @@ final class KVP[A] private (private val _underlying: Dictionary[A]) extends KVPO
   def toKVP: ImmutableKVP[A] =
     ImmutableKVP.from(Dictionary.empty[A].addAll(_underlying))
 
-  def map[B](f: ((String, A)) => ((String, B))): KVP[B] =
+  def map[B](f: ((String, A)) => (String, B)): KVP[B] =
     new KVP(_underlying.map(f))
 
   def mapValues[B](f: A => B): KVP[B] =
-    val g: ((String, A)) => ((String, B)) =
+    val g: ((String, A)) => (String, B) =
       (k, v) => (k, f(v))
     map(g)
 

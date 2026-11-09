@@ -15,7 +15,7 @@ object WebSocketsPage:
 
   def drawGameOfLife(game: GameOfLife): Html[Nothing] =
     val cellSize = 10
-    val cells = (for {
+    val cells    = (for {
       row    <- 0 until game.height
       column <- 0 until game.width
       isLive = game.cells.contains(Point(column, row))

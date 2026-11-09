@@ -333,7 +333,7 @@ class SolverTests extends munit.FunSuite:
 
   test("Example: A box travelling down y whose corner hits a static circle at ~45 degrees should not get stuck.") {
     val pointInsideCircle = Vertex(1.4, -1.4)
-    val box = Collider
+    val box               = Collider
       .Box(tag, BoundingBox(pointInsideCircle + Vertex(0, -3), Vertex(3, 3)))
       .withVelocity(Vector2(0, 10))
       .withFriction(Friction.zero)

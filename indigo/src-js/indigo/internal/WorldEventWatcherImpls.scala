@@ -255,7 +255,7 @@ final class WorldEventWatcherImpls(canvas: html.Canvas):
     val clickEvents: Batch[GlobalEvent] =
       pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == button) match
         case Some((_, downTime)) if Date.now() - downTime.getTime() <= clickTimeMs =>
-          val btn = MouseButton.fromOrdinalOpt(button)
+          val btn   = MouseButton.fromOrdinalOpt(button)
           val click =
             PointerEvent.Click(
               PointerId(e.pointerId),

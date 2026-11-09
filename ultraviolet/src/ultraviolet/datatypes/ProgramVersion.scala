@@ -80,7 +80,7 @@ object ProgramVersion:
             summon[FromExpr[ProgramVersionId]]
               .unapply(unwrap(idTerm).asExprOf[ProgramVersionId]) match
               case Some(value) => value
-              case None =>
+              case None        =>
                 report.errorAndAbort(
                   s"[Ultraviolet macro error, please report.] Could not extract ProgramVersionId:\n${idTerm
                       .show(using Printer.TreeStructure)}"
@@ -91,7 +91,7 @@ object ProgramVersion:
               summon[FromExpr[ProgramRequirement]].unapply(unwrap(t).asExprOf[ProgramRequirement])
             } match
               case Some(value) => value
-              case None =>
+              case None        =>
                 report.errorAndAbort(
                   s"[Ultraviolet macro error, please report.] Could not extract List[ProgramRequirement]:\n${reqsTerm
                       .show(using Printer.TreeStructure)}"
@@ -102,7 +102,7 @@ object ProgramVersion:
               summon[FromExpr[ProgramTransformer]].unapply(unwrap(t).asExprOf[ProgramTransformer])
             } match
               case Some(value) => value
-              case None =>
+              case None        =>
                 report.errorAndAbort(
                   s"[Ultraviolet macro error, please report.] Could not extract List[ProgramTransformer]:\n${transTerm
                       .show(using Printer.TreeStructure)}"

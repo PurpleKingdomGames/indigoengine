@@ -170,7 +170,7 @@ trait ButtonInputState:
     * @return
     */
   def wasButtonUpWithin(bounds: Rectangle): Boolean =
-    upButtons.exists { case (b, position) => bounds.isPointWithin(position) }
+    upButtons.exists { case (_, position) => bounds.isPointWithin(position) }
 
   /** Whether the button was down within the specified bounds in this frame
     *
@@ -213,7 +213,7 @@ trait ButtonInputState:
     * @return
     */
   def wasButtonDownWithin(bounds: Rectangle): Boolean =
-    downButtons.exists { case (b, position) => bounds.isPointWithin(position) }
+    downButtons.exists { case (_, position) => bounds.isPointWithin(position) }
 
   /** Whether the button was down within the specified bounds in this frame
     *

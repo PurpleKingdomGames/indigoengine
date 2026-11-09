@@ -40,7 +40,7 @@ object TextureAtlasFunctions:
           .map(TextureAtlasFunctionsShared.convertTextureDetailsToTree)
           .foldLeft(AtlasQuadTree.identity)(_ + _) match {
           case AtlasQuadEmpty(_) => TextureAtlas.identity
-          case n: AtlasQuadNode =>
+          case n: AtlasQuadNode  =>
             val textureMap = n.toTextureMap
 
             val legend: KVP[AtlasIndex] =

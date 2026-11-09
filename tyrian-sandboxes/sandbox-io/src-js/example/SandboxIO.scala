@@ -36,7 +36,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
         case "/page5" => Msg.NavigateTo(Page.Page5)
         case "/page6" => Msg.NavigateTo(Page.Page6)
         case "/page7" => Msg.NavigateTo(Page.Page7)
-        case _ =>
+        case _        =>
           println("Unknown route: " + loc.url)
           Msg.NoOp
 
@@ -104,6 +104,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
         case "delete"  => Method.Delete
         case "options" => Method.Options
         case "head"    => Method.Head
+        case _         => Method.Get
       }
 
       (model.copy(http = model.http.copy(method = method)), Cmd.None)
@@ -113,6 +114,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
         case "omit"        => RequestCredentials.Omit
         case "same-origin" => RequestCredentials.SameOrigin
         case "include"     => RequestCredentials.Include
+        case _             => RequestCredentials.Omit
       }
       (model.copy(http = model.http.copy(credentials = credentials)), Cmd.None)
 
@@ -142,6 +144,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
         case "no-cache"       => RequestCache.NoCache
         case "force-cache"    => RequestCache.ForceCache
         case "only-if-cached" => RequestCache.OnlyIfCached
+        case _                => RequestCache.Default
       }
       (model.copy(http = model.http.copy(cache = cache)), Cmd.None)
 
@@ -188,7 +191,7 @@ object SandboxIO extends TyrianIOApp[Msg, Model]:
 
     case Msg.Load(k) =>
       val cmd: Cmd[IO, Msg] = LocalStorage.getItem(k) {
-        case Left(e) => Msg.Log("Error loading: " + e.key)
+        case Left(e)      => Msg.Log("Error loading: " + e.key)
         case Right(found) =>
           Msg.DataLoaded(found.data)
       }

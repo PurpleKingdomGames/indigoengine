@@ -14,5 +14,5 @@ trait KVPOps[A, KVPOut[_]]:
   def size: Int
   def toMap: Map[String, A]
   def toBatch: Batch[(String, A)]
-  def map[B](f: ((String, A)) => ((String, B))): KVPOut[B]
+  def map[B](f: ((String, A)) => (String, B)): KVPOut[B]
   def mapValues[B](f: A => B): KVPOut[B]

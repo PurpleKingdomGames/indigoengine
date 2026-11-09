@@ -79,7 +79,7 @@ object HSL:
     val cmin  = Math.min(r, Math.min(g, b))
     val delta = cmax - cmin
     val l     = (cmax + cmin) / 2.0
-    val s =
+    val s     =
       if delta == 0 then 0.0
       else delta / (1.0 - Math.abs(2.0 * l - 1.0))
     val h =

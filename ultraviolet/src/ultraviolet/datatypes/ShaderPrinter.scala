@@ -13,6 +13,9 @@ object ShaderPrinter:
       case Empty() =>
         Nil
 
+      case Discard() =>
+        List("discard")
+
       case Block(statements) =>
         renderStatements(statements)
 
@@ -257,7 +260,7 @@ object ShaderPrinter:
         }
         List(s"""${lead}${rest.mkString(",")}""")
 
-      case v @ Val(id, value, typeOf) =>
+      case Val(id, value, typeOf) =>
         val tOf = render(typeOf).headOption.getOrElse("void")
         value match
           // This rearranges `vec2[16] foo` to `vec2 foo[16]`, both are valid,
@@ -284,7 +287,7 @@ object ShaderPrinter:
           case v @ Val(id, value, typeOf) if lbl == "const" =>
             List(s"""const ${render(v).mkString}""")
 
-          case v @ Val(id, value, typeOf) if lbl == "define" =>
+          case Val(id, value, typeOf) if lbl == "define" =>
             List(s"""#define $id ${render(value).mkString}""")
 
           case _ if lbl == "layout" =>
@@ -293,7 +296,7 @@ object ShaderPrinter:
           case v if lbl == "global" =>
             List(s"""${render(v).mkString}""")
 
-          case v @ Val(id, value, typeOf) =>
+          case Val(id, value, typeOf) =>
             List(s"""$lbl ${render(Val(id, Empty(), typeOf)).mkString}""")
 
           case _ =>
@@ -350,6 +353,7 @@ object ShaderPrinter:
   private def decideType(a: ShaderAST): String =
     a match
       case Empty()                        => "void"
+      case Discard()                      => "void"
       case Block(_)                       => "void"
       case Neg(v)                         => decideType(v)
       case Not(v)                         => decideType(v)
@@ -422,27 +426,34 @@ object ShaderPrinter:
         case None        => last.headOption.map(v => decideType(v)).getOrElse("void")
         case Some(value) => value
 
+    val endsInDiscard = last.headOption.exists {
+      case Discard() => true
+      case _         => false
+    }
+
+    val returnPrefix = if returnType != "void" && !endsInDiscard then "return " else ""
+
     val end: List[String] =
       last.headOption
         .map { ss =>
           renderStatements(List(ss)) match
             case x :: Nil =>
-              List((if returnType != "void" then "return " else "") + x)
+              List(returnPrefix + x)
 
             case x :: xs =>
               x match
                 case s if s.contains("if") =>
                   // This case covers one-line if statements
-                  ((if returnType != "void" then "return " else "") + x) :: xs
+                  (returnPrefix + x) :: xs
 
                 case _ =>
                   x :: xs match
                     case ss :+ s =>
                       // When the last line is actually more than one line...
-                      ss :+ ((if returnType != "void" then "return " else "") + s)
+                      ss :+ (returnPrefix + s)
 
                     case _ =>
-                      ((if returnType != "void" then "return " else "") + x) :: xs
+                      (returnPrefix + x) :: xs
 
             case xs =>
               xs

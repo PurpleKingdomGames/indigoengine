@@ -87,7 +87,7 @@ class ThemeTests extends munit.FunSuite {
     {
       given Theme          = Theme.default
       val actualWithStyles = textBlock.toElem.toString
-      val expectedStyles = Style(
+      val expectedStyles   = Style(
         "font-family" -> "system-ui, ui-sans-serif, -apple-system, 'Segoe UI Variable', 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif",
         "font-size"   -> "1rem",
         "font-weight" -> "400",

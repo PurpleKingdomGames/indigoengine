@@ -37,7 +37,6 @@ object Http:
 
     @nowarn("msg=unused")
     def fetchTask(abortController: dom.AbortController): F[dom.Response] = Async[F].async_ { callback =>
-
       val requestInit = new RequestInit {}
       val headers     = new dom.Headers()
 
@@ -77,7 +76,7 @@ object Http:
 
     val fullTask = (for {
       abortController <- Async[F].delay(new dom.AbortController())
-      domResponse <- Async[F].timeoutTo(
+      domResponse     <- Async[F].timeoutTo(
         fetchTask(abortController),
         request.timeout,
         Async[F].delay(abortController.abort()) >> Async[F].raiseError(TimeoutException)

@@ -34,7 +34,7 @@ class TiledMapTests extends munit.FunSuite {
       case (i, TileTypes.Solid) if i != 0 => true
       case (i, TileTypes.Empty) if i != 0 => false
       case (i, TileTypes.Solid) if i == 0 => false
-      case _ =>
+      case _                              =>
         throw new Exception("test failed")
     }
 

@@ -90,7 +90,6 @@ object VoronoiShader:
   @nowarn("msg=unused")
   inline def voronoi: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
-
       def N22(p: vec2): vec2 =
         var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
         a = a + dot(a, a + 34.45f)

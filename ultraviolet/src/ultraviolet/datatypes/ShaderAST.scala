@@ -10,6 +10,7 @@ object ShaderAST:
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
       x match
         case v: Empty                => Expr(v)
+        case v: Discard              => Expr(v)
         case v: Block                => Expr(v)
         case v: Neg                  => Expr(v)
         case v: Not                  => Expr(v)
@@ -41,6 +42,13 @@ object ShaderAST:
     given ToExpr[Empty] with {
       def apply(x: Empty)(using Quotes): Expr[Empty] =
         '{ Empty() }
+    }
+
+  final case class Discard() extends ShaderAST
+  object Discard:
+    given ToExpr[Discard] with {
+      def apply(x: Discard)(using Quotes): Expr[Discard] =
+        '{ Discard() }
     }
 
   final case class Block(statements: List[ShaderAST]) extends ShaderAST
@@ -423,11 +431,12 @@ object ShaderAST:
       @tailrec
       def rec(remaining: List[ShaderAST], acc: List[ShaderAST]): List[ShaderAST] =
         remaining match
-          case Nil => acc.reverse
+          case Nil     => acc.reverse
           case x :: xs =>
             x match
               case v if p(v)                        => rec(xs, v :: acc)
               case Empty()                          => rec(xs, acc)
+              case Discard()                        => rec(xs, acc)
               case Block(s)                         => rec(s ++ xs, acc)
               case Neg(s)                           => rec(s :: xs, acc)
               case Not(s)                           => rec(s :: xs, acc)
@@ -451,13 +460,13 @@ object ShaderAST:
               case Annotated(_, _, body)            => rec(body :: xs, acc)
               case RawLiteral(_)                    => rec(xs, acc)
               case Field(t, _)                      => rec(t :: xs, acc)
-              case v: DataTypes.ident               => rec(xs, acc)
-              case v: DataTypes.external            => rec(xs, acc)
-              case v: DataTypes.index               => rec(xs, acc)
-              case v: DataTypes.externalIndex       => rec(xs, acc)
-              case v: DataTypes.bool                => rec(xs, acc)
-              case v: DataTypes.float               => rec(xs, acc)
-              case v: DataTypes.int                 => rec(xs, acc)
+              case _: DataTypes.ident               => rec(xs, acc)
+              case _: DataTypes.external            => rec(xs, acc)
+              case _: DataTypes.index               => rec(xs, acc)
+              case _: DataTypes.externalIndex       => rec(xs, acc)
+              case _: DataTypes.bool                => rec(xs, acc)
+              case _: DataTypes.float               => rec(xs, acc)
+              case _: DataTypes.int                 => rec(xs, acc)
               case v: DataTypes.vec2                => rec(v.args ++ xs, acc)
               case v: DataTypes.vec3                => rec(v.args ++ xs, acc)
               case v: DataTypes.vec4                => rec(v.args ++ xs, acc)
@@ -470,7 +479,7 @@ object ShaderAST:
               case v: DataTypes.mat2                => rec(v.args ++ xs, acc)
               case v: DataTypes.mat3                => rec(v.args ++ xs, acc)
               case v: DataTypes.mat4                => rec(v.args ++ xs, acc)
-              case v: DataTypes.array               => rec(xs, acc)
+              case _: DataTypes.array               => rec(xs, acc)
               case v: DataTypes.swizzle             => rec(v.genType :: xs, acc)
 
       rec(List(ast), Nil)
@@ -487,6 +496,7 @@ object ShaderAST:
       val f = modify.orElse(s => s)
       ast match
         case v @ Empty()                             => f(v)
+        case v @ Discard()                           => f(v)
         case Block(s)                                => f(Block(s.map(_.traverse(f))))
         case Neg(s)                                  => f(Neg(s.traverse(f)))
         case Not(s)                                  => f(Not(s.traverse(f)))
@@ -535,6 +545,7 @@ object ShaderAST:
     def typeIdent: ShaderAST.DataTypes.ident =
       ast match
         case Empty()                        => void
+        case Discard()                      => void
         case Block(_)                       => void
         case Neg(v)                         => v.typeIdent
         case Not(v)                         => v.typeIdent
@@ -557,7 +568,7 @@ object ShaderAST:
         case MultiStatements(typeOf, _)     => typeOf.typeIdent
         case Annotated(_, _, value)         => value.typeIdent
         case RawLiteral(_)                  => void
-        case Field(t, n)                    => void
+        case Field(_, _)                    => void
         case n @ DataTypes.ident(_)         => n
         case n @ DataTypes.external(_)      => ShaderAST.DataTypes.ident(n.id)
         case DataTypes.index(_, _)          => void

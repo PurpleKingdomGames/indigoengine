@@ -128,7 +128,7 @@ object Seascape:
         n = vec3(n.x, eps, n.z)
         normalize(n)
 
-      var pOut: vec3 = vec3(0.0)
+      var pOut: vec3                                    = vec3(0.0)
       def heightMapTracing(ori: vec3, dir: vec3): Float =
         var tm: Float = 0.0f
         var tx: Float = 1000.0f

@@ -21,7 +21,7 @@ object ShaderMacros:
       inline version: ProgramVersion,
       inline useValidation: Boolean
   ): ShaderResult =
-    ${ toGLSLImpl('{ shader }, '{ headers }, '{ version }, '{ useValidation }) }
+    ${ toGLSLImpl('shader, 'headers, 'version, 'useValidation) }
 
   @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -66,7 +66,7 @@ object ShaderMacros:
     }
 
   inline def toAST[In, Out](inline expr: Shader[In, Out], inline useValidation: Boolean): ProceduralShader =
-    ${ toASTImpl('{ expr }, '{ useValidation }) }
+    ${ toASTImpl('expr, 'useValidation) }
 
   private[macros] def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]], useValidation: Expr[Boolean])(using
       q: Quotes
@@ -78,7 +78,7 @@ object ShaderMacros:
       inline version: ProgramVersion,
       inline useValidation: Boolean
   ): ProceduralShader =
-    ${ toASTTransformedImpl('{ expr }, '{ version }, '{ useValidation }) }
+    ${ toASTTransformedImpl('expr, 'version, 'useValidation) }
 
   private[macros] def toASTTransformedImpl[In, Out: Type](
       expr: Expr[Shader[In, Out]],
@@ -114,7 +114,7 @@ object ShaderMacros:
     val annotations =
       createAST.annotationRegister.toList
 
-    val defRefs = defs.map(_.id)
+    val defRefs        = defs.map(_.id)
     val annotationRefs =
       annotations.flatMap {
         case ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _)) =>
@@ -154,7 +154,7 @@ object ShaderMacros:
         )
   }
 
-  inline def fromFile(inline expr: String): RawGLSL = ${ fromFileImpl('{ expr }) }
+  inline def fromFile(inline expr: String): RawGLSL = ${ fromFileImpl('expr) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private[macros] def fromFileImpl[In, Out: Type](expr: Expr[String])(using q: Quotes): Expr[RawGLSL] =

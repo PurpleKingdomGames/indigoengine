@@ -16,5 +16,5 @@ object SDLMsg:
       case SDLEvents.SDL_EVENT_QUIT =>
         SDLMsg.Quit
 
-      case raw =>
+      case _ =>
         SDLMsg.Other(event)

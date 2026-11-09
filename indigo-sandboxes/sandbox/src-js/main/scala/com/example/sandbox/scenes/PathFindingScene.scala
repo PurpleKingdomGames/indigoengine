@@ -61,8 +61,8 @@ object PathFindingScene extends Scene[SandboxGameModel]:
   ): Outcome[SceneUpdateFragment] =
 
     // in practice we should not have to compute the path every frame
-    val start = Point(0, 0)                       // top left
-    val end   = Point(gridSize - 1, gridSize - 1) // bottom right
+    val start       = Point(0, 0)                       // top left
+    val end         = Point(gridSize - 1, gridSize - 1) // bottom right
     val pathBuilder =
       PathBuilder.fromWeightedGrid(
         grid = model.data,

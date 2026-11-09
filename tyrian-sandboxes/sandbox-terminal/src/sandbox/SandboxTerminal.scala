@@ -19,6 +19,9 @@ object SandboxTerminal extends App[Unit, Model]:
     case Msg.NoOp =>
       Result(model)
 
+    case _ =>
+      Result(model)
+
   def view(model: Model): ConsoleFragment =
     model.elapsed match
       case None =>

@@ -1,6 +1,7 @@
 package ultraviolet
 
 import ultraviolet.datatypes.ShaderDSLOps
+import ultraviolet.datatypes.ShaderDiscardException
 import ultraviolet.macros.UBOReader
 
 import scala.annotation.StaticAnnotation
@@ -75,6 +76,12 @@ object syntax extends ShaderDSLOps:
 
   inline def raw(body: String): RawGLSL =
     RawGLSL(body)
+
+  /** Abandons the current fragment. Maps to the GLSL 300 `discard` statement, so is only valid in fragment shaders.
+    */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  inline def discard(): Nothing =
+    throw new ShaderDiscardException()
 
   inline def _for[A](init: A, cond: A => Boolean, next: A => A)(f: A => Unit) =
     cfor(init, cond, next)(f)

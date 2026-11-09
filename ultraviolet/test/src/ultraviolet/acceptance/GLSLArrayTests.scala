@@ -69,7 +69,7 @@ class GLSLArrayTests extends munit.FunSuite {
     inline def fragment =
       Shader[Env] { env =>
         def func(): array[16, vec2] = env.VERTICES
-        def main: Unit =
+        def main: Unit              =
           val foo = func()
       }
 
@@ -197,7 +197,7 @@ class GLSLArrayTests extends munit.FunSuite {
 
     inline def fragment =
       Shader {
-        val i = 0
+        val i                              = 0
         def func(v: array[3, vec2]): Float =
           v(i).y
       }

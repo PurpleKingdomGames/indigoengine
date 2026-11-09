@@ -12,7 +12,7 @@ object Bounds:
   inline def apply(x: Int, y: Int, width: Int, height: Int): Bounds = Rectangle(x, y, width, height)
   inline def apply(width: Int, height: Int): Bounds                 = Rectangle(0, 0, width, height)
   inline def apply(dimensions: Dimensions): Bounds                  = Rectangle(dimensions.toSize)
-  inline def apply(coords: Coords, dimensions: Dimensions): Bounds =
+  inline def apply(coords: Coords, dimensions: Dimensions): Bounds  =
     Rectangle(coords.toPoint, dimensions.toSize)
 
   val zero: Bounds = Bounds(0, 0, 0, 0)

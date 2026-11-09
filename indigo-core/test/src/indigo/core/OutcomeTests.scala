@@ -320,7 +320,7 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("mapping an error") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Outcome(10).map[Int](_ => throw e).map(i => i * i)
 
@@ -362,7 +362,7 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("recovering from an error") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Outcome(10)
         .map[Int](_ => throw e)
@@ -378,7 +378,7 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("recovering from an error with orElse") {
-    val e = new Exception("Boom!")
+    val e      = new Exception("Boom!")
     val actual =
       Outcome(10)
         .map[Int](_ => throw e)

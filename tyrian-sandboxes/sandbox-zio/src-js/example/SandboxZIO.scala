@@ -37,7 +37,7 @@ object SandboxZIO extends TyrianZIOApp[Msg, Model]:
     case Msg.FollowLink(href, openInNewTab) if openInNewTab =>
       (model, Nav.openUrl(href))
 
-    case Msg.FollowLink(href, openInNewTab) =>
+    case Msg.FollowLink(href, _) =>
       (model, Nav.loadUrl(href))
 
     case Msg.NewRandomInt(i) =>

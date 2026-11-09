@@ -118,7 +118,7 @@ final case class Sprite[M <: Material](
 
   def withEventHandler(f: ((Sprite[?], GlobalEvent)) => Option[GlobalEvent]): Sprite[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[((Sprite[?], GlobalEvent)), GlobalEvent]): Sprite[M] =
+  def onEvent(f: PartialFunction[(Sprite[?], GlobalEvent), GlobalEvent]): Sprite[M] =
     withEventHandler(f.lift)
   def enableEvents: Sprite[M] =
     this.copy(eventHandlerEnabled = true)

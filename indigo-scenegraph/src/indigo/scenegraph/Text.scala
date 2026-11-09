@@ -109,7 +109,7 @@ final case class Text[M <: Material](
 
   def withEventHandler(f: ((Text[?], GlobalEvent)) => Option[GlobalEvent]): Text[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[((Text[?], GlobalEvent)), GlobalEvent]): Text[M] =
+  def onEvent(f: PartialFunction[(Text[?], GlobalEvent), GlobalEvent]): Text[M] =
     withEventHandler(f.lift)
   def enableEvents: Text[M] =
     this.copy(eventHandlerEnabled = true)

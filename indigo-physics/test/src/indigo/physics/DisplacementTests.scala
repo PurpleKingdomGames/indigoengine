@@ -134,7 +134,7 @@ class DisplacementTests extends munit.FunSuite:
     val a = Collider.Circle(idA, BoundingCircle(0, 0, 5))
     val b = Collider.Circle(idB, BoundingCircle(9, 0, 5))
 
-    val actual = a.displacementWith(b)
+    val actual   = a.displacementWith(b)
     val expected =
       Displacement(1.0, Vector2(-1, 0), LineSegment(Vertex(0, 0), Vertex(9, 0)), Mass.one, Option(Mass.one))
 
@@ -159,7 +159,7 @@ class DisplacementTests extends munit.FunSuite:
     val a = Collider.Circle(idA, BoundingCircle(0, 0, 3)).withVelocity(Vector2(10))
     val b = Collider.Box(idB, BoundingBox(2, 2, 6, 6)).makeStatic
 
-    val actual = a.displacementWith(b)
+    val actual   = a.displacementWith(b)
     val expected =
       Displacement(0.1715, Vector2(-0.7071, -0.7071), LineSegment(Vertex(0, 0), Vertex(5, 5)), Mass.one, None)
 
@@ -180,7 +180,7 @@ class DisplacementTests extends munit.FunSuite:
     val a = Collider.Circle(idA, BoundingCircle(0, -0.5, 1)).withVelocity(Vector2(10))
     val b = Collider.Box(idB, BoundingBox(0, 0, 3, 3)).makeStatic
 
-    val actual = a.displacementWith(b)
+    val actual   = a.displacementWith(b)
     val expected =
       Displacement(0.375, Vector2(-0.6, -0.8), LineSegment(Vertex(0, -0.5), Vertex(1.5, 1.5)), Mass.one, None)
 
@@ -193,7 +193,7 @@ class DisplacementTests extends munit.FunSuite:
     val a = Collider.Box(idA, BoundingBox(0, 0, 3, 3)).withVelocity(Vector2(10))
     val b = Collider.Circle(idB, BoundingCircle(4, 4, 2)).makeStatic
 
-    val actual = a.displacementWith(b)
+    val actual   = a.displacementWith(b)
     val expected =
       Displacement(0.5857, Vector2(-0.7071), LineSegment(Vertex(1.5, 1.5), Vertex(4, 4)), Mass.one, None)
 
@@ -214,7 +214,7 @@ class DisplacementTests extends munit.FunSuite:
     val a = Collider.Circle(idA, BoundingCircle(50, 90, 20)).withVelocity(Vector2(10, 10))
     val b = Collider.Box(idB, BoundingBox(0, 100, 1000, 100)).makeStatic
 
-    val actual = a.displacementWith(b)
+    val actual   = a.displacementWith(b)
     val expected =
       Displacement(10, Vector2(0, -1), LineSegment(Vertex(50, 90), Vertex(50, 150)), Mass.one, None)
 

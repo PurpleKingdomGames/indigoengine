@@ -85,7 +85,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
       json <- assetCollection.findTextDataByName(
         AssetName(SandboxAssets.dudeName.toString + "-json")
       )
-      aseprite <- Json.asepriteFromJson(json)
+      aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(
         dice,
         SandboxAssets.dudeName

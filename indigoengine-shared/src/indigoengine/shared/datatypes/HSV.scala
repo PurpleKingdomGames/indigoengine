@@ -73,7 +73,7 @@ object HSV:
     val cmin  = Math.min(r, Math.min(g, b))
     val delta = cmax - cmin
     val v     = cmax
-    val s =
+    val s     =
       if cmax == 0 then 0.0
       else delta / cmax
     val h =
