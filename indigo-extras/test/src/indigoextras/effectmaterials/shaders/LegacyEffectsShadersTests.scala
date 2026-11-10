@@ -22,8 +22,7 @@ class LegacyEffectsShadersTests extends munit.FunSuite {
       |out vec2 v_offsetBR;
       |const vec2 gridOffsets[9]=vec2[9](vec2(-1.0,-1.0),vec2(0.0,-1.0),vec2(1.0,-1.0),vec2(-1.0,0.0),vec2(0.0,0.0),vec2(1.0,0.0),vec2(-1.0,1.0),vec2(0.0,1.0),vec2(1.0,1.0));
       |vec2[9] generateTexCoords3x3(){
-      |  vec2 onePixel=1.0/SIZE;
-      |  return vec2[9](UV+(onePixel*gridOffsets[0]),UV+(onePixel*gridOffsets[1]),UV+(onePixel*gridOffsets[2]),UV+(onePixel*gridOffsets[3]),UV+(onePixel*gridOffsets[4]),UV+(onePixel*gridOffsets[5]),UV+(onePixel*gridOffsets[6]),UV+(onePixel*gridOffsets[7]),UV+(onePixel*gridOffsets[8]));
+      |  return vec2[9](UV+(TEXEL_SIZE*gridOffsets[0]),UV+(TEXEL_SIZE*gridOffsets[1]),UV+(TEXEL_SIZE*gridOffsets[2]),UV+(TEXEL_SIZE*gridOffsets[3]),UV+(TEXEL_SIZE*gridOffsets[4]),UV+(TEXEL_SIZE*gridOffsets[5]),UV+(TEXEL_SIZE*gridOffsets[6]),UV+(TEXEL_SIZE*gridOffsets[7]),UV+(TEXEL_SIZE*gridOffsets[8]));
       |}
       |vec4 vertex(in vec4 v){
       |  vec2 offsets[9]=generateTexCoords3x3();

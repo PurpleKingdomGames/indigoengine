@@ -46,5 +46,6 @@ object ScenesList:
       BgAudioScene,
       MagnificationScene,
       LocaleScene,
-      QuadScene
+      QuadScene,
+      TexelScene
     )

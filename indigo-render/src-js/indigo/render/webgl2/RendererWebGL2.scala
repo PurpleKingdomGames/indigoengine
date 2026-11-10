@@ -230,7 +230,7 @@ final class RendererWebGL2(
     }
   }
 
-  private val frameData: Float32Array = new Float32Array(4)
+  private val frameData: Float32Array = new Float32Array(6)
 
   def drawScene(ctx: ContextAndSize, sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     val gl2 = ctx.context
@@ -244,16 +244,31 @@ final class RendererWebGL2(
     var frameDataWidth: Int = 0
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var frameDataHeight: Int = 0
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var frameDataSrcWidth: Int = 0
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var frameDataSrcHeight: Int = 0
 
-    def attachFrameData(width: Int, height: Int): Unit =
-      if frameDataWidth != width || frameDataHeight != height then
+    // The source size is the size of the texture a blend shader sees as SRC_CHANNEL, used to give it SRC_TEXEL_SIZE.
+    def attachFrameData(width: Int, height: Int, srcWidth: Int, srcHeight: Int): Unit =
+      val sizeChanged =
+        frameDataWidth != width || frameDataHeight != height
+
+      val srcSizeChanged =
+        frameDataSrcWidth != srcWidth || frameDataSrcHeight != srcHeight
+
+      if sizeChanged || srcSizeChanged then
         frameDataWidth = width
         frameDataHeight = height
+        frameDataSrcWidth = srcWidth
+        frameDataSrcHeight = srcHeight
 
         frameData(0) = runningTime.toFloat
         frameData(1) = 0.0
         frameData(2) = width.toFloat
         frameData(3) = height.toFloat
+        frameData(4) = 1.0f / srcWidth.toFloat
+        frameData(5) = 1.0f / srcHeight.toFloat
 
         WebGLHelper.attachUBOData(
           gl2,
@@ -261,7 +276,7 @@ final class RendererWebGL2(
           frameDataUBOBuffer
         )
 
-    attachFrameData(lastWidth, lastHeight)
+    attachFrameData(lastWidth, lastHeight, lastWidth, lastHeight)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var currentBlend: Blend = Blend.Normal
@@ -326,7 +341,12 @@ final class RendererWebGL2(
       }
 
       // Draw the entities onto the layer buffer
-      attachFrameData(entityFrameBuffer.width, entityFrameBuffer.height)
+      attachFrameData(
+        entityFrameBuffer.width,
+        entityFrameBuffer.height,
+        entityFrameBuffer.width,
+        entityFrameBuffer.height
+      )
 
       layerRenderInstance.drawLayer(
         sceneData.cloneBlankDisplayObjects.toDictionary,
@@ -336,7 +356,7 @@ final class RendererWebGL2(
         customShaders
       )
 
-      attachFrameData(lastWidth, lastHeight)
+      attachFrameData(lastWidth, lastHeight, entityFrameBuffer.width, entityFrameBuffer.height)
 
       // Set the layer blend mode
       if currentBlend != layer.layerBlend then {
@@ -385,6 +405,8 @@ final class RendererWebGL2(
 
     // transfer the back buffer to the default framebuffer
     WebGLHelper.setNormalBlend(gl2)
+
+    attachFrameData(lastWidth, lastHeight, lastWidth, lastHeight)
 
     layerMergeRenderInstance.mergeToDefaultFramebuffer(
       orthographicProjectionMatrixNoMagFlipped,

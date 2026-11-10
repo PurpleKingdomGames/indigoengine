@@ -21,6 +21,7 @@ object IndigoUV:
       ATLAS_SIZE: vec2,
       var VERTEX: vec4,
       TEXTURE_SIZE: vec2,
+      TEXEL_SIZE: vec2, // Size of one pixel of this entity's frame in UV space, i.e. 1.0f / SIZE
       var UV: vec2,
       SIZE: vec2,
       FRAME_SIZE: vec2,
@@ -62,6 +63,7 @@ object IndigoUV:
         ATLAS_SIZE = vec2(0.0f),
         VERTEX = vec4(0.0f),
         TEXTURE_SIZE = vec2(0.0f),
+        TEXEL_SIZE = vec2(0.0f),
         UV = vec2(0.0f),
         SIZE = vec2(0.0f),
         FRAME_SIZE = vec2(0.0f),
@@ -100,6 +102,7 @@ object IndigoUV:
     val ATLAS_SIZE: vec2               = vec2(0.0f)
     var VERTEX: vec4                   = vec4(0.0f)
     val TEXTURE_SIZE: vec2             = vec2(0.0f)
+    val TEXEL_SIZE: vec2               = vec2(0.0f)
     var UV: vec2                       = vec2(0.0f)
     val SIZE: vec2                     = vec2(0.0f)
     val FRAME_SIZE: vec2               = vec2(0.0f)
@@ -156,6 +159,7 @@ object IndigoUV:
       SCREEN_COORDS: vec2,
       ROTATION: Float,
       TEXTURE_SIZE: vec2, // Size of the texture in pixels
+      TEXEL_SIZE: vec2,   // Size of one pixel of this entity's frame in UV space, i.e. 1.0f / SIZE
       ATLAS_SIZE: vec2,   // Size of the atlas this texture is on, in pixels
       INSTANCE_ID: Int,   // The current instance id
       var COLOR: vec4,    // The fragment color accumulated so far
@@ -209,6 +213,7 @@ object IndigoUV:
         SCREEN_COORDS = vec2(0.0f),
         ROTATION = 0.0f,
         TEXTURE_SIZE = vec2(0.0f),
+        TEXEL_SIZE = vec2(0.0f),
         ATLAS_SIZE = vec2(0.0f),
         INSTANCE_ID = 0,
         COLOR = vec4(0.0f),
@@ -257,6 +262,7 @@ object IndigoUV:
     val SCREEN_COORDS: vec2            = vec2(0.0f)
     val ROTATION: Float                = 0.0f
     val TEXTURE_SIZE: vec2             = vec2(0.0f)
+    val TEXEL_SIZE: vec2               = vec2(0.0f)
     val ATLAS_SIZE: vec2               = vec2(0.0f)
     val INSTANCE_ID: Int               = 0
     var COLOR: vec4                    = vec4(0.0f)
@@ -289,10 +295,12 @@ object IndigoUV:
       VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
 
       // Variables
-      UV: vec2,   // Unscaled texture coordinates
-      SIZE: vec2, // Width / height of the objects
-      SRC: vec4,  // Pixel value from SRC texture
-      DST: vec4,  // Pixel value from DST texture
+      UV: vec2,             // Unscaled texture coordinates
+      SIZE: vec2,           // Width / height of the objects
+      SRC_TEXEL_SIZE: vec2, // Size of one texel of the SRC texture in UV space, i.e. 1.0f / SRC texture size in pixels
+      DST_TEXEL_SIZE: vec2, // Size of one texel of the DST texture in UV space, i.e. 1.0f / DST texture size in pixels
+      SRC: vec4,            // Pixel value from SRC texture
+      DST: vec4,            // Pixel value from DST texture
 
       // Constants
       PI: Float,
@@ -312,6 +320,8 @@ object IndigoUV:
         VIEWPORT_SIZE = vec2(0.0f),
         UV = vec2(0.0f),
         SIZE = vec2(0.0f),
+        SRC_TEXEL_SIZE = vec2(0.0f),
+        DST_TEXEL_SIZE = vec2(0.0f),
         SRC = vec4(0.0f),
         DST = vec4(0.0f),
         PI = PI,
@@ -329,6 +339,8 @@ object IndigoUV:
     val VIEWPORT_SIZE: vec2         = vec2(0.0f)
     val UV: vec2                    = vec2(0.0f)
     val SIZE: vec2                  = vec2(0.0f)
+    val SRC_TEXEL_SIZE: vec2        = vec2(0.0f)
+    val DST_TEXEL_SIZE: vec2        = vec2(0.0f)
     val SRC: vec4                   = vec4(0.0f)
     val DST: vec4                   = vec4(0.0f)
     val PI: Float                   = 0.0f

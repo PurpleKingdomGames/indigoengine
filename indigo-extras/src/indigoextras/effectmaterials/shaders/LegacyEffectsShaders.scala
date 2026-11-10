@@ -39,17 +39,16 @@ object LegacyEffectsShaders:
       )
 
       def generateTexCoords3x3: array[9, vec2] =
-        val onePixel = 1.0f / env.SIZE
         array[9, vec2](
-          env.UV + (onePixel * gridOffsets(0)),
-          env.UV + (onePixel * gridOffsets(1)),
-          env.UV + (onePixel * gridOffsets(2)),
-          env.UV + (onePixel * gridOffsets(3)),
-          env.UV + (onePixel * gridOffsets(4)),
-          env.UV + (onePixel * gridOffsets(5)),
-          env.UV + (onePixel * gridOffsets(6)),
-          env.UV + (onePixel * gridOffsets(7)),
-          env.UV + (onePixel * gridOffsets(8))
+          env.UV + (env.TEXEL_SIZE * gridOffsets(0)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(1)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(2)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(3)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(4)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(5)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(6)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(7)),
+          env.UV + (env.TEXEL_SIZE * gridOffsets(8))
         )
 
       def vertex(v: vec4): vec4 =

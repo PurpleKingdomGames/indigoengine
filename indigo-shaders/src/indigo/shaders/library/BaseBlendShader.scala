@@ -9,8 +9,9 @@ trait BaseBlendShader:
 
   case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
   case class IndigoFrameData(
-      TIME: highp[Float], // Running time
-      VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
+      TIME: highp[Float],  // Running time
+      VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
+      SRC_TEXEL_SIZE: vec2 // Size of one texel of the SRC texture in UV space
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -116,8 +117,11 @@ trait BaseBlendShader:
   @nowarn("msg=unused")
   @nowarn("msg=unset")
   @nowarn("msg=mutated")
-  inline def fragmentShader[E](inline userFragmentFn: Shader[E, Unit], reference: E): Shader[UserDefined, Unit] =
-    Shader[UserDefined] { env =>
+  inline def fragmentShader[E](
+      inline userFragmentFn: Shader[E, Unit],
+      reference: E
+  ): Shader[IndigoFrameData & UserDefined, Unit] =
+    Shader[IndigoFrameData & UserDefined] { env =>
 
       @in val SIZE: vec2 = null // In this case, screen size.
       @in val UV: vec2 = null // Unscaled texture coordinates
@@ -140,6 +144,7 @@ trait BaseBlendShader:
 
       @global var SRC: vec4 = null // Pixel value from SRC texture
       @global var DST: vec4 = null // Pixel value from DST texture
+      @global var DST_TEXEL_SIZE: vec2 = null // Size of one texel of the DST texture in UV space
 
       // Output
       @global var COLOR: vec4 = null
@@ -147,6 +152,7 @@ trait BaseBlendShader:
       userFragmentFn.run(reference)
 
       def main: Unit =
+        DST_TEXEL_SIZE = 1.0f / env.VIEWPORT_SIZE
         SRC = texture2D(SRC_CHANNEL, UV)
         DST = texture2D(DST_CHANNEL, UV)
         COLOR = SRC
