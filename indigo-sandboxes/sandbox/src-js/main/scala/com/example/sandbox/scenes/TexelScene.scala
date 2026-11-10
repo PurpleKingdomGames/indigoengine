@@ -130,7 +130,7 @@ object TexelShaders:
 
         val outline = max(horizontal, vertical) * (1.0f - env.CHANNEL_0.a)
 
-        vec4(env.CHANNEL_0.rgb * env.CHANNEL_0.a + vec3(1.0f, 0.0f, 1.0f) * outline, env.CHANNEL_0.a + outline)
+        vec4(env.CHANNEL_0.rgb + vec3(1.0f, 0.0f, 1.0f) * outline, env.CHANNEL_0.a + outline)
     }
 
   val outline: UltravioletShader =
