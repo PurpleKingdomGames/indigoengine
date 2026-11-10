@@ -120,4 +120,45 @@ vec4 vertex(vec4 v){
     assert(clue(actual).contains(clue(expected5.replace("\r\n", "\n"))))
   }
 
+  test("Base WebGL 2.0 vertex shader sets TEXEL_SIZE to 1 / SIZE before the user vertex function runs") {
+
+    inline def useTexel: Shader[IndigoUV.VertexEnv, Unit] =
+      Shader[IndigoUV.VertexEnv] { env =>
+        def vertex(v: vec4): vec4 =
+          v + vec4(env.TEXEL_SIZE, 0.0f, 0.0f)
+      }
+
+    val actual =
+      EntityShader.vertex(useTexel, IndigoUV.VertexEnv.reference).code
+
+    assert(clue(actual).contains("vec2 TEXEL_SIZE;"))
+    assert(clue(actual).contains("v+vec4(TEXEL_SIZE,0.0,0.0)"))
+
+    val assigned = actual.indexOf("TEXEL_SIZE=1.0/SIZE;")
+    val used     = actual.indexOf("VERTEX=vertex(VERTEX);")
+
+    assert(clue(assigned) >= 0)
+    assert(clue(assigned) < clue(used))
+  }
+
+  test("Base WebGL 2.0 fragment shader exposes TEXEL_SIZE as 1 / SIZE") {
+
+    inline def useTexel: Shader[IndigoUV.FragmentEnv, Unit] =
+      Shader[IndigoUV.FragmentEnv] { env =>
+        def fragment(v: vec4): vec4 =
+          texture2D(
+            env.SRC_CHANNEL,
+            env.CHANNEL_0_POSITION + (env.UV + env.TEXEL_SIZE * 3.0f) * (env.SIZE / env.ATLAS_SIZE)
+          )
+      }
+
+    val actual =
+      EntityShader.fragment(useTexel, IndigoUV.FragmentEnv.reference).code
+
+    assert(clue(actual).contains("vec2 TEXEL_SIZE;"))
+    assert(clue(actual).contains("TEXEL_SIZE=1.0/SIZE;"))
+    assert(!clue(actual).contains("1.0/v_textureSize"))
+    assert(clue(actual).contains("texture(SRC_CHANNEL,CHANNEL_0_POSITION+(UV+(TEXEL_SIZE*3.0))*(SIZE/ATLAS_SIZE))"))
+  }
+
 }

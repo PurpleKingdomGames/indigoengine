@@ -91,6 +91,7 @@ trait BaseEntityShader:
       @global var ATLAS_SIZE: vec2               = null
       @global var VERTEX: vec4                   = null
       @global var TEXTURE_SIZE: vec2             = null
+      @global var TEXEL_SIZE: vec2               = null
       @global var UV: vec2                       = null
       @global var SIZE: vec2                     = null
       @global var FRAME_SIZE: vec2               = null
@@ -194,6 +195,8 @@ trait BaseEntityShader:
           case _ =>
             ()
           
+        TEXEL_SIZE = 1.0f / SIZE
+
         VERTEX = env.vertex(VERTEX)
 
         CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET)
@@ -322,6 +325,7 @@ trait BaseEntityShader:
       @global var SCREEN_COORDS: vec2 = null
       @global var ROTATION: Float = 0.0f
       @global var TEXTURE_SIZE: vec2 = null // Size of the texture in pixels
+      @global var TEXEL_SIZE: vec2 = null // Size of one pixel of this entity's frame in UV space
       @global var ATLAS_SIZE: vec2 = null // Size of the atlas this texture is on, in pixels
       @global var INSTANCE_ID: Int = 0 // The current instance id
 
@@ -371,6 +375,7 @@ trait BaseEntityShader:
         // Defaults
         UV = v_uv_size.xy
         SIZE = v_uv_size.zw
+        TEXEL_SIZE = 1.0f / SIZE
         COLOR = vec4(0.0f)
 
         SCREEN_COORDS = v_screenCoordsRotation.xy

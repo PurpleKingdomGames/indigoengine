@@ -13,7 +13,7 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
   val gameId: GameId = GameId("sandbox")
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ClipScene.name)
+    Some(TexelScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxGameModel]] =
     ScenesList.scenes
@@ -54,7 +54,11 @@ final class SandboxGame extends Game[SandboxBootData, SandboxStartupData, Sandbo
         Archetype.shader,
         UVShaders.circle,
         UVShaders.voronoi,
-        UVShaders.redBlend
+        UVShaders.redBlend,
+        TexelShaders.outline,
+        TexelShaders.border,
+        TexelShaders.stripes,
+        TexelShaders.edgeBlend
       ).addShaders(Refraction.shaders)
         .addShaders(indigoextras.ui.shaders.all)
     )
