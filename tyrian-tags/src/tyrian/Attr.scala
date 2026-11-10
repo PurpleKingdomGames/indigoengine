@@ -147,10 +147,10 @@ final class AttributeName(name: String):
       case x: Boolean => Attribute(name.toString, x.toString)
 
 final class PropertyName(name: String):
-  def :=(value: String | Boolean): Attribute =
+  def :=(value: String | Boolean): Property =
     value match
-      case x: String  => Attribute(name.toString, x)
-      case x: Boolean => Attribute(name.toString, x.toString)
+      case x: String  => PropertyString(name.toString, x)
+      case x: Boolean => PropertyBoolean(name.toString, x)
 
 final class AttributeNameString(name: String):
   def :=(value: String): Attribute = Attribute(name.toString, value)
