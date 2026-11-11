@@ -1,6 +1,10 @@
 package tyrian.ui.elements.stateful.textarea
 
 import indigoengine.shared.datatypes.RGBA
+import tyrian.Attribute
+import tyrian.GlobalMsg
+import tyrian.PropertyString
+import tyrian.Tag
 import tyrian.ui.UIKey
 import tyrian.ui.datatypes.BorderRadius
 import tyrian.ui.datatypes.BorderStyle
@@ -33,14 +37,31 @@ class TextAreaTests extends munit.FunSuite {
     assert(actual.contains("""placeholder="Enter text here""""), "Should contain placeholder")
   }
 
-  test("Should render textarea with value") {
-    val actual = TextArea(testKey)
-      .withValue("test value")
-      .toElem
-      .toString
+  private def tagOf(textArea: TextArea): Tag[GlobalMsg] =
+    textArea.toElem match
+      case t: Tag[?] => t.asInstanceOf[Tag[GlobalMsg]]
+      case other     => fail(s"Expected a Tag but got: $other")
 
-    assert(actual.contains("""value="test value""""), "Should contain value property")
-    assert(!actual.contains(">test value<"), "Should not render value as child text")
+  private def assertValueProperty(textArea: TextArea, expected: String)(using munit.Location): Unit =
+    val tag = tagOf(textArea)
+
+    assert(tag.attributes.contains(PropertyString("value", expected)), s"Should contain value property = '$expected'")
+
+    val usesAttribute =
+      tag.attributes.exists {
+        case Attribute("value", _) => true
+        case _                     => false
+      }
+
+    assert(!usesAttribute, "Should not use a value attribute")
+    assertEquals(tag.children, Nil)
+
+  test("Should render textarea with value") {
+    assertValueProperty(TextArea(testKey).withValue("test value"), "test value")
+  }
+
+  test("Should always emit the value property, even when empty") {
+    assertValueProperty(TextArea(testKey), "")
   }
 
   test("Should render disabled textarea") {
