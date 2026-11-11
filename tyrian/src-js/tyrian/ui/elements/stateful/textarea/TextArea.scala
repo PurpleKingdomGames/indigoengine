@@ -141,6 +141,7 @@ object TextArea:
 
     val textareaAttrs = List(
       tyrian.Html.placeholder := t.placeholder,
+      tyrian.Html.value       := t.value,
       onInput((s: String) => TextInputMsg.Changed(t.key, s)),
       disabledAttr,
       readonlyAttr,
@@ -151,4 +152,4 @@ object TextArea:
       idAttribute
     )
 
-    textarea(textareaAttrs*)(t.value)
+    textarea(textareaAttrs*)()

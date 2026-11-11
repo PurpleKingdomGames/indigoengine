@@ -36,7 +36,14 @@ class CheckboxTests extends munit.FunSuite {
 
     assertEquals(checkbox.isChecked, false)
     val actual = checkbox.toElem.toString
-    assert(!actual.contains("""checked="true""""), "Should not contain checked attribute")
+    assert(!actual.contains("""checked="true""""), "Should not contain checked=true")
+    assert(actual.contains("""checked="false""""), "Should always emit the checked property")
+  }
+
+  test("Should always emit the checked property, even when unchecked by default") {
+    val actual = Checkbox(testKey).toElem.toString
+
+    assert(actual.contains("""checked="false""""), "Should contain checked=false")
   }
 
   test("Should render disabled checkbox") {
