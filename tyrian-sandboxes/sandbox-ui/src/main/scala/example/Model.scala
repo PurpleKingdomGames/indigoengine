@@ -18,6 +18,9 @@ final case class Model(
     case AppEvent.NoOp =>
       Result(this)
 
+    case AppEvent.Log(msg) =>
+      Result(this).log(msg)
+
     case AppEvent.FollowLink(href) =>
       Result(this)
         .addActions(Nav.loadUrl[IO](href))
@@ -46,6 +49,7 @@ object Model:
       components.TopNav.initial,
       Input(UIKey("name-input"))
         .withPlaceholder("Type here...")
+        .onChange((k, v) => Batch(AppEvent.Log(s"${k.toString} changed: '$v'")))
         .overrideTheme(
           _.withTextColor(RGBA.fromHex("#1f2937"))
             .withBackgroundColor(RGBA.fromHex("#f9fafb"))
@@ -56,6 +60,7 @@ object Model:
       TextArea(UIKey("bio-textarea"))
         .withPlaceholder("Tell us about yourself...")
         .withRows(4)
+        .onChange((k, v) => Batch(AppEvent.Log(s"${k.toString} changed: '$v'")))
         .withResize(ResizeMode.Vertical)
         .overrideTheme(
           _.withTextColor(RGBA.fromHex("#1f2937"))
@@ -66,6 +71,7 @@ object Model:
         ),
       Checkbox(UIKey("terms-checkbox"))
         .withLabel("I agree to the terms and conditions")
+        .onChange((k, v) => Batch(AppEvent.Log(s"${k.toString} changed: $v")))
         .overrideTheme(
           _.withAccentColor(RGBA.fromHex("#2563eb"))
             .withLabelColor(RGBA.fromHex("#374151"))

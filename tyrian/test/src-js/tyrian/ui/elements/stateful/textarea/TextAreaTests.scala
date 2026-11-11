@@ -1,6 +1,8 @@
 package tyrian.ui.elements.stateful.textarea
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
+import tyrian.Action
 import tyrian.Attribute
 import tyrian.GlobalMsg
 import tyrian.PropertyString
@@ -294,6 +296,59 @@ class TextAreaTests extends munit.FunSuite {
 
     val result2 = textarea.update(TextInputMsg.Clear(otherKey))
     assertEquals(result2.unsafeGet.value, "initial")
+  }
+
+  case class TestMsg(key: UIKey, value: String) extends GlobalMsg
+
+  test("onChange with key and value function emits messages on Changed and Clear") {
+    val el = TextArea(testKey).onChange((k, v) => Batch(TestMsg(k, v)))
+
+    assertEquals(
+      el.update(TextInputMsg.Changed(testKey, "abc")).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, "abc")))
+    )
+    assertEquals(
+      el.update(TextInputMsg.Clear(testKey)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, "")))
+    )
+  }
+
+  test("onChange with value function emits messages") {
+    val el = TextArea(testKey).onChange(v => Batch(TestMsg(testKey, v.toUpperCase)))
+
+    assertEquals(
+      el.update(TextInputMsg.Changed(testKey, "abc")).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, "ABC")))
+    )
+  }
+
+  test("onChange with fixed messages emits them on Changed and Clear") {
+    val el       = TextArea(testKey).onChange(TestMsg(testKey, "a"), TestMsg(testKey, "b"))
+    val expected = Batch(Action.emit(TestMsg(testKey, "a")), Action.emit(TestMsg(testKey, "b")))
+
+    assertEquals(el.update(TextInputMsg.Changed(testKey, "x")).unsafeActions, expected)
+    assertEquals(el.update(TextInputMsg.Clear(testKey)).unsafeActions, expected)
+  }
+
+  test("onChange replaces previous handler and clearChangeMsgs removes it") {
+    val el = TextArea(testKey).onChange(TestMsg(testKey, "a")).onChange(TestMsg(testKey, "b"))
+
+    assertEquals(
+      el.update(TextInputMsg.Changed(testKey, "x")).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, "b")))
+    )
+    assertEquals(
+      el.clearChangeMsgs.update(TextInputMsg.Changed(testKey, "x")).unsafeActions,
+      Batch.empty
+    )
+  }
+
+  test("onChange does not emit for messages with a different key") {
+    val el       = TextArea(testKey).onChange(TestMsg(testKey, "a"))
+    val otherKey = UIKey("other")
+
+    assertEquals(el.update(TextInputMsg.Changed(otherKey, "x")).unsafeActions, Batch.empty)
+    assertEquals(el.update(TextInputMsg.Clear(otherKey)).unsafeActions, Batch.empty)
   }
 
 }

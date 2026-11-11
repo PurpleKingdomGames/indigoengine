@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateful.textarea
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
@@ -23,8 +24,9 @@ final case class TextArea(
     key: UIKey,
     classNames: Set[String],
     id: Option[String],
-    themeOverride: ThemeOverride[InputTheme]
-) extends UIElement.Stateful[TextArea, InputTheme]:
+    themeOverride: ThemeOverride[InputTheme],
+    onChangeMsgs: (UIKey, String) => Batch[GlobalMsg]
+) extends UIElement.Stateful[TextArea, InputTheme, String]:
 
   def withPlaceholder(placeholder: String): TextArea =
     this.copy(placeholder = placeholder)
@@ -73,12 +75,17 @@ final case class TextArea(
   def withThemeOverride(value: ThemeOverride[InputTheme]): TextArea =
     this.copy(themeOverride = value)
 
+  def onChange(msgs: (UIKey, String) => Batch[GlobalMsg]): TextArea =
+    this.copy(onChangeMsgs = msgs)
+
   def update: GlobalMsg => Result[TextArea] =
     case TextInputMsg.Changed(_key, v) if _key == key =>
       Result(this.copy(value = v))
+        .addGlobalMsgs(onChangeMsgs(key, v))
 
     case TextInputMsg.Clear(_key) if _key == key =>
       Result(this.copy(value = ""))
+        .addGlobalMsgs(onChangeMsgs(key, ""))
 
     case _ =>
       Result(this)
@@ -103,7 +110,8 @@ object TextArea:
       key,
       Set.empty,
       id = None,
-      ThemeOverride.NoOverride
+      ThemeOverride.NoOverride,
+      (_, _) => Batch.empty
     )
 
   def toHtml(t: TextArea)(using theme: Theme): tyrian.Elem[GlobalMsg] =
