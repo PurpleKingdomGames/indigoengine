@@ -1,6 +1,8 @@
 package tyrian.ui.elements.stateful.checkbox
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.RGBA
+import tyrian.Action
 import tyrian.Attr
 import tyrian.Attribute
 import tyrian.GlobalMsg
@@ -266,6 +268,61 @@ class CheckboxTests extends munit.FunSuite {
 
     assert(clue(styles.asString).contains("color:rgba(128, 128, 128, 255)"), "Should contain gray label color")
     assert(clue(styles.asString).contains("cursor:not-allowed"), "Should contain not-allowed cursor")
+  }
+
+  case class TestMsg(key: UIKey, checked: Boolean) extends GlobalMsg
+
+  test("onChange with key and value function emits messages on Toggled") {
+    val cb = Checkbox(testKey).onChange((k, v) => Batch(TestMsg(k, v)))
+
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(testKey, true)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, true)))
+    )
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(testKey, false)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, false)))
+    )
+  }
+
+  test("onChange with value function emits messages") {
+    val cb = Checkbox(testKey).onChange(v => Batch(TestMsg(testKey, !v)))
+
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(testKey, true)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, false)))
+    )
+  }
+
+  test("onChange with fixed messages emits them on Toggled") {
+    val cb = Checkbox(testKey).onChange(TestMsg(testKey, true), TestMsg(testKey, false))
+
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(testKey, true)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, true)), Action.emit(TestMsg(testKey, false)))
+    )
+  }
+
+  test("onChange replaces previous handler and clearChangeMsgs removes it") {
+    val cb = Checkbox(testKey).onChange(TestMsg(testKey, true)).onChange(TestMsg(testKey, false))
+
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(testKey, true)).unsafeActions,
+      Batch(Action.emit(TestMsg(testKey, false)))
+    )
+    assertEquals(
+      cb.clearChangeMsgs.update(CheckboxMsg.Toggled(testKey, true)).unsafeActions,
+      Batch.empty
+    )
+  }
+
+  test("onChange does not emit for messages with a different key") {
+    val cb = Checkbox(testKey).onChange(TestMsg(testKey, true))
+
+    assertEquals(
+      cb.update(CheckboxMsg.Toggled(UIKey("other"), true)).unsafeActions,
+      Batch.empty
+    )
   }
 
 }

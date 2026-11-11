@@ -1,5 +1,6 @@
 package tyrian.ui
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.GlobalMsg
 import tyrian.Result
@@ -58,9 +59,21 @@ trait UIElement[Component, ComponentTheme]:
 
 object UIElement:
 
-  trait Stateful[Component, ComponentTheme] extends UIElement[Component, ComponentTheme]:
+  trait Stateful[Component, ComponentTheme, Value] extends UIElement[Component, ComponentTheme]:
 
     def key: UIKey
     def withKey(value: UIKey): Component
+
+    def onChangeMsgs: (UIKey, Value) => Batch[GlobalMsg]
+
+    /** Replaces any previously set onChange handler. */
+    def onChange(msgs: (UIKey, Value) => Batch[GlobalMsg]): Component
+
+    def onChange(msgs: Value => Batch[GlobalMsg]): Component =
+      onChange((_, v) => msgs(v))
+    def onChange(msgs: GlobalMsg*): Component =
+      onChange((_, _) => Batch.fromSeq(msgs))
+    def clearChangeMsgs: Component =
+      onChange((_, _) => Batch.empty)
 
     def update: GlobalMsg => Result[Component]

@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateful.checkbox
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
@@ -18,8 +19,9 @@ final case class Checkbox(
     key: UIKey,
     classNames: Set[String],
     id: Option[String],
-    themeOverride: ThemeOverride[CheckboxTheme]
-) extends UIElement.Stateful[Checkbox, CheckboxTheme]:
+    themeOverride: ThemeOverride[CheckboxTheme],
+    onChangeMsgs: (UIKey, Boolean) => Batch[GlobalMsg]
+) extends UIElement.Stateful[Checkbox, CheckboxTheme, Boolean]:
 
   def withChecked(checked: Boolean): Checkbox =
     this.copy(isChecked = checked)
@@ -58,9 +60,13 @@ final case class Checkbox(
   def withThemeOverride(value: ThemeOverride[CheckboxTheme]): Checkbox =
     this.copy(themeOverride = value)
 
+  def onChange(msgs: (UIKey, Boolean) => Batch[GlobalMsg]): Checkbox =
+    this.copy(onChangeMsgs = msgs)
+
   def update: GlobalMsg => Result[Checkbox] =
     case CheckboxMsg.Toggled(_key, newChecked) if _key == key =>
       Result(this.copy(isChecked = newChecked))
+        .addGlobalMsgs(onChangeMsgs(key, newChecked))
 
     case _ =>
       Result(this)
@@ -81,7 +87,8 @@ object Checkbox:
       key,
       Set.empty,
       id = None,
-      ThemeOverride.NoOverride
+      ThemeOverride.NoOverride,
+      (_, _) => Batch.empty
     )
 
   def toHtml(c: Checkbox)(using theme: Theme): tyrian.Elem[GlobalMsg] =

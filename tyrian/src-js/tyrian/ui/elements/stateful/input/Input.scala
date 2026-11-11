@@ -1,5 +1,6 @@
 package tyrian.ui.elements.stateful.input
 
+import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
 import tyrian.Elem
 import tyrian.EmptyAttribute
@@ -19,8 +20,9 @@ final case class Input(
     key: UIKey,
     classNames: Set[String],
     id: Option[String],
-    themeOverride: ThemeOverride[InputTheme]
-) extends UIElement.Stateful[Input, InputTheme]:
+    themeOverride: ThemeOverride[InputTheme],
+    onChangeMsgs: (UIKey, String) => Batch[GlobalMsg]
+) extends UIElement.Stateful[Input, InputTheme, String]:
 
   def withPlaceholder(placeholder: String): Input =
     this.copy(placeholder = placeholder)
@@ -60,12 +62,17 @@ final case class Input(
   def withThemeOverride(value: ThemeOverride[InputTheme]): Input =
     this.copy(themeOverride = value)
 
+  def onChange(msgs: (UIKey, String) => Batch[GlobalMsg]): Input =
+    this.copy(onChangeMsgs = msgs)
+
   def update: GlobalMsg => Result[Input] =
     case TextInputMsg.Changed(_key, v) if _key == key =>
       Result(this.copy(value = v))
+        .addGlobalMsgs(onChangeMsgs(key, v))
 
     case TextInputMsg.Clear(_key) if _key == key =>
       Result(this.copy(value = ""))
+        .addGlobalMsgs(onChangeMsgs(key, ""))
 
     case _ =>
       Result(this)
@@ -87,7 +94,8 @@ object Input:
       key,
       Set.empty,
       id = None,
-      ThemeOverride.NoOverride
+      ThemeOverride.NoOverride,
+      (_, _) => Batch.empty
     )
 
   def toHtml(i: Input)(using theme: Theme): tyrian.Elem[GlobalMsg] =
