@@ -232,9 +232,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
       case TypeDef(_, _) =>
         throw ShaderError.Unsupported("Shaders do not support fancy types. :-)")
 
-      case ValDef(name, _, _) if isGLSLReservedWord(name) =>
-        throw ShaderError.GLSLReservedWord(name)
-
       case v @ ValDef(name, typ, Some(term)) =>
         val body = walkTerm(term, envVarName)
 
@@ -341,9 +338,6 @@ class CreateShaderAST[Q <: Quotes](using val qq: Q) extends ShaderMacroUtils:
 
           case a =>
             a
-
-      case DefDef(name, _, _, _) if isGLSLReservedWord(name) =>
-        throw ShaderError.GLSLReservedWord(name)
 
       case DefDef(fnName, args, rt, Some(term)) =>
         val argNamesTypes =
