@@ -1,6 +1,11 @@
 package tyrian.ui.elements.stateful.checkbox
 
 import indigoengine.shared.datatypes.RGBA
+import tyrian.Attr
+import tyrian.Attribute
+import tyrian.GlobalMsg
+import tyrian.PropertyBoolean
+import tyrian.Tag
 import tyrian.ui.UIKey
 import tyrian.ui.datatypes.FontSize
 import tyrian.ui.datatypes.Spacing
@@ -25,25 +30,37 @@ class CheckboxTests extends munit.FunSuite {
     assertEquals(checkbox.isChecked, false)
   }
 
-  test("Should render checked checkbox") {
-    val actual = Checkbox(testKey).checked.toElem.toString
+  private def attributesOf(checkbox: Checkbox): List[Attr[GlobalMsg]] =
+    checkbox.toElem match
+      case t: Tag[?] => t.attributes.asInstanceOf[List[Attr[GlobalMsg]]]
+      case other     => fail(s"Expected a Tag but got: $other")
 
-    assert(actual.contains("""checked="true""""), "Should contain checked attribute")
+  private def assertCheckedProperty(checkbox: Checkbox, expected: Boolean)(using munit.Location): Unit =
+    val attrs = attributesOf(checkbox)
+
+    assert(attrs.contains(PropertyBoolean("checked", expected)), s"Should contain checked property = $expected")
+
+    val usesAttribute =
+      attrs.exists {
+        case Attribute("checked", _) => true
+        case _                       => false
+      }
+
+    assert(!usesAttribute, "Should not use a checked attribute")
+
+  test("Should render checked checkbox") {
+    assertCheckedProperty(Checkbox(testKey).checked, true)
   }
 
   test("Should render unchecked checkbox explicitly") {
     val checkbox = Checkbox(testKey).checked.unchecked
 
     assertEquals(checkbox.isChecked, false)
-    val actual = checkbox.toElem.toString
-    assert(!actual.contains("""checked="true""""), "Should not contain checked=true")
-    assert(actual.contains("""checked="false""""), "Should always emit the checked property")
+    assertCheckedProperty(checkbox, false)
   }
 
   test("Should always emit the checked property, even when unchecked by default") {
-    val actual = Checkbox(testKey).toElem.toString
-
-    assert(actual.contains("""checked="false""""), "Should contain checked=false")
+    assertCheckedProperty(Checkbox(testKey), false)
   }
 
   test("Should render disabled checkbox") {
