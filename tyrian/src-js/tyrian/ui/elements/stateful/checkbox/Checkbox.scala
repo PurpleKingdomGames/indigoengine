@@ -89,10 +89,6 @@ object Checkbox:
       if c.isDisabled then attribute("disabled", "true")
       else EmptyAttribute
 
-    val checkedAttr =
-      if c.isChecked then attribute("checked", "true")
-      else EmptyAttribute
-
     val checkboxStyles =
       theme match
         case Theme.None =>
@@ -116,7 +112,7 @@ object Checkbox:
         (e: Tyrian.Event) => CheckboxMsg.Toggled(c.key, e.target.asInstanceOf[Tyrian.HTMLInputElement].checked)
       ),
       disabledAttr,
-      checkedAttr,
+      tyrian.Html.checked := c.isChecked,
       style(checkboxStyles),
       classAttribute,
       idAttribute

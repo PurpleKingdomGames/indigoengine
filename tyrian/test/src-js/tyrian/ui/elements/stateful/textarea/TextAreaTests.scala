@@ -39,7 +39,8 @@ class TextAreaTests extends munit.FunSuite {
       .toElem
       .toString
 
-    assert(actual.contains("test value"), "Should contain value text")
+    assert(actual.contains("""value="test value""""), "Should contain value property")
+    assert(!actual.contains(">test value<"), "Should not render value as child text")
   }
 
   test("Should render disabled textarea") {
