@@ -2,6 +2,7 @@ package tyrian.ui.elements.stateful.checkbox
 
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
+import tyrian.Action
 import tyrian.Elem
 import tyrian.EmptyAttribute
 import tyrian.GlobalMsg
@@ -65,8 +66,10 @@ final case class Checkbox(
 
   def update: GlobalMsg => Result[Checkbox] =
     case CheckboxMsg.Toggled(_key, newChecked) if _key == key =>
-      Result(this.copy(isChecked = newChecked))
-        .addGlobalMsgs(onChangeMsgs(key, newChecked))
+      Result(
+        this.copy(isChecked = newChecked),
+        onChangeMsgs(key, newChecked).map(Action.emit)
+      )
 
     case _ =>
       Result(this)
