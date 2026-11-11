@@ -2,6 +2,7 @@ package tyrian.ui.elements.stateful.input
 
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.optics.Lens
+import tyrian.Action
 import tyrian.Elem
 import tyrian.EmptyAttribute
 import tyrian.GlobalMsg
@@ -67,12 +68,16 @@ final case class Input(
 
   def update: GlobalMsg => Result[Input] =
     case TextInputMsg.Changed(_key, v) if _key == key =>
-      Result(this.copy(value = v))
-        .addGlobalMsgs(onChangeMsgs(key, v))
+      Result(
+        this.copy(value = v),
+        onChangeMsgs(key, v).map(Action.emit)
+      )
 
     case TextInputMsg.Clear(_key) if _key == key =>
-      Result(this.copy(value = ""))
-        .addGlobalMsgs(onChangeMsgs(key, ""))
+      Result(
+        this.copy(value = ""),
+        onChangeMsgs(key, "").map(Action.emit)
+      )
 
     case _ =>
       Result(this)
