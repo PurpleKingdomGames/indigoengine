@@ -10,6 +10,7 @@ import indigoengine.shared.logging.LogEntry
 import indigoengine.shared.logging.LogLevel
 
 import scala.annotation.tailrec
+import scala.annotation.targetName
 import scala.util.control.NonFatal
 
 /** An `Outcome` represents the result of some part of a frame update. It contains a value or an error (exception), and
@@ -43,7 +44,8 @@ sealed trait Outcome[+A] derives CanEqual:
 
   def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[A]
 
-  def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A]
+  @targetName("Outcome-addGlobalEvents-repeat")
+  def addGlobalEvents(newEvents: => GlobalEvent*): Outcome[A]
 
   def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Outcome[A]
 
@@ -103,7 +105,8 @@ object Outcome:
     def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[A] =
       this
 
-    def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
+    @targetName("Outcome-addGlobalEvents-repeat")
+    def addGlobalEvents(newEvents: => GlobalEvent*): Outcome[A] =
       addGlobalEvents(Batch.fromSeq(newEvents))
 
     def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Outcome[A] =
@@ -152,12 +155,17 @@ object Outcome:
       }
 
     def flatMap[B](f: A => Outcome[B]): Outcome[B] =
-      f(state) match {
-        case err: Error =>
-          err
+      try
+        f(state) match {
+          case err: Error =>
+            err
 
-        case Result(s, es) =>
-          Outcome(s, globalEvents ++ es)
+          case Result(s, es) =>
+            Outcome(s, globalEvents ++ es)
+        }
+      catch {
+        case NonFatal(e) =>
+          Outcome.Error(e)
       }
 
   }
@@ -177,7 +185,11 @@ object Outcome:
     def getOrElse[B >: Nothing](b: => B): B =
       b
     def orElse[B >: Nothing](b: => Outcome[B]): Outcome[B] =
-      b
+      try b
+      catch {
+        case NonFatal(thrown) =>
+          this.copy(e = thrown)
+      }
 
     def unsafeGlobalEvents: Batch[GlobalEvent] =
       throw e
@@ -185,7 +197,11 @@ object Outcome:
       Batch.empty
 
     def handleError[B >: Nothing](recoverWith: Throwable => Outcome[B]): Outcome[B] =
-      recoverWith(e)
+      try recoverWith(e)
+      catch {
+        case NonFatal(thrown) =>
+          this.copy(e = thrown)
+      }
 
     def log(message: String): Outcome[Nothing] =
       log(message, LogLevel.StdOut)
@@ -211,7 +227,8 @@ object Outcome:
       IndigoLogger.unsafeLogNow(LogEntry.error(reportCrash))
       throw e
 
-    def addGlobalEvents(newEvents: GlobalEvent*): Error                                = this
+    @targetName("Outcome-addGlobalEvents-repeat")
+    def addGlobalEvents(newEvents: => GlobalEvent*): Error                             = this
     def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Error                       = this
     def createGlobalEvents(f: Nothing => Batch[GlobalEvent]): Error                    = this
     def clearGlobalEvents: Error                                                       = this
