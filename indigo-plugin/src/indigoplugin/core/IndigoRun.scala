@@ -118,10 +118,16 @@ object IndigoRun {
 
 object IndigoProc {
 
+  // Electron based tools (e.g. VS Code) set ELECTRON_RUN_AS_NODE, which leaks into the Mill daemon
+  // and causes Electron to run main.js as plain Node. Mapping it to null removes it from the subprocess.
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  private val electronEnv: Map[String, String] =
+    Map("ELECTRON_RUN_AS_NODE" -> null)
+
   object Windows {
     def npmStart(outputDir: Path) =
       os.proc("cmd", "/C", "npm", "start")
-        .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+        .call(cwd = outputDir, env = electronEnv, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
 
     def installLatestElectron(outputDir: Path) =
       os.proc("cmd", "/C", "npm", "install", "electron", "--save-dev")
@@ -135,7 +141,7 @@ object IndigoProc {
   object Nix {
     def npmStart(outputDir: Path) =
       os.proc("npm", "start")
-        .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+        .call(cwd = outputDir, env = electronEnv, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
 
     def installLatestElectron(outputDir: Path) =
       os.proc("npm", "install", "electron", "--save-dev")
