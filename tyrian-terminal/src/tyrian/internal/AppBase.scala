@@ -70,15 +70,13 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     */
   def teardown: Unit
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(args: List[String]): (Model, Cmd[IO, GlobalMsg]) =
     init(args) match
       case Result.Next(state, actions) =>
         (state, Action.internal.Many(actions).toCmd)
 
-      case e @ Result.Error(err, _) =>
-        println(e.reportCrash)
-        throw err
+      case e: Result.Error =>
+        e.crash()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   protected def _update(
@@ -94,9 +92,8 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
             case None =>
               state -> Action.internal.Many(actions).toCmd
 
-        case e @ Result.Error(err, _) =>
-          println(e.reportCrash)
-          throw err
+        case e: Result.Error =>
+          e.crash()
 
   private def findExit(actions: Batch[Action]): Option[ExitCode] =
     actions.collectFirst {
@@ -117,7 +114,6 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
     val extensionsCmds =
       extensionsRegister.register(Batch.fromSet(extensions(args, initModel))).map(_.toCmd)
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def combinedUpdate(
         model: Model
     ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
@@ -132,8 +128,8 @@ trait AppBase[GraphicsContext, Model] extends IOApp:
         }
 
         extCmds match {
-          case Result.Error(e, _) =>
-            throw e
+          case err: Result.Error =>
+            err.crash()
 
           case Result.Next(eCmds, _) =>
             m -> (as |+| eCmds)

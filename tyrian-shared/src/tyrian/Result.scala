@@ -3,6 +3,8 @@ package tyrian
 import cats.effect.ExitCode
 import cats.effect.IO
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
 import tyrian.classic.cmds.Logger
 import tyrian.platform.Cmd
 
@@ -27,7 +29,18 @@ sealed trait Result[+A] derives CanEqual:
 
   def handleError[B >: A](recoverWith: Throwable => Result[B]): Result[B]
 
+  /** Log a message to stdout, with no decoration. */
   def log(message: String): Result[A]
+
+  /** Log a message at the given level. */
+  def log(message: String, level: LogLevel): Result[A]
+
+  /** Log a message to stdout, with no decoration, but only log each message once. */
+  def logOnce(message: String): Result[A]
+
+  /** Log a message at the given level, but only log each message once. */
+  def logOnce(message: String, level: LogLevel): Result[A]
+
   def logCrash(reporter: PartialFunction[Throwable, String]): Result[A]
 
   def addActions(newActions: Action*): Result[A]
@@ -104,9 +117,14 @@ object Result:
     def handleError[B >: A](recoverWith: Throwable => Result[B]): Result[B] =
       this
 
-    // TODO: Expand to all log types, also add to Outcome in Indigo
     def log(message: String): Result[A] =
-      this.addActions(Logger.stdout[IO](message))
+      log(message, LogLevel.StdOut)
+    def log(message: String, level: LogLevel): Result[A] =
+      this.addActions(Logger.log[IO](level, message))
+    def logOnce(message: String): Result[A] =
+      logOnce(message, LogLevel.StdOut)
+    def logOnce(message: String, level: LogLevel): Result[A] =
+      this.addActions(Logger.logOnce[IO](level, message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[A] =
       this
 
@@ -139,8 +157,8 @@ object Result:
 
     def ap[B](of: Result[A => B]): Result[B] =
       of match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Next(s, es) =>
           map(s).addActions(es)
@@ -151,8 +169,8 @@ object Result:
 
     def combine[B](other: Result[B]): Result[(A, B)] =
       other match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Next(s, es) =>
           Result((state, s), actions ++ es)
@@ -160,8 +178,8 @@ object Result:
 
     def flatMap[B](f: A => Result[B]): Result[B] =
       f(state) match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Next(s, es) =>
           Result(s, actions ++ es)
@@ -170,7 +188,11 @@ object Result:
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final case class Error(e: Throwable, crashReporter: PartialFunction[Throwable, String]) extends Result[Nothing] {
+  final case class Error(
+      e: Throwable,
+      crashReporter: PartialFunction[Throwable, String],
+      logs: Batch[LogEntry]
+  ) extends Result[Nothing] {
 
     def isResult: Boolean = false
     def isError: Boolean  = true
@@ -191,12 +213,25 @@ object Result:
       recoverWith(e)
 
     def log(message: String): Result[Nothing] =
-      this.addActions(Logger.stdout[IO](message))
+      log(message, LogLevel.StdOut)
+    def log(message: String, level: LogLevel): Result[Nothing] =
+      this.copy(logs = logs :+ LogEntry.Log(level, message))
+    def logOnce(message: String): Result[Nothing] =
+      logOnce(message, LogLevel.StdOut)
+    def logOnce(message: String, level: LogLevel): Result[Nothing] =
+      this.copy(logs = logs :+ LogEntry.LogOnce(level, message))
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[Nothing] =
       this.copy(crashReporter = reporter)
 
     def reportCrash: String =
       crashReporter.orElse(defaultCrashLogging)(e)
+
+    /** Immediately logs any outstanding log entries, the final words, and the crash report, then throws the error. */
+    private[tyrian] def crash(finalWords: LogEntry*): Nothing =
+      logs.foreach(Logger.unsafeLogNow)
+      finalWords.foreach(Logger.unsafeLogNow)
+      Logger.unsafeLogNow(LogEntry.stdOut(reportCrash))
+      throw e
 
     def addActions(newActions: Action*): Error                               = this
     def addActions(newActions: Batch[Action]): Error                         = this
@@ -216,7 +251,7 @@ object Result:
 
   object Error {
     def apply(e: Throwable): Error =
-      Error(e, defaultCrashLogging)
+      Error(e, defaultCrashLogging, Batch.empty)
   }
 
   extension [A](l: Batch[Result[A]]) def sequence: Result[Batch[A]] = Result.sequenceBatch(l)
@@ -235,14 +270,14 @@ object Result:
         case (Next(s1, es1), Next(s2, es2), Next(s3, es3)) =>
           Result((s1, s2, s3), es1 ++ es2 ++ es3)
 
-        case (Error(e, r), _, _) =>
-          Error(e, r)
+        case (err: Error, _, _) =>
+          err
 
-        case (_, Error(e, r), _) =>
-          Error(e, r)
+        case (_, err: Error, _) =>
+          err
 
-        case (_, _, Error(e, r)) =>
-          Error(e, r)
+        case (_, _, err: Error) =>
+          err
       }
     def merge[D](f: (A, B, C) => D): Result[D] =
       for {
@@ -271,7 +306,7 @@ object Result:
 
   def unapply[A](outcome: Result[A]): Option[(A, Batch[Action])] =
     outcome match {
-      case Result.Error(_, _) =>
+      case Result.Error(_, _, _) =>
         None
 
       case Result.Next(s, es) =>
@@ -297,7 +332,7 @@ object Result:
         val h = remaining.head
         val t = remaining.tail
         h match
-          case Error(e, r) => Error(e, r)
+          case err: Error  => err
           case Next(s, es) =>
             rec(t, accA ++ Batch(s), accActions ++ es)
 
@@ -311,8 +346,8 @@ object Result:
         case Nil =>
           Result(accA).addActions(Batch.fromList(accEvents))
 
-        case Error(e, r) :: _ =>
-          Error(e, r)
+        case (err: Error) :: _ =>
+          err
 
         case Next(s, es) :: xs =>
           rec(xs, accA ++ List(s), accEvents ++ es.toList)
@@ -345,23 +380,26 @@ object Result:
       case (Next(s1, es1), Next(s2, es2), Next(s3, es3)) =>
         Result((s1, s2, s3), es1 ++ es2 ++ es3)
 
-      case (Error(e, r), _, _) =>
-        Error(e, r)
+      case (err: Error, _, _) =>
+        err
 
-      case (_, Error(e, r), _) =>
-        Error(e, r)
+      case (_, err: Error, _) =>
+        err
 
-      case (_, _, Error(e, r)) =>
-        Error(e, r)
+      case (_, _, err: Error) =>
+        err
     }
 
   def join[A](faa: Result[Result[A]]): Result[A] =
     faa match {
-      case Error(e, r) =>
-        Error(e, r)
+      case err: Error =>
+        err
 
-      case Next(outcome, es) =>
-        Result(outcome.unsafeGet, es ++ outcome.unsafeActions)
+      case Next(err: Error, _) =>
+        err
+
+      case Next(Next(s, es2), es) =>
+        Result(s, es ++ es2)
     }
   def flatten[A](faa: Result[Result[A]]): Result[A] =
     join(faa)

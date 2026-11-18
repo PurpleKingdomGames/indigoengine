@@ -19,6 +19,7 @@ import indigo.shared.Context
 import indigo.shared.IndigoSystemEvent
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.logging.LogEntry
 
 import scala.collection.mutable
 
@@ -69,7 +70,6 @@ final class GameLoop[StartUpData, GameModel](
       gameEngine.globalEventStream.pushGlobalEvent(nextEvent)
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def runFrameNormal(time: Seconds, timeDelta: Seconds): Unit =
     val gameTime =
       new GameTime(time, timeDelta)
@@ -105,10 +105,8 @@ final class GameLoop[StartUpData, GameModel](
     // Persist frame state
     val scene =
       processedFrame match
-        case oe @ Outcome.Error(e, _) =>
-          IndigoLogger.error("The game has crashed...")
-          IndigoLogger.error(oe.reportCrash)
-          throw e
+        case oe: Outcome.Error =>
+          oe.crash(LogEntry.error("The game has crashed..."))
 
         case Outcome.Result((gameModel, sceneUpdateFragment), globalEvents) =>
           _gameModelState = gameModel

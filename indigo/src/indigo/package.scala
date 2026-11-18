@@ -247,6 +247,9 @@ object aliases:
   type PlaySound = indigo.core.events.PlaySound
   val PlaySound: indigo.core.events.PlaySound.type = indigo.core.events.PlaySound
 
+  type LogEvent = indigo.core.events.LogEvent
+  val LogEvent: indigo.core.events.LogEvent.type = indigo.core.events.LogEvent
+
   type AssetEvent = indigo.core.events.AssetEvent
   val AssetEvent: indigo.core.events.AssetEvent.type = indigo.core.events.AssetEvent
 

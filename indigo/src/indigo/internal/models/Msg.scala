@@ -8,9 +8,9 @@ import indigo.core.audio.PlaybackPolicy
 import indigo.core.audio.Volume
 import indigo.core.datatypes.BindingKey
 import indigo.core.render.ScreenCaptureConfig
-import indigo.core.utils.LogLevel
 import indigo.internal.models.FullScreenRequest
 import indigo.internal.models.LaunchStatus
+import indigoengine.shared.logging.LogLevel
 import tyrian.*
 
 enum Msg extends GlobalMsg:

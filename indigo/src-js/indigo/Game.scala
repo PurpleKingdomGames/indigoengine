@@ -6,7 +6,6 @@ import indigo.core.dice.Dice
 import indigo.core.events.EventFilters
 import indigo.core.events.GlobalEvent
 import indigo.core.utils.IndigoLogger
-import indigo.core.utils.LogLevel
 import indigo.frameprocessors.GameFrameProcessor
 import indigo.internal.assets.AssetLoader
 import indigo.platform.IndigoCoreServices
@@ -26,6 +25,8 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
 import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
@@ -227,10 +228,8 @@ trait Game[BootData, StartUpData, Model]:
       services: IndigoCoreServices[html.Image, ImageData]
   ): GameEngine[StartUpData, Model] =
     boot(flags) match
-      case oe @ Outcome.Error(e, _) =>
-        IndigoLogger.error("Error during boot - Halting")
-        IndigoLogger.error(oe.reportCrash)
-        throw e
+      case oe: Outcome.Error =>
+        oe.crash(LogEntry.error("Error during boot - Halting"))
 
       case Outcome.Result(b, evts) =>
         val engine = indigoGame(b, services)

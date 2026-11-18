@@ -99,17 +99,14 @@ trait App[GraphicsContext, Model]:
       }
     Cmd.Run(task, router)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def _init(flags: Map[String, String]): (Model, Cmd[IO, GlobalMsg]) =
     init(flags) match
       case Result.Next(state, actions) =>
         (state, Action.internal.Many(actions).toCmd |+| routeCurrentLocation(router))
 
-      case e @ Result.Error(err, _) =>
-        println(e.reportCrash)
-        throw err
+      case e: Result.Error =>
+        e.crash()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   protected def _update(
       model: Model
   ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
@@ -118,9 +115,8 @@ trait App[GraphicsContext, Model]:
         case Result.Next(state, actions) =>
           state -> Action.internal.Many(actions).toCmd
 
-        case e @ Result.Error(err, _) =>
-          println(e.reportCrash)
-          throw err
+        case e: Result.Error =>
+          e.crash()
 
   private def onUrlChange(router: Location => GlobalMsg): Watcher =
     def makeMsg = Option(router(Location.fromJsLocation(window.location)))
@@ -160,7 +156,6 @@ trait App[GraphicsContext, Model]:
         graphicsTick(time)
       }: Unit
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def combinedUpdate(
         model: Model
     ): GlobalMsg => (Model, Cmd[IO, GlobalMsg]) =
@@ -175,8 +170,8 @@ trait App[GraphicsContext, Model]:
         }
 
         extCmds match {
-          case Result.Error(e, _) =>
-            throw e
+          case err: Result.Error =>
+            err.crash()
 
           case Result.Next(eCmds, _) =>
             m -> (as |+| eCmds)

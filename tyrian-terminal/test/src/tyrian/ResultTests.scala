@@ -63,7 +63,7 @@ class ResultTests extends munit.FunSuite {
 
   def errorsMatch[A](actual: Result[A], expected: Result[A]): Boolean =
     (actual, expected) match {
-      case (Result.Error(e1, _), Result.Error(e2, _)) =>
+      case (Result.Error(e1, _, _), Result.Error(e2, _, _)) =>
         e1.getMessage == e2.getMessage
 
       case _ =>

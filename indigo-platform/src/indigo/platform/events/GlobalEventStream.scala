@@ -1,6 +1,8 @@
 package indigo.platform.events
 
 import indigo.core.events.GlobalEvent
+import indigo.core.events.LogEvent
+import indigo.core.utils.IndigoLogger
 import indigo.render.EmitGlobalEvent
 import indigoengine.shared.collections.Batch
 
@@ -27,7 +29,13 @@ final class GlobalEventStream extends EmitGlobalEvent with GlobalEventCallback:
     ()
 
   def pushGlobalEvent(e: GlobalEvent): Unit =
-    eventQueue.enqueue(e)
+    e match
+      case LogEvent(entry) =>
+        IndigoLogger.log(entry)
+
+      case _ =>
+        eventQueue.enqueue(e)
+        ()
 
   def collect: Batch[GlobalEvent] =
     val res = Batch.fromSeq(eventQueue.dequeueAll(_ => true))
