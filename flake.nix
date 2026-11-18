@@ -31,7 +31,7 @@
         jsInputs = with pkgs; [
           nodejs
           yarn
-          nodePackages_latest.http-server
+          http-server
           electron
         ];
         jsHook = ''
