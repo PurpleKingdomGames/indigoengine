@@ -1,9 +1,13 @@
 package indigo.core
 
 import indigo.core.events.GlobalEvent
+import indigo.core.events.LogEvent
+import indigo.core.utils.IndigoLogger
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.NonEmptyBatch
 import indigoengine.shared.collections.NonEmptyList
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
 
 import scala.annotation.tailrec
 import scala.util.control.NonFatal
@@ -24,6 +28,18 @@ sealed trait Outcome[+A] derives CanEqual:
   def globalEventsOrNil: Batch[GlobalEvent]
 
   def handleError[B >: A](recoverWith: Throwable => Outcome[B]): Outcome[B]
+
+  /** Log a message to stdout, with no decoration. */
+  def log(message: String): Outcome[A]
+
+  /** Log a message at the given level. */
+  def log(message: String, level: LogLevel): Outcome[A]
+
+  /** Log a message to stdout, with no decoration, but only log each message once. */
+  def logOnce(message: String): Outcome[A]
+
+  /** Log a message at the given level, but only log each message once. */
+  def logOnce(message: String, level: LogLevel): Outcome[A]
 
   def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[A]
 
@@ -75,6 +91,15 @@ object Outcome:
     def handleError[B >: A](recoverWith: Throwable => Outcome[B]): Outcome[B] =
       this
 
+    def log(message: String): Outcome[A] =
+      log(message, LogLevel.StdOut)
+    def log(message: String, level: LogLevel): Outcome[A] =
+      addGlobalEvents(LogEvent(LogEntry.Log(level, message)))
+    def logOnce(message: String): Outcome[A] =
+      logOnce(message, LogLevel.StdOut)
+    def logOnce(message: String, level: LogLevel): Outcome[A] =
+      addGlobalEvents(LogEvent(LogEntry.LogOnce(level, message)))
+
     def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[A] =
       this
 
@@ -107,8 +132,8 @@ object Outcome:
 
     def ap[B](of: Outcome[A => B]): Outcome[B] =
       of match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Result(s, es) =>
           map(s).addGlobalEvents(es)
@@ -119,8 +144,8 @@ object Outcome:
 
     def combine[B](other: Outcome[B]): Outcome[(A, B)] =
       other match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Result(s, es) =>
           Outcome((state, s), globalEvents ++ es)
@@ -128,8 +153,8 @@ object Outcome:
 
     def flatMap[B](f: A => Outcome[B]): Outcome[B] =
       f(state) match {
-        case Error(e, r) =>
-          Error(e, r)
+        case err: Error =>
+          err
 
         case Result(s, es) =>
           Outcome(s, globalEvents ++ es)
@@ -138,7 +163,11 @@ object Outcome:
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final case class Error(e: Throwable, crashReporter: PartialFunction[Throwable, String]) extends Outcome[Nothing] {
+  final case class Error(
+      e: Throwable,
+      crashReporter: PartialFunction[Throwable, String],
+      logs: Batch[LogEntry]
+  ) extends Outcome[Nothing] {
 
     def isResult: Boolean = false
     def isError: Boolean  = true
@@ -158,6 +187,15 @@ object Outcome:
     def handleError[B >: Nothing](recoverWith: Throwable => Outcome[B]): Outcome[B] =
       recoverWith(e)
 
+    def log(message: String): Outcome[Nothing] =
+      log(message, LogLevel.StdOut)
+    def log(message: String, level: LogLevel): Outcome[Nothing] =
+      this.copy(logs = logs :+ LogEntry.Log(level, message))
+    def logOnce(message: String): Outcome[Nothing] =
+      logOnce(message, LogLevel.StdOut)
+    def logOnce(message: String, level: LogLevel): Outcome[Nothing] =
+      this.copy(logs = logs :+ LogEntry.LogOnce(level, message))
+
     def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[Nothing] =
       this.copy(crashReporter = reporter)
 
@@ -165,6 +203,13 @@ object Outcome:
       crashReporter.orElse[Throwable, String] { case e: Throwable =>
         e.getMessage + "\n" + e.getStackTrace.mkString("\n")
       }(e)
+
+    /** Immediately logs any outstanding log entries, the final words, and the crash report, then throws the error. */
+    private[indigo] def crash(finalWords: LogEntry*): Nothing =
+      logs.foreach(IndigoLogger.unsafeLogNow)
+      finalWords.foreach(IndigoLogger.unsafeLogNow)
+      IndigoLogger.unsafeLogNow(LogEntry.error(reportCrash))
+      throw e
 
     def addGlobalEvents(newEvents: GlobalEvent*): Error                                = this
     def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Error                       = this
@@ -184,7 +229,7 @@ object Outcome:
 
   object Error {
     def apply(e: Throwable): Error =
-      Error(e, { case ee: Throwable => ee.getMessage })
+      Error(e, { case ee: Throwable => ee.getMessage }, Batch.empty)
   }
 
   extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
@@ -206,14 +251,14 @@ object Outcome:
         case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>
           Outcome((s1, s2, s3), es1 ++ es2 ++ es3)
 
-        case (Error(e, r), _, _) =>
-          Error(e, r)
+        case (err: Error, _, _) =>
+          err
 
-        case (_, Error(e, r), _) =>
-          Error(e, r)
+        case (_, err: Error, _) =>
+          err
 
-        case (_, _, Error(e, r)) =>
-          Error(e, r)
+        case (_, _, err: Error) =>
+          err
       }
     def merge[D](f: (A, B, C) => D): Outcome[D] =
       for {
@@ -240,7 +285,7 @@ object Outcome:
 
   def unapply[A](outcome: Outcome[A]): Option[(A, Batch[GlobalEvent])] =
     outcome match {
-      case Outcome.Error(_, _) =>
+      case Outcome.Error(_, _, _) =>
         None
 
       case Outcome.Result(s, es) =>
@@ -263,7 +308,7 @@ object Outcome:
         val h = remaining.head
         val t = remaining.tail
         h match
-          case Error(e, r)   => Error(e, r)
+          case err: Error    => err
           case Result(s, es) =>
             rec(t, accA ++ Batch(s), accEvents ++ es)
 
@@ -279,8 +324,8 @@ object Outcome:
         case Nil =>
           Outcome(accA).addGlobalEvents(Batch.fromList(accEvents))
 
-        case Error(e, r) :: _ =>
-          Error(e, r)
+        case (err: Error) :: _ =>
+          err
 
         case Result(s, es) :: xs =>
           rec(xs, accA ++ List(s), accEvents ++ es.toList)
@@ -311,23 +356,26 @@ object Outcome:
       case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>
         Outcome((s1, s2, s3), es1 ++ es2 ++ es3)
 
-      case (Error(e, r), _, _) =>
-        Error(e, r)
+      case (err: Error, _, _) =>
+        err
 
-      case (_, Error(e, r), _) =>
-        Error(e, r)
+      case (_, err: Error, _) =>
+        err
 
-      case (_, _, Error(e, r)) =>
-        Error(e, r)
+      case (_, _, err: Error) =>
+        err
     }
 
   def join[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     faa match {
-      case Error(e, r) =>
-        Error(e, r)
+      case err: Error =>
+        err
 
-      case Result(outcome, es) =>
-        Outcome(outcome.unsafeGet, es ++ outcome.unsafeGlobalEvents)
+      case Result(err: Error, _) =>
+        err
+
+      case Result(Result(s, es2), es) =>
+        Outcome(s, es ++ es2)
     }
   def flatten[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     join(faa)

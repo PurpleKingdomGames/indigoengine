@@ -10,6 +10,14 @@ object aliases:
   type Seconds = indigoengine.shared.datatypes.Seconds
   val Seconds: indigoengine.shared.datatypes.Seconds.type = indigoengine.shared.datatypes.Seconds
 
+  // Logging
+
+  type LogLevel = indigoengine.shared.logging.LogLevel
+  val LogLevel: indigoengine.shared.logging.LogLevel.type = indigoengine.shared.logging.LogLevel
+
+  type LogEntry = indigoengine.shared.logging.LogEntry
+  val LogEntry: indigoengine.shared.logging.LogEntry.type = indigoengine.shared.logging.LogEntry
+
   // Collections
 
   type Batch[A] = indigoengine.shared.collections.Batch[A]

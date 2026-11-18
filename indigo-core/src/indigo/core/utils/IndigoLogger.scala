@@ -1,10 +1,10 @@
 package indigo.core.utils
 
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
+
 import scala.collection.mutable
 import scala.collection.mutable.Queue
-
-enum LogLevel derives CanEqual:
-  case Info, Error, Debug, Raw
 
 /** A very, very simple logger.
   *
@@ -13,19 +13,21 @@ enum LogLevel derives CanEqual:
   */
 object IndigoLogger:
 
-  private val INFO: String  = "INFO"
-  private val ERROR: String = "ERROR"
-  private val DEBUG: String = "DEBUG"
+  private val ORIGIN: String = "Indigo"
 
-  private val errorLogs: mutable.HashSet[String] = mutable.HashSet.empty
-  private val debugLogs: mutable.HashSet[String] = mutable.HashSet.empty
+  private val onceLogs: mutable.HashSet[String] = mutable.HashSet.empty
 
   private val buffer: Queue[(LogLevel, String)] = Queue.empty[(LogLevel, String)]
 
   private def push(level: LogLevel, message: String): Unit =
     buffer.synchronized {
-      buffer.enqueue((level, message))
+      buffer.enqueue((level, LogEntry.format(level, ORIGIN, message)))
       ()
+    }
+
+  private def pushOnce(level: LogLevel, message: String): Unit =
+    buffer.synchronized {
+      if onceLogs.add(LogEntry.format(level, ORIGIN, message)) then push(level, message)
     }
 
   private[indigo] def drainAll(): List[(LogLevel, String)] =
@@ -35,29 +37,57 @@ object IndigoLogger:
       out
     }
 
-  private def formatMessage(level: String, message: String): String =
-    s"""[$level] [Indigo] $message"""
+  /** Immediately prints the given entry, bypassing the buffer. For use when there will be no chance to drain the
+    * buffer, e.g. during a crash.
+    */
+  private[indigo] def unsafeLogNow(entry: LogEntry): Unit =
+    val formatted = entry.format(ORIGIN)
+    val shouldLog =
+      if entry.isOnce then buffer.synchronized(onceLogs.add(formatted))
+      else true
+
+    if shouldLog then println(formatted)
+
+  /** Log the given entry. */
+  def log(entry: LogEntry): Unit =
+    entry match
+      case LogEntry.Log(level, message)     => push(level, message)
+      case LogEntry.LogOnce(level, message) => pushOnce(level, message)
+
+  /** Log at the given level. */
+  def log(level: LogLevel, messages: String*): Unit =
+    push(level, messages.toList.mkString(", "))
+
+  /** Log at the given level, but only log each message once. */
+  def logOnce(level: LogLevel, messages: String*): Unit =
+    pushOnce(level, messages.toList.mkString(", "))
 
   def consoleLog(messages: String*): Unit =
-    push(LogLevel.Raw, messages.toList.mkString(", "))
+    log(LogLevel.StdOut, messages*)
+
+  def consoleLogOnce(messages: String*): Unit =
+    logOnce(LogLevel.StdOut, messages*)
 
   def info(messages: String*): Unit =
-    push(LogLevel.Info, formatMessage(INFO, messages.toList.mkString(", ")))
+    log(LogLevel.Info, messages*)
+
+  def infoOnce(messages: String*): Unit =
+    logOnce(LogLevel.Info, messages*)
+
+  def warn(messages: String*): Unit =
+    log(LogLevel.Warn, messages*)
+
+  def warnOnce(messages: String*): Unit =
+    logOnce(LogLevel.Warn, messages*)
 
   def error(messages: String*): Unit =
-    push(LogLevel.Error, formatMessage(ERROR, messages.toList.mkString(", ")))
+    log(LogLevel.Error, messages*)
 
   def errorOnce(messages: String*): Unit =
-    val msg = messages.toList.mkString(", ")
-    buffer.synchronized {
-      if errorLogs.add(msg) then push(LogLevel.Error, formatMessage(ERROR, msg))
-    }
+    logOnce(LogLevel.Error, messages*)
 
   def debug(messages: String*): Unit =
-    push(LogLevel.Debug, formatMessage(DEBUG, messages.toList.mkString(", ")))
+    log(LogLevel.Debug, messages*)
 
   def debugOnce(messages: String*): Unit =
-    val msg = messages.toList.mkString(", ")
-    buffer.synchronized {
-      if debugLogs.add(msg) then push(LogLevel.Debug, formatMessage(DEBUG, msg))
-    }
+    logOnce(LogLevel.Debug, messages*)

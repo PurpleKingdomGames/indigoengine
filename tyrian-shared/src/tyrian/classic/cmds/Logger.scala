@@ -1,76 +1,90 @@
 package tyrian.classic.cmds
 
 import cats.effect.kernel.Sync
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
 import tyrian.platform.Cmd
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 /** A very, very simple logger that logs to stdout with a few standard headers and the log message.
   */
 object Logger:
 
-  private val INFO: String  = "INFO"
-  private val ERROR: String = "ERROR"
-  private val DEBUG: String = "DEBUG"
+  private val ORIGIN: String = "Tyrian"
 
-  private val errorLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
-  private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+  private val onceLogs: mutable.HashSet[String] = mutable.HashSet.empty
 
-  private def formatMessage(level: String, message: String): String =
-    s"""[$level] [Tyrian] $message"""
+  private def logString(level: LogLevel, message: String): Unit =
+    println(LogEntry.format(level, ORIGIN, message))
 
-  private val stdOutString: String => Unit = message => println(message)
+  private def logOnceString(level: LogLevel, message: String): Unit =
+    val formatted = LogEntry.format(level, ORIGIN, message)
+    val isNew     = onceLogs.synchronized(onceLogs.add(formatted))
+    if isNew then println(formatted)
 
-  private val infoString: String => Unit = message => println(formatMessage(INFO, message))
-
-  private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
-
-  private val errorOnceString: String => Unit = message =>
-    if !errorLogs.contains(message) then {
-      errorLogs += message
-      println(formatMessage(ERROR, message))
+  /** Log at the given level. */
+  def log[F[_]: Sync](level: LogLevel, messages: String*): Cmd.SideEffect[F] =
+    Cmd.SideEffect {
+      logString(level, messages.toList.mkString(", "))
     }
 
-  private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
-
-  private val debugOnceString: String => Unit = message =>
-    if !debugLogs.contains(message) then {
-      debugLogs += message
-      println(formatMessage(DEBUG, message))
+  /** Log at the given level, but only log each message once. */
+  def logOnce[F[_]: Sync](level: LogLevel, messages: String*): Cmd.SideEffect[F] =
+    Cmd.SideEffect {
+      logOnceString(level, messages.toList.mkString(", "))
     }
+
+  /** Immediately logs the given entry, for use when there will be no chance to run a Cmd, e.g. during a crash. */
+  private[tyrian] def unsafeLogNow(entry: LogEntry): Unit =
+    entry match
+      case LogEntry.Log(level, message)     => logString(level, message)
+      case LogEntry.LogOnce(level, message) => logOnceString(level, message)
+
+  /** Log the given entry. */
+  def log[F[_]: Sync](entry: LogEntry): Cmd.SideEffect[F] =
+    entry match
+      case LogEntry.Log(level, message)     => log(level, message)
+      case LogEntry.LogOnce(level, message) => logOnce(level, message)
 
   /** stdout logs to the platforms standard output with no decoration or embellishments. */
   def stdout[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      stdOutString(messages.toList.mkString(", "))
-    }
+    log(LogLevel.StdOut, messages*)
+
+  /** stdout logs to the platforms standard output with no decoration or embellishments, but only logs each message
+    * once.
+    */
+  def stdoutOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
+    logOnce(LogLevel.StdOut, messages*)
 
   /** Log at an info level */
   def info[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      infoString(messages.toList.mkString(", "))
-    }
+    log(LogLevel.Info, messages*)
+
+  /** Log at an info level, but only log each message once. */
+  def infoOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
+    logOnce(LogLevel.Info, messages*)
+
+  /** Log at a warn level */
+  def warn[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
+    log(LogLevel.Warn, messages*)
+
+  /** Log at a warn level, but only log each message once. */
+  def warnOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
+    logOnce(LogLevel.Warn, messages*)
 
   /** Log at an error level */
   def error[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      errorString(messages.toList.mkString(", "))
-    }
+    log(LogLevel.Error, messages*)
 
   /** Log at an error level, but only log each message once. */
   def errorOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      errorOnceString(messages.toList.mkString(", "))
-    }
+    logOnce(LogLevel.Error, messages*)
 
   /** Log at an debug level */
   def debug[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      debugString(messages.toList.mkString(", "))
-    }
+    log(LogLevel.Debug, messages*)
 
   /** Log at an debug level, but only log each message once. */
   def debugOnce[F[_]: Sync](messages: String*): Cmd.SideEffect[F] =
-    Cmd.SideEffect {
-      debugOnceString(messages.toList.mkString(", "))
-    }
+    logOnce(LogLevel.Debug, messages*)

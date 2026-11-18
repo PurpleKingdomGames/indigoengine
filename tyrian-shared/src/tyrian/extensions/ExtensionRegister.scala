@@ -3,6 +3,7 @@ package tyrian.extensions
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.mutable.KVP
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.logging.LogEntry
 import indigoengine.shared.typeclass.Monoid
 import tyrian.Action
 import tyrian.GlobalMsg
@@ -18,14 +19,13 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredExtensions: Batch[RegisteredExtension[GraphicsContext, View]] = Batch()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def register(newExtensions: Batch[Extension[GraphicsContext, View]]): Batch[Action] =
     newExtensions.map(initialiseExtension).sequence match {
-      case oe @ Result.Error(e, _) =>
-        println("Error during subsystem setup - Halting.")
-        println("Crash report:")
-        println(oe.reportCrash)
-        throw e
+      case oe: Result.Error =>
+        oe.crash(
+          LogEntry.stdOut("Error during subsystem setup - Halting."),
+          LogEntry.stdOut("Crash report:")
+        )
 
       case Result.Next(toBeRegistered, actions) =>
         registeredExtensions = registeredExtensions ++ toBeRegistered
@@ -62,8 +62,8 @@ final class ExtensionRegister[GraphicsContext, View](using m: Monoid[View]):
           val model: extension.ExtensionModel = stateMap.getUnsafe(key).asInstanceOf[extension.ExtensionModel]
 
           extension.update(model)(globalMsg) match
-            case Result.Error(e, _) =>
-              Result.raiseError(e)
+            case err: Result.Error =>
+              err
 
             case Result.Next(state, actions) =>
               stateMap.update(key, state.asInstanceOf[Object])

@@ -1,6 +1,8 @@
 package tyrian
 
 import indigoengine.shared.collections.Batch
+import indigoengine.shared.logging.LogEntry
+import indigoengine.shared.logging.LogLevel
 
 import Result.*
 
@@ -316,7 +318,7 @@ class ResultTests extends munit.FunSuite {
 
   def errorsMatch[A](actual: Result[A], expected: Result[A]): Boolean =
     (actual, expected) match {
-      case (Result.Error(e1, _), Result.Error(e2, _)) =>
+      case (Result.Error(e1, _, _), Result.Error(e2, _, _)) =>
         e1.getMessage == e2.getMessage
 
       case _ =>
@@ -425,7 +427,7 @@ class ResultTests extends munit.FunSuite {
       "Boom!"
 
     actual match {
-      case Error(e, r) =>
+      case Error(e, r, _) =>
         assertEquals(r(e), expected)
 
       case _ =>
@@ -458,6 +460,88 @@ class ResultTests extends munit.FunSuite {
       Result.Error(e)
 
     assert(errorsMatch(actual, expected))
+  }
+
+  test("Logging.log and logOnce add an action each on Next") {
+    val actual =
+      Result(10)
+        .log("a")
+        .log("b", LogLevel.Info)
+        .logOnce("c")
+        .logOnce("d", LogLevel.Warn)
+
+    assertEquals(actual.unsafeGet, 10)
+    assertEquals(actual.unsafeActions.length, 4)
+  }
+
+  test("Logging.log and logOnce accumulate log entries on Error") {
+    val actual: Result[Int] =
+      Result
+        .raiseError(new Exception("Boom!"))
+        .log("a")
+        .log("b", LogLevel.Info)
+        .logOnce("c")
+        .logOnce("d", LogLevel.Warn)
+
+    val expected =
+      Batch(
+        LogEntry.Log(LogLevel.StdOut, "a"),
+        LogEntry.Log(LogLevel.Info, "b"),
+        LogEntry.LogOnce(LogLevel.StdOut, "c"),
+        LogEntry.LogOnce(LogLevel.Warn, "d")
+      )
+
+    actual match
+      case Error(_, _, logs) => assertEquals(logs, expected)
+      case _                 => fail("Expected an error")
+  }
+
+  test("Logging.logs on an Error survive transformations") {
+    val err: Result[Int] =
+      Result.raiseError(new Exception("Boom!")).log("a")
+
+    val expected =
+      Batch(LogEntry.Log(LogLevel.StdOut, "a"))
+
+    def logsOf[A](r: Result[A]): Batch[LogEntry] =
+      r match
+        case Error(_, _, logs) => logs
+        case _                 => fail("Expected an error")
+
+    assertEquals(logsOf(err.map(_ + 1)), expected)
+    assertEquals(logsOf(Result(1).flatMap(_ => err)), expected)
+    assertEquals(logsOf(Result(1).combine(err)), expected)
+    assertEquals(logsOf(Batch(Result(1), err).sequence), expected)
+    assertEquals(logsOf(Result.join(Result(err))), expected)
+  }
+
+  test("Logging.reportCrash reports the crash only, logs are kept separately") {
+    val actual: Result[Int] =
+      Result
+        .raiseError(new Exception("Boom!"))
+        .log("a")
+        .logCrash { case e => e.getMessage }
+
+    actual match
+      case e: Error =>
+        assertEquals(e.reportCrash, "Boom!")
+        assertEquals(e.logs, Batch(LogEntry.Log(LogLevel.StdOut, "a")))
+
+      case _ =>
+        fail("Expected an error")
+  }
+
+  test("Logging.crash rethrows the original exception") {
+    val e                = new Exception("Boom!")
+    val err: Result[Int] = Result.raiseError(e).log("a")
+
+    err match
+      case x: Error =>
+        val thrown = intercept[Exception](x.crash(LogEntry.stdOut("Halting.")))
+        assert(thrown eq e)
+
+      case _ =>
+        fail("Expected an error")
   }
 
 }

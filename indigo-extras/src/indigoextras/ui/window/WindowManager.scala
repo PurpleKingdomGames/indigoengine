@@ -396,9 +396,8 @@ object WindowManager:
       outcome: Outcome[WindowManagerModel[ReferenceData]],
       prevModel: WindowManagerModel[ReferenceData]
   ): Outcome[WindowManagerModel[ReferenceData]] =
-
     outcome match
-      case Outcome.Error(_, _) =>
+      case Outcome.Error(_, _, _) =>
         outcome
 
       case Outcome.Result(model, globalEvents) =>

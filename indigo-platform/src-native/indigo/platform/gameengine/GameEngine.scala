@@ -34,6 +34,7 @@ import indigo.shaders.UltravioletShader
 import indigo.shared.Startup
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.datatypes.Seconds
+import indigoengine.shared.logging.LogEntry
 
 import scala.compiletime.uninitialized
 import scala.scalanative.libc.locale.*
@@ -147,7 +148,7 @@ final class GameEngine[StartUpData, GameModel](
   def updateAssetCollection(assetCollection: AssetCollection): Unit =
     _assetCollection = assetCollection
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def rebuildGameLoop(
       firstRun: Boolean
   ): Seconds => Unit =
@@ -167,15 +168,12 @@ final class GameEngine[StartUpData, GameModel](
       val dice = if firstRun then Dice.default else Dice.fromSeed(runningTime.toLong)
 
       initialise(accumulatedAssetCollection)(dice) match {
-        case oe @ Outcome.Error(error, _) =>
+        case oe: Outcome.Error =>
           val msg =
             if (firstRun) "Error during first initialisation - Halting."
             else "Error during re-initialisation - Halting."
 
-          IndigoLogger.error(msg)
-          IndigoLogger.error("Crash report:")
-          IndigoLogger.error(oe.reportCrash)
-          throw error
+          oe.crash(LogEntry.error(msg), LogEntry.error("Crash report:"))
 
         case Outcome.Result(startupData, globalEvents) =>
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -232,14 +230,12 @@ final class GameEngine[StartUpData, GameModel](
 
               ()
 
-            case oe @ Outcome.Error(e, _) =>
+            case oe: Outcome.Error =>
               val msg =
                 if (firstRun) "Error during first engine start up - Halting."
                 else "Error during engine restart - Halting."
 
-              IndigoLogger.error(msg)
-              IndigoLogger.error(oe.reportCrash)
-              throw e
+              oe.crash(LogEntry.error(msg))
           }
 
       }

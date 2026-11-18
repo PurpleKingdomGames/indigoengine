@@ -2,10 +2,10 @@ package indigo.shared.subsystems
 
 import indigo.core.Outcome
 import indigo.core.events.GlobalEvent
-import indigo.core.utils.IndigoLogger
 import indigo.scenegraph.SceneUpdateFragment
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.collections.mutable
+import indigoengine.shared.logging.LogEntry
 
 final class SubSystemsRegister[Model] {
 
@@ -14,14 +14,13 @@ final class SubSystemsRegister[Model] {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredSubSystems: Batch[RegisteredSubSystem[Model]] = Batch()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def register(newSubSystems: Batch[SubSystem[Model]]): Batch[GlobalEvent] =
     newSubSystems.map(initialiseSubSystem).sequence match {
-      case oe @ Outcome.Error(e, _) =>
-        IndigoLogger.error("Error during subsystem setup - Halting.")
-        IndigoLogger.error("Crash report:")
-        IndigoLogger.error(oe.reportCrash)
-        throw e
+      case oe: Outcome.Error =>
+        oe.crash(
+          LogEntry.error("Error during subsystem setup - Halting."),
+          LogEntry.error("Crash report:")
+        )
 
       case Outcome.Result(toBeRegistered, events) =>
         registeredSubSystems = registeredSubSystems ++ toBeRegistered
@@ -68,8 +67,8 @@ final class SubSystemsRegister[Model] {
                     )(e)
                   }
                 } match {
-                  case Outcome.Error(e, _) =>
-                    Outcome.raiseError(e)
+                  case err: Outcome.Error =>
+                    err
 
                   case Outcome.Result(state, globalEvents) =>
                     stateMap.update(key, state.asInstanceOf[Object])
