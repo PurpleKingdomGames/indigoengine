@@ -361,11 +361,23 @@ class ResultTests extends munit.FunSuite {
     assert(errorsMatch(Result(10).addGlobalMsgs(boomMsgs), expected))
   }
 
-  test("Adding messages to an error does not evaluate them") {
+  test("Adding actions, cmds, or messages to an error does not evaluate them") {
     val error = Result.Error(new Exception("Boom!"))
 
-    def boomMsgs: Batch[GlobalMsg] = throw new Exception("Should not be evaluated")
+    def boomAction: Action                  = throw new Exception("Should not be evaluated")
+    def boomActions: Batch[Action]          = throw new Exception("Should not be evaluated")
+    def boomCmd: Cmd[IO, GlobalMsg]         = throw new Exception("Should not be evaluated")
+    def boomCmds: Batch[Cmd[IO, GlobalMsg]] = throw new Exception("Should not be evaluated")
+    def boomMsg: GlobalMsg                  = throw new Exception("Should not be evaluated")
+    def boomMsgs: Batch[GlobalMsg]          = throw new Exception("Should not be evaluated")
 
+    assertEquals(error.addActions(boomAction), error)
+    assertEquals(error.addActions(boomActions), error)
+    assertEquals(error.addActions(boomCmd), error)
+    assertEquals(error.addActions(boomCmds), error)
+    assertEquals(error.addCmds(boomCmd), error)
+    assertEquals(error.addCmds(boomCmds), error)
+    assertEquals(error.addGlobalMsgs(boomMsg), error)
     assertEquals(error.addGlobalMsgs(boomMsgs), error)
   }
 

@@ -337,9 +337,11 @@ class OutcomeTests extends munit.FunSuite {
   test("Adding events to an error does not evaluate them") {
     val error = Outcome.Error(new Exception("Boom!"))
 
-    def boomEvent: GlobalEvent = throw new Exception("Should not be evaluated")
+    def boomEvent: GlobalEvent         = throw new Exception("Should not be evaluated")
+    def boomEvents: Batch[GlobalEvent] = throw new Exception("Should not be evaluated")
 
     assertEquals(error.addGlobalEvents(boomEvent), error)
+    assertEquals(error.addGlobalEvents(boomEvents), error)
   }
 
   test("Exceptions thrown during flatMap are handled") {
