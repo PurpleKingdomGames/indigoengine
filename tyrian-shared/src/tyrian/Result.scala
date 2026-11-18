@@ -43,23 +43,26 @@ sealed trait Result[+A] derives CanEqual:
 
   def logCrash(reporter: PartialFunction[Throwable, String]): Result[A]
 
-  def addActions(newActions: Action*): Result[A]
-  def addActions(newActions: Batch[Action]): Result[A]
+  @targetName("Result-addActions-repeat")
+  def addActions(newActions: => Action*): Result[A]
+  def addActions(newActions: => Batch[Action]): Result[A]
   @targetName("Result-addActions-fromCmd-repeat")
-  def addActions(newCmds: Cmd[IO, GlobalMsg]*): Result[A] =
+  def addActions(newCmds: => Cmd[IO, GlobalMsg]*): Result[A] =
     addActions(Batch.fromSeq(newCmds.map(Action.fromCmd)))
   @targetName("Result-addActions-fromCmd-list")
-  def addActions(newCmds: Batch[Cmd[IO, GlobalMsg]]): Result[A] =
+  def addActions(newCmds: => Batch[Cmd[IO, GlobalMsg]]): Result[A] =
     addActions(newCmds.map(Action.fromCmd))
 
-  def addCmds(newCmds: Cmd[IO, GlobalMsg]*): Result[A] =
+  @targetName("Result-addCmds-repeat")
+  def addCmds(newCmds: => Cmd[IO, GlobalMsg]*): Result[A] =
     addActions(Batch.fromSeq(newCmds))
-  def addCmds(newCmds: Batch[Cmd[IO, GlobalMsg]]): Result[A] =
+  def addCmds(newCmds: => Batch[Cmd[IO, GlobalMsg]]): Result[A] =
     addActions(newCmds)
 
-  def addGlobalMsgs(msgs: Batch[GlobalMsg]): Result[A] =
+  def addGlobalMsgs(msgs: => Batch[GlobalMsg]): Result[A] =
     addActions(msgs.map(Action.emit))
-  def addGlobalMsgs(msgs: GlobalMsg*): Result[A] =
+  @targetName("Result-addGlobalMsgs-repeat")
+  def addGlobalMsgs(msgs: => GlobalMsg*): Result[A] =
     addGlobalMsgs(Batch.fromSeq(msgs))
 
   def exit: Result[A] =
@@ -128,10 +131,11 @@ object Result:
     def logCrash(reporter: PartialFunction[Throwable, String]): Result[A] =
       this
 
-    def addActions(newActions: Action*): Result[A] =
+    @targetName("Result-addActions-repeat")
+    def addActions(newActions: => Action*): Result[A] =
       addActions(Batch.fromSeq(newActions))
 
-    def addActions(newActions: Batch[Action]): Result[A] =
+    def addActions(newActions: => Batch[Action]): Result[A] =
       Result(state, actions ++ newActions)
 
     def createActions(f: A => Batch[Action]): Result[A] =
@@ -177,12 +181,17 @@ object Result:
       }
 
     def flatMap[B](f: A => Result[B]): Result[B] =
-      f(state) match {
-        case err: Error =>
-          err
+      try
+        f(state) match {
+          case err: Error =>
+            err
 
-        case Next(s, es) =>
-          Result(s, actions ++ es)
+          case Next(s, es) =>
+            Result(s, actions ++ es)
+        }
+      catch {
+        case NonFatal(e) =>
+          Result.Error(e)
       }
 
   }
@@ -202,7 +211,11 @@ object Result:
     def getOrElse[B >: Nothing](b: => B): B =
       b
     def orElse[B >: Nothing](b: => Result[B]): Result[B] =
-      b
+      try b
+      catch {
+        case NonFatal(thrown) =>
+          this.copy(e = thrown)
+      }
 
     def unsafeActions: Batch[Action] =
       throw e
@@ -210,7 +223,11 @@ object Result:
       Batch.empty
 
     def handleError[B >: Nothing](recoverWith: Throwable => Result[B]): Result[B] =
-      recoverWith(e)
+      try recoverWith(e)
+      catch {
+        case NonFatal(thrown) =>
+          this.copy(e = thrown)
+      }
 
     def log(message: String): Result[Nothing] =
       log(message, LogLevel.StdOut)
@@ -233,8 +250,9 @@ object Result:
       Logger.unsafeLogNow(LogEntry.stdOut(reportCrash))
       throw e
 
-    def addActions(newActions: Action*): Error                               = this
-    def addActions(newActions: Batch[Action]): Error                         = this
+    @targetName("Result-addActions-repeat")
+    def addActions(newActions: => Action*): Error                            = this
+    def addActions(newActions: => Batch[Action]): Error                      = this
     def createActions(f: Nothing => Batch[Action]): Error                    = this
     def clearActions: Error                                                  = this
     def replaceActions(f: Batch[Action] => Batch[Action]): Error             = this

@@ -1,8 +1,10 @@
 package tyrian
 
+import cats.effect.IO
 import indigoengine.shared.collections.Batch
 import indigoengine.shared.logging.LogEntry
 import indigoengine.shared.logging.LogLevel
+import tyrian.platform.Cmd
 
 import Result.*
 
@@ -335,6 +337,63 @@ class ResultTests extends munit.FunSuite {
       Result.Error(e)
 
     assert(errorsMatch(actual, expected))
+  }
+
+  test("Exceptions thrown while adding actions, cmds, or messages are handled") {
+    val e = new Exception("Boom!")
+
+    def boomAction: Action                  = throw e
+    def boomActions: Batch[Action]          = throw e
+    def boomCmd: Cmd[IO, GlobalMsg]         = throw e
+    def boomCmds: Batch[Cmd[IO, GlobalMsg]] = throw e
+    def boomMsg: GlobalMsg                  = throw e
+    def boomMsgs: Batch[GlobalMsg]          = throw e
+
+    val expected = Result.Error(e)
+
+    assert(errorsMatch(Result(10).addActions(boomAction), expected))
+    assert(errorsMatch(Result(10).addActions(boomActions), expected))
+    assert(errorsMatch(Result(10).addActions(boomCmd), expected))
+    assert(errorsMatch(Result(10).addActions(boomCmds), expected))
+    assert(errorsMatch(Result(10).addCmds(boomCmd), expected))
+    assert(errorsMatch(Result(10).addCmds(boomCmds), expected))
+    assert(errorsMatch(Result(10).addGlobalMsgs(boomMsg), expected))
+    assert(errorsMatch(Result(10).addGlobalMsgs(boomMsgs), expected))
+  }
+
+  test("Adding messages to an error does not evaluate them") {
+    val error = Result.Error(new Exception("Boom!"))
+
+    def boomMsgs: Batch[GlobalMsg] = throw new Exception("Should not be evaluated")
+
+    assertEquals(error.addGlobalMsgs(boomMsgs), error)
+  }
+
+  test("Exceptions thrown during flatMap are handled") {
+    val e = new Exception("Boom!")
+
+    val actual =
+      Result(10).flatMap[Int](_ => throw e)
+
+    assert(errorsMatch(actual, Result.Error(e)))
+  }
+
+  test("Exceptions thrown during handleError are handled") {
+    val e = new Exception("Kaboom!")
+
+    val actual =
+      Result.Error(new Exception("Boom!")).handleError[Int](_ => throw e)
+
+    assert(errorsMatch(actual, Result.Error(e)))
+  }
+
+  test("Exceptions thrown during orElse are handled") {
+    val e = new Exception("Kaboom!")
+
+    val actual =
+      Result.Error(new Exception("Boom!")).orElse[Int](throw e)
+
+    assert(errorsMatch(actual, Result.Error(e)))
   }
 
   test("mapping an error") {

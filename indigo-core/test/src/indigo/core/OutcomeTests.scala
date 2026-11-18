@@ -322,6 +322,53 @@ class OutcomeTests extends munit.FunSuite {
     assert(errorsMatch(actual, expected))
   }
 
+  test("Exceptions thrown while adding events are handled") {
+    val e = new Exception("Boom!")
+
+    def boomEvent: GlobalEvent         = throw e
+    def boomEvents: Batch[GlobalEvent] = throw e
+
+    val expected = Outcome.Error(e)
+
+    assert(errorsMatch(Outcome(10).addGlobalEvents(boomEvent), expected))
+    assert(errorsMatch(Outcome(10).addGlobalEvents(boomEvents), expected))
+  }
+
+  test("Adding events to an error does not evaluate them") {
+    val error = Outcome.Error(new Exception("Boom!"))
+
+    def boomEvent: GlobalEvent = throw new Exception("Should not be evaluated")
+
+    assertEquals(error.addGlobalEvents(boomEvent), error)
+  }
+
+  test("Exceptions thrown during flatMap are handled") {
+    val e = new Exception("Boom!")
+
+    val actual =
+      Outcome(10).flatMap[Int](_ => throw e)
+
+    assert(errorsMatch(actual, Outcome.Error(e)))
+  }
+
+  test("Exceptions thrown during handleError are handled") {
+    val e = new Exception("Kaboom!")
+
+    val actual =
+      Outcome.Error(new Exception("Boom!")).handleError[Int](_ => throw e)
+
+    assert(errorsMatch(actual, Outcome.Error(e)))
+  }
+
+  test("Exceptions thrown during orElse are handled") {
+    val e = new Exception("Kaboom!")
+
+    val actual =
+      Outcome.Error(new Exception("Boom!")).orElse[Int](throw e)
+
+    assert(errorsMatch(actual, Outcome.Error(e)))
+  }
+
   test("mapping an error") {
     val e      = new Exception("Boom!")
     val actual =
