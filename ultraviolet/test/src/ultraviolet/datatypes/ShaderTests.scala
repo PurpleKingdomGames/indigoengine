@@ -473,17 +473,17 @@ class ShaderTests extends munit.FunSuite {
       }
 
     val actualCode =
-      shader { (input: vec4) =>
+      shader { (vtx: vec4) =>
         Shader[Unit, vec4] { _ =>
-          input + vec4(1.0f)
+          vtx + vec4(1.0f)
         }
       }.toGLSL300.code
 
     assertNoDiff(
       actualCode,
       s"""
-      |vec4 def0(in vec4 input){
-      |  return input+vec4(1.0);
+      |vec4 def0(in vec4 vtx){
+      |  return vtx+vec4(1.0);
       |}
       |vec4 VERTEX;
       |void vertex(){

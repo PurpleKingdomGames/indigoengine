@@ -92,6 +92,53 @@ class ShaderProgramValidationTests extends munit.FunSuite {
     }
   }
 
+  test("GLSL reserved words cannot be used as function parameter names") {
+    val ast =
+      ShaderAST.Function(
+        "f",
+        List((ShaderAST.DataTypes.ident("float"), "switch")),
+        ShaderAST.DataTypes.ident("switch"),
+        ShaderAST.DataTypes.ident("float")
+      )
+
+    interceptMessage[ShaderError.GLSLReservedWord](
+      errorPrefix + "'switch' is a reserved word in GLSL, please choose a different name."
+    ) {
+      ShaderProgramValidation.validate(0, Nil)(ast)
+    }
+  }
+
+  test("GLSL reserved words cannot be declared inside function call arguments") {
+    val ast =
+      ShaderAST.CallExternalFunction(
+        "sin",
+        List(
+          ShaderAST.Block(
+            List(
+              ShaderAST.Val(
+                "a",
+                ShaderAST.Block(
+                  List(
+                    ShaderAST.Val("switch", ShaderAST.DataTypes.float(1.0f), ShaderAST.DataTypes.ident("float")),
+                    ShaderAST.DataTypes.ident("switch")
+                  )
+                ),
+                ShaderAST.DataTypes.ident("float")
+              ),
+              ShaderAST.DataTypes.ident("a")
+            )
+          )
+        ),
+        ShaderAST.DataTypes.ident("float")
+      )
+
+    interceptMessage[ShaderError.GLSLReservedWord](
+      errorPrefix + "'switch' is a reserved word in GLSL, please choose a different name."
+    ) {
+      ShaderProgramValidation.validate(1, Nil)(ast)
+    }
+  }
+
   test("Global variables much be null or constant values, not function calls") {
     val ast =
       ShaderAST.ShaderBlock(

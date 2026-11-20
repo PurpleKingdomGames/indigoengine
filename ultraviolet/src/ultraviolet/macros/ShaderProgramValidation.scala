@@ -29,7 +29,7 @@ import ultraviolet.datatypes.ShaderAST.While
 
 import scala.annotation.tailrec
 
-object ShaderProgramValidation extends ShaderMacroUtils:
+object ShaderProgramValidation:
 
   val ErrorMsgNestedFunction: String =
     "It is not permitted to nest named functions, however, you can declare nested anonymous functions."
@@ -42,19 +42,48 @@ object ShaderProgramValidation extends ShaderMacroUtils:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def validateIdentifier(name: String): Unit =
-    if isGLSLReservedWord(name) then throw ShaderError.GLSLReservedWord(name)
+    if GLSLReservedWords.isReserved(name) then throw ShaderError.GLSLReservedWord(name)
 
-  def validateAnnotatedDeclaration(ast: ShaderAST): ShaderAST = {
-    @tailrec
-    def rec(value: ShaderAST): Unit =
-      value match
-        case Annotated(_, _, inner) => rec(inner)
-        case Val(id, _, _)          => validateIdentifier(id)
-        case _                      => ()
-
-    rec(ast)
+  /** Checks the identifiers of declarations nested anywhere inside a node that `validate` doesn't otherwise descend
+    * into, without applying any of the other validation rules to it. `findAll` stops at the first match on each path,
+    * so matches are searched recursively.
+    */
+  private def validateDeclaredIdentifiers(ast: ShaderAST): Unit =
     ast
-  }
+      .findAll {
+        case Val(_, _, _) | ShaderAST.Function(_, _, _, _) | New(_, _) | index(_, _) => true
+        case _                                                                       => false
+      }
+      .foreach {
+        case Val(id, value, _) =>
+          validateIdentifier(id)
+          validateDeclaredIdentifiers(value)
+
+        case ShaderAST.Function(id, args, body, _) =>
+          validateIdentifier(id)
+          args.foreach(a => validateIdentifier(a._2))
+          validateDeclaredIdentifiers(body)
+
+        case New(_, args) =>
+          args.foreach(validateDeclaredIdentifiers)
+
+        case index(_, at) =>
+          validateDeclaredIdentifiers(at)
+
+        case _ =>
+          ()
+      }
+
+  @tailrec
+  def annotatedValIdentifier(ast: ShaderAST): Option[String] =
+    ast match
+      case Annotated(_, _, inner) => annotatedValIdentifier(inner)
+      case Val(id, _, _)          => Some(id)
+      case _                      => None
+
+  def validateAnnotatedDeclaration(ast: ShaderAST): ShaderAST =
+    annotatedValIdentifier(ast).foreach(validateIdentifier)
+    ast
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def validate(level: Int, knownRefs: List[String]): ShaderAST => ShaderAST = {
@@ -80,6 +109,7 @@ object ShaderProgramValidation extends ShaderMacroUtils:
       Struct(name, members.map(validate(level + 1, knownRefs)))
 
     case ast @ New(name, args) =>
+      args.foreach(validateDeclaredIdentifiers)
       ast
 
     case ShaderBlock(inType, outType, envVarName, statements) =>
@@ -87,6 +117,7 @@ object ShaderProgramValidation extends ShaderMacroUtils:
 
     case ShaderAST.Function(id, args, body, returnType) =>
       validateIdentifier(id)
+      args.foreach(a => validateIdentifier(a._2))
 
       // Should not contain function
       body.find {
@@ -102,10 +133,13 @@ object ShaderProgramValidation extends ShaderMacroUtils:
       ShaderAST.Function(id, args, validate(level + 1, knownRefs ++ args.map(_._2))(body), returnType)
 
     case ast @ CallFunction(id, args, returnType) =>
+      args.foreach(validateDeclaredIdentifiers)
+
       if knownRefs.contains(id) then ast
       else throw ShaderError.Validation(forwardRefMsg(id))
 
     case ast @ CallExternalFunction(id, args, returnType) =>
+      args.foreach(validateDeclaredIdentifiers)
       ast
 
     case ast @ FunctionRef(id, arg, returnType) =>
@@ -221,6 +255,8 @@ object ShaderProgramValidation extends ShaderMacroUtils:
       ast
 
     case ast @ index(id, at) =>
+      validateDeclaredIdentifiers(at)
+
       if knownRefs.contains(id) then ast
       else throw ShaderError.Validation(forwardRefMsg(id))
 

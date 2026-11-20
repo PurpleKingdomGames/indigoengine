@@ -116,16 +116,7 @@ object ShaderMacros:
 
     val defRefs        = defs.map(_.id)
     val annotationRefs =
-      annotations.flatMap {
-        case ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _)) =>
-          List(id)
-
-        case ShaderAST.Annotated(_, _, ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _))) =>
-          List(id)
-
-        case _ =>
-          Nil
-      }
+      annotations.flatMap(ShaderProgramValidation.annotatedValIdentifier)
 
     val additionalKeyword =
       List(
