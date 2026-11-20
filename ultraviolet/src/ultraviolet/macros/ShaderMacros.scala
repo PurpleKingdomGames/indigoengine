@@ -116,16 +116,7 @@ object ShaderMacros:
 
     val defRefs        = defs.map(_.id)
     val annotationRefs =
-      annotations.flatMap {
-        case ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _)) =>
-          List(id)
-
-        case ShaderAST.Annotated(_, _, ShaderAST.Annotated(_, _, ShaderAST.Val(id, _, _))) =>
-          List(id)
-
-        case _ =>
-          Nil
-      }
+      annotations.flatMap(ShaderProgramValidation.annotatedValIdentifier)
 
     val additionalKeyword =
       List(
@@ -146,7 +137,7 @@ object ShaderMacros:
         ProceduralShader(
           ShaderProgramValidation.validateFunctionList(defs, ShaderDSLOps.allKeywords ++ additionalKeyword),
           createAST.uboRegister.toList,
-          annotations,
+          annotations.map(ShaderProgramValidation.validateAnnotatedDeclaration),
           ShaderProgramValidation.validate(
             0,
             ShaderDSLOps.allKeywords ++ additionalKeyword ++ defRefs ++ annotationRefs
