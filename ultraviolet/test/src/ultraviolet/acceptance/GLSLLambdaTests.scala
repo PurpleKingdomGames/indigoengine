@@ -260,4 +260,29 @@ class GLSLLambdaTests extends munit.FunSuite {
     )
   }
 
+  // TODO: Blocks passed as call arguments are emitted inline, producing invalid GLSL, e.g. `sin(float a=1.0;,a;)`.
+  test("Blocks can be used as function call arguments".ignore) {
+    inline def fragment =
+      Shader[Unit, Unit] { _ =>
+        // scalafmt will format this to `sin { val a = 1.0f; a }`, which is technically the
+        // same, but less clear to the reader, for the purposes of this test.
+
+        // format: off
+        def f(): Float = sin({ val a = 1.0f; a })
+        // format: on
+      }
+
+    val actual =
+      fragment.toGLSL300.code
+
+    assertNoDiff(
+      actual,
+      s"""
+      |float f(){
+      |  float a=1.0;
+      |  return sin(a);
+      |}
+      |""".stripMargin.trim
+    )
+  }
 }

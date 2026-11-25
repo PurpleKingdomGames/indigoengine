@@ -41,6 +41,51 @@ object ShaderProgramValidation:
     s"${name} is a top level variable, and so must be a constant value or null."
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private def validateIdentifier(name: String): Unit =
+    if GLSLReservedWords.isReserved(name) then throw ShaderError.GLSLReservedWord(name)
+
+  /** Checks the identifiers of declarations nested anywhere inside a node that `validate` doesn't otherwise descend
+    * into, without applying any of the other validation rules to it. `findAll` stops at the first match on each path,
+    * so matches are searched recursively.
+    */
+  private def validateDeclaredIdentifiers(ast: ShaderAST): Unit =
+    ast
+      .findAll {
+        case Val(_, _, _) | ShaderAST.Function(_, _, _, _) | New(_, _) | index(_, _) => true
+        case _                                                                       => false
+      }
+      .foreach {
+        case Val(id, value, _) =>
+          validateIdentifier(id)
+          validateDeclaredIdentifiers(value)
+
+        case ShaderAST.Function(id, args, body, _) =>
+          validateIdentifier(id)
+          args.foreach(a => validateIdentifier(a._2))
+          validateDeclaredIdentifiers(body)
+
+        case New(_, args) =>
+          args.foreach(validateDeclaredIdentifiers)
+
+        case index(_, at) =>
+          validateDeclaredIdentifiers(at)
+
+        case _ =>
+          ()
+      }
+
+  @tailrec
+  def annotatedValIdentifier(ast: ShaderAST): Option[String] =
+    ast match
+      case Annotated(_, _, inner) => annotatedValIdentifier(inner)
+      case Val(id, _, _)          => Some(id)
+      case _                      => None
+
+  def validateAnnotatedDeclaration(ast: ShaderAST): ShaderAST =
+    annotatedValIdentifier(ast).foreach(validateIdentifier)
+    ast
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def validate(level: Int, knownRefs: List[String]): ShaderAST => ShaderAST = {
     case ast @ Empty() =>
       ast
@@ -60,16 +105,20 @@ object ShaderProgramValidation:
     case ast @ UBO(uboDef) =>
       ast
 
-    case ast @ Struct(name, members) =>
-      ast
+    case Struct(name, members) =>
+      Struct(name, members.map(validate(level + 1, knownRefs)))
 
     case ast @ New(name, args) =>
+      args.foreach(validateDeclaredIdentifiers)
       ast
 
     case ShaderBlock(inType, outType, envVarName, statements) =>
       ShaderBlock(inType, outType, envVarName, validateStatementBlock(statements, level, knownRefs))
 
     case ShaderAST.Function(id, args, body, returnType) =>
+      validateIdentifier(id)
+      args.foreach(a => validateIdentifier(a._2))
+
       // Should not contain function
       body.find {
         case ShaderAST.Function(_, _, _, _) => true
@@ -84,10 +133,13 @@ object ShaderProgramValidation:
       ShaderAST.Function(id, args, validate(level + 1, knownRefs ++ args.map(_._2))(body), returnType)
 
     case ast @ CallFunction(id, args, returnType) =>
+      args.foreach(validateDeclaredIdentifiers)
+
       if knownRefs.contains(id) then ast
       else throw ShaderError.Validation(forwardRefMsg(id))
 
     case ast @ CallExternalFunction(id, args, returnType) =>
+      args.foreach(validateDeclaredIdentifiers)
       ast
 
     case ast @ FunctionRef(id, arg, returnType) =>
@@ -138,6 +190,8 @@ object ShaderProgramValidation:
       Switch(validate(level + 1, knownRefs)(on), cases.map(c => c._1 -> validate(level + 1, knownRefs)(c._2)))
 
     case Val(id, value, typeOf) =>
+      validateIdentifier(id)
+
       if level == 0 then
         value.find {
           case ShaderAST.Function(_, _, _, _)                         => true
@@ -158,6 +212,8 @@ object ShaderProgramValidation:
     case MultiStatements(typeOf, vals) =>
       val vs = vals.map {
         case Val(id, value, typeOf_) =>
+          validateIdentifier(id)
+
           if typeOf_ != typeOf then
             throw ShaderError.Validation(s"Type mismatch for ${id}. Expected ${typeOf}, found ${typeOf_}")
           if level == 0 then
@@ -199,6 +255,8 @@ object ShaderProgramValidation:
       ast
 
     case ast @ index(id, at) =>
+      validateDeclaredIdentifiers(at)
+
       if knownRefs.contains(id) then ast
       else throw ShaderError.Validation(forwardRefMsg(id))
 
