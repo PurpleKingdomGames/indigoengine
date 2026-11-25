@@ -16,6 +16,7 @@ import indigo.render.pipeline.datatypes.DisplayObject
 import indigo.render.pipeline.datatypes.DisplayTextLetters
 import indigo.scenegraph.Graphic
 import indigo.scenegraph.SceneNode
+import indigo.scenegraph.materials.LightingModel
 import indigo.scenegraph.materials.Material
 import indigo.scenegraph.registers.AnimationsRegister
 import indigo.scenegraph.registers.BoundaryLocator
@@ -35,7 +36,18 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val fontRegister      = new FontRegister
   val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister)
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
-  val assetMapping: AssetMapping = new AssetMapping(KVP.empty.add("texture" -> texture))
+  val normals = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2(0, 50), Vector2(50, 50))
+  val assetMapping: AssetMapping =
+    new AssetMapping(KVP.empty.add("texture" -> texture).add("texture_n" -> normals))
+
+  val litGraphic: Graphic[?] =
+    Graphic(
+      Size(50, 40),
+      Material.Bitmap(
+        AssetName("texture"),
+        LightingModel.Lit.flat.withNormal(AssetName("texture_n"), 1.0)
+      )
+    )
 
   val doc = new DisplayObjectConversions(
     boundaryLocator,
@@ -90,6 +102,26 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.y, 20.0f)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
+  }
+
+  test("lighting channel offsets of an uncropped graphic point at the channel asset") {
+    val actual: DisplayObject =
+      convert(litGraphic)
+
+    assertEqualsFloat(actual.channelOffset0X, 0.0f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset0Y, 0.0f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset2X, 0.0f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset2Y, 0.5f, 0.0001f)
+  }
+
+  test("lighting channel offsets of a cropped graphic include the crop position") {
+    val actual: DisplayObject =
+      convert(litGraphic.withCrop(10, 20, 50, 40))
+
+    assertEqualsFloat(actual.channelOffset0X, 0.1f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset0Y, 0.2f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset2X, 0.1f, 0.0001f)
+    assertEqualsFloat(actual.channelOffset2Y, 0.7f, 0.0001f)
   }
 
 }

@@ -41,6 +41,11 @@ object LightsScene extends Scene[SandboxGameModel] {
           .withOverlay(Fill.Color(RGBA.Magenta))
       )
 
+  val graphic3: Graphic[Material.Bitmap] =
+    Graphic(40, 20, LightingAssets.junctionBoxMaterialOn)
+      .withCrop(0, 20, 40, 20)
+      .moveTo(20, 20)
+
   val shape =
     Shape
       .Polygon(
@@ -67,6 +72,7 @@ object LightsScene extends Scene[SandboxGameModel] {
         Constants.LayerKeys.game -> Layer.Content(
           graphic,
           graphic2,
+          graphic3,
           shape
         )
       )
