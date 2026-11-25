@@ -263,6 +263,11 @@ object Game:
       */
     def config: EngineConfig
 
+    /** The pixel magnification factor your shader should run at, e.g. Magnification.x1 for 1:1 pixels, or
+      * Magnification.x3 for chunky pixel art.
+      */
+    def magnification: Magnification
+
     /** A fixed set of assets that will be loaded before the game starts, typically for loading an external shader file.
       */
     def assets: Set[AssetType]
@@ -406,21 +411,25 @@ object Game:
     ): Outcome[SceneUpdateFragment] =
       Outcome(
         SceneUpdateFragment(
-          LayerKey("shaderplayground") -> Layer
-            .Content(
-              BlankEntity(
-                model.viewport,
-                ShaderData(
-                  shader.id,
-                  uniformBlocks,
-                  model.channels.channel0,
-                  model.channels.channel1,
-                  model.channels.channel2,
-                  model.channels.channel3
+          LayerEntry(
+            LayerKey("shaderplayground"),
+            Layer
+              .Content(
+                BlankEntity(
+                  model.viewport,
+                  ShaderData(
+                    shader.id,
+                    uniformBlocks,
+                    model.channels.channel0,
+                    model.channels.channel1,
+                    model.channels.channel2,
+                    model.channels.channel3
+                  )
                 )
               )
-            )
-            .withBlendMaterial(ShaderPlayground.SceneBlendShader.material)
+              .withBlendMaterial(ShaderPlayground.SceneBlendShader.material),
+            magnification
+          )
         )
       )
 
