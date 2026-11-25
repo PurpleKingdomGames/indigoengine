@@ -40,6 +40,9 @@ object GraphicConversion:
     val normalOffset   = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
     val specularOffset = TextureLookups.findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
 
+    val cropOffset =
+      leaf.crop.fold(Vector2.zero)(_.position.toVector2)
+
     val texture =
       val t = TextureLookups.lookupTexture(assetMapping, materialName)
 
@@ -83,9 +86,9 @@ object GraphicConversion:
       height = leaf.size.height,
       atlasName = Some(texture.atlasName),
       frame = frameInfo,
-      channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
-      channelOffset2 = frameInfo.offsetToCoords(normalOffset),
-      channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+      channelOffset1 = frameInfo.offsetToCoords(emissiveOffset + cropOffset),
+      channelOffset2 = frameInfo.offsetToCoords(normalOffset + cropOffset),
+      channelOffset3 = frameInfo.offsetToCoords(specularOffset + cropOffset),
       texturePosition = texture.offset,
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
