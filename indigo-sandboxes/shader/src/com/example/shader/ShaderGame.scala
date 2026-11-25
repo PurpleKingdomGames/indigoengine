@@ -10,19 +10,20 @@ final class ShaderGame() extends Game.ShaderPlayground:
 
   val gameId: GameId = GameId("shader-game")
 
-  val config: EngineConfig        = EngineConfig.default
-  val assets: Set[AssetType]      = SeascapeShader.assets
-  val channel0: Option[AssetPath] = Option(AssetPath("assets/dots.png"))
-  val channel1: Option[AssetPath] = None
-  val channel2: Option[AssetPath] = None
-  val channel3: Option[AssetPath] = None
+  val config: EngineConfig         = EngineConfig.default
+  val magnification: Magnification = Magnification.x2
+  val assets: Set[AssetType]       = SeascapeShader.assets
+  val channel0: Option[AssetPath]  = Option(AssetPath("assets/dots.png"))
+  val channel1: Option[AssetPath]  = None
+  val channel2: Option[AssetPath]  = None
+  val channel3: Option[AssetPath]  = None
 
   val uniformBlocks: Batch[UniformBlock] =
     Batch(CustomData(RGBA.Magenta.toUVVec4))
 
   val shader: ShaderProgram =
-    ShaderWithData.shader
-// ShowImage.shader
+    // ShaderWithData.shader
+    ShowImage.shader
 // SeascapeShader.shader
 
 final case class CustomData(CUSTOM_COLOR: vec4) extends FragmentEnvReference derives ToUniformBlock
