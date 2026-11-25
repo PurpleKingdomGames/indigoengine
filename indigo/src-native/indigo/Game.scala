@@ -329,7 +329,7 @@ object Game:
         case _                      => None
       }
 
-    final def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Channels, ShaderPlayground.Model]] =
+    def boot(flags: Map[String, String]): Outcome[BootResult[ShaderPlayground.Channels, ShaderPlayground.Model]] =
       val c0 = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
       val c1 = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
       val c2 = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
@@ -367,7 +367,7 @@ object Game:
           .withAssets(assets ++ channelAssets)
       )
 
-    final def setup(
+    def setup(
         channels: ShaderPlayground.Channels,
         assetCollection: AssetCollection,
         dice: Dice
@@ -378,7 +378,7 @@ object Game:
         )
       )
 
-    final def initialModel(channels: ShaderPlayground.Channels): Outcome[ShaderPlayground.Model] =
+    def initialModel(channels: ShaderPlayground.Channels): Outcome[ShaderPlayground.Model] =
       Outcome(
         ShaderPlayground.Model(
           Size.one,
@@ -386,7 +386,7 @@ object Game:
         )
       )
 
-    final def updateModel(
+    def updateModel(
         context: Context,
         model: ShaderPlayground.Model
     ): GlobalEvent => Outcome[ShaderPlayground.Model] = {
@@ -400,7 +400,7 @@ object Game:
         Outcome(model)
     }
 
-    final def present(
+    def present(
         context: Context,
         model: ShaderPlayground.Model
     ): Outcome[SceneUpdateFragment] =
